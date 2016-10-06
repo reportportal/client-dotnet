@@ -4,15 +4,14 @@
     <id>$id$</id>
     <version>$version$</version>
     <title>$title$</title>
-    <authors>NB</authors>
+    <authors>Nikolay Borisenko</authors>
     <owners>$author$</owners>
-    <licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl>
-    <projectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</projectUrl>
-    <iconUrl>https://github.com/reportportal/reportportal.github.io/blob/master/img/rp_logo.png</iconUrl>
+    <licenseUrl>https://raw.githubusercontent.com/reportportal/client-net/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/reportportal/client-net</projectUrl>
+    <iconUrl>https://reportportal.github.io/img/rp_logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>.NET Wrapper above Report Portal REST API</description>
-    <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
+    <description>Report Portal API client</description>
     <copyright>Copyright 2016</copyright>
-    <tags>Tag1 Tag2</tags>
+    <tags>reportportal testing</tags>
   </metadata>
 </package>
