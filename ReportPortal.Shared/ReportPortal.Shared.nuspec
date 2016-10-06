@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>Nikolay Borisenko</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://raw.githubusercontent.com/reportportal/commons-net/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/reportportal/commons-net</projectUrl>
+    <iconUrl>https://reportportal.github.io/img/rp_logo.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Report Portal bean objects</description>
+    <copyright>Copyright 2016</copyright>
+    <tags>reportportal testing</tags>
+  </metadata>
+  <files>
+    <file src="..\ReportPortal.Shared.Net40\bin\$configuration$\ReportPortal.Shared.dll" target="lib\net40" />
+  </files>
+</package>
