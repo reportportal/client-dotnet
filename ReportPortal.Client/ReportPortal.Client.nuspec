@@ -3,7 +3,7 @@
   <metadata>
     <id>$id$</id>
     <version>$version$</version>
-    <title>$title$</title>
+    <title>ReportPortal Client</title>
     <authors>Nikolay Borisenko</authors>
     <owners>$author$</owners>
     <licenseUrl>https://raw.githubusercontent.com/reportportal/client-net/master/LICENSE</licenseUrl>
