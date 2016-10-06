@@ -13,5 +13,8 @@
     <description>Report Portal API client</description>
     <copyright>Copyright 2016</copyright>
     <tags>reportportal testing</tags>
+    <files>
+      <file src="bin\$configuration$\ReportPortal.Client.dll" target="lib\net40" />
+    </files>
   </metadata>
 </package>
