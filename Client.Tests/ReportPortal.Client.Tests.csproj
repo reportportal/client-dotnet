@@ -7,9 +7,9 @@
     <ProjectGuid>{DEF6115D-6C67-4CBC-B164-A1A5C348D1F4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EPAM.ReportPortal.Client.Tests</RootNamespace>
-    <AssemblyName>EPAM.ReportPortal.Client.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <RootNamespace>ReportPortal.Client.Tests</RootNamespace>
+    <AssemblyName>ReportPortal.Client.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
