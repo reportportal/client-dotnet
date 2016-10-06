@@ -54,7 +54,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Client\ReportPortal.Client.csproj">
+    <ProjectReference Include="..\ReportPortal.Client\ReportPortal.Client.csproj">
       <Project>{6e580093-bf06-4b93-9ad3-309a3ab38afe}</Project>
       <Name>ReportPortal.Client</Name>
     </ProjectReference>
