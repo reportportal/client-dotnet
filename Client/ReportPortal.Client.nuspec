@@ -8,7 +8,7 @@
     <owners>$author$</owners>
     <licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl>
     <projectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</projectUrl>
-    <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>
+    <iconUrl>https://github.com/reportportal/reportportal.github.io/blob/master/img/rp_logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>.NET Wrapper above Report Portal REST API</description>
     <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
