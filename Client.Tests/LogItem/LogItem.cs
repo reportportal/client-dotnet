@@ -13,7 +13,7 @@ namespace ReportPortal.Client.Tests.LogItem
         private string _launchId;
         private string _testId;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void SetUp()
         {
             _launchId = Service.StartLaunch(new StartLaunchRequest
@@ -31,7 +31,7 @@ namespace ReportPortal.Client.Tests.LogItem
                 }).Id;
         }
 
-        [TestFixtureTearDown]
+        [OneTimeTearDown]
         public void TearDown()
         {
             Service.FinishTestItem(_testId, new FinishTestItemRequest
