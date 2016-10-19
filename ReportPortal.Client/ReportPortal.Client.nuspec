@@ -13,6 +13,11 @@
     <description>Report Portal API client</description>
     <copyright>Copyright 2016</copyright>
     <tags>reportportal testing</tags>
+
+    <dependencies>
+      <dependency id="Newtonsoft.Json" version="9.0.0" />
+      <dependency id="RestSharp" version="105.0.0" />
+    </dependencies>
   </metadata>
   <files>
     <file src="..\ReportPortal.Client.Net40\bin\$configuration$\ReportPortal.Client.dll" target="lib\net40" />
