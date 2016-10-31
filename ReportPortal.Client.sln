@@ -1,13 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportPortal.Client", "ReportPortal.Client\ReportPortal.Client.csproj", "{6E580093-BF06-4B93-9AD3-309A3AB38AFE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportPortal.Client.Tests", "ReportPortal.Client.Tests\ReportPortal.Client.Tests.csproj", "{DEF6115D-6C67-4CBC-B164-A1A5C348D1F4}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportPortal.Client.Net40", "ReportPortal.Client.Net40\ReportPortal.Client.Net40.csproj", "{D95ACE92-BE37-4522-AB69-98A3188BB2DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +21,6 @@ Global
 		{DEF6115D-6C67-4CBC-B164-A1A5C348D1F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DEF6115D-6C67-4CBC-B164-A1A5C348D1F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DEF6115D-6C67-4CBC-B164-A1A5C348D1F4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D95ACE92-BE37-4522-AB69-98A3188BB2DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D95ACE92-BE37-4522-AB69-98A3188BB2DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D95ACE92-BE37-4522-AB69-98A3188BB2DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D95ACE92-BE37-4522-AB69-98A3188BB2DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

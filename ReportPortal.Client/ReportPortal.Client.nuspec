@@ -15,11 +15,11 @@
     <tags>reportportal testing</tags>
 
     <dependencies>
-      <dependency id="Newtonsoft.Json" version="9.0.0" />
-      <dependency id="RestSharp" version="105.0.0" />
+      <dependency id="Newtonsoft.Json" version="[9.0.0,)" />
+      <dependency id="RestSharp" version="[105.0.0,)" />
     </dependencies>
   </metadata>
   <files>
-    <file src="..\ReportPortal.Client.Net40\bin\$configuration$\ReportPortal.Client.dll" target="lib\net40" />
+    <file src="..\ReportPortal.Client\bin\$configuration$\ReportPortal.Client.dll" target="lib" />
   </files>
 </package>
