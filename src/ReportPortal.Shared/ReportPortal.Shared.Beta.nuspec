@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>$version$</version>
+    <version>$version$-beta</version>
     <title>ReportPortal Shared</title>
     <authors>Nikolay Borisenko</authors>
     <owners>$author$</owners>
