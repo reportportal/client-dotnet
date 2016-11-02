@@ -66,11 +66,6 @@ Task("Package")
 		BasePath = "./src/ReportPortal.Client/bin/" + configuration,
 		Version = build
 	});
-	NuGetPack("src/ReportPortal.Client/ReportPortal.Client.nuspec", new NuGetPackSettings()
-	{
-		BasePath = "./src/ReportPortal.Client/bin/" + configuration,
-		Version = build + "-prerelease"
-	});
 	}
 	);
 
