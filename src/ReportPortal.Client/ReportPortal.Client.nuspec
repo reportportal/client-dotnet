@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>$id$</id>
+    <id>ReportPortal.Client</id>
     <version>$version$</version>
     <title>ReportPortal Client</title>
     <authors>Nikolay Borisenko</authors>
-    <owners>$author$</owners>
+    <owners>Nikolay Borisenko</owners>
     <licenseUrl>https://raw.githubusercontent.com/reportportal/client-net/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/reportportal/client-net</projectUrl>
     <iconUrl>https://reportportal.github.io/img/rp_logo.png</iconUrl>
@@ -20,6 +20,6 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="..\ReportPortal.Client\bin\$configuration$\ReportPortal.Client.dll" target="lib" />
+    <file src="ReportPortal.Client.dll" target="lib" />
   </files>
 </package>

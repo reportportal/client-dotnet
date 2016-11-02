@@ -18,51 +18,63 @@ var buildDir = Directory("./src/ReportPortal.Client/bin") + Directory(configurat
 //////////////////////////////////////////////////////////////////////
 
 Task("Clean")
-    .Does(() =>
+	.Does(() =>
 {
-    CleanDirectory(buildDir);
+	CleanDirectory(buildDir);
 });
 
 Task("Restore-NuGet-Packages")
-    .IsDependentOn("Clean")
-    .Does(() =>
+	.IsDependentOn("Clean")
+	.Does(() =>
 {
-    NuGetRestore("./src/ReportPortal.Client.sln");
+	NuGetRestore("./src/ReportPortal.Client.sln");
 });
 
 Task("Build")
-    .IsDependentOn("Restore-NuGet-Packages")
-    .Does(() =>
+	.IsDependentOn("Restore-NuGet-Packages")
+	.Does(() =>
 {
-    if(IsRunningOnWindows())
-    {
-      // Use MSBuild
-      MSBuild("./src/ReportPortal.Client.sln", settings =>
-        settings.SetConfiguration(configuration));
-    }
-    else
-    {
-      // Use XBuild
-      XBuild("./src/ReportPortal.Client.sln", settings =>
-        settings.SetConfiguration(configuration));
-    }
+	if(IsRunningOnWindows())
+	{
+	  // Use MSBuild
+	  MSBuild("./src/ReportPortal.Client.sln", settings =>
+		settings.SetConfiguration(configuration));
+	}
+	else
+	{
+	  // Use XBuild
+	  XBuild("./src/ReportPortal.Client.sln", settings =>
+		settings.SetConfiguration(configuration));
+	}
 });
 
 Task("Run-Unit-Tests")
-    .IsDependentOn("Build")
-    .Does(() =>
+	.IsDependentOn("Build")
+	.Does(() =>
 {
-    NUnit3("./src/**/bin/" + configuration + "/*.Tests.dll", new NUnit3Settings {
-        NoResults = true
-        });
+	NUnit3("./src/**/bin/" + configuration + "/*.Tests.dll", new NUnit3Settings {
+		NoResults = true
+		});
 });
+
+Task("Package")
+	.IsDependentOn("Run-Unit-Tests")
+	.Does(() =>
+{
+	NuGetPack("src/ReportPortal.Client/ReportPortal.Client.nuspec", new NuGetPackSettings()
+	{
+		BasePath = "./src/ReportPortal.Client/bin/" + configuration,
+		Version = "1.0.0"
+	});
+	}
+	);
 
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("Run-Unit-Tests");
+	.IsDependentOn("Package");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
