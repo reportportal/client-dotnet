@@ -1,10 +1,11 @@
-#tool nuget:?package=NUnit.ConsoleRunner&version=3.4.0
+#tool nuget:?package=NUnit.ConsoleRunner&version=3.5.0
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 //////////////////////////////////////////////////////////////////////
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Debug");
+var build = Argument("build", "1.0.0");
 
 //////////////////////////////////////////////////////////////////////
 // PREPARATION
@@ -37,8 +38,7 @@ Task("Build")
 	if(IsRunningOnWindows())
 	{
 	  // Use MSBuild
-	  MSBuild("./src/ReportPortal.Client.sln", settings =>
-		settings.SetConfiguration(configuration));
+	  MSBuild("./src/ReportPortal.Client.sln", new MSBuildSettings().SetConfiguration(configuration));
 	}
 	else
 	{
@@ -64,7 +64,12 @@ Task("Package")
 	NuGetPack("src/ReportPortal.Client/ReportPortal.Client.nuspec", new NuGetPackSettings()
 	{
 		BasePath = "./src/ReportPortal.Client/bin/" + configuration,
-		Version = "1.0.0"
+		Version = build
+	});
+	NuGetPack("src/ReportPortal.Client/ReportPortal.Client.nuspec", new NuGetPackSettings()
+	{
+		BasePath = "./src/ReportPortal.Client/bin/" + configuration,
+		Version = build + "-prerelease"
 	});
 	}
 	);

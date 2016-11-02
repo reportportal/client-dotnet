@@ -32,6 +32,8 @@ Tells Cake to use the Mono scripting engine.
 Skips restoring of packages.
 .PARAMETER ScriptArgs
 Remaining arguments are added here.
+.PARAMETER Build
+Build number for nuget package.
 
 .LINK
 http://cakebuild.net
@@ -44,6 +46,7 @@ Param(
     [string]$Target = "Default",
     [ValidateSet("Release", "Debug")]
     [string]$Configuration = "Release",
+    [string]$Build = "1.0.0",
     [ValidateSet("Quiet", "Minimal", "Normal", "Verbose", "Diagnostic")]
     [string]$Verbosity = "Verbose",
     [switch]$Experimental,
@@ -185,5 +188,5 @@ if (!(Test-Path $CAKE_EXE)) {
 
 # Start Cake
 Write-Host "Running build script..."
-Invoke-Expression "& `"$CAKE_EXE`" `"$Script`" -target=`"$Target`" -configuration=`"$Configuration`" -verbosity=`"$Verbosity`" $UseMono $UseDryRun $UseExperimental $ScriptArgs"
+Invoke-Expression "& `"$CAKE_EXE`" `"$Script`" -target=`"$Target`" -configuration=`"$Configuration`" -build=`"$Build`" -verbosity=`"$Verbosity`" $UseMono $UseDryRun $UseExperimental $ScriptArgs"
 exit $LASTEXITCODE
