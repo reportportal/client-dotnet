@@ -11,6 +11,8 @@ var build = Argument("build", "1.0.0");
 // PREPARATION
 //////////////////////////////////////////////////////////////////////
 
+var isAppVeyorBuild = AppVeyor.IsRunningOnAppVeyor;
+
 // Define directories.
 var buildDir = Directory("./src/ReportPortal.Client/bin") + Directory(configuration);
 
@@ -61,6 +63,21 @@ Task("Package")
 	.IsDependentOn("Run-Unit-Tests")
 	.Does(() =>
 {
+	if (isAppVeyorBuild)
+	{
+		if (AppVeyor.Environment.Repository.Tag.IsTag)
+		{
+			build = AppVeyor.Environment.Repository.Tag.Name;
+		}
+		else
+		{
+			build = AppVeyor.Environment.Build.Version + "-prerelease";
+		}
+	}
+	else
+	{
+		build += "-prerelease";
+	}
 	NuGetPack("src/ReportPortal.Client/ReportPortal.Client.nuspec", new NuGetPackSettings()
 	{
 		BasePath = "./src/ReportPortal.Client/bin/" + configuration,
