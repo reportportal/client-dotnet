@@ -76,7 +76,7 @@ Task("Package")
 	}
 	else
 	{
-		build += "-prerelease";
+		build += "-local";
 	}
 	NuGetPack("src/ReportPortal.Client/ReportPortal.Client.nuspec", new NuGetPackSettings()
 	{
