@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace ReportPortal.Client.Tests.LogItem
 {
-    public class LogItemFixture: BaseFixture
+    public class LogItemFixture : BaseFixture
     {
         private string _launchId;
         private string _testId;
@@ -23,22 +23,22 @@ namespace ReportPortal.Client.Tests.LogItem
             }).Id;
 
             _testId = Service.StartTestItem(new StartTestItemRequest
-                {
-                    LaunchId = _launchId,
-                    Name = "Test1",
-                    StartTime = DateTime.UtcNow,
-                    Type = TestItemType.Test
-                }).Id;
+            {
+                LaunchId = _launchId,
+                Name = "Test1",
+                StartTime = DateTime.UtcNow,
+                Type = TestItemType.Test
+            }).Id;
         }
 
         [OneTimeTearDown]
         public void TearDown()
         {
             Service.FinishTestItem(_testId, new FinishTestItemRequest
-                {
-                    EndTime = DateTime.UtcNow,
-                    Status = Status.Passed
-                });
+            {
+                EndTime = DateTime.UtcNow,
+                Status = Status.Passed
+            });
 
             Service.FinishLaunch(_launchId, new FinishLaunchRequest
             {
@@ -72,9 +72,9 @@ namespace ReportPortal.Client.Tests.LogItem
         }
 
         [Test]
-        public void CteateLogWithAttach()
+        public void CreateLogWithAttach()
         {
-            var data = new byte[]{1, 2, 3};
+            var data = new byte[] { 1, 2, 3 };
             var log = Service.AddLogItem(new AddLogItemRequest
             {
                 TestItemId = _testId,
@@ -114,11 +114,11 @@ namespace ReportPortal.Client.Tests.LogItem
             Assert.NotNull(log.Id);
 
             Service.FinishTestItem(newTestId, new FinishTestItemRequest
-                {
-                    EndTime = DateTime.UtcNow,
-                    Status = Status.Passed
+            {
+                EndTime = DateTime.UtcNow,
+                Status = Status.Passed
 
-                });
+            });
 
             var message = Service.DeleteLogItem(log.Id).Info;
             StringAssert.Contains("successfully", message);
@@ -151,12 +151,12 @@ namespace ReportPortal.Client.Tests.LogItem
             });
 
             var logs = Service.GetLogItems(new FilterOption
-                {
-                    Filters = new List<Filter>
+            {
+                Filters = new List<Filter>
                         {
                             new Filter(FilterOperation.Equals, "item", newTestId)
                         }
-                });
+            });
             Assert.Greater(logs.Count(), 0);
 
             var message = Service.DeleteLogItem(log.Id).Info;

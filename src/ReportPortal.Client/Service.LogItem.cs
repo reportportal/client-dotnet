@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using RestSharp;
+using System.Threading.Tasks;
 
 namespace ReportPortal.Client
 {
@@ -80,6 +81,11 @@ namespace ReportPortal.Client
             var response = _restClient.ExecuteWithErrorHandling(request);
             var result = JsonConvert.DeserializeObject<LogItem>(model.Attach == null ? response.Content : JObject.Parse(response.Content)["responses"].First.ToString());
             return result;
+        }
+
+        public async Task<LogItem> AddLogItemAsync(AddLogItemRequest model)
+        {
+            return await Task.Run(() => AddLogItem(model));
         }
 
         /// <summary>
