@@ -38,7 +38,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="ReportPortal.Client, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ReportPortal.Client.1.2.2\lib\ReportPortal.Client.dll</HintPath>
+      <HintPath>..\packages\ReportPortal.Client.1.2.3-beta-7\lib\ReportPortal.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="RestSharp, Version=105.2.3.0, Culture=neutral, processorArchitecture=MSIL">

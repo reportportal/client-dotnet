@@ -27,7 +27,7 @@ namespace ReportPortal.Shared
                     Text = message
                 };
 
-                Service.AddLogItem(request);
+                Service.AddLogItemAsync(request);
             }
         }
     }
