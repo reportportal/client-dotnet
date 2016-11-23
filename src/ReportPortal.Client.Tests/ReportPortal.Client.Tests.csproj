@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="BaseFixture.cs" />
     <Compile Include="LogItem\LogItem.cs" />
+    <Compile Include="Negative\Negative.cs" />
     <Compile Include="TestItem\TestItem.cs" />
     <Compile Include="LaunchItem\LaunchItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

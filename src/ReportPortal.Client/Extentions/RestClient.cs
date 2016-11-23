@@ -28,6 +28,17 @@ namespace ReportPortal.Client.Extentions
                     throw response.ErrorException;
                 }
             }
+            else
+            {
+                if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    throw new ServiceException(string.Format("Nothing found by the '{0}' uri.", client.BaseUrl + request.Resource), (int)HttpStatusCode.NotFound);
+                }
+                else if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    throw new ServiceException("Client isn't authorized to perform the operation.", (int)HttpStatusCode.Unauthorized);
+                }
+            }
             Error errorMessage = null;
             try
             {
@@ -39,6 +50,7 @@ namespace ReportPortal.Client.Extentions
             }
             catch (JsonSerializationException)
             {
+                
             }
 
             if (errorMessage != null)
