@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using NUnit.Framework;
 using ReportPortal.Client.Filtering;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
-using NUnit.Framework;
 
 namespace ReportPortal.Client.Tests.TestItem
 {
@@ -646,6 +646,38 @@ namespace ReportPortal.Client.Tests.TestItem
             {
                 EndTime = DateTime.UtcNow
             });
+        }
+
+        [Test]
+        public void TrimTestItemName()
+        {
+            var namePrefix = "TrimLaunch";
+            var testItemName = namePrefix + new string('_', 256 - namePrefix.Length + 1);
+
+            var test = Service.StartTestItem(new StartTestItemRequest
+            {
+                LaunchId = _launchId,
+                Name = testItemName,
+                StartTime = DateTime.UtcNow,
+                Type = TestItemType.Test
+            });
+            Assert.NotNull(test.Id);
+
+            var gotTestItem = Service.GetTestItem(test.Id);
+            Assert.AreEqual(testItemName.Substring(0, 256), gotTestItem.Name);
+
+            var message = Service.FinishTestItem(test.Id, new FinishTestItemRequest
+            {
+                EndTime = DateTime.UtcNow,
+                Status = Status.Passed
+            });
+            StringAssert.Contains("successfully", message.Info);
+            Service.FinishLaunch(_launchId, new FinishLaunchRequest
+            {
+                EndTime = DateTime.UtcNow
+            });
+            var delMessage = Service.DeleteTestItem(test.Id);
+            StringAssert.Contains("successfully", delMessage.Info);
         }
     }
 }
