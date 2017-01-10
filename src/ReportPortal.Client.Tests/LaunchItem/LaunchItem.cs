@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
 using ReportPortal.Client.Extentions;
 using ReportPortal.Client.Filtering;
 using ReportPortal.Client.Requests;
-using NUnit.Framework;
 
 namespace ReportPortal.Client.Tests.LaunchItem
 {
@@ -185,6 +185,31 @@ namespace ReportPortal.Client.Tests.LaunchItem
 
             var analyzeMessage = Service.AnalyzeLaunch(launch.Id, "history");
             StringAssert.Contains("started", analyzeMessage.Info);
+
+            var delMessage = Service.DeleteLaunch(launch.Id);
+            StringAssert.Contains("successfully", delMessage.Info);
+        }
+
+        [Test]
+        public void TrimLaunchName()
+        {
+            var namePrefix = "TrimLaunch";
+            var launchName = namePrefix + new string('_', 256 - namePrefix.Length + 1);
+
+            var launch = Service.StartLaunch(new StartLaunchRequest
+            {
+                Name = launchName,
+                StartTime = DateTime.UtcNow
+            });
+            Assert.NotNull(launch.Id);
+            var message = Service.FinishLaunch(launch.Id, new FinishLaunchRequest
+            {
+                EndTime = DateTime.UtcNow
+            });
+            StringAssert.Contains("successfully", message.Info);
+
+            var gotLaunch = Service.GetLaunch(launch.Id);
+            Assert.AreEqual(launchName.Substring(0, 256), gotLaunch.Name);
 
             var delMessage = Service.DeleteLaunch(launch.Id);
             StringAssert.Contains("successfully", delMessage.Info);

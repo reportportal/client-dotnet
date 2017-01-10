@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using ReportPortal.Client.Converters;
 using ReportPortal.Client.Models;
-using Newtonsoft.Json;
 
 namespace ReportPortal.Client.Requests
 {
@@ -14,6 +14,7 @@ namespace ReportPortal.Client.Requests
         /// <summary>
         /// A short name of launch.
         /// </summary>
+        [JsonConverter(typeof(TrimmingConverter), 256)]
         public string Name { get; set; }
 
         /// <summary>
