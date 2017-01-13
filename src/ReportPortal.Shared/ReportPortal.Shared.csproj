@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="Bridge.cs" />
     <Compile Include="ContextInfo.cs" />
+    <Compile Include="IBridgeExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
