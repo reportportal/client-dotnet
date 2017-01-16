@@ -21,10 +21,12 @@ namespace ReportPortal.Client
         public Service(Uri uri, string project, string password)
         {
             ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
-            _restClient = new RestClient(new Uri(uri, project).ToString())
+            _restClient = new RestClient(uri)
                 {
                     Authenticator = new ReportPortalAuthenticator(password)
                 };
+
+            Project = project;
         }
 
         /// <summary>
@@ -39,5 +41,10 @@ namespace ReportPortal.Client
         {
             _restClient.Proxy = proxy;
         }
+
+        /// <summary>
+        /// Get or set project name to interact with.
+        /// </summary>
+        public string Project { get; set; }
     }
 }

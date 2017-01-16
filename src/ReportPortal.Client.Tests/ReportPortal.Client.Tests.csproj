@@ -53,6 +53,7 @@
     <Compile Include="TestItem\TestItem.cs" />
     <Compile Include="LaunchItem\LaunchItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="User\UserFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ReportPortal.Client\ReportPortal.Client.csproj">

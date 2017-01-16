@@ -19,7 +19,7 @@ namespace ReportPortal.Client
         /// <returns>A list of test items.</returns>
         public TestItemsContainer GetTestItems(FilterOption filterOption = null)
         {
-            var request = new RestRequest("item");
+            var request = new RestRequest(Project + "/item");
             if (filterOption != null)
             {
                 foreach (var p in filterOption.ConvertToDictionary())
@@ -38,7 +38,7 @@ namespace ReportPortal.Client
         /// <returns>A representation of test item.</returns>
         public TestItem GetTestItem(string id)
         {
-            var request = new RestRequest("item/" + id);
+            var request = new RestRequest(Project + "/item/" + id);
             var response = _restClient.ExecuteWithErrorHandling(request);
             return JsonConvert.DeserializeObject<TestItem>(response.Content);
         }
@@ -51,7 +51,7 @@ namespace ReportPortal.Client
         /// <returns></returns>
         public List<string> GetUniqueTags(string launchId, string tagContains)
         {
-            var request = new RestRequest("item/tags");
+            var request = new RestRequest(Project + "/item/tags");
             request.AddParameter("launch", launchId, ParameterType.QueryString);
             request.AddParameter("filter.cnt.tags", tagContains, ParameterType.QueryString);
 
@@ -66,7 +66,7 @@ namespace ReportPortal.Client
         /// <returns>Representation of created test item.</returns>
         public TestItem StartTestItem(StartTestItemRequest model)
         {
-            var request = new RestRequest("item", Method.POST);
+            var request = new RestRequest(Project + "/item", Method.POST);
             var body = JsonConvert.SerializeObject(model, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
             request.AddParameter("application/json", body, ParameterType.RequestBody);
             var response = _restClient.ExecuteWithErrorHandling(request);
@@ -81,7 +81,7 @@ namespace ReportPortal.Client
         /// <returns>Representation of created test item.</returns>
         public TestItem StartTestItem(string id, StartTestItemRequest model)
         {
-            var request = new RestRequest("item/" + id, Method.POST);
+            var request = new RestRequest(Project + "/item/" + id, Method.POST);
             var body = JsonConvert.SerializeObject(model, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
             request.AddParameter("application/json", body, ParameterType.RequestBody);
             var response = _restClient.ExecuteWithErrorHandling(request);
@@ -96,7 +96,7 @@ namespace ReportPortal.Client
         /// <returns>A message from service.</returns>
         public Message FinishTestItem(string id, FinishTestItemRequest model)
         {
-            var request = new RestRequest("item/" + id, Method.PUT);
+            var request = new RestRequest(Project + "/item/" + id, Method.PUT);
             var body = JsonConvert.SerializeObject(model, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
             request.AddParameter("application/json", body, ParameterType.RequestBody);
             var response = _restClient.ExecuteWithErrorHandling(request);
@@ -111,7 +111,7 @@ namespace ReportPortal.Client
         /// <returns>A message from service.</returns>
         public Message UpdateTestItem(string id, UpdateTestItemRequest model)
         {
-            var request = new RestRequest("item/" + id + "/update", Method.PUT);
+            var request = new RestRequest(Project + "/item/" + id + "/update", Method.PUT);
             var body = JsonConvert.SerializeObject(model, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
             request.AddParameter("application/json", body, ParameterType.RequestBody);
             var response = _restClient.ExecuteWithErrorHandling(request);
@@ -125,7 +125,7 @@ namespace ReportPortal.Client
         /// <returns>A message from service.</returns>
         public Message DeleteTestItem(string id)
         {
-            var request = new RestRequest("item/" + id, Method.DELETE);
+            var request = new RestRequest(Project + "/item/" + id, Method.DELETE);
             var response = _restClient.ExecuteWithErrorHandling(request);
             return JsonConvert.DeserializeObject<Message>(response.Content);
         }
@@ -137,7 +137,7 @@ namespace ReportPortal.Client
         /// <returns>A list of assigned issues.</returns>
         public List<Issue> AssignTestItemIssues(AssignTestItemIssuesRequest model)
         {
-            var request = new RestRequest("item", Method.PUT);
+            var request = new RestRequest(Project + "/item", Method.PUT);
             var body = JsonConvert.SerializeObject(model, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
             request.AddParameter("application/json", body, ParameterType.RequestBody);
             var response = _restClient.ExecuteWithErrorHandling(request);
@@ -153,7 +153,7 @@ namespace ReportPortal.Client
         /// <returns>The list of execution history.</returns>
         public List<TestItemHistory> GetTestItemHistory(string testItemId, int depth, bool full)
         {
-            var request = new RestRequest("item/history", Method.GET);
+            var request = new RestRequest(Project + "/item/history", Method.GET);
             request.AddParameter("ids", testItemId, ParameterType.QueryString);
             request.AddParameter("history_depth", depth, ParameterType.QueryString);
             request.AddParameter("is_full", full, ParameterType.QueryString);

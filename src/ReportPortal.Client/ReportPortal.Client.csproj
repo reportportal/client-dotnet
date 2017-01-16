@@ -76,6 +76,7 @@
     <Compile Include="Models\Container.cs" />
     <Compile Include="Models\Error.cs" />
     <Compile Include="Models\TestItemHistory.cs" />
+    <Compile Include="Models\User.cs" />
     <Compile Include="Requests\AssignTestItemIssuesRequest.cs" />
     <Compile Include="Requests\MergeLaunchesRequest.cs" />
     <Compile Include="Requests\UpdateLaunchRequest.cs" />
@@ -100,6 +101,7 @@
     <Compile Include="Models\Message.cs" />
     <Compile Include="Service.Launch.cs" />
     <Compile Include="Service.cs" />
+    <Compile Include="Service.User.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

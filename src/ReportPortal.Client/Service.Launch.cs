@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ReportPortal.Client.Extentions;
 using ReportPortal.Client.Filtering;
 using ReportPortal.Client.Models;
@@ -19,7 +20,7 @@ namespace ReportPortal.Client
         /// <returns>A list of launches.</returns>
         public LaunchesContainer GetLaunches(FilterOption filterOption = null)
         {
-            var request = new RestRequest("launch");
+            var request = new RestRequest(Project + "/launch");
             if (filterOption != null)
             {
                 foreach (var p in filterOption.ConvertToDictionary())
@@ -38,7 +39,7 @@ namespace ReportPortal.Client
         /// <returns>A representation of launch.</returns>
         public Launch GetLaunch(string id)
         {
-            var request = new RestRequest("launch/" + id);
+            var request = new RestRequest(Project + "/launch/" + id);
             var response = _restClient.ExecuteWithErrorHandling(request);
             return JsonConvert.DeserializeObject<Launch>(response.Content);
         }
@@ -50,7 +51,7 @@ namespace ReportPortal.Client
         /// <returns>Representation of just created launch.</returns>
         public Launch StartLaunch(StartLaunchRequest model)
         {
-            var request = new RestRequest("launch/", Method.POST);
+            var request = new RestRequest(Project + "/launch/", Method.POST);
             var body = JsonConvert.SerializeObject(model, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
             request.AddParameter("application/json", body, ParameterType.RequestBody);
             var response = _restClient.ExecuteWithErrorHandling(request);
@@ -69,11 +70,11 @@ namespace ReportPortal.Client
             RestRequest request;
             if (force)
             {
-                request = new RestRequest("launch/" + id + "/stop", Method.PUT);
+                request = new RestRequest(Project + "/launch/" + id + "/stop", Method.PUT);
             }
             else
             {
-                request = new RestRequest("launch/" + id + "/finish", Method.PUT);
+                request = new RestRequest(Project + "/launch/" + id + "/finish", Method.PUT);
             }
             var body = JsonConvert.SerializeObject(model, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
             request.AddParameter("application/json", body, ParameterType.RequestBody);
@@ -88,7 +89,7 @@ namespace ReportPortal.Client
         /// <returns>A message from service.</returns>
         public Message DeleteLaunch(string id)
         {
-            var request = new RestRequest("launch/" + id, Method.DELETE);
+            var request = new RestRequest(Project + "/launch/" + id, Method.DELETE);
             var response = _restClient.ExecuteWithErrorHandling(request);
             return JsonConvert.DeserializeObject<Message>(response.Content);
         }
@@ -100,7 +101,7 @@ namespace ReportPortal.Client
         /// <returns>Returns the model of merged launches.</returns>
         public Launch MergeLaunches(MergeLaunchesRequest model)
         {
-            var request = new RestRequest("launch/merge", Method.POST);
+            var request = new RestRequest(Project + "/launch/merge", Method.POST);
             var body = JsonConvert.SerializeObject(model, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
             request.AddParameter("application/json", body, ParameterType.RequestBody);
             var response = _restClient.ExecuteWithErrorHandling(request);
@@ -115,7 +116,7 @@ namespace ReportPortal.Client
         /// <returns>A message from service.</returns>
         public Message UpdateLaunch(string id, UpdateLaunchRequest model)
         {
-            var request = new RestRequest("launch/" + id + "/update", Method.PUT);
+            var request = new RestRequest(Project + "/launch/" + id + "/update", Method.PUT);
             var body = JsonConvert.SerializeObject(model, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
             request.AddParameter("application/json", body, ParameterType.RequestBody);
             var response = _restClient.ExecuteWithErrorHandling(request);
@@ -130,7 +131,7 @@ namespace ReportPortal.Client
         /// <returns>A message from service.</returns>
         public Message AnalyzeLaunch(string id, string strategy)
         {
-            var request = new RestRequest(string.Format("launch/{0}/analyze/{1}", id, strategy), Method.POST);
+            var request = new RestRequest(Project + "/launch/" + id +"/analyze/" + strategy, Method.POST);
             var response = _restClient.ExecuteWithErrorHandling(request);
             return JsonConvert.DeserializeObject<Message>(response.Content);
         }

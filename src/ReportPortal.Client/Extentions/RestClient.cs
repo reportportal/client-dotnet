@@ -32,7 +32,7 @@ namespace ReportPortal.Client.Extentions
             {
                 if (response.StatusCode == HttpStatusCode.NotFound)
                 {
-                    throw new ServiceException(string.Format("Nothing found by the '{0}' uri.", client.BaseUrl + request.Resource), (int)HttpStatusCode.NotFound);
+                    throw new ServiceException(string.Format("Nothing found by the '{0}' uri.", new Uri( client.BaseUrl, request.Resource)), (int)HttpStatusCode.NotFound);
                 }
                 else if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {

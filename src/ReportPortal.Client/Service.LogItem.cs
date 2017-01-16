@@ -21,7 +21,7 @@ namespace ReportPortal.Client
         /// <returns>A list of log items.</returns>
         public IEnumerable<LogItem> GetLogItems(FilterOption filterOption = null)
         {
-            var request = new RestRequest("log");
+            var request = new RestRequest(Project + "/log");
             if (filterOption != null)
             {
                 foreach (var p in filterOption.ConvertToDictionary())
@@ -40,7 +40,7 @@ namespace ReportPortal.Client
         /// <returns>A representation of log item/</returns>
         public LogItem GetLogItem(string id)
         {
-            var request = new RestRequest("log/" + id);
+            var request = new RestRequest(Project + "/log/" + id);
             var response = _restClient.ExecuteWithErrorHandling(request);
             return JsonConvert.DeserializeObject<LogItem>(response.Content);
         }
@@ -52,7 +52,7 @@ namespace ReportPortal.Client
         /// <returns>Array of bytes.</returns>
         public byte[] GetBinaryData(string id)
         {
-            var request = new RestRequest("data/" + id);
+            var request = new RestRequest(Project + "/data/" + id);
             var response = _restClient.Execute(request);
             return response.RawBytes;
         }
@@ -64,7 +64,7 @@ namespace ReportPortal.Client
         /// <returns>Representation of just created log item.</returns>
         public LogItem AddLogItem(AddLogItemRequest model)
         {
-            var request = new RestRequest("log/", Method.POST);
+            var request = new RestRequest(Project + "/log/", Method.POST);
            
             if (model.Attach == null)
             {
@@ -95,7 +95,7 @@ namespace ReportPortal.Client
         /// <returns>A message from service.</returns>
         public Message DeleteLogItem(string id)
         {
-            var request = new RestRequest("log/" + id, Method.DELETE);
+            var request = new RestRequest(Project + "/log/" + id, Method.DELETE);
             var response = _restClient.ExecuteWithErrorHandling(request);
             return JsonConvert.DeserializeObject<Message>(response.Content);
         }
