@@ -81,7 +81,7 @@ Task("Upload-Coverage-Report")
 	.IsDependentOn("Generate-Coverage")
 	.Does(() =>
 {
-		CoverallsIo("CoverageResults.xml");
+		CoverallsIo("CoverageResults.xml", CoverallsNetReportType.OpenCover);
 });
 
 Task("Package")
