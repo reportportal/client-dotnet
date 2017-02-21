@@ -1,4 +1,8 @@
 #tool nuget:?package=NUnit.ConsoleRunner&version=3.5.0
+#tool nuget:?package=OpenCover
+
+#tool coveralls.io
+#addin Cake.Coveralls
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 //////////////////////////////////////////////////////////////////////
@@ -59,8 +63,29 @@ Task("Run-Unit-Tests")
 		});
 });
 
-Task("Package")
+Task("Generate-Coverage")
 	.IsDependentOn("Run-Unit-Tests")
+	.Does(() =>
+{
+	OpenCover(tool => {
+  		tool.NUnit3("./src/**/bin/" + configuration + "/*.Tests.dll", new NUnit3Settings {
+			NoResults = true
+			});
+  		},
+  		new FilePath("./CoverageResults.xml"),
+  		new OpenCoverSettings().WithFilter("+[ReportPortal.Client]*")
+    );
+});
+
+Task("Upload-Coverage-Report")
+	.IsDependentOn("Generate-Coverage")
+	.Does(() =>
+{
+		CoverallsIo("CoverageResults.xml");
+});
+
+Task("Package")
+	.IsDependentOn("Upload-Coverage-Report")
 	.Does(() =>
 {
 	if (isAppVeyorBuild)

@@ -462,7 +462,7 @@ namespace ReportPortal.Client.Tests.TestItem
             StringAssert.Contains("successfully", delMessage.Info);
         }
 
-        [Test]
+        [Test, Ignore("Temporary")]
         public void AssignTestItemIssuesTest()
         {
             var suite = Service.StartTestItem(new StartTestItemRequest
