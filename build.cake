@@ -1,6 +1,7 @@
 #tool nuget:?package=NUnit.ConsoleRunner&version=3.5.0
 #tool nuget:?package=OpenCover
 
+#tool coveralls.net
 #tool coveralls.io
 #addin Cake.Coveralls
 //////////////////////////////////////////////////////////////////////
@@ -81,7 +82,10 @@ Task("Upload-Coverage-Report")
 	.IsDependentOn("Generate-Coverage")
 	.Does(() =>
 {
-		CoverallsIo("CoverageResults.xml", CoverallsNetReportType.OpenCover);
+	if (isAppVeyorBuild)
+	{
+		CoverallsNet("CoverageResults.xml", CoverallsNetReportType.OpenCover);
+	}
 });
 
 Task("Package")
