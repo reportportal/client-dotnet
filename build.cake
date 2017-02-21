@@ -84,7 +84,7 @@ Task("Upload-Coverage-Report")
 {
 	if (isAppVeyorBuild)
 	{
-		CoverallsIo("CoverageResults.xml");
+		CoverallsNet("CoverageResults.xml", CoverallsNetReportType.OpenCover);
 	}
 });
 
