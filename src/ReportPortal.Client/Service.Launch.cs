@@ -59,6 +59,11 @@ namespace ReportPortal.Client
             return JsonConvert.DeserializeObject<Launch>(response.Content);
         }
 
+        public async Task<Launch> StartLaunchAsync(StartLaunchRequest model)
+        {
+            return await Task.Run(() => StartLaunch(model));
+        }
+
         /// <summary>
         /// Finishes specified launch.
         /// </summary>
@@ -81,6 +86,11 @@ namespace ReportPortal.Client
             request.AddParameter("application/json", body, ParameterType.RequestBody);
             var response = _restClient.ExecuteWithErrorHandling(request);
             return JsonConvert.DeserializeObject<Message>(response.Content);
+        }
+
+        public async Task<Message> FinishLaunchAsync(string id, FinishLaunchRequest model, bool force = false)
+        {
+            return await Task.Run(() => FinishLaunch(id, model, force));
         }
 
         /// <summary>
