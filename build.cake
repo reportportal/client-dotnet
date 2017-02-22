@@ -80,6 +80,7 @@ Task("Generate-Coverage")
 
 Task("Upload-Coverage-Report")
 	.IsDependentOn("Generate-Coverage")
+	.ContinueOnError()
 	.Does(() =>
 {
 	if (isAppVeyorBuild)
