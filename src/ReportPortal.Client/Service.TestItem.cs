@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using ReportPortal.Client.Extentions;
 using ReportPortal.Client.Filtering;
 using ReportPortal.Client.Models;
@@ -73,6 +74,11 @@ namespace ReportPortal.Client
             return JsonConvert.DeserializeObject<TestItem>(response.Content);
         }
 
+        public async Task<TestItem> StartTestItemAsync(StartTestItemRequest model)
+        {
+            return await Task.Run(() => StartTestItem(model));
+        }
+
         /// <summary>
         /// Creates a new test item.
         /// </summary>
@@ -86,6 +92,11 @@ namespace ReportPortal.Client
             request.AddParameter("application/json", body, ParameterType.RequestBody);
             var response = _restClient.ExecuteWithErrorHandling(request);
             return JsonConvert.DeserializeObject<TestItem>(response.Content);
+        }
+
+        public async Task<TestItem> StartTestItemAsync(string id, StartTestItemRequest model)
+        {
+            return await Task.Run(() => StartTestItem(id, model));
         }
 
         /// <summary>
@@ -103,6 +114,11 @@ namespace ReportPortal.Client
             return JsonConvert.DeserializeObject<Message>(response.Content);
         }
 
+        public async Task<Message> FinishTestItemAsync(string id, FinishTestItemRequest model)
+        {
+            return await Task.Run(() => FinishTestItem(id, model));
+        }
+
         /// <summary>
         /// Update specified test item.
         /// </summary>
@@ -116,6 +132,11 @@ namespace ReportPortal.Client
             request.AddParameter("application/json", body, ParameterType.RequestBody);
             var response = _restClient.ExecuteWithErrorHandling(request);
             return JsonConvert.DeserializeObject<Message>(response.Content);
+        }
+
+        public async Task<Message> UpdateTestItemAsync(string id, UpdateTestItemRequest model)
+        {
+            return await Task.Run(() => UpdateTestItem(id, model));
         }
 
         /// <summary>

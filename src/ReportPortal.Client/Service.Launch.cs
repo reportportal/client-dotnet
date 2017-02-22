@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using ReportPortal.Client.Extentions;
 using ReportPortal.Client.Filtering;
 using ReportPortal.Client.Models;
