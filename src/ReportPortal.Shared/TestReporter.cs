@@ -92,6 +92,7 @@ namespace ReportPortal.Shared
                 AdditionalTasks.Add(Task.Run(() =>
                 {
                     StartTask.Wait();
+                    request.TestItemId = TestId;
                     _service.AddLogItem(request);
                 }));
             }
