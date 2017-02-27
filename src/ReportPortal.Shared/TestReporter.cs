@@ -71,5 +71,24 @@ namespace ReportPortal.Shared
 
             return newTestNode;
         }
+
+        public void Update(UpdateTestItemRequest request)
+        {
+            AdditionalTasks.Add(Task.Run(() =>
+            {
+                StartTask.Wait();
+                _service.UpdateTestItem(TestId, request);
+            }));
+        }
+
+        public void Log(AddLogItemRequest request)
+        {
+            AdditionalTasks.Add(Task.Run(() =>
+            {
+                StartTask.Wait();
+                request.TestItemId = TestId;
+                _service.AddLogItem(request);
+            }));
+        }
     }
 }
