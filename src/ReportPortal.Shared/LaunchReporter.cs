@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using ReportPortal.Client;
 using ReportPortal.Client.Requests;
@@ -14,6 +15,8 @@ namespace ReportPortal.Shared
             _service = service;
 
             TestNodes = new List<TestReporter>();
+
+            ServicePointManager.DefaultConnectionLimit = 10;
         }
 
         public string LaunchId;
