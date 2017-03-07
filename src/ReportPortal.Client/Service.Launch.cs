@@ -18,10 +18,12 @@ namespace ReportPortal.Client
         /// Returns a list of launches for current project.
         /// </summary>
         /// <param name="filterOption">Specified criterias for retrieving launches.</param>
+        /// <param name="debug">Returns user debug launches or not.</param>
         /// <returns>A list of launches.</returns>
-        public LaunchesContainer GetLaunches(FilterOption filterOption = null)
+        public LaunchesContainer GetLaunches(FilterOption filterOption = null, bool debug = false)
         {
-            var request = new RestRequest(Project + "/launch");
+            var request = !debug ? new RestRequest(Project + "/launch") : new RestRequest(Project + "/launch/mode");
+            
             if (filterOption != null)
             {
                 foreach (var p in filterOption.ConvertToDictionary())

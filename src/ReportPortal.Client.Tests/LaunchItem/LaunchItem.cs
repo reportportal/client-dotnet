@@ -4,6 +4,7 @@ using System.Linq;
 using NUnit.Framework;
 using ReportPortal.Client.Extentions;
 using ReportPortal.Client.Filtering;
+using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 
 namespace ReportPortal.Client.Tests.LaunchItem
@@ -22,6 +23,13 @@ namespace ReportPortal.Client.Tests.LaunchItem
         {
             var launches = Service.GetLaunches().Launches.ToList();
             Assert.Greater(launches.Count(), 0);
+        }
+
+        [Test]
+        public void GetDebugLaunches()
+        {
+            var launches = Service.GetLaunches(debug: true).Launches;
+            launches.ForEach((l) => Assert.That(l.Mode, Is.EqualTo(LaunchMode.Debug)));
         }
 
         [Test]
