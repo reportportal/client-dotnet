@@ -9,6 +9,6 @@ namespace ReportPortal.Shared
 {
     public interface IBridgeExtension
     {
-        void Log(LogLevel level, string message);
+        bool Log(LogLevel level, string message);
     }
 }
