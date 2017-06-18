@@ -31,6 +31,8 @@ namespace ReportPortal.Shared
                     }
                 }
             }
+
+            Extensions = Extensions.OrderBy(ext => ext.Order).ToList();
         }
 
         private static readonly List<IBridgeExtension> Extensions = new List<IBridgeExtension>();
@@ -42,38 +44,29 @@ namespace ReportPortal.Shared
 
         public static void LogMessage(LogLevel level, string text)
         {
+            var request = new AddLogItemRequest
+            {
+                Level = level,
+                Time = DateTime.UtcNow,
+                Text = text
+            };
+
             var handled = false;
 
             foreach (var extension in Extensions)
             {
-                handled = extension.Log(level, text);
-                if (handled)
+                extension.FormatLog(ref request);
+                if (extension.Handled)
                 {
+                    handled = true;
                     break;
                 }
             }
 
             if (!handled && Context.LaunchReporter != null)
             {
-                Context.LaunchReporter.LastTestNode.Log(new AddLogItemRequest
-                {
-                    Level = level,
-                    Time = DateTime.UtcNow,
-                    Text = text
-                });
+                Context.LaunchReporter.LastTestNode.Log(request);
             }
-        }
-
-        public static AddLogItemRequest BuildRequest(string formattedMessage)
-        {
-            var request = new AddLogItemRequest
-            {
-                Level = LogLevel.Debug,
-                Time = DateTime.UtcNow,
-                Text = formattedMessage
-            };
-
-            return request;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using ReportPortal.Client.Models;
+using ReportPortal.Client.Requests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,10 @@ namespace ReportPortal.Shared
 {
     public interface IBridgeExtension
     {
-        bool Log(LogLevel level, string message);
+        int Order { get; }
+
+        bool Handled { get; set; }
+
+        void FormatLog(ref AddLogItemRequest logRequest);
     }
 }
