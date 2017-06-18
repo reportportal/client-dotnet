@@ -37,6 +37,11 @@ namespace ReportPortal.Client.Models
 
     public class Attach
     {
+        public Attach()
+        {
+
+        }
+
         public Attach(string name, string mimeType, byte[] data)
         {
             Name = name;
