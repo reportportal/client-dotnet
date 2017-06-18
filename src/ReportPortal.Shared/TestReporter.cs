@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using ReportPortal.Client;
 using ReportPortal.Client.Requests;
+using System;
 
 namespace ReportPortal.Shared
 {
@@ -23,6 +24,7 @@ namespace ReportPortal.Shared
         public string TestId;
 
         public Task StartTask;
+        public DateTime StartTime;
 
         public void Start(StartTestItemRequest request)
         {
@@ -39,6 +41,8 @@ namespace ReportPortal.Shared
                     _parentTestNode.StartTask.Wait();
                     TestId = _service.StartTestItem(_parentTestNode.TestId, request).Id;
                 }
+
+                StartTime = request.StartTime;
             });
         }
 
@@ -92,6 +96,12 @@ namespace ReportPortal.Shared
                 AdditionalTasks.Add(Task.Run(() =>
                 {
                     StartTask.Wait();
+
+                    if (request.Time < StartTime)
+                    {
+                        request.Time = StartTime.AddMilliseconds(1);
+                    }
+
                     request.TestItemId = TestId;
                     _service.AddLogItem(request);
                 }));
