@@ -22,13 +22,20 @@ namespace ReportPortal.Shared
 
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
-                foreach (var type in assembly.GetTypes())
+                try
                 {
-                    if (type.GetInterfaces().Contains(typeof(IBridgeExtension)))
+                    foreach (var type in assembly.GetTypes())
                     {
-                        var extension = Activator.CreateInstance(type);
-                        Extensions.Add((IBridgeExtension)extension);
+                        if (type.GetInterfaces().Contains(typeof(IBridgeExtension)))
+                        {
+                            var extension = Activator.CreateInstance(type);
+                            Extensions.Add((IBridgeExtension)extension);
+                        }
                     }
+                }
+                catch (ReflectionTypeLoadException)
+                {
+
                 }
             }
 
