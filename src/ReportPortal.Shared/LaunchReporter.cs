@@ -16,7 +16,8 @@ namespace ReportPortal.Shared
 
             TestNodes = new List<TestReporter>();
 
-            ServicePointManager.DefaultConnectionLimit = 10;
+            ServicePointManager.UseNagleAlgorithm = false;
+            ServicePointManager.DefaultConnectionLimit = 1000;
         }
 
         public string LaunchId;
