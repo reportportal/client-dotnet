@@ -35,6 +35,13 @@ namespace ReportPortal.Client.Requests
         public DateTime StartTime { get; set; }
 
         /// <summary>
+        /// Date time when the launch is finished.
+        /// </summary>
+        [JsonProperty("end_time")]
+        [JsonConverter(typeof(DateTimeConverter))]
+        public DateTime EndTime { get; set; }
+
+        /// <summary>
         /// Tags for merged launch.
         /// </summary>
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
@@ -44,5 +51,11 @@ namespace ReportPortal.Client.Requests
         /// Tags for merged launch.
         /// </summary>
         public List<string> Launches { get; set; }
+
+        /// <summary>
+        /// Type of launches merge.
+        /// </summary>
+        [JsonProperty("merge_type")]
+        public string MergeType { get; set; }
     }
 }

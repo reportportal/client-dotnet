@@ -163,10 +163,12 @@ namespace ReportPortal.Client.Tests.LaunchItem
             });
             StringAssert.Contains("successfully", message.Info);
 
-            var mergedLaunch = Service.MergeLaunches(new MergeLaunchesRequest()
+            var mergedLaunch = Service.MergeLaunches(new MergeLaunchesRequest
             {
                 Name = "MergedLaunch",
-                Launches = new List<string> { launch1.Id, launch2.Id}
+                Launches = new List<string> { launch1.Id, launch2.Id},
+                MergeType = "BASIC",
+                EndTime = DateTime.UtcNow
             });
 
             var delMessage = Service.DeleteLaunch(mergedLaunch.Id);

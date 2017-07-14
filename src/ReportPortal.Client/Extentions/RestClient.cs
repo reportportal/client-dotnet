@@ -15,6 +15,7 @@ namespace ReportPortal.Client.Extentions
             {
                 if (response.ErrorException is WebException &&
                     (response.ErrorException.Message.Contains("The underlying connection was closed")
+                    || response.ErrorException.Message.Contains("An existing connection was forcibly closed by the remote host")
                     || response.ErrorException.Message.Contains("Unable to connect to the remote server")
                     || response.ErrorException.Message.Contains("The operation has timed out")
                     || response.ErrorException.Message.Contains("The remote name could not be resolved")))
