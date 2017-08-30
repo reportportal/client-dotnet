@@ -63,7 +63,6 @@ namespace ReportPortal.Client.Models
     /// </summary>
     public enum LogLevel
     {
-        None,
         [Description("TRACE")]
         Trace,
         [Description("DEBUG")]

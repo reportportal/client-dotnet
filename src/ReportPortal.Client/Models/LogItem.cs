@@ -50,6 +50,7 @@ namespace ReportPortal.Client.Models
         public string ThumbnailId { get; set; }
     }
 
+    [DataContract]
     public class Attach
     {
         public Attach()

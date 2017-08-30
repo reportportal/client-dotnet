@@ -17,7 +17,7 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="filterOption">Specified criterias for retrieving log items.</param>
         /// <returns>A list of log items.</returns>
-        public IEnumerable<LogItem> GetLogItems(FilterOption filterOption = null)
+        public LogItemsContainer GetLogItems(FilterOption filterOption = null)
         {
             var request = new RestRequest(Project + "/log");
             if (filterOption != null)
@@ -28,7 +28,7 @@ namespace ReportPortal.Client
                 }
             }
             var response = _restClient.ExecuteWithErrorHandling(request);
-            return ModelSerializer.Deserialize<List<LogItem>>(response.Content);
+            return ModelSerializer.Deserialize<LogItemsContainer>(response.Content);
         }
 
         /// <summary>
@@ -77,8 +77,15 @@ namespace ReportPortal.Client
             }
 
             var response = _restClient.ExecuteWithErrorHandling(request);
-            var result = ModelSerializer.Deserialize<LogItem>(response.Content);
+            var result = model.Attach == null ? ModelSerializer.Deserialize<LogItem>(response.Content) : ModelSerializer.Deserialize<Responses>(response.Content).LogItems[0];
             return result;
+        }
+
+        [System.Runtime.Serialization.DataContract]
+        public class Responses
+        {
+            [System.Runtime.Serialization.DataMember(Name = "responses")]
+            public List<LogItem> LogItems { get; set; }
         }
 
         public async Task<LogItem> AddLogItemAsync(AddLogItemRequest model)

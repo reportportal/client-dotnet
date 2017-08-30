@@ -8,6 +8,7 @@ namespace ReportPortal.Client.Requests
     /// <summary>
     /// Defines a request for logging messages into Report Portal.
     /// </summary>
+    [DataContract]
     public class AddLogItemRequest
     {
         /// <summary>
@@ -37,18 +38,21 @@ namespace ReportPortal.Client.Requests
         /// <summary>
         /// A level of log item.
         /// </summary>
-        public LogLevel Level { get; set; }
+        [DataMember(Name = "level")]
+        public string LevelString { get { return EnumConverter.ConvertFrom(Level); } set { Level = EnumConverter.ConvertTo<LogLevel>(value); } }
+
+        public LogLevel Level = LogLevel.Info;
 
         /// <summary>
         /// Message of log item.
         /// </summary>
-        [DataMember(Name = "message", EmitDefaultValue = true)]
+        [DataMember(Name = "message")]
         public string Text { get; set; }
 
         /// <summary>
         /// Specify an attachment of log item.
         /// </summary>
-        [DataMember(Name = "file", EmitDefaultValue = true)]
+        [DataMember(Name = "file")]
         public Attach Attach { get; set; }
     }
 }

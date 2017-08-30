@@ -24,6 +24,16 @@ namespace ReportPortal.Client.Models
     }
 
     [DataContract]
+    public class LogItemsContainer
+    {
+        [DataMember(Name = "content")]
+        public List<LogItem> LogItems { get; set; }
+
+        [DataMember(Name = "page")]
+        public Page Page { get; set; }
+    }
+
+    [DataContract]
     public class Page
     {
         [DataMember(Name = "size")]
