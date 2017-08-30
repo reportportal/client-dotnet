@@ -77,9 +77,9 @@ namespace ReportPortal.Client.Models
     public class Issue
     {
         [DataMember(Name = "issue_type")]
-        public string TypeString { get; set; }
+        public string TypeString { get { return EnumConverter.ConvertFrom(Type); } set { Type = EnumConverter.ConvertTo<IssueType>(value); } }
 
-        public IssueType Type { get { return EnumConverter.ConvertTo<IssueType>(TypeString); } set { TypeString = EnumConverter.ConvertFrom(value); } }
+        public IssueType Type = IssueType.NoDefect;
 
         [DataMember(Name = "comment")]
         public string Comment { get; set; }

@@ -8,6 +8,7 @@ namespace ReportPortal.Client.Requests
     /// <summary>
     /// Defines a request to finish specified test item.
     /// </summary>
+    [DataContract]
     public class FinishTestItemRequest
     {
         /// <summary>
@@ -31,12 +32,15 @@ namespace ReportPortal.Client.Requests
         /// <summary>
         /// A result of test item.
         /// </summary>
-        public Status Status { get; set; }
+        [DataMember(Name = "status")]
+        public string StatusString { get { return EnumConverter.ConvertFrom(Status); } set { Status = EnumConverter.ConvertTo<Status>(value); } }
+
+        public Status Status = Models.Status.Passed;
 
         /// <summary>
         /// A issue of test item if execution was proceeded with error.
         /// </summary>
-        [DataMember(EmitDefaultValue = true)]
+        [DataMember(Name = "issue", EmitDefaultValue = true)]
         public Issue Issue { get; set; }
     }
 }

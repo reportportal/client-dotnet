@@ -13,6 +13,7 @@ namespace ReportPortal.Client.Models
         public Page Page { get; set; }
     }
 
+    [DataContract]
     public class TestItemsContainer
     {
         [DataMember(Name = "content")]

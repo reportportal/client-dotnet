@@ -63,7 +63,7 @@
     <Compile Include="Converters\EnumConverter.cs" />
     <Compile Include="Converters\ModelSerializer.cs" />
     <Compile Include="Converters\DateTimeConverter.cs" />
-    <Compile Include="Converters\TrimmingConverter.cs" />
+    <Compile Include="Converters\StringTrimmer.cs" />
     <Compile Include="Extentions\EnumDescription.cs" />
     <Compile Include="Extentions\ReportPortalAuthenticator.cs" />
     <Compile Include="Extentions\RestClient.cs" />

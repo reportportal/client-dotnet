@@ -18,16 +18,18 @@ namespace ReportPortal.Client.Requests
         [DataMember(Name = "launch_id")]
         public string LaunchId { get; set; }
 
+        private string _name;
+
         /// <summary>
         /// A short name of test item.
         /// </summary>
-
-        public string Name { get; set; }
+        [DataMember(Name = "name")]
+        public string Name { get { return _name; } set { _name = StringTrimmer.Trim(value, 256); } }
 
         /// <summary>
         /// A long description of test item.
         /// </summary>
-        [DataMember(EmitDefaultValue = true)]
+        [DataMember(Name = "description", EmitDefaultValue = true)]
         public string Description { get; set; }
 
         /// <summary>
@@ -51,11 +53,15 @@ namespace ReportPortal.Client.Requests
         /// <summary>
         /// A type of test item.
         /// </summary>
-        public TestItemType Type { get; set; }
+        [DataMember(Name = "type")]
+        public string TypeString { get { return EnumConverter.ConvertFrom(Type); } set { Type = EnumConverter.ConvertTo<TestItemType>(value); } }
+
+        public TestItemType Type = TestItemType.Test;
 
         /// <summary>
         /// A list of tags.
         /// </summary>
+        [DataMember(Name = "tags")]
         public List<string> Tags { get; set; }
     }
 }

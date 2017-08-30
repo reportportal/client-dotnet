@@ -46,7 +46,6 @@ namespace ReportPortal.Client.Models
     /// </summary>
     public enum IssueType
     {
-        None,
         [Description("PB001")]
         ProductionBug,
         [Description("AB001")]

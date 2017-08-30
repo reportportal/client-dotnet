@@ -7,6 +7,7 @@ namespace ReportPortal.Client.Requests
     /// <summary>
     /// Defines a request for assigning issues to test items.
     /// </summary>
+    [DataContract]
     public class AssignTestItemIssuesRequest
     {
         /// <summary>
@@ -16,6 +17,7 @@ namespace ReportPortal.Client.Requests
         public List<TestItemIssueUpdate> Issues { get; set; }
     }
 
+    [DataContract]
     public class TestItemIssueUpdate
     {
         /// <summary>
