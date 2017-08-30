@@ -9,6 +9,7 @@ namespace ReportPortal.Client.Requests
     /// <summary>
     /// Defines a content of request for service to create new test item in progress state.
     /// </summary>
+    [DataContract]
     public class StartTestItemRequest
     {
         /// <summary>
@@ -20,6 +21,7 @@ namespace ReportPortal.Client.Requests
         /// <summary>
         /// A short name of test item.
         /// </summary>
+
         public string Name { get; set; }
 
         /// <summary>

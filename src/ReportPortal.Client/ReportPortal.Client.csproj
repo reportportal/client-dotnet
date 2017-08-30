@@ -60,12 +60,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Converters\LaunchModeConverter.cs" />
-    <Compile Include="Converters\LogLevelConverter.cs" />
-    <Compile Include="Converters\IssueTypeConverter.cs" />
+    <Compile Include="Converters\EnumConverter.cs" />
     <Compile Include="Converters\ModelSerializer.cs" />
-    <Compile Include="Converters\TestItemTypeConverter.cs" />
-    <Compile Include="Converters\StatusConverter.cs" />
     <Compile Include="Converters\DateTimeConverter.cs" />
     <Compile Include="Converters\TrimmingConverter.cs" />
     <Compile Include="Extentions\EnumDescription.cs" />

@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Models
 {
+    [DataContract]
     public class TestItemHistory
     {
         [DataMember(Name = "launchNumber")]
@@ -29,7 +30,9 @@ namespace ReportPortal.Client.Models
         }
 
         [DataMember(Name = "launchStatus")]
-        public Status LaunchStatus { get; set; }
+        public string LaunchStatusString { get; set; }
+
+        public Status LaunchStatus { get { return EnumConverter.ConvertTo<Status>(LaunchStatusString); } set { LaunchStatusString = EnumConverter.ConvertFrom(value); } }
 
         [DataMember(Name = "resources")]
         public List<TestItem> Resources { get; set; }

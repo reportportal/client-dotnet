@@ -169,6 +169,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
                 Name = "MergedLaunch",
                 Launches = new List<string> { launch1.Id, launch2.Id},
                 MergeType = "BASIC",
+                StartTime = DateTime.UtcNow,
                 EndTime = DateTime.UtcNow
             });
 

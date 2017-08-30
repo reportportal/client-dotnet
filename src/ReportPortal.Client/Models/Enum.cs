@@ -7,7 +7,6 @@ namespace ReportPortal.Client.Models
     /// </summary>
     public enum Status
     {
-        None,
         [Description("IN_PROGRESS")]
         InProgress,
         [Description("PASSED")]

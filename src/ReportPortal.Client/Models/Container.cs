@@ -18,6 +18,7 @@ namespace ReportPortal.Client.Models
         [DataMember(Name = "content")]
         public List<TestItem> TestItems { get; set; }
 
+        [DataMember(Name = "page")]
         public Page Page { get; set; }
     }
 

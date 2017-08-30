@@ -43,22 +43,14 @@ namespace ReportPortal.Client.Extentions
                     throw new ServiceException("Client isn't authorized to perform the operation.", (int)HttpStatusCode.Unauthorized);
                 }
             }
-            Error errorMessage = null;
-            try
+            Error errorMessage = ModelSerializer.Deserialize<Error>(response.Content); ;
+
+            if (errorMessage.Code > 0)
             {
-                errorMessage = ModelSerializer.Deserialize<Error>(response.Content);
-                //errorMessage = JsonConvert.DeserializeObject<Error>(response.Content);
-            }
-            catch (Exception exp)
-            {
-                //throw new Exception(response.Content, exp);
+                var exp = new ServiceException(errorMessage.Message, errorMessage.Code);
+                throw exp;
             }
 
-            //if (errorMessage != null)
-            //{
-            //    var exp = new ServiceException(errorMessage.Message, errorMessage.Code);
-            //    throw exp;
-            //}
             return response;
         }
     }

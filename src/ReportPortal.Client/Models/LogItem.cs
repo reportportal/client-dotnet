@@ -4,6 +4,7 @@ using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Models
 {
+    [DataContract]
     public class LogItem
     {
         [DataMember(Name = "id")]
@@ -28,17 +29,21 @@ namespace ReportPortal.Client.Models
         public string Text { get; set; }
 
         [DataMember(Name = "level")]
-        public LogLevel Level { get; set; }
+        public string LevelString { get; set; }
+
+        public LogLevel Level { get { return EnumConverter.ConvertTo<LogLevel>(LevelString); } set { LevelString = EnumConverter.ConvertFrom(value); } }
 
         [DataMember(Name = "binary_content")]
         public BinaryContent Content { get; set; }
     }
 
+    [DataContract]
     public class BinaryContent
     {
         [DataMember(Name = "content_type")]
         public string ContentType { get; set; }
 
+        [DataMember(Name = "id")]
         public string Id { get; set; }
 
         [DataMember(Name = "thumbnail_id")]

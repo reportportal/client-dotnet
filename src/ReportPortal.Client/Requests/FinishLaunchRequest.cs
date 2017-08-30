@@ -7,6 +7,7 @@ namespace ReportPortal.Client.Requests
     /// <summary>
     /// Defines a request to finish execution of specified launch.
     /// </summary>
+    [DataContract]
     public class FinishLaunchRequest
     {
         /// <summary>

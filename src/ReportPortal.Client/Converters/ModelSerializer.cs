@@ -1,10 +1,10 @@
-﻿using System;
+﻿using ReportPortal.Client.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Json;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ReportPortal.Client.Converters
 {
@@ -25,8 +25,8 @@ namespace ReportPortal.Client.Converters
             DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(T));
             MemoryStream stream = new MemoryStream();
             serializer.WriteObject(stream, obj);
-
-            return Encoding.UTF8.GetString(stream.ToArray());
+            var bytes = stream.ToArray();
+            return Encoding.UTF8.GetString(bytes);
         }
     }
 }
