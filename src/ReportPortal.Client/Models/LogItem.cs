@@ -1,37 +1,47 @@
 ﻿using System;
 using ReportPortal.Client.Converters;
-using Newtonsoft.Json;
+using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Models
 {
     public class LogItem
     {
-        [JsonProperty("id")]
+        [DataMember(Name = "id")]
         public string Id { get; set; }
 
-        [JsonProperty("time")]
-        [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime? Time { get; set; }
+        [DataMember(Name = "time")]
+        public string TimeString { get; set; }
 
-        [JsonProperty("message")]
+        public DateTime Time
+        {
+            get
+            {
+                return DateTimeConverter.ConvertTo(TimeString);
+            }
+            set
+            {
+                TimeString = DateTimeConverter.ConvertFrom(value);
+            }
+        }
+
+        [DataMember(Name = "message")]
         public string Text { get; set; }
 
-        [JsonProperty("level")]
-        [JsonConverter(typeof(LogLevelConverter))]
+        [DataMember(Name = "level")]
         public LogLevel Level { get; set; }
 
-        [JsonProperty("binary_content")]
+        [DataMember(Name = "binary_content")]
         public BinaryContent Content { get; set; }
     }
 
     public class BinaryContent
     {
-        [JsonProperty("content_type")]
+        [DataMember(Name = "content_type")]
         public string ContentType { get; set; }
 
         public string Id { get; set; }
 
-        [JsonProperty("thumbnail_id")]
+        [DataMember(Name = "thumbnail_id")]
         public string ThumbnailId { get; set; }
     }
 
@@ -49,13 +59,13 @@ namespace ReportPortal.Client.Models
             Data = data;
         }
 
-        [JsonProperty("name")]
+        [DataMember(Name = "name")]
         public string Name { get; set; }
 
-        [JsonIgnore]
+        [IgnoreDataMember]
         public byte[] Data { get; set; }
 
-        [JsonIgnore]
+        [IgnoreDataMember]
         public string MimeType { get; set; }
     }
 }

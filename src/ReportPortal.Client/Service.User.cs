@@ -1,12 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using ReportPortal.Client.Converters;
 using ReportPortal.Client.Extentions;
 using ReportPortal.Client.Models;
 using RestSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReportPortal.Client
 {
@@ -16,7 +11,7 @@ namespace ReportPortal.Client
         {
             var request = new RestRequest("user");
             var response = _restClient.ExecuteWithErrorHandling(request);
-            return JsonConvert.DeserializeObject<User>(response.Content);
+            return ModelSerializer.Deserialize<User>(response.Content);
         }
     }
 }

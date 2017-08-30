@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ReportPortal.Client.Converters;
-using Newtonsoft.Json;
+using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Models
 {
@@ -9,65 +9,95 @@ namespace ReportPortal.Client.Models
     {
         public string Id { get; set; }
 
-        [JsonProperty("parent")]
+        [DataMember(Name = "parent")]
         public string ParentId { get; set; }
 
         public string Name { get; set; }
 
         public string Description { get; set; }
 
-        [JsonProperty("start_time")]
-        [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime? StartTime { get; set; }
+        [DataMember(Name = "start_time")]
+        public string StartTimeString { get; set; }
 
-        [JsonProperty("end_time")]
-        [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime? EndTime { get; set; }
+        public DateTime StartTime
+        {
+            get
+            {
+                return DateTimeConverter.ConvertTo(StartTimeString);
+            }
+            set
+            {
+                StartTimeString = DateTimeConverter.ConvertFrom(value);
+            }
+        }
 
-        [JsonConverter(typeof(StatusConverter))]
+        [DataMember(Name = "end_time")]
+        public string EndTimeString { get; set; }
+
+        public DateTime EndTime
+        {
+            get
+            {
+                return DateTimeConverter.ConvertTo(EndTimeString);
+            }
+            set
+            {
+                EndTimeString = DateTimeConverter.ConvertFrom(value);
+            }
+        }
+
         public Status Status { get; set; }
 
-        [JsonConverter(typeof(TestItemTypeConverter))]
         public TestItemType Type { get; set; }
 
         public List<string> Tags { get; set; }
 
         public Issue Issue { get; set; }
 
-        [JsonProperty("path_names")]
+        [DataMember(Name = "path_names")]
         public Dictionary<string,string> PathNames { get; set; }
 
-        [JsonProperty("has_childs")]
+        [DataMember(Name = "has_childs")]
         public bool HasChilds { get; set; }
     }
 
     public class Issue
     {
-        [JsonProperty("issue_type")]
-        [JsonConverter(typeof(IssueTypeConverter))]
+        [DataMember(Name = "issue_type")]
         public IssueType Type { get; set; }
         
         public string Comment { get; set; }
 
-        [JsonProperty("externalSystemIssues")]
+        [DataMember(Name = "externalSystemIssues")]
         public List<ExternalSystemIssue> ExternalSystemIssues { get; set; }
     }
 
     public class ExternalSystemIssue
     {
-        [JsonProperty("submitDate")]
-        [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime? SubmitDate { get; set; }
+        [DataMember(Name = "submitDate")]
+        public string SubmitDateString { get; set; }
+
+        public DateTime SubmitDate
+        {
+            get
+            {
+                return DateTimeConverter.ConvertTo(SubmitDateString);
+            }
+            set
+            {
+                SubmitDateString = DateTimeConverter.ConvertFrom(value);
+            }
+        }
 
         public string Submitter { get; set; }
 
-        [JsonProperty("systemId")]
+        [DataMember(Name = "systemId")]
         public string SystemId { get; set; }
 
-        [JsonProperty("ticketId")]
+        [DataMember(Name = "ticketId")]
         public string TicketId { get; set; }
 
-        [JsonProperty("url")]
+        [DataMember(Name = "url")]
         public string Url { get; set; }
     }
 }

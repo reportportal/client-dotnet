@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using ReportPortal.Client.Converters;
-using Newtonsoft.Json;
+using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Models
 {
+    [DataContract]
     public class Launch
     {
         public string Id { get; set; }
@@ -17,13 +18,35 @@ namespace ReportPortal.Client.Models
 
         public LaunchMode Mode { get; set; }
 
-        [JsonProperty("start_time")]
-        [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime? StartTime { get; set; }
+        [DataMember(Name = "start_time")]
+        public string StartTimeString { get; set; }
 
-        [JsonProperty("end_time")]
-        [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime? EndTime { get; set; }
+        public DateTime StartTime
+        {
+            get
+            {
+                return DateTimeConverter.ConvertTo(StartTimeString);
+            }
+            set
+            {
+                StartTimeString = DateTimeConverter.ConvertFrom(value);
+            }
+        }
+
+        [DataMember(Name = "end_time")]
+        public string EndTimeString { get; set; }
+
+        public DateTime EndTime
+        {
+            get
+            {
+                return DateTimeConverter.ConvertTo(EndTimeString);
+            }
+            set
+            {
+                EndTimeString = DateTimeConverter.ConvertFrom(value);
+            }
+        }
 
         public List<string> Tags { get; set; }
 
@@ -46,22 +69,22 @@ namespace ReportPortal.Client.Models
 
     public class Defects
     {
-        [JsonProperty("product_bugs")]
+        [DataMember(Name = "product_bugs")]
         public Defect ProductBugs { get; set; }
 
-        [JsonProperty("automation_bugs")]
+        [DataMember(Name = "automation_bugs")]
         public Defect AutomationBugs { get; set; }
 
-        [JsonProperty("system_issue")]
+        [DataMember(Name = "system_issue")]
         public Defect SystemIssues { get; set; }
 
-        [JsonProperty("to_investigate")]
+        [DataMember(Name = "to_investigate")]
         public Defect ToInvestigate { get; set; }
     }
 
     public class Defect
     {
-        [JsonProperty("total")]
+        [DataMember(Name = "total")]
         public int Total { get; set; }
     }
 }

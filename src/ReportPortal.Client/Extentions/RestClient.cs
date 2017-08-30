@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Net;
 using ReportPortal.Client.Models;
-using Newtonsoft.Json;
 using RestSharp;
+using System.Runtime.Serialization.Json;
+using System.IO;
+using System.Text;
+using ReportPortal.Client.Converters;
 
 namespace ReportPortal.Client.Extentions
 {
@@ -43,22 +46,19 @@ namespace ReportPortal.Client.Extentions
             Error errorMessage = null;
             try
             {
-                errorMessage = JsonConvert.DeserializeObject<Error>(response.Content);
+                errorMessage = ModelSerializer.Deserialize<Error>(response.Content);
+                //errorMessage = JsonConvert.DeserializeObject<Error>(response.Content);
             }
-            catch (JsonReaderException exp)
+            catch (Exception exp)
             {
-                throw new Exception(response.Content, exp);
-            }
-            catch (JsonSerializationException)
-            {
-                
+                //throw new Exception(response.Content, exp);
             }
 
-            if (errorMessage != null)
-            {
-                var exp = new ServiceException(errorMessage.Message, errorMessage.Code);
-                throw exp;
-            }
+            //if (errorMessage != null)
+            //{
+            //    var exp = new ServiceException(errorMessage.Message, errorMessage.Code);
+            //    throw exp;
+            //}
             return response;
         }
     }

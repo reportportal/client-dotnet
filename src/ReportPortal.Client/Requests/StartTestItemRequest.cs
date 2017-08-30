@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using ReportPortal.Client.Converters;
 using ReportPortal.Client.Models;
+using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Requests
 {
@@ -14,32 +14,41 @@ namespace ReportPortal.Client.Requests
         /// <summary>
         /// ID of parent launch to create new test item.
         /// </summary>
-        [JsonProperty("launch_id")]
+        [DataMember(Name = "launch_id")]
         public string LaunchId { get; set; }
 
         /// <summary>
         /// A short name of test item.
         /// </summary>
-        [JsonConverter(typeof(TrimmingConverter), 256)]
         public string Name { get; set; }
 
         /// <summary>
         /// A long description of test item.
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [DataMember(EmitDefaultValue = true)]
         public string Description { get; set; }
 
         /// <summary>
         /// Date time when new test item is created.
         /// </summary>
-        [JsonProperty("start_time")]
-        [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime StartTime { get; set; }
+        [DataMember(Name = "start_time")]
+        public string StartTimeString { get; set; }
+
+        public DateTime StartTime
+        {
+            get
+            {
+                return DateTimeConverter.ConvertTo(StartTimeString);
+            }
+            set
+            {
+                StartTimeString = DateTimeConverter.ConvertFrom(value);
+            }
+        }
 
         /// <summary>
         /// A type of test item.
         /// </summary>
-        [JsonConverter(typeof(TestItemTypeConverter))]
         public TestItemType Type { get; set; }
 
         /// <summary>

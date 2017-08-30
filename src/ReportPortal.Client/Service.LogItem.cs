@@ -4,11 +4,9 @@ using ReportPortal.Client.Extentions;
 using ReportPortal.Client.Filtering;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 using RestSharp;
 using System.Threading.Tasks;
+using ReportPortal.Client.Converters;
 
 namespace ReportPortal.Client
 {
@@ -30,7 +28,7 @@ namespace ReportPortal.Client
                 }
             }
             var response = _restClient.ExecuteWithErrorHandling(request);
-            return JsonConvert.DeserializeObject<List<LogItem>>(JObject.Parse(response.Content)["content"].ToString());
+            return ModelSerializer.Deserialize<List<LogItem>>(response.Content);
         }
 
         /// <summary>
@@ -42,7 +40,7 @@ namespace ReportPortal.Client
         {
             var request = new RestRequest(Project + "/log/" + id);
             var response = _restClient.ExecuteWithErrorHandling(request);
-            return JsonConvert.DeserializeObject<LogItem>(response.Content);
+            return ModelSerializer.Deserialize<LogItem>(response.Content);
         }
 
         /// <summary>
@@ -68,18 +66,18 @@ namespace ReportPortal.Client
            
             if (model.Attach == null)
             {
-                var body = JsonConvert.SerializeObject(model, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+                var body = ModelSerializer.Serialize<AddLogItemRequest>(model);
                 request.AddParameter("application/json", body, ParameterType.RequestBody);
             }
             else
             {
-                var body = JsonConvert.SerializeObject(new List<AddLogItemRequest> {model}, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+                var body = ModelSerializer.Serialize<List<AddLogItemRequest>>(new List<AddLogItemRequest> { model });
                 request.AddFile("json_request_part", Encoding.Unicode.GetBytes(body), "body", "application/json");
                 request.AddFile(model.Attach.Name, model.Attach.Data, model.Attach.Name, model.Attach.MimeType);
             }
 
             var response = _restClient.ExecuteWithErrorHandling(request);
-            var result = JsonConvert.DeserializeObject<LogItem>(model.Attach == null ? response.Content : JObject.Parse(response.Content)["responses"].First.ToString());
+            var result = ModelSerializer.Deserialize<LogItem>(response.Content);
             return result;
         }
 
@@ -97,7 +95,7 @@ namespace ReportPortal.Client
         {
             var request = new RestRequest(Project + "/log/" + id, Method.DELETE);
             var response = _restClient.ExecuteWithErrorHandling(request);
-            return JsonConvert.DeserializeObject<Message>(response.Content);
+            return ModelSerializer.Deserialize<Message>(response.Content);
         }
     }
 }

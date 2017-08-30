@@ -1,7 +1,7 @@
 ﻿using System;
 using ReportPortal.Client.Converters;
 using ReportPortal.Client.Models;
-using Newtonsoft.Json;
+using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Requests
 {
@@ -13,32 +13,42 @@ namespace ReportPortal.Client.Requests
         /// <summary>
         /// ID of test item to add new logs.
         /// </summary>
-        [JsonProperty("item_id")]
+        [DataMember(Name = "item_id")]
         public string TestItemId { get; set; }
 
         /// <summary>
         /// Date time of log item.
         /// </summary>
-        [JsonProperty("time")]
-        [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime? Time { get; set; }
+        [DataMember(Name = "time")]
+        public string TimeString { get; set; }
+
+        public DateTime Time
+        {
+            get
+            {
+                return DateTimeConverter.ConvertTo(TimeString);
+            }
+            set
+            {
+                TimeString = DateTimeConverter.ConvertFrom(value);
+            }
+        }
 
         /// <summary>
         /// A level of log item.
         /// </summary>
-        [JsonConverter(typeof(LogLevelConverter))]
         public LogLevel Level { get; set; }
 
         /// <summary>
         /// Message of log item.
         /// </summary>
-        [JsonProperty("message", NullValueHandling = NullValueHandling.Ignore)]
+        [DataMember(Name = "message", EmitDefaultValue = true)]
         public string Text { get; set; }
 
         /// <summary>
         /// Specify an attachment of log item.
         /// </summary>
-        [JsonProperty("file", NullValueHandling = NullValueHandling.Ignore)]
+        [DataMember(Name = "file", EmitDefaultValue = true)]
         public Attach Attach { get; set; }
     }
 }

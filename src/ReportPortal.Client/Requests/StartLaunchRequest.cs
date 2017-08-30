@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using ReportPortal.Client.Converters;
 using ReportPortal.Client.Models;
+using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Requests
 {
@@ -14,7 +14,6 @@ namespace ReportPortal.Client.Requests
         /// <summary>
         /// A short name of launch.
         /// </summary>
-        [JsonConverter(typeof(TrimmingConverter), 256)]
         public string Name { get; set; }
 
         /// <summary>
@@ -25,20 +24,30 @@ namespace ReportPortal.Client.Requests
         /// <summary>
         /// Specify whether the launch is executed under debugging.
         /// </summary>
-        [JsonConverter(typeof(LaunchModeConverter))]
         public LaunchMode Mode { get; set; }
 
         /// <summary>
         /// Date time when the launch is executed.
         /// </summary>
-        [JsonProperty("start_time")]
-        [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime StartTime { get; set; }
+        [DataMember(Name = "start_time")]
+        public string StartTimeString { get; set; }
+
+        public DateTime StartTime
+        {
+            get
+            {
+                return DateTimeConverter.ConvertTo(StartTimeString);
+            }
+            set
+            {
+                StartTimeString = DateTimeConverter.ConvertFrom(value);
+            }
+        }
 
         /// <summary>
         /// Mark the launch with tags.
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [DataMember(EmitDefaultValue = true)]
         public List<string> Tags { get; set; }
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ReportPortal.Client.Converters;
 using ReportPortal.Client.Models;
-using Newtonsoft.Json;
+using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Requests
 {
@@ -24,27 +24,48 @@ namespace ReportPortal.Client.Requests
         /// <summary>
         /// Specify whether the launch is executed under debugging.
         /// </summary>
-        [JsonConverter(typeof(LaunchModeConverter))]
         public LaunchMode Mode { get; set; }
 
         /// <summary>
         /// Date time when the launch is executed.
         /// </summary>
-        [JsonProperty("start_time")]
-        [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime StartTime { get; set; }
+        [DataMember(Name = "start_time")]
+        public string StartTimeString { get; set; }
+
+        public DateTime StartTime
+        {
+            get
+            {
+                return DateTimeConverter.ConvertTo(StartTimeString);
+            }
+            set
+            {
+                StartTimeString = DateTimeConverter.ConvertFrom(value);
+            }
+        }
 
         /// <summary>
         /// Date time when the launch is finished.
         /// </summary>
-        [JsonProperty("end_time")]
-        [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime EndTime { get; set; }
+        [DataMember(Name = "end_time")]
+        public string EndTimeString { get; set; }
+
+        public DateTime EndTime
+        {
+            get
+            {
+                return DateTimeConverter.ConvertTo(EndTimeString);
+            }
+            set
+            {
+                EndTimeString = DateTimeConverter.ConvertFrom(value);
+            }
+        }
 
         /// <summary>
         /// Tags for merged launch.
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [DataMember(EmitDefaultValue = true)]
         public List<string> Tags { get; set; }
 
         /// <summary>
@@ -55,7 +76,7 @@ namespace ReportPortal.Client.Requests
         /// <summary>
         /// Type of launches merge.
         /// </summary>
-        [JsonProperty("merge_type")]
+        [DataMember(Name = "merge_type")]
         public string MergeType { get; set; }
     }
 }

@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Models
 {
     public class Message
     {
-        [JsonProperty("msg")]
+        [DataMember(Name = "msg")]
         public string Info { get; set; }
     }
 }

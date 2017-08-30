@@ -21,7 +21,8 @@ namespace ReportPortal.Client.Tests.LaunchItem
         [Test]
         public void GetLaunches()
         {
-            var launches = Service.GetLaunches().Launches.ToList();
+            var container = Service.GetLaunches();
+            var launches = container.Launches.ToList();
             Assert.Greater(launches.Count(), 0);
         }
 

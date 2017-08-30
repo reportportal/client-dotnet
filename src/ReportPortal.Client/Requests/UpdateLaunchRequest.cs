@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ReportPortal.Client.Converters;
 using ReportPortal.Client.Models;
-using Newtonsoft.Json;
+using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Requests
 {
@@ -13,7 +13,7 @@ namespace ReportPortal.Client.Requests
         /// <summary>
         /// Update tags for launch.
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [DataMember(EmitDefaultValue = true)]
         public List<string> Tags { get; set; }
 
         /// <summary>
@@ -24,7 +24,6 @@ namespace ReportPortal.Client.Requests
         /// <summary>
         /// Specify whether the launch is executed under debugging.
         /// </summary>
-        [JsonConverter(typeof(LaunchModeConverter))]
         public LaunchMode Mode { get; set; }
     }
 }

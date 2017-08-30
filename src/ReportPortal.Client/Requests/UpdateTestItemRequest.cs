@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Requests
 {
@@ -11,7 +11,7 @@ namespace ReportPortal.Client.Requests
         /// <summary>
         /// Update tags for test item.
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [DataMember(EmitDefaultValue = true)]
         public List<string> Tags { get; set; }
 
         /// <summary>

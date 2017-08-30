@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Models
 {
@@ -10,13 +10,13 @@ namespace ReportPortal.Client.Models
         /// <summary>
         /// Code of error.
         /// </summary>
-        [JsonProperty("error_code", Required = Required.Always)]
+        [DataMember(Name = "error_code", IsRequired = true)]
         public int Code { get; set; }
 
         /// <summary>
         /// Detailed message of error.
         /// </summary>
-        [JsonProperty("message", Required = Required.Always)]
+        [DataMember(Name = "message", IsRequired = true)]
         public string Message { get; set; }
     }
 }

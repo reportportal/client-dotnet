@@ -5,10 +5,8 @@ using ReportPortal.Client.Extentions;
 using ReportPortal.Client.Filtering;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 using RestSharp;
-using Newtonsoft.Json;
+using ReportPortal.Client.Converters;
 
 namespace ReportPortal.Client
 {
@@ -32,7 +30,7 @@ namespace ReportPortal.Client
                 }
             }
             var response = _restClient.ExecuteWithErrorHandling(request);
-            return JsonConvert.DeserializeObject<LaunchesContainer>(JObject.Parse(response.Content).ToString());
+            return ModelSerializer.Deserialize<LaunchesContainer>(response.Content);
         }
 
         /// <summary>
@@ -44,7 +42,7 @@ namespace ReportPortal.Client
         {
             var request = new RestRequest(Project + "/launch/" + id);
             var response = _restClient.ExecuteWithErrorHandling(request);
-            return JsonConvert.DeserializeObject<Launch>(response.Content);
+            return ModelSerializer.Deserialize<Launch>(response.Content);
         }
 
         /// <summary>
@@ -55,10 +53,10 @@ namespace ReportPortal.Client
         public Launch StartLaunch(StartLaunchRequest model)
         {
             var request = new RestRequest(Project + "/launch/", Method.POST);
-            var body = JsonConvert.SerializeObject(model, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+            var body = ModelSerializer.Serialize<StartLaunchRequest>(model);
             request.AddParameter("application/json", body, ParameterType.RequestBody);
             var response = _restClient.ExecuteWithErrorHandling(request);
-            return JsonConvert.DeserializeObject<Launch>(response.Content);
+            return ModelSerializer.Deserialize<Launch>(response.Content);
         }
 
         public async Task<Launch> StartLaunchAsync(StartLaunchRequest model)
@@ -84,10 +82,10 @@ namespace ReportPortal.Client
             {
                 request = new RestRequest(Project + "/launch/" + id + "/finish", Method.PUT);
             }
-            var body = JsonConvert.SerializeObject(model, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+            var body = ModelSerializer.Serialize<FinishLaunchRequest>(model);
             request.AddParameter("application/json", body, ParameterType.RequestBody);
             var response = _restClient.ExecuteWithErrorHandling(request);
-            return JsonConvert.DeserializeObject<Message>(response.Content);
+            return ModelSerializer.Deserialize<Message>(response.Content);
         }
 
         public async Task<Message> FinishLaunchAsync(string id, FinishLaunchRequest model, bool force = false)
@@ -104,7 +102,7 @@ namespace ReportPortal.Client
         {
             var request = new RestRequest(Project + "/launch/" + id, Method.DELETE);
             var response = _restClient.ExecuteWithErrorHandling(request);
-            return JsonConvert.DeserializeObject<Message>(response.Content);
+            return ModelSerializer.Deserialize<Message>(response.Content);
         }
 
         /// <summary>
@@ -115,10 +113,10 @@ namespace ReportPortal.Client
         public Launch MergeLaunches(MergeLaunchesRequest model)
         {
             var request = new RestRequest(Project + "/launch/merge", Method.POST);
-            var body = JsonConvert.SerializeObject(model, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+            var body = ModelSerializer.Serialize<MergeLaunchesRequest>(model);
             request.AddParameter("application/json", body, ParameterType.RequestBody);
             var response = _restClient.ExecuteWithErrorHandling(request);
-            return JsonConvert.DeserializeObject<Launch>(response.Content);
+            return ModelSerializer.Deserialize<Launch>(response.Content);
         }
 
         /// <summary>
@@ -130,10 +128,10 @@ namespace ReportPortal.Client
         public Message UpdateLaunch(string id, UpdateLaunchRequest model)
         {
             var request = new RestRequest(Project + "/launch/" + id + "/update", Method.PUT);
-            var body = JsonConvert.SerializeObject(model, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+            var body = ModelSerializer.Serialize<UpdateLaunchRequest>(model);
             request.AddParameter("application/json", body, ParameterType.RequestBody);
             var response = _restClient.ExecuteWithErrorHandling(request);
-            return JsonConvert.DeserializeObject<Message>(response.Content);
+            return ModelSerializer.Deserialize<Message>(response.Content);
         }
 
         /// <summary>
@@ -146,7 +144,7 @@ namespace ReportPortal.Client
         {
             var request = new RestRequest(Project + "/launch/" + id +"/analyze/" + strategy, Method.POST);
             var response = _restClient.ExecuteWithErrorHandling(request);
-            return JsonConvert.DeserializeObject<Message>(response.Content);
+            return ModelSerializer.Deserialize<Message>(response.Content);
         }
     }
 }
