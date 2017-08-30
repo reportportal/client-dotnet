@@ -1,67 +1,113 @@
 ﻿using System;
 using System.Collections.Generic;
 using ReportPortal.Client.Converters;
-using Newtonsoft.Json;
+using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Models
 {
+    [DataContract]
     public class Launch
     {
+        [DataMember(Name = "id")]
         public string Id { get; set; }
 
+        [DataMember(Name = "name")]
         public string Name { get; set; }
 
+        [DataMember(Name = "description")]
         public string Description { get; set; }
 
-        public int? Number { get; set; }
+        [DataMember(Name = "number")]
+        public int Number { get; set; }
 
-        public LaunchMode Mode { get; set; }
+        [DataMember(Name = "mode")]
+        public string ModeString { get; set; }
 
-        [JsonProperty("start_time")]
-        [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime? StartTime { get; set; }
+        public LaunchMode Mode { get { return EnumConverter.ConvertTo<LaunchMode>(ModeString); } set { ModeString = EnumConverter.ConvertFrom(value); } }
 
-        [JsonProperty("end_time")]
-        [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime? EndTime { get; set; }
+        [DataMember(Name = "start_time")]
+        public string StartTimeString { get; set; }
 
+        public DateTime StartTime
+        {
+            get
+            {
+                return DateTimeConverter.ConvertTo(StartTimeString);
+            }
+            set
+            {
+                StartTimeString = DateTimeConverter.ConvertFrom(value);
+            }
+        }
+
+        [DataMember(Name = "end_time")]
+        public string EndTimeString { get; set; }
+
+        public DateTime EndTime
+        {
+            get
+            {
+                return DateTimeConverter.ConvertTo(EndTimeString);
+            }
+            set
+            {
+                EndTimeString = DateTimeConverter.ConvertFrom(value);
+            }
+        }
+
+        [DataMember(Name = "tags")]
         public List<string> Tags { get; set; }
 
+        [DataMember(Name = "statistics")]
         public Statistic Statistics { get; set; }
     }
 
+    [DataContract]
     public class Statistic
     {
+        [DataMember(Name = "executions")]
         public Executions Executions { get; set; }
+
+        [DataMember(Name = "defects")]
         public Defects Defects { get; set; }
     }
 
+    [DataContract]
     public class Executions
     {
+        [DataMember(Name = "total")]
         public int Total { get; set; }
+
+        [DataMember(Name = "passed")]
         public int Passed { get; set; }
+
+        [DataMember(Name = "failed")]
         public int Failed { get; set; }
+
+        [DataMember(Name = "skipped")]
         public int Skipped { get; set; }
     }
 
+    [DataContract]
     public class Defects
     {
-        [JsonProperty("product_bugs")]
+        [DataMember(Name = "product_bugs")]
         public Defect ProductBugs { get; set; }
 
-        [JsonProperty("automation_bugs")]
+        [DataMember(Name = "automation_bugs")]
         public Defect AutomationBugs { get; set; }
 
-        [JsonProperty("system_issue")]
+        [DataMember(Name = "system_issue")]
         public Defect SystemIssues { get; set; }
 
-        [JsonProperty("to_investigate")]
+        [DataMember(Name = "to_investigate")]
         public Defect ToInvestigate { get; set; }
     }
 
+    [DataContract]
     public class Defect
     {
-        [JsonProperty("total")]
+        [DataMember(Name = "total")]
         public int Total { get; set; }
     }
 }

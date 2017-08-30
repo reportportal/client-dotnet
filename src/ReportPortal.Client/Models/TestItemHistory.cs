@@ -1,27 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
 using ReportPortal.Client.Converters;
-using Newtonsoft.Json;
+using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Models
 {
+    [DataContract]
     public class TestItemHistory
     {
-        [JsonProperty("launchNumber")]
+        [DataMember(Name = "launchNumber")]
         public long LaunchNumber { get; set; }
 
-        [JsonProperty("launchId")]
+        [DataMember(Name = "launchId")]
         public string LaunchId { get; set; }
 
-        [JsonProperty("startTime")]
-        [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime? StartTime { get; set; }
+        [DataMember(Name = "startTime")]
+        public string StartTimeString { get; set; }
 
-        [JsonProperty("launchStatus")]
-        [JsonConverter(typeof(StatusConverter))]
-        public Status LaunchStatus { get; set; }
+        public DateTime StartTime
+        {
+            get
+            {
+                return DateTimeConverter.ConvertTo(StartTimeString);
+            }
+            set
+            {
+                StartTimeString = DateTimeConverter.ConvertFrom(value);
+            }
+        }
 
-        [JsonProperty("resources")]
+        [DataMember(Name = "launchStatus")]
+        public string LaunchStatusString { get; set; }
+
+        public Status LaunchStatus { get { return EnumConverter.ConvertTo<Status>(LaunchStatusString); } set { LaunchStatusString = EnumConverter.ConvertFrom(value); } }
+
+        [DataMember(Name = "resources")]
         public List<TestItem> Resources { get; set; }
     }
 }

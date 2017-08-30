@@ -21,7 +21,8 @@ namespace ReportPortal.Client.Tests.LaunchItem
         [Test]
         public void GetLaunches()
         {
-            var launches = Service.GetLaunches().Launches.ToList();
+            var container = Service.GetLaunches();
+            var launches = container.Launches.ToList();
             Assert.Greater(launches.Count(), 0);
         }
 
@@ -168,6 +169,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
                 Name = "MergedLaunch",
                 Launches = new List<string> { launch1.Id, launch2.Id},
                 MergeType = "BASIC",
+                StartTime = DateTime.UtcNow,
                 EndTime = DateTime.UtcNow
             });
 

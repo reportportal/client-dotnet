@@ -1,44 +1,61 @@
 ﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using ReportPortal.Client.Converters;
 using ReportPortal.Client.Models;
+using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Requests
 {
     /// <summary>
     /// Defines a content of request for service to create new launch.
     /// </summary>
+    [DataContract]
     public class StartLaunchRequest
     {
+        private string _name;
+
         /// <summary>
         /// A short name of launch.
         /// </summary>
-        [JsonConverter(typeof(TrimmingConverter), 256)]
-        public string Name { get; set; }
+        [DataMember(Name = "name")]
+        public string Name { get { return _name; } set { _name = StringTrimmer.Trim(value, 256); } }
 
         /// <summary>
         /// Description of launch.
         /// </summary>
+        [DataMember(Name = "description")]
         public string Description { get; set; }
 
         /// <summary>
         /// Specify whether the launch is executed under debugging.
         /// </summary>
-        [JsonConverter(typeof(LaunchModeConverter))]
-        public LaunchMode Mode { get; set; }
+        [DataMember(Name = "mode")]
+        public string ModeString { get { return EnumConverter.ConvertFrom(Mode); } set { Mode = EnumConverter.ConvertTo<LaunchMode>(ModeString); } }
+
+        public LaunchMode Mode = LaunchMode.Default;
 
         /// <summary>
         /// Date time when the launch is executed.
         /// </summary>
-        [JsonProperty("start_time")]
-        [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime StartTime { get; set; }
+        [DataMember(Name = "start_time")]
+        public string StartTimeString { get; set; }
+
+        public DateTime StartTime
+        {
+            get
+            {
+                return DateTimeConverter.ConvertTo(StartTimeString);
+            }
+            set
+            {
+                StartTimeString = DateTimeConverter.ConvertFrom(value);
+            }
+        }
 
         /// <summary>
         /// Mark the launch with tags.
         /// </summary>
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        [DataMember(Name = "tags", EmitDefaultValue = true)]
         public List<string> Tags { get; set; }
     }
 }

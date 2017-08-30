@@ -47,29 +47,23 @@
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="RestSharp, Version=105.2.3.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\RestSharp.105.2.3\lib\net35\RestSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Converters\LaunchModeConverter.cs" />
-    <Compile Include="Converters\LogLevelConverter.cs" />
-    <Compile Include="Converters\IssueTypeConverter.cs" />
-    <Compile Include="Converters\TestItemTypeConverter.cs" />
-    <Compile Include="Converters\StatusConverter.cs" />
+    <Compile Include="Converters\EnumConverter.cs" />
+    <Compile Include="Converters\ModelSerializer.cs" />
     <Compile Include="Converters\DateTimeConverter.cs" />
-    <Compile Include="Converters\TrimmingConverter.cs" />
+    <Compile Include="Converters\StringTrimmer.cs" />
     <Compile Include="Extentions\EnumDescription.cs" />
     <Compile Include="Extentions\ReportPortalAuthenticator.cs" />
     <Compile Include="Extentions\RestClient.cs" />

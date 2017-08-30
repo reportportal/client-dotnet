@@ -7,7 +7,6 @@ namespace ReportPortal.Client.Models
     /// </summary>
     public enum Status
     {
-        None,
         [Description("IN_PROGRESS")]
         InProgress,
         [Description("PASSED")]
@@ -47,7 +46,6 @@ namespace ReportPortal.Client.Models
     /// </summary>
     public enum IssueType
     {
-        None,
         [Description("PB001")]
         ProductionBug,
         [Description("AB001")]
@@ -65,7 +63,6 @@ namespace ReportPortal.Client.Models
     /// </summary>
     public enum LogLevel
     {
-        None,
         [Description("TRACE")]
         Trace,
         [Description("DEBUG")]

@@ -1,22 +1,23 @@
-﻿using Newtonsoft.Json;
+﻿using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Models
 {
     /// <summary>
     /// Wraps a response from web service in case if something is wrong.
     /// </summary>
+    [DataContract]
     public class Error
     {
         /// <summary>
         /// Code of error.
         /// </summary>
-        [JsonProperty("error_code", Required = Required.Always)]
+        [DataMember(Name = "error_code")]
         public int Code { get; set; }
 
         /// <summary>
         /// Detailed message of error.
         /// </summary>
-        [JsonProperty("message", Required = Required.Always)]
+        [DataMember(Name = "message")]
         public string Message { get; set; }
     }
 }

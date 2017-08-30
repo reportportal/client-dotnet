@@ -1,40 +1,56 @@
 ﻿using System;
 using ReportPortal.Client.Converters;
-using Newtonsoft.Json;
+using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Models
 {
+    [DataContract]
     public class LogItem
     {
-        [JsonProperty("id")]
+        [DataMember(Name = "id")]
         public string Id { get; set; }
 
-        [JsonProperty("time")]
-        [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime? Time { get; set; }
+        [DataMember(Name = "time")]
+        public string TimeString { get; set; }
 
-        [JsonProperty("message")]
+        public DateTime Time
+        {
+            get
+            {
+                return DateTimeConverter.ConvertTo(TimeString);
+            }
+            set
+            {
+                TimeString = DateTimeConverter.ConvertFrom(value);
+            }
+        }
+
+        [DataMember(Name = "message")]
         public string Text { get; set; }
 
-        [JsonProperty("level")]
-        [JsonConverter(typeof(LogLevelConverter))]
-        public LogLevel Level { get; set; }
+        [DataMember(Name = "level")]
+        public string LevelString { get; set; }
 
-        [JsonProperty("binary_content")]
+        public LogLevel Level { get { return EnumConverter.ConvertTo<LogLevel>(LevelString); } set { LevelString = EnumConverter.ConvertFrom(value); } }
+
+        [DataMember(Name = "binary_content")]
         public BinaryContent Content { get; set; }
     }
 
+    [DataContract]
     public class BinaryContent
     {
-        [JsonProperty("content_type")]
+        [DataMember(Name = "content_type")]
         public string ContentType { get; set; }
 
+        [DataMember(Name = "id")]
         public string Id { get; set; }
 
-        [JsonProperty("thumbnail_id")]
+        [DataMember(Name = "thumbnail_id")]
         public string ThumbnailId { get; set; }
     }
 
+    [DataContract]
     public class Attach
     {
         public Attach()
@@ -49,13 +65,13 @@ namespace ReportPortal.Client.Models
             Data = data;
         }
 
-        [JsonProperty("name")]
+        [DataMember(Name = "name")]
         public string Name { get; set; }
 
-        [JsonIgnore]
+        [IgnoreDataMember]
         public byte[] Data { get; set; }
 
-        [JsonIgnore]
+        [IgnoreDataMember]
         public string MimeType { get; set; }
     }
 }

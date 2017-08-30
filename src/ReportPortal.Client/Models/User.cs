@@ -1,17 +1,14 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Models
 {
+    [DataContract]
     public class User
     {
-        [JsonProperty("full_name")]
+        [DataMember(Name = "full_name")]
         public string Fullname { get; set; }
 
+        [DataMember(Name = "email")]
         public string Email { get; set; }
     }
 }

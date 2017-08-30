@@ -1,19 +1,31 @@
 ﻿using System;
 using ReportPortal.Client.Converters;
-using Newtonsoft.Json;
+using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Requests
 {
     /// <summary>
     /// Defines a request to finish execution of specified launch.
     /// </summary>
+    [DataContract]
     public class FinishLaunchRequest
     {
         /// <summary>
         /// Date time when launch execution is finished.
         /// </summary>
-        [JsonProperty("end_time")]
-        [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime EndTime { get; set; }
+        [DataMember(Name = "end_time")]
+        public string EndTimeString { get; set; }
+
+        public DateTime EndTime
+        {
+            get
+            {
+                return DateTimeConverter.ConvertTo(EndTimeString);
+            }
+            set
+            {
+                EndTimeString = DateTimeConverter.ConvertFrom(value);
+            }
+        }
     }
 }

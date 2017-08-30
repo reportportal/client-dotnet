@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Net;
 using ReportPortal.Client.Models;
-using Newtonsoft.Json;
 using RestSharp;
+using System.Runtime.Serialization.Json;
+using System.IO;
+using System.Text;
+using ReportPortal.Client.Converters;
 
 namespace ReportPortal.Client.Extentions
 {
@@ -40,25 +43,14 @@ namespace ReportPortal.Client.Extentions
                     throw new ServiceException("Client isn't authorized to perform the operation.", (int)HttpStatusCode.Unauthorized);
                 }
             }
-            Error errorMessage = null;
-            try
-            {
-                errorMessage = JsonConvert.DeserializeObject<Error>(response.Content);
-            }
-            catch (JsonReaderException exp)
-            {
-                throw new Exception(response.Content, exp);
-            }
-            catch (JsonSerializationException)
-            {
-                
-            }
+            Error errorMessage = ModelSerializer.Deserialize<Error>(response.Content); ;
 
-            if (errorMessage != null)
+            if (errorMessage.Code > 0)
             {
                 var exp = new ServiceException(errorMessage.Message, errorMessage.Code);
                 throw exp;
             }
+
             return response;
         }
     }

@@ -156,7 +156,7 @@ namespace ReportPortal.Client.Tests.LogItem
                         {
                             new Filter(FilterOperation.Equals, "item", newTestId)
                         }
-            });
+            }).LogItems;
             Assert.Greater(logs.Count(), 0);
 
             var message = Service.DeleteLogItem(log.Id).Info;
