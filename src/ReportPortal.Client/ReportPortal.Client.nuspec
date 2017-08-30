@@ -15,7 +15,6 @@
     <tags>reportportal testing</tags>
 
     <dependencies>
-      <dependency id="Newtonsoft.Json" version="[9.0.0,)" />
       <dependency id="RestSharp" version="[105.2.1,)" />
     </dependencies>
   </metadata>
