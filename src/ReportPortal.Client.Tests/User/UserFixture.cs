@@ -10,9 +10,9 @@ namespace ReportPortal.Client.Tests.User
     public class UserFixture : BaseFixture
     {
         [Test]
-        public void GetUserInfo()
+        public async Task GetUserInfo()
         {
-            var user = Service.GetUser();
+            var user = await Service.GetUserAsync();
             Assert.AreEqual("RP Tester", user.Fullname);
         }
     }

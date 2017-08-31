@@ -47,12 +47,9 @@
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="RestSharp, Version=105.2.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\RestSharp.105.2.3\lib\net35\RestSharp.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -65,7 +62,6 @@
     <Compile Include="Converters\DateTimeConverter.cs" />
     <Compile Include="Converters\StringTrimmer.cs" />
     <Compile Include="Extentions\EnumDescription.cs" />
-    <Compile Include="Extentions\ReportPortalAuthenticator.cs" />
     <Compile Include="Extentions\RestClient.cs" />
     <Compile Include="Models\Container.cs" />
     <Compile Include="Models\Error.cs" />

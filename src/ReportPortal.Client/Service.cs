@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 using ReportPortal.Client.Extentions;
-using RestSharp;
+using System.Net.Http;
 
 namespace ReportPortal.Client
 {
@@ -10,7 +10,8 @@ namespace ReportPortal.Client
     /// </summary>
     public partial class Service
     {
-        private readonly RestClient _restClient;
+        private readonly HttpClient _httpClient;
+        private readonly HttpClientHandler _httpHandler;
 
         /// <summary>
         /// Constructor to initialize a new object of service.
@@ -20,12 +21,13 @@ namespace ReportPortal.Client
         /// <param name="password">A password for user. Can be UID given from user's profile page.</param>
         public Service(Uri uri, string project, string password)
         {
-            ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
-            _restClient = new RestClient(uri)
-                {
-                    Authenticator = new ReportPortalAuthenticator(password)
-                };
+            _httpHandler = new HttpClientHandler();
 
+            _httpClient = new HttpClient(_httpHandler);
+
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + password);
+            _httpClient.DefaultRequestHeaders.Add("User-Agent", ".NET Reporter");
+            BaseUri = uri;
             Project = project;
         }
 
@@ -39,12 +41,14 @@ namespace ReportPortal.Client
         public Service(Uri uri, string project, string password, IWebProxy proxy)
             : this(uri, project, password)
         {
-            _restClient.Proxy = proxy;
+            _httpHandler.Proxy = proxy;
         }
 
         /// <summary>
         /// Get or set project name to interact with.
         /// </summary>
         public string Project { get; set; }
+
+        public Uri BaseUri { get; set; }
     }
 }
