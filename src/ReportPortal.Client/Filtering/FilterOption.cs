@@ -56,7 +56,7 @@ namespace ReportPortal.Client.Filtering
                 foreach (var filter in Filters)
                 {
                     var value = string.Join(",", filter.Values.Select(s => s.ToString()).ToArray());
-                    builder.Append($"filter.{filter.Operation.GetDescriptionAttribute()}.{filter.Field}");
+                    builder.Append($"&filter.{filter.Operation.GetDescriptionAttribute()}.{filter.Field}={value}");
                 }
             }
 

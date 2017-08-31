@@ -45,20 +45,20 @@ namespace ReportPortal.Client.Tests.LaunchItem
             Assert.AreEqual(10, launches.Launches.Count());
         }
 
-        //[Test]
-        //public void GetLaunchesFilteredByName()
-        //{
-        //    var launches = Service.GetLaunches(new FilterOption
-        //    {
-        //        Paging = new Paging(1, 10),
-        //        Filters = new List<Filter> { new Filter(FilterOperation.Contains, "name", "test") }
-        //    }).Launches;
-        //    Assert.Greater(launches.Count(), 0);
-        //    foreach (var launch in launches)
-        //    {
-        //        StringAssert.Contains("test", launch.Name.ToLower());
-        //    }
-        //}
+        [Test]
+        public async Task GetLaunchesFilteredByName()
+        {
+            var launches = await Service.GetLaunchesAsync(new FilterOption
+            {
+                Paging = new Paging(1, 10),
+                Filters = new List<Filter> { new Filter(FilterOperation.Contains, "name", "test") }
+            });
+            Assert.Greater(launches.Launches.Count(), 0);
+            foreach (var launch in launches.Launches)
+            {
+                StringAssert.Contains("test", launch.Name.ToLower());
+            }
+        }
 
         //[Test]
         //public void StartFinishDeleteLaunch()

@@ -25,7 +25,7 @@ namespace ReportPortal.Client
 
             if (filterOption != null)
             {
-                uriBuilder.Query += $"?{filterOption}";
+                uriBuilder.Query += filterOption;
             }
 
             var response = await _httpClient.GetAsync(uriBuilder.Uri);
