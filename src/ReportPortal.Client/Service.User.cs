@@ -10,11 +10,9 @@ namespace ReportPortal.Client
     {
         public async Task<User> GetUserAsync()
         {
-            var uri = new Uri($"{BaseUri}/user");
-
+            var uri = $"user";
             var response = await _httpClient.GetAsync(uri);
             response.EnsureSuccessStatusCode();
-
             return ModelSerializer.Deserialize<User>(await response.Content.ReadAsStringAsync());
         }
     }

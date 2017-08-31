@@ -1,183 +1,162 @@
-﻿//using System.Collections.Generic;
-//using System.Threading.Tasks;
-//using ReportPortal.Client.Extentions;
-//using ReportPortal.Client.Filtering;
-//using ReportPortal.Client.Models;
-//using ReportPortal.Client.Requests;
-//using RestSharp;
-//using ReportPortal.Client.Converters;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using ReportPortal.Client.Filtering;
+using ReportPortal.Client.Models;
+using ReportPortal.Client.Requests;
+using ReportPortal.Client.Converters;
+using System;
+using System.Net.Http;
+using System.Text;
 
-//namespace ReportPortal.Client
-//{
-//    public partial class Service
-//    {
-//        /// <summary>
-//        /// Returns a list of test items for specified launch and parent test item (optional).
-//        /// </summary>
-//        /// <param name="filterOption">Specified criterias for retrieving test items.</param>
-//        /// <returns>A list of test items.</returns>
-//        public TestItemsContainer GetTestItems(FilterOption filterOption = null)
-//        {
-//            var request = new RestRequest(Project + "/item");
-//            if (filterOption != null)
-//            {
-//                foreach (var p in filterOption.ConvertToDictionary())
-//                {
-//                    request.AddParameter(p.Key, p.Value, ParameterType.QueryString);
-//                }
-//            }
-//            var response = _restClient.ExecuteWithErrorHandling(request);
-//            return ModelSerializer.Deserialize<TestItemsContainer>(response.Content);
-//        }
+namespace ReportPortal.Client
+{
+    public partial class Service
+    {
+        /// <summary>
+        /// Returns a list of test items for specified launch and parent test item (optional).
+        /// </summary>
+        /// <param name="filterOption">Specified criterias for retrieving test items.</param>
+        /// <returns>A list of test items.</returns>
+        public async Task<TestItemsContainer> GetTestItemsAsync(FilterOption filterOption = null)
+        {
+            UriBuilder uriBuilder = new UriBuilder($"{BaseUri}/{Project}/item");
+            if (filterOption != null)
+            {
+                uriBuilder.Query += filterOption;
+            }
+            var response = await _httpClient.GetAsync(uriBuilder.Uri);
+            response.EnsureSuccessStatusCode();
+            return ModelSerializer.Deserialize<TestItemsContainer>(await response.Content.ReadAsStringAsync());
+        }
 
-//        /// <summary>
-//        /// Returns specified test item by ID.
-//        /// </summary>
-//        /// <param name="id">ID of the test item to retrieve.</param>
-//        /// <returns>A representation of test item.</returns>
-//        public TestItem GetTestItem(string id)
-//        {
-//            var request = new RestRequest(Project + "/item/" + id);
-//            var response = _restClient.ExecuteWithErrorHandling(request);
-//            return ModelSerializer.Deserialize<TestItem>(response.Content);
-//        }
+        /// <summary>
+        /// Returns specified test item by ID.
+        /// </summary>
+        /// <param name="id">ID of the test item to retrieve.</param>
+        /// <returns>A representation of test item.</returns>
+        public async Task<TestItem> GetTestItemAsync(string id)
+        {
+            var uri = $"{Project}/item/{id}";
+            var response = await _httpClient.GetAsync(uri);
+            response.EnsureSuccessStatusCode();
+            return ModelSerializer.Deserialize<TestItem>(await response.Content.ReadAsStringAsync());
+        }
 
-//        /// <summary>
-//        /// Returns the list of tests tags for specified launch.
-//        /// </summary>
-//        /// <param name="launchId">ID of launch.</param>
-//        /// <param name="tagContains">Tags should contain specified text.</param>
-//        /// <returns></returns>
-//        public List<string> GetUniqueTags(string launchId, string tagContains)
-//        {
-//            var request = new RestRequest(Project + "/item/tags");
-//            request.AddParameter("launch", launchId, ParameterType.QueryString);
-//            request.AddParameter("filter.cnt.tags", tagContains, ParameterType.QueryString);
+        /// <summary>
+        /// Returns the list of tests tags for specified launch.
+        /// </summary>
+        /// <param name="launchId">ID of launch.</param>
+        /// <param name="tagContains">Tags should contain specified text.</param>
+        /// <returns></returns>
+        public async Task<List<string>> GetUniqueTagsAsync(string launchId, string tagContains)
+        {
+            var uri = $"{Project}/item/tags?launch={launchId}&filter.cnt.tags={tagContains}";
 
-//            var response = _restClient.ExecuteWithErrorHandling(request);
-//            return ModelSerializer.Deserialize<List<string>>(response.Content);
-//        }
+            var response = await _httpClient.GetAsync(uri);
+            response.EnsureSuccessStatusCode();
+            return ModelSerializer.Deserialize<List<string>>(await response.Content.ReadAsStringAsync());
+        }
 
-//        /// <summary>
-//        /// Creates a new test item.
-//        /// </summary>
-//        /// <param name="model">Information about representation of test item.</param>
-//        /// <returns>Representation of created test item.</returns>
-//        public TestItem StartTestItem(StartTestItemRequest model)
-//        {
-//            var request = new RestRequest(Project + "/item", Method.POST);
-//            var body = ModelSerializer.Serialize<StartTestItemRequest>(model);
-//            request.AddParameter("application/json", body, ParameterType.RequestBody);
-//            var response = _restClient.ExecuteWithErrorHandling(request);
-//            return ModelSerializer.Deserialize<TestItem>(response.Content);
-//        }
+        /// <summary>
+        /// Creates a new test item.
+        /// </summary>
+        /// <param name="model">Information about representation of test item.</param>
+        /// <returns>Representation of created test item.</returns>
+        public async Task<TestItem> StartTestItemAsync(StartTestItemRequest model)
+        {
+            var uri = $"{Project}/item";
+            var body = ModelSerializer.Serialize<StartTestItemRequest>(model);
+            var response = await _httpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json"));
+            response.EnsureSuccessStatusCode();
+            return ModelSerializer.Deserialize<TestItem>(await response.Content.ReadAsStringAsync());
+        }
 
-//        public async Task<TestItem> StartTestItemAsync(StartTestItemRequest model)
-//        {
-//            return await Task.Run(() => StartTestItem(model));
-//        }
+        /// <summary>
+        /// Creates a new test item.
+        /// </summary>
+        /// <param name="id">ID of parent item.</param>
+        /// <param name="model">Information about representation of test item.</param>
+        /// <returns>Representation of created test item.</returns>
+        public async Task<TestItem> StartTestItemAsync(string id, StartTestItemRequest model)
+        {
+            var uri = $"{Project}/item/{id}";
+            var body = ModelSerializer.Serialize<StartTestItemRequest>(model);
+            var response = await _httpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json"));
+            response.EnsureSuccessStatusCode();
+            return ModelSerializer.Deserialize<TestItem>(await response.Content.ReadAsStringAsync());
+        }
 
-//        /// <summary>
-//        /// Creates a new test item.
-//        /// </summary>
-//        /// <param name="id">ID of parent item.</param>
-//        /// <param name="model">Information about representation of test item.</param>
-//        /// <returns>Representation of created test item.</returns>
-//        public TestItem StartTestItem(string id, StartTestItemRequest model)
-//        {
-//            var request = new RestRequest(Project + "/item/" + id, Method.POST);
-//            var body = ModelSerializer.Serialize<StartTestItemRequest>(model);
-//            request.AddParameter("application/json", body, ParameterType.RequestBody);
-//            var response = _restClient.ExecuteWithErrorHandling(request);
-//            return ModelSerializer.Deserialize<TestItem>(response.Content);
-//        }
+        /// <summary>
+        /// Finishes specified test item.
+        /// </summary>
+        /// <param name="id">ID of specified test item.</param>
+        /// <param name="model">Information about representation of test item to finish.</param>
+        /// <returns>A message from service.</returns>
+        public async Task<Message> FinishTestItemAsync(string id, FinishTestItemRequest model)
+        {
+            var uri = $"{Project}/item/{id}";
+            var body = ModelSerializer.Serialize<FinishTestItemRequest>(model);
+            var response = await _httpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json"));
+            response.EnsureSuccessStatusCode();
+            return ModelSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync());
+        }
 
-//        public async Task<TestItem> StartTestItemAsync(string id, StartTestItemRequest model)
-//        {
-//            return await Task.Run(() => StartTestItem(id, model));
-//        }
+        /// <summary>
+        /// Update specified test item.
+        /// </summary>
+        /// <param name="id">ID of test item to update.</param>
+        /// <param name="model">Information about test item.</param>
+        /// <returns>A message from service.</returns>
+        public async Task<Message> UpdateTestItemAsync(string id, UpdateTestItemRequest model)
+        {
+            var uri = $"{Project}/item/{id}/update";
+            var body = ModelSerializer.Serialize<UpdateTestItemRequest>(model);
+            var response = await _httpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json"));
+            response.EnsureSuccessStatusCode();
+            return ModelSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync());
+        }
 
-//        /// <summary>
-//        /// Finishes specified test item.
-//        /// </summary>
-//        /// <param name="id">ID of specified test item.</param>
-//        /// <param name="model">Information about representation of test item to finish.</param>
-//        /// <returns>A message from service.</returns>
-//        public Message FinishTestItem(string id, FinishTestItemRequest model)
-//        {
-//            var request = new RestRequest(Project + "/item/" + id, Method.PUT);
-//            var body = ModelSerializer.Serialize<FinishTestItemRequest>(model);
-//            request.AddParameter("application/json", body, ParameterType.RequestBody);
-//            var response = _restClient.ExecuteWithErrorHandling(request);
-//            return ModelSerializer.Deserialize<Message>(response.Content);
-//        }
+        /// <summary>
+        /// Deletes specified test item.
+        /// </summary>
+        /// <param name="id">ID of the test item to delete.</param>
+        /// <returns>A message from service.</returns>
+        public async Task<Message> DeleteTestItemAsync(string id)
+        {
+            var uri = $"{Project}/item/{id}";
+            var response = await _httpClient.DeleteAsync(uri);
+            response.EnsureSuccessStatusCode();
+            return ModelSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync());
+        }
 
-//        public async Task<Message> FinishTestItemAsync(string id, FinishTestItemRequest model)
-//        {
-//            return await Task.Run(() => FinishTestItem(id, model));
-//        }
+        /// <summary>
+        /// Assign issues to specified test items.
+        /// </summary>
+        /// <param name="model">Information about test items and their issues.</param>
+        /// <returns>A list of assigned issues.</returns>
+        public async Task<List<Issue>> AssignTestItemIssuesAsync(AssignTestItemIssuesRequest model)
+        {
+            var uri = $"{Project}/item";
+            var body = ModelSerializer.Serialize<AssignTestItemIssuesRequest>(model);
+            var response = await _httpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json"));
+            response.EnsureSuccessStatusCode();
+            return ModelSerializer.Deserialize<List<Issue>>(await response.Content.ReadAsStringAsync());
+        }
 
-//        /// <summary>
-//        /// Update specified test item.
-//        /// </summary>
-//        /// <param name="id">ID of test item to update.</param>
-//        /// <param name="model">Information about test item.</param>
-//        /// <returns>A message from service.</returns>
-//        public Message UpdateTestItem(string id, UpdateTestItemRequest model)
-//        {
-//            var request = new RestRequest(Project + "/item/" + id + "/update", Method.PUT);
-//            var body = ModelSerializer.Serialize<UpdateTestItemRequest>(model);
-//            request.AddParameter("application/json", body, ParameterType.RequestBody);
-//            var response = _restClient.ExecuteWithErrorHandling(request);
-//            return ModelSerializer.Deserialize<Message>(response.Content);
-//        }
+        /// <summary>
+        /// Get the history of test item executions.
+        /// </summary>
+        /// <param name="testItemId">ID of test item.</param>
+        /// <param name="depth">How many executions to return.</param>
+        /// <param name="full"></param>
+        /// <returns>The list of execution history.</returns>
+        public async Task<List<TestItemHistory>> GetTestItemHistoryAsync(string testItemId, int depth, bool full)
+        {
+            var uri = $"{Project}/item/history?ids={testItemId}&history_depth={depth}&is_full={full}";
 
-//        public async Task<Message> UpdateTestItemAsync(string id, UpdateTestItemRequest model)
-//        {
-//            return await Task.Run(() => UpdateTestItem(id, model));
-//        }
-
-//        /// <summary>
-//        /// Deletes specified test item.
-//        /// </summary>
-//        /// <param name="id">ID of the test item to delete.</param>
-//        /// <returns>A message from service.</returns>
-//        public Message DeleteTestItem(string id)
-//        {
-//            var request = new RestRequest(Project + "/item/" + id, Method.DELETE);
-//            var response = _restClient.ExecuteWithErrorHandling(request);
-//            return ModelSerializer.Deserialize<Message>(response.Content);
-//        }
-
-//        /// <summary>
-//        /// Assign issues to specified test items.
-//        /// </summary>
-//        /// <param name="model">Information about test items and their issues.</param>
-//        /// <returns>A list of assigned issues.</returns>
-//        public List<Issue> AssignTestItemIssues(AssignTestItemIssuesRequest model)
-//        {
-//            var request = new RestRequest(Project + "/item", Method.PUT);
-//            var body = ModelSerializer.Serialize<AssignTestItemIssuesRequest>(model);
-//            request.AddParameter("application/json", body, ParameterType.RequestBody);
-//            var response = _restClient.ExecuteWithErrorHandling(request);
-//            return ModelSerializer.Deserialize<List<Issue>>(response.Content);
-//        }
-
-//        /// <summary>
-//        /// Get the history of test item executions.
-//        /// </summary>
-//        /// <param name="testItemId">ID of test item.</param>
-//        /// <param name="depth">How many executions to return.</param>
-//        /// <param name="full"></param>
-//        /// <returns>The list of execution history.</returns>
-//        public List<TestItemHistory> GetTestItemHistory(string testItemId, int depth, bool full)
-//        {
-//            var request = new RestRequest(Project + "/item/history", Method.GET);
-//            request.AddParameter("ids", testItemId, ParameterType.QueryString);
-//            request.AddParameter("history_depth", depth, ParameterType.QueryString);
-//            request.AddParameter("is_full", full, ParameterType.QueryString);
-//            var response = _restClient.ExecuteWithErrorHandling(request);
-//            return ModelSerializer.Deserialize<List<TestItemHistory>>(response.Content);
-//        }
-//    }
-//}
+            var response = await _httpClient.GetAsync(uri);
+            response.EnsureSuccessStatusCode();
+            return ModelSerializer.Deserialize<List<TestItemHistory>>(await response.Content.ReadAsStringAsync());
+        }
+    }
+}
