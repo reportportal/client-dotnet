@@ -1,52 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NUnit.Framework;
 using ReportPortal.Client.Extentions;
 using ReportPortal.Client.Filtering;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 using System.Threading.Tasks;
 using System.Net.Http;
+using Xunit;
 
 namespace ReportPortal.Client.Tests.LaunchItem
 {
-    [TestFixture]
-    [Parallelizable]
     public class LaunchItemFixture : BaseFixture
     {
-        [Test]
+        [Fact]
         public void GetInvalidLaunch()
         {
             Assert.ThrowsAsync<HttpRequestException>(async () => await Service.GetLaunchAsync("invalid_id"));
         }
 
-        [Test]
+        [Fact]
         public async Task GetLaunches()
         {
             var container = await Service.GetLaunchesAsync();
             var launches = container.Launches.ToList();
-            Assert.Greater(launches.Count(), 0);
+            Assert.True(launches.Count() > 0);
         }
 
-        [Test]
+        [Fact]
         public async Task GetDebugLaunches()
         {
             var launches = await Service.GetLaunchesAsync(debug: true);
-            launches.Launches.ForEach((l) => Assert.That(l.Mode, Is.EqualTo(LaunchMode.Debug)));
+            launches.Launches.ForEach((l) => Assert.Equal(LaunchMode.Debug, l.Mode));
         }
 
-        [Test]
+        [Fact]
         public async Task GetTheFirst10Launches()
         {
             var launches = await Service.GetLaunchesAsync(new FilterOption
             {
                 Paging = new Paging(1, 10)
             });
-            Assert.AreEqual(10, launches.Launches.Count());
+            Assert.Equal(10, launches.Launches.Count());
         }
 
-        [Test]
+        [Fact]
         public async Task GetLaunchesFilteredByName()
         {
             var launches = await Service.GetLaunchesAsync(new FilterOption
@@ -54,14 +52,14 @@ namespace ReportPortal.Client.Tests.LaunchItem
                 Paging = new Paging(1, 10),
                 Filters = new List<Filter> { new Filter(FilterOperation.Contains, "name", "test") }
             });
-            Assert.Greater(launches.Launches.Count(), 0);
+            Assert.True(launches.Launches.Count() > 0);
             foreach (var launch in launches.Launches)
             {
-                StringAssert.Contains("test", launch.Name.ToLower());
+                Assert.Contains("test", launch.Name.ToLower());
             }
         }
 
-        [Test]
+        [Fact]
         public async Task StartFinishDeleteLaunch()
         {
             var launch = await Service.StartLaunchAsync(new StartLaunchRequest
@@ -74,16 +72,16 @@ namespace ReportPortal.Client.Tests.LaunchItem
             {
                 EndTime = DateTime.UtcNow
             });
-            StringAssert.Contains("successfully", message.Info);
+            Assert.Contains("successfully", message.Info);
 
             var gotLaunch = await Service.GetLaunchAsync(launch.Id);
-            Assert.AreEqual("StartFinishDeleteLaunch", gotLaunch.Name);
+            Assert.Equal("StartFinishDeleteLaunch", gotLaunch.Name);
 
             var delMessage = await Service.DeleteLaunchAsync(launch.Id);
-            StringAssert.Contains("successfully", delMessage.Info);
+            Assert.Contains("successfully", delMessage.Info);
         }
 
-        [Test]
+        [Fact]
         public async Task StartUpdateFinishDeleteLaunch()
         {
             var launch = await Service.StartLaunchAsync(new StartLaunchRequest
@@ -100,21 +98,21 @@ namespace ReportPortal.Client.Tests.LaunchItem
             });
 
             Assert.NotNull(launch.Id);
-            StringAssert.Contains("successfully updated", updateMessage.Info);
+            Assert.Contains("successfully updated", updateMessage.Info);
             var message = await Service.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });
-            StringAssert.Contains("successfully", message.Info);
+            Assert.Contains("successfully", message.Info);
 
             var gotLaunch = await Service.GetLaunchAsync(launch.Id);
-            Assert.AreEqual("StartFinishDeleteLaunch", gotLaunch.Name);
+            Assert.Equal("StartFinishDeleteLaunch", gotLaunch.Name);
 
             var delMessage = await Service.DeleteLaunchAsync(launch.Id);
-            StringAssert.Contains("successfully", delMessage.Info);
+            Assert.Contains("successfully", delMessage.Info);
         }
 
-        [Test]
+        [Fact]
         public async Task StartFinishDeleteFullLaunch()
         {
             var now = DateTime.UtcNow;
@@ -127,20 +125,20 @@ namespace ReportPortal.Client.Tests.LaunchItem
             });
             Assert.NotNull(launch.Id);
             var getLaunch = await Service.GetLaunchAsync(launch.Id);
-            Assert.AreEqual("StartFinishDeleteFullLaunch", getLaunch.Name);
-            Assert.AreEqual("Desc", getLaunch.Description);
-            Assert.AreEqual(now.ToString(), getLaunch.StartTime.ToString());
-            CollectionAssert.AreEquivalent(new List<string> { "tag1", "tag2", "tag3" }, getLaunch.Tags);
+            Assert.Equal("StartFinishDeleteFullLaunch", getLaunch.Name);
+            Assert.Equal("Desc", getLaunch.Description);
+            Assert.Equal(now.ToString(), getLaunch.StartTime.ToString());
+            Assert.Equal(new List<string> { "tag1", "tag2", "tag3" }, getLaunch.Tags);
             var message = await Service.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });
-            StringAssert.Contains("successfully", message.Info);
+            Assert.Contains("successfully", message.Info);
             var delMessage = await Service.DeleteLaunchAsync(launch.Id);
-            StringAssert.Contains("successfully", delMessage.Info);
+            Assert.Contains("successfully", delMessage.Info);
         }
 
-        [Test]
+        [Fact]
         public async Task StartFinishDeleteMergedLaunch()
         {
             var launch1 = await Service.StartLaunchAsync(new StartLaunchRequest
@@ -153,7 +151,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
             {
                 EndTime = DateTime.UtcNow
             });
-            StringAssert.Contains("successfully", message.Info);
+            Assert.Contains("successfully", message.Info);
 
             var launch2 = await Service.StartLaunchAsync(new StartLaunchRequest
             {
@@ -165,7 +163,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
             {
                 EndTime = DateTime.UtcNow
             });
-            StringAssert.Contains("successfully", message.Info);
+            Assert.Contains("successfully", message.Info);
 
             var mergedLaunch = await Service.MergeLaunchesAsync(new MergeLaunchesRequest
             {
@@ -177,10 +175,10 @@ namespace ReportPortal.Client.Tests.LaunchItem
             });
 
             var delMessage = await Service.DeleteLaunchAsync(mergedLaunch.Id);
-            StringAssert.Contains("successfully", delMessage.Info);
+            Assert.Contains("successfully", delMessage.Info);
         }
 
-        [Test]
+        [Fact]
         public async Task StartFinishAnalyzeDeleteLaunch()
         {
             var launch = await Service.StartLaunchAsync(new StartLaunchRequest
@@ -193,19 +191,19 @@ namespace ReportPortal.Client.Tests.LaunchItem
             {
                 EndTime = DateTime.UtcNow
             });
-            StringAssert.Contains("successfully", message.Info);
+            Assert.Contains("successfully", message.Info);
 
             var gotLaunch = await Service.GetLaunchAsync(launch.Id);
-            Assert.AreEqual("StartFinishDeleteLaunch", gotLaunch.Name);
+            Assert.Equal("StartFinishDeleteLaunch", gotLaunch.Name);
 
             var analyzeMessage = await Service.AnalyzeLaunchAsync(launch.Id, "history");
-            StringAssert.Contains("started", analyzeMessage.Info);
+            Assert.Contains("started", analyzeMessage.Info);
 
             var delMessage = await Service.DeleteLaunchAsync(launch.Id);
-            StringAssert.Contains("successfully", delMessage.Info);
+            Assert.Contains("successfully", delMessage.Info);
         }
 
-        [Test]
+        [Fact]
         public async Task TrimLaunchName()
         {
             var namePrefix = "TrimLaunch";
@@ -221,13 +219,13 @@ namespace ReportPortal.Client.Tests.LaunchItem
             {
                 EndTime = DateTime.UtcNow
             });
-            StringAssert.Contains("successfully", message.Info);
+            Assert.Contains("successfully", message.Info);
 
             var gotLaunch = await Service.GetLaunchAsync(launch.Id);
-            Assert.AreEqual(launchName.Substring(0, 256), gotLaunch.Name);
+            Assert.Equal(launchName.Substring(0, 256), gotLaunch.Name);
 
             var delMessage = await Service.DeleteLaunchAsync(launch.Id);
-            StringAssert.Contains("successfully", delMessage.Info);
+            Assert.Contains("successfully", delMessage.Info);
         }
     }
 }

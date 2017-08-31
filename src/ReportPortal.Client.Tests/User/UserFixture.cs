@@ -1,19 +1,15 @@
-﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Xunit;
 
 namespace ReportPortal.Client.Tests.User
 {
     public class UserFixture : BaseFixture
     {
-        [Test]
+        [Fact]
         public async Task GetUserInfo()
         {
             var user = await Service.GetUserAsync();
-            Assert.AreEqual("RP Tester", user.Fullname);
+            Assert.Equal("RP Tester", user.Fullname);
         }
     }
 }

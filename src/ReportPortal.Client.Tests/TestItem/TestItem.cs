@@ -1,37 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NUnit.Framework;
 using ReportPortal.Client.Filtering;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace ReportPortal.Client.Tests.TestItem
 {
-    [TestFixture]
-    [Parallelizable]
-    public class TestItemFixture : BaseFixture
+    public class TestItemFixture : BaseFixture, IDisposable
     {
         private string _launchId;
 
-        [SetUp]
-        public async Task SetUp()
+        public TestItemFixture()
         {
-            _launchId = (await Service.StartLaunchAsync(new StartLaunchRequest
+            _launchId = Service.StartLaunchAsync(new StartLaunchRequest
             {
                 Name = "StartFinishDeleteLaunch",
                 StartTime = DateTime.UtcNow
-            })).Id;
+            }).Result.Id;
         }
-
-        [TearDown]
-        public async Task TearDown()
+        
+        public void Dispose()
         {
-            await Service.DeleteLaunchAsync(_launchId);
+            Service.DeleteLaunchAsync(_launchId).Wait();
         }
 
-        [Test]
+        [Fact]
         public async Task StartFinishDeleteTest()
         {
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
@@ -47,16 +43,16 @@ namespace ReportPortal.Client.Tests.TestItem
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
             });
-            StringAssert.Contains("successfully", message.Info);
+            Assert.Contains("successfully", message.Info);
             await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });
             var delMessage = await Service.DeleteTestItemAsync(test.Id);
-            StringAssert.Contains("successfully", delMessage.Info);
+            Assert.Contains("successfully", delMessage.Info);
         }
 
-        [Test]
+        [Fact]
         public async Task StartForceFinishIncompleteLaunch()
         {
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
@@ -74,7 +70,7 @@ namespace ReportPortal.Client.Tests.TestItem
             }, true);
         }
 
-        [Test]
+        [Fact]
         public async Task StartFinishDeleteTestWithTag()
         {
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
@@ -87,7 +83,7 @@ namespace ReportPortal.Client.Tests.TestItem
             });
 
             var uniqueTags = await Service.GetUniqueTagsAsync(_launchId, "myta");
-            CollectionAssert.Contains(uniqueTags, "MyTag1");
+            Assert.Contains("MyTag1", uniqueTags);
 
             Assert.NotNull(test.Id);
             var message = await Service.FinishTestItemAsync(test.Id, new FinishTestItemRequest
@@ -95,16 +91,16 @@ namespace ReportPortal.Client.Tests.TestItem
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
             });
-            StringAssert.Contains("successfully", message.Info);
+            Assert.Contains("successfully", message.Info);
             await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });
             var delMessage = await Service.DeleteTestItemAsync(test.Id);
-            StringAssert.Contains("successfully", delMessage.Info);
+            Assert.Contains("successfully", delMessage.Info);
         }
 
-        [Test]
+        [Fact]
         public async Task StartFinishDeleteSeveralTests()
         {
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
@@ -132,31 +128,31 @@ namespace ReportPortal.Client.Tests.TestItem
                             new Filter(FilterOperation.Equals, "launch", _launchId)
                         }
             });
-            Assert.AreEqual(tests.TestItems.Count(), 2);
+            Assert.Equal(tests.TestItems.Count(), 2);
 
             var message = await Service.FinishTestItemAsync(test.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
             });
-            StringAssert.Contains("successfully", message.Info);
+            Assert.Contains("successfully", message.Info);
 
             var message2 = await Service.FinishTestItemAsync(test2.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
             });
-            StringAssert.Contains("successfully", message2.Info);
+            Assert.Contains("successfully", message2.Info);
 
             await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });
             var delMessage = await Service.DeleteTestItemAsync(test.Id);
-            StringAssert.Contains("successfully", delMessage.Info);
+            Assert.Contains("successfully", delMessage.Info);
         }
 
-        [Test]
+        [Fact]
         public async Task StartFinishDeleteFullTest()
         {
             var now = DateTime.UtcNow;
@@ -171,18 +167,18 @@ namespace ReportPortal.Client.Tests.TestItem
             Assert.NotNull(test.Id);
 
             var getTest = await Service.GetTestItemAsync(test.Id);
-            Assert.AreEqual(null, getTest.ParentId);
-            Assert.AreEqual("Test1", getTest.Name);
-            Assert.AreEqual(now.ToString(), getTest.StartTime.ToString());
-            Assert.AreEqual(TestItemType.Test, getTest.Type);
-            Assert.AreEqual("Desc for test", getTest.Description);
+            Assert.Equal(null, getTest.ParentId);
+            Assert.Equal("Test1", getTest.Name);
+            Assert.Equal(now.ToString(), getTest.StartTime.ToString());
+            Assert.Equal(TestItemType.Test, getTest.Type);
+            Assert.Equal("Desc for test", getTest.Description);
 
             var message = await Service.FinishTestItemAsync(test.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
             });
-            StringAssert.Contains("successfully", message.Info);
+            Assert.Contains("successfully", message.Info);
 
             await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
             {
@@ -190,16 +186,17 @@ namespace ReportPortal.Client.Tests.TestItem
             });
 
             var delMessage = await Service.DeleteTestItemAsync(test.Id);
-            StringAssert.Contains("successfully", delMessage.Info);
+            Assert.Contains("successfully", delMessage.Info);
         }
 
-        [TestCase(TestItemType.BeforeClass)]
-        [TestCase(TestItemType.BeforeMethod)]
-        [TestCase(TestItemType.Suite)]
-        [TestCase(TestItemType.Test)]
-        [TestCase(TestItemType.Step)]
-        [TestCase(TestItemType.AfterMethod)]
-        [TestCase(TestItemType.AfterClass)]
+        [Theory]
+        [InlineData(TestItemType.BeforeClass)]
+        [InlineData(TestItemType.BeforeMethod)]
+        [InlineData(TestItemType.Suite)]
+        [InlineData(TestItemType.Test)]
+        [InlineData(TestItemType.Step)]
+        [InlineData(TestItemType.AfterMethod)]
+        [InlineData(TestItemType.AfterClass)]
         public async Task VerifyTypeOfTests(TestItemType type)
         {
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
@@ -215,7 +212,7 @@ namespace ReportPortal.Client.Tests.TestItem
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
             });
-            StringAssert.Contains("successfully", message.Info);
+            Assert.Contains("successfully", message.Info);
 
             await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
             {
@@ -223,9 +220,10 @@ namespace ReportPortal.Client.Tests.TestItem
             });
         }
 
-        [TestCase(Status.Failed)]
-        [TestCase(Status.Passed)]
-        [TestCase(Status.Skipped)]
+        [Theory]
+        [InlineData(Status.Failed)]
+        [InlineData(Status.Passed)]
+        [InlineData(Status.Skipped)]
         public async Task VerifyStatusesOfTests(Status status)
         {
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
@@ -241,7 +239,7 @@ namespace ReportPortal.Client.Tests.TestItem
                 EndTime = DateTime.UtcNow,
                 Status = status
             });
-            StringAssert.Contains("successfully", message.Info);
+            Assert.Contains("successfully", message.Info);
 
             await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
             {
@@ -249,7 +247,7 @@ namespace ReportPortal.Client.Tests.TestItem
             });
         }
 
-        [Test]
+        [Fact]
         public async Task FinishTestWithIssue()
         {
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
@@ -270,20 +268,21 @@ namespace ReportPortal.Client.Tests.TestItem
                     Type = IssueType.ProductionBug
                 }
             });
-            StringAssert.Contains("successfully", message.Info);
+            Assert.Contains("successfully", message.Info);
             await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });
             var delMessage = await Service.DeleteTestItemAsync(test.Id);
-            StringAssert.Contains("successfully", delMessage.Info);
+            Assert.Contains("successfully", delMessage.Info);
         }
 
-        [TestCase(IssueType.AutomationBug)]
-        [TestCase(IssueType.ProductionBug)]
-        [TestCase(IssueType.SystemIssue)]
-        [TestCase(IssueType.ToInvestigate)]
-        [TestCase(IssueType.NoDefect)]
+        [Theory]
+        [InlineData(IssueType.AutomationBug)]
+        [InlineData(IssueType.ProductionBug)]
+        [InlineData(IssueType.SystemIssue)]
+        [InlineData(IssueType.ToInvestigate)]
+        [InlineData(IssueType.NoDefect)]
         public async Task VerifyTestIssueTypes(IssueType type)
         {
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
@@ -304,7 +303,7 @@ namespace ReportPortal.Client.Tests.TestItem
                     Type = type
                 }
             });
-            StringAssert.Contains("successfully", message.Info);
+            Assert.Contains("successfully", message.Info);
 
             await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
             {
@@ -312,7 +311,7 @@ namespace ReportPortal.Client.Tests.TestItem
             });
         }
 
-        [Test]
+        [Fact]
         public async Task CreateTestForSuites()
         {
             var suite = await Service.StartTestItemAsync(new StartTestItemRequest
@@ -339,14 +338,14 @@ namespace ReportPortal.Client.Tests.TestItem
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
             });
-            StringAssert.Contains("successfully", message.Info);
+            Assert.Contains("successfully", message.Info);
 
             var messageSuite = await Service.FinishTestItemAsync(suite.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
             });
-            StringAssert.Contains("successfully", messageSuite.Info);
+            Assert.Contains("successfully", messageSuite.Info);
 
             await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
             {
@@ -354,13 +353,13 @@ namespace ReportPortal.Client.Tests.TestItem
             });
 
             var delMessage = await Service.DeleteTestItemAsync(test.Id);
-            StringAssert.Contains("successfully", delMessage.Info);
+            Assert.Contains("successfully", delMessage.Info);
 
             var delMessageSuite = await Service.DeleteTestItemAsync(suite.Id);
-            StringAssert.Contains("successfully", delMessageSuite.Info);
+            Assert.Contains("successfully", delMessageSuite.Info);
         }
 
-        [Test]
+        [Fact]
         public async Task CreateStepForTestInSuite()
         {
             var suite = await Service.StartTestItemAsync(new StartTestItemRequest
@@ -381,7 +380,7 @@ namespace ReportPortal.Client.Tests.TestItem
 
             Assert.NotNull(test.Id);
 
-            Assert.IsTrue((await Service.GetTestItemAsync(suite.Id)).HasChilds);
+            Assert.True((await Service.GetTestItemAsync(suite.Id)).HasChilds);
 
             var step = await Service.StartTestItemAsync(test.Id, new StartTestItemRequest
             {
@@ -399,21 +398,21 @@ namespace ReportPortal.Client.Tests.TestItem
                 Status = Status.Passed
             });
 
-            StringAssert.Contains("successfully", messageStep.Info);
+            Assert.Contains("successfully", messageStep.Info);
 
             var message = await Service.FinishTestItemAsync(test.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
             });
-            StringAssert.Contains("successfully", message.Info);
+            Assert.Contains("successfully", message.Info);
 
             var messageSuite = await Service.FinishTestItemAsync(suite.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
             });
-            StringAssert.Contains("successfully", messageSuite.Info);
+            Assert.Contains("successfully", messageSuite.Info);
 
             await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
             {
@@ -421,13 +420,13 @@ namespace ReportPortal.Client.Tests.TestItem
             });
 
             var delMessage = await Service.DeleteTestItemAsync(test.Id);
-            StringAssert.Contains("successfully", delMessage.Info);
+            Assert.Contains("successfully", delMessage.Info);
 
             var delMessageSuite = await Service.DeleteTestItemAsync(suite.Id);
-            StringAssert.Contains("successfully", delMessageSuite.Info);
+            Assert.Contains("successfully", delMessageSuite.Info);
         }
 
-        [Test]
+        [Fact]
         public async Task StartUpdateFinishDeleteTest()
         {
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
@@ -444,27 +443,27 @@ namespace ReportPortal.Client.Tests.TestItem
                 Description = "newDesc",
                 Tags = new List<string> { "tag1", "tag2" }
             });
-            StringAssert.Contains("successfully", updateMessage.Info);
+            Assert.Contains("successfully", updateMessage.Info);
 
             var updatedTest = await Service.GetTestItemAsync(test.Id);
-            Assert.AreEqual("newDesc", updatedTest.Description);
-            CollectionAssert.AreEquivalent(new List<string> { "tag1", "tag2" }, updatedTest.Tags);
+            Assert.Equal("newDesc", updatedTest.Description);
+            Assert.Equal(new List<string> { "tag1", "tag2" }, updatedTest.Tags);
 
             var message = await Service.FinishTestItemAsync(test.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
             });
-            StringAssert.Contains("successfully", message.Info);
+            Assert.Contains("successfully", message.Info);
             await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });
             var delMessage = await Service.DeleteTestItemAsync(test.Id);
-            StringAssert.Contains("successfully", delMessage.Info);
+            Assert.Contains("successfully", delMessage.Info);
         }
 
-        [Test]
+        [Fact]
         public async Task AssignTestItemIssuesTest()
         {
             var suite = await Service.StartTestItemAsync(new StartTestItemRequest
@@ -506,14 +505,14 @@ namespace ReportPortal.Client.Tests.TestItem
                 }
             });
 
-            StringAssert.Contains("successfully", messageStep1.Info);
+            Assert.Contains("successfully", messageStep1.Info);
 
             var messageTest1 = await Service.FinishTestItemAsync(test1.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
             });
-            StringAssert.Contains("successfully", messageTest1.Info);
+            Assert.Contains("successfully", messageTest1.Info);
 
             var test2 = await Service.StartTestItemAsync(suite.Id, new StartTestItemRequest
             {
@@ -546,21 +545,21 @@ namespace ReportPortal.Client.Tests.TestItem
                 }
             });
 
-            StringAssert.Contains("successfully", messageStep2.Info);
+            Assert.Contains("successfully", messageStep2.Info);
 
             var messageTest2 = await Service.FinishTestItemAsync(test2.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
             });
-            StringAssert.Contains("successfully", messageTest2.Info);
+            Assert.Contains("successfully", messageTest2.Info);
 
             var messageSuite = await Service.FinishTestItemAsync(suite.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
             });
-            StringAssert.Contains("successfully", messageSuite.Info);
+            Assert.Contains("successfully", messageSuite.Info);
 
             var issue1 = new Issue
             {
@@ -595,21 +594,21 @@ namespace ReportPortal.Client.Tests.TestItem
                 }
             });
 
-            Assert.That(assignedIssues.Count(), Is.EqualTo(2));
+            Assert.Equal(2, assignedIssues.Count());
 
-            Assert.That(assignedIssues.First().Comment, Is.EqualTo(issue1.Comment));
-            Assert.That(assignedIssues.First().Type, Is.EqualTo(issue1.Type));
-            Assert.That(assignedIssues.First().ExternalSystemIssues, Is.Null);
+            Assert.Equal(issue1.Comment, assignedIssues.First().Comment);
+            Assert.Equal(issue1.Type, assignedIssues.First().Type);
+            Assert.Null(assignedIssues.First().ExternalSystemIssues);
 
-            Assert.That(assignedIssues.ElementAt(1).Comment, Is.EqualTo(issue2.Comment));
-            Assert.That(assignedIssues.ElementAt(1).Type, Is.EqualTo(issue2.Type));
-            Assert.That(assignedIssues.ElementAt(1).ExternalSystemIssues, Is.Not.Null);
+            Assert.Equal(issue2.Comment, assignedIssues.ElementAt(1).Comment);
+            Assert.Equal(issue2.Type, assignedIssues.ElementAt(1).Type);
+            Assert.NotNull(assignedIssues.ElementAt(1).ExternalSystemIssues);
 
-            Assert.That(assignedIssues.ElementAt(1).ExternalSystemIssues.Count(), Is.EqualTo(1));
-            Assert.That(assignedIssues.ElementAt(1).ExternalSystemIssues.First().SubmitDate, Is.EqualTo(DateTime.UtcNow).Within(TimeSpan.FromMinutes(5)));
-            Assert.That(assignedIssues.ElementAt(1).ExternalSystemIssues.First().Submitter, Is.EqualTo(Username));
-            Assert.That(assignedIssues.ElementAt(1).ExternalSystemIssues.First().TicketId, Is.EqualTo(issue2.ExternalSystemIssues.First().TicketId));
-            Assert.That(assignedIssues.ElementAt(1).ExternalSystemIssues.First().Url, Is.EqualTo(issue2.ExternalSystemIssues.First().Url));
+            Assert.Equal(1, assignedIssues.ElementAt(1).ExternalSystemIssues.Count());
+            Assert.True(assignedIssues.ElementAt(1).ExternalSystemIssues.First().SubmitDate - DateTime.UtcNow < TimeSpan.FromMinutes(1));
+            Assert.Equal(Username, assignedIssues.ElementAt(1).ExternalSystemIssues.First().Submitter);
+            Assert.Equal(issue2.ExternalSystemIssues.First().TicketId, assignedIssues.ElementAt(1).ExternalSystemIssues.First().TicketId);
+            Assert.Equal(issue2.ExternalSystemIssues.First().Url, assignedIssues.ElementAt(1).ExternalSystemIssues.First().Url);
 
             step1 = await Service.GetTestItemAsync(step1.Id);
             Assert.NotNull(step1.Issue);
@@ -617,40 +616,40 @@ namespace ReportPortal.Client.Tests.TestItem
             step2 = await Service.GetTestItemAsync(step2.Id);
             Assert.NotNull(step2.Issue);
 
-            Assert.That(step1.Issue.Comment, Is.EqualTo(issue1.Comment));
-            Assert.That(step1.Issue.Type, Is.EqualTo(issue1.Type));
-            Assert.That(step1.Issue.ExternalSystemIssues, Is.Null);
+            Assert.Equal(issue1.Comment, step1.Issue.Comment);
+            Assert.Equal(issue1.Type, step1.Issue.Type);
+            Assert.Null(step1.Issue.ExternalSystemIssues);
 
-            Assert.That(step2.Issue.Comment, Is.EqualTo(issue2.Comment));
-            Assert.That(step2.Issue.Type, Is.EqualTo(issue2.Type));
-            Assert.That(step2.Issue.ExternalSystemIssues, Is.Not.Null);
+            Assert.Equal(issue2.Comment, step2.Issue.Comment);
+            Assert.Equal(issue2.Type, step2.Issue.Type);
+            Assert.NotNull(step2.Issue.ExternalSystemIssues);
 
-            Assert.That(step2.Issue.ExternalSystemIssues.Count(), Is.EqualTo(1));
-            Assert.That(step2.Issue.ExternalSystemIssues.First().SubmitDate, Is.EqualTo(DateTime.UtcNow).Within(TimeSpan.FromMinutes(5)));
-            Assert.That(step2.Issue.ExternalSystemIssues.First().Submitter, Is.EqualTo(Username));
-            Assert.That(step2.Issue.ExternalSystemIssues.First().TicketId, Is.EqualTo(issue2.ExternalSystemIssues.First().TicketId));
-            Assert.That(step2.Issue.ExternalSystemIssues.First().Url, Is.EqualTo(issue2.ExternalSystemIssues.First().Url));
+            Assert.Equal(1, step2.Issue.ExternalSystemIssues.Count());
+            Assert.True(step2.Issue.ExternalSystemIssues.First().SubmitDate - DateTime.UtcNow < TimeSpan.FromMinutes(1));
+            Assert.Equal(Username, step2.Issue.ExternalSystemIssues.First().Submitter);
+            Assert.Equal(issue2.ExternalSystemIssues.First().TicketId, step2.Issue.ExternalSystemIssues.First().TicketId);
+            Assert.Equal(issue2.ExternalSystemIssues.First().Url, step2.Issue.ExternalSystemIssues.First().Url);
 
             await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });
             var delMessage = await Service.DeleteTestItemAsync(test1.Id);
-            StringAssert.Contains("successfully", delMessage.Info);
+            Assert.Contains("successfully", delMessage.Info);
         }
 
-        [Test]
+        [Fact]
         public async Task GetTestItemHistory()
         {
             var histories = await Service.GetTestItemHistoryAsync("5472e38ee4b098dbedf8e860", 5, true);
-            Assert.That(histories.Count, Is.EqualTo(5));
+            Assert.Equal(5, histories.Count);
             await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });
         }
 
-        [Test]
+        [Fact]
         public async Task TrimTestItemName()
         {
             var namePrefix = "TrimLaunch";
@@ -666,20 +665,20 @@ namespace ReportPortal.Client.Tests.TestItem
             Assert.NotNull(test.Id);
 
             var gotTestItem = await Service.GetTestItemAsync(test.Id);
-            Assert.AreEqual(testItemName.Substring(0, 256), gotTestItem.Name);
+            Assert.Equal(testItemName.Substring(0, 256), gotTestItem.Name);
 
             var message = await Service.FinishTestItemAsync(test.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
             });
-            StringAssert.Contains("successfully", message.Info);
+            Assert.Contains("successfully", message.Info);
             await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });
             var delMessage = await Service.DeleteTestItemAsync(test.Id);
-            StringAssert.Contains("successfully", delMessage.Info);
+            Assert.Contains("successfully", delMessage.Info);
         }
     }
 }

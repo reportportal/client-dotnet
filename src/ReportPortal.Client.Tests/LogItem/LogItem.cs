@@ -4,59 +4,57 @@ using System.Linq;
 using ReportPortal.Client.Filtering;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
-using NUnit.Framework;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace ReportPortal.Client.Tests.LogItem
 {
-    [Parallelizable]
-    public class LogItemFixture : BaseFixture
+    public class LogItemFixture : BaseFixture, IDisposable
     {
         private string _launchId;
         private string _testId;
 
-        [OneTimeSetUp]
-        public async Task SetUp()
+        public LogItemFixture()
         {
-            _launchId = (await Service.StartLaunchAsync(new StartLaunchRequest
+            _launchId = Service.StartLaunchAsync(new StartLaunchRequest
             {
                 Name = "StartFinishDeleteLaunch",
                 StartTime = DateTime.UtcNow
-            })).Id;
+            }).Result.Id;
 
-            _testId = (await Service.StartTestItemAsync(new StartTestItemRequest
+            _testId = Service.StartTestItemAsync(new StartTestItemRequest
             {
                 LaunchId = _launchId,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
-            })).Id;
+            }).Result.Id;
         }
 
-        [OneTimeTearDown]
-        public async Task TearDown()
+        public void Dispose()
         {
-            await Service.FinishTestItemAsync(_testId, new FinishTestItemRequest
+            Service.FinishTestItemAsync(_testId, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
-            });
+            }).Wait();
 
-            await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
+            Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
-            });
+            }).Wait();
 
-            await Service.DeleteTestItemAsync(_testId);
+            Service.DeleteTestItemAsync(_testId).Wait();
 
-            await Service.DeleteLaunchAsync(_launchId);
+            Service.DeleteLaunchAsync(_launchId).Wait();
         }
 
-        [TestCase(LogLevel.Debug)]
-        [TestCase(LogLevel.Error)]
-        [TestCase(LogLevel.Info)]
-        [TestCase(LogLevel.Trace)]
-        [TestCase(LogLevel.Warning)]
+        [Theory]
+        [InlineData(LogLevel.Debug)]
+        [InlineData(LogLevel.Error)]
+        [InlineData(LogLevel.Info)]
+        [InlineData(LogLevel.Trace)]
+        [InlineData(LogLevel.Warning)]
         public async Task CteateLogWithAllLevels(LogLevel level)
         {
             var now = DateTime.UtcNow;
@@ -69,11 +67,11 @@ namespace ReportPortal.Client.Tests.LogItem
             });
             Assert.NotNull(log.Id);
             var getLog = await Service.GetLogItemAsync(log.Id);
-            Assert.AreEqual("Log1", getLog.Text);
-            Assert.AreEqual(now.ToString(), getLog.Time.ToString());
+            Assert.Equal("Log1", getLog.Text);
+            Assert.Equal(now.ToString(), getLog.Time.ToString());
         }
 
-        [Test]
+        [Fact]
         public async Task CreateLogWithAttach()
         {
             var data = new byte[] { 1, 2, 3 };
@@ -87,15 +85,15 @@ namespace ReportPortal.Client.Tests.LogItem
             });
             Assert.NotNull(log.Id);
             var getLog = await Service.GetLogItemAsync(log.Id);
-            Assert.AreEqual("Log1", getLog.Text);
+            Assert.Equal("Log1", getLog.Text);
 
             var logMessage = await Service.GetLogItemAsync(log.Id);
             var binaryId = logMessage.Content.Id;
             var logData = await Service.GetBinaryDataAsync(binaryId);
-            CollectionAssert.AreEqual(data, logData);
+            Assert.Equal(data, logData);
         }
 
-        [Test]
+        [Fact]
         public async Task DeleteLogItem()
         {
             var newTestId = (await Service.StartTestItemAsync(new StartTestItemRequest
@@ -123,10 +121,10 @@ namespace ReportPortal.Client.Tests.LogItem
             });
 
             var message = (await Service.DeleteLogItemAsync(log.Id)).Info;
-            StringAssert.Contains("successfully", message);
+            Assert.Contains("successfully", message);
         }
 
-        [Test]
+        [Fact]
         public async Task GetLogItems()
         {
             var newTestId = (await Service.StartTestItemAsync(new StartTestItemRequest
@@ -159,10 +157,10 @@ namespace ReportPortal.Client.Tests.LogItem
                             new Filter(FilterOperation.Equals, "item", newTestId)
                         }
             })).LogItems;
-            Assert.Greater(logs.Count(), 0);
+            Assert.True(logs.Count() > 0);
 
             var message = (await Service.DeleteLogItemAsync(log.Id)).Info;
-            StringAssert.Contains("successfully", message);
+            Assert.Contains("successfully", message);
         }
     }
 }
