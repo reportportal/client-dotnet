@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace ReportPortal.Client.Tests.LogItem
 {
+    [Parallelizable]
     public class LogItemFixture : BaseFixture
     {
         private string _launchId;

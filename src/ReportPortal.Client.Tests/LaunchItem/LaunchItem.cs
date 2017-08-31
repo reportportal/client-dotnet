@@ -12,6 +12,7 @@ using System.Net.Http;
 namespace ReportPortal.Client.Tests.LaunchItem
 {
     [TestFixture]
+    [Parallelizable]
     public class LaunchItemFixture : BaseFixture
     {
         [Test]

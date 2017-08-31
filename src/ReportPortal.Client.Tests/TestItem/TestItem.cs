@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 namespace ReportPortal.Client.Tests.TestItem
 {
     [TestFixture]
+    [Parallelizable]
     public class TestItemFixture : BaseFixture
     {
         private string _launchId;
