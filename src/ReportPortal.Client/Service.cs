@@ -2,6 +2,7 @@
 using System.Net;
 using ReportPortal.Client.Extentions;
 using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace ReportPortal.Client
 {
@@ -24,7 +25,10 @@ namespace ReportPortal.Client
             _httpHandler = new HttpClientHandler();
 
             _httpClient = new HttpClient(_httpHandler);
+            _httpClient.BaseAddress = uri;
 
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + password);
             _httpClient.DefaultRequestHeaders.Add("User-Agent", ".NET Reporter");
             BaseUri = uri;
