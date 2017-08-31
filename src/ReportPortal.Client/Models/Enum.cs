@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Models
 {
@@ -7,15 +8,15 @@ namespace ReportPortal.Client.Models
     /// </summary>
     public enum Status
     {
-        [Description("IN_PROGRESS")]
+        [DataMember(Name = "IN_PROGRESS")]
         InProgress,
-        [Description("PASSED")]
+        [DataMember(Name = "PASSED")]
         Passed,
-        [Description("FAILED")]
+        [DataMember(Name = "FAILED")]
         Failed,
-        [Description("SKIPPED")]
+        [DataMember(Name = "SKIPPED")]
         Skipped,
-        [Description("INTERRUPTED")]
+        [DataMember(Name = "INTERRUPTED")]
         Interrupted
     }
 
@@ -25,19 +26,19 @@ namespace ReportPortal.Client.Models
     public enum TestItemType
     {
         None,
-        [Description("SUITE")]
+        [DataMember(Name = "SUITE")]
         Suite,
-        [Description("TEST")]
+        [DataMember(Name = "TEST")]
         Test,
-        [Description("STEP")]
+        [DataMember(Name = "STEP")]
         Step,
-        [Description("BEFORE_CLASS")]
+        [DataMember(Name = "BEFORE_CLASS")]
         BeforeClass,
-        [Description("AFTER_CLASS")]
+        [DataMember(Name = "AFTER_CLASS")]
         AfterClass,
-        [Description("AFTER_METHOD")]
+        [DataMember(Name = "AFTER_METHOD")]
         AfterMethod,
-        [Description("BEFORE_METHOD")]
+        [DataMember(Name = "BEFORE_METHOD")]
         BeforeMethod
     }
 
@@ -46,15 +47,15 @@ namespace ReportPortal.Client.Models
     /// </summary>
     public enum IssueType
     {
-        [Description("PB001")]
+        [DataMember(Name = "PB001")]
         ProductionBug,
-        [Description("AB001")]
+        [DataMember(Name = "AB001")]
         AutomationBug,
-        [Description("SI001")]
+        [DataMember(Name = "SI001")]
         SystemIssue,
-        [Description("TI001")]
+        [DataMember(Name = "TI001")]
         ToInvestigate,
-        [Description("ND001")]
+        [DataMember(Name = "ND001")]
         NoDefect
     }
 
@@ -63,15 +64,15 @@ namespace ReportPortal.Client.Models
     /// </summary>
     public enum LogLevel
     {
-        [Description("TRACE")]
+        [DataMember(Name = "TRACE")]
         Trace,
-        [Description("DEBUG")]
+        [DataMember(Name = "DEBUG")]
         Debug,
-        [Description("INFO")]
+        [DataMember(Name = "INFO")]
         Info,
-        [Description("WARN")]
+        [DataMember(Name = "WARN")]
         Warning,
-        [Description("ERROR")]
+        [DataMember(Name = "ERROR")]
         Error
     }
 
@@ -80,9 +81,9 @@ namespace ReportPortal.Client.Models
     /// </summary>
     public enum LaunchMode
     {
-        [Description("DEFAULT")]
+        [DataMember(Name = "DEFAULT")]
         Default,
-        [Description("DEBUG")]
+        [DataMember(Name = "DEBUG")]
         Debug
     }
 }

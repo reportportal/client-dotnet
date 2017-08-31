@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Reflection;
+using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Extentions
 {
@@ -6,11 +7,11 @@ namespace ReportPortal.Client.Extentions
     {
         public static string GetDescriptionAttribute<T>(this T source)
         {
-            var fi = source.GetType().GetField(source.ToString());
+            var fi = source.GetType().GetRuntimeField(source.ToString());
 
-            var attributes = (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
+            var attributes = (DataMemberAttribute[])fi.GetCustomAttributes(typeof(DataMemberAttribute), false);
 
-            return attributes.Length > 0 ? attributes[0].Description : source.ToString();
+            return attributes.Length > 0 ? attributes[0].Name : source.ToString();
         }
     }
 }

@@ -1,37 +1,38 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Filtering
 {
     public enum FilterOperation
     {
-        [Description("eq")]
+        [DataMember(Name = "eq")]
         Equals,
-        [Description("!eq")]
+        [DataMember(Name = "!eq")]
         NotEquals,
-        [Description("cnt")]
+        [DataMember(Name = "cnt")]
         Contains,
-        [Description("!cnt")]
+        [DataMember(Name = "!cnt")]
         NotContains,
-        [Description("ex")]
+        [DataMember(Name = "ex")]
         Exists,
-        [Description("in")]
+        [DataMember(Name = "in")]
         In,
-        [Description("!in")]
+        [DataMember(Name = "!in")]
         NotIn,
-        [Description("gt")]
+        [DataMember(Name = "gt")]
         GreaterThan,
-        [Description("gte")]
+        [DataMember(Name = "gte")]
         GreaterThanOrEquals,
-        [Description("lt")]
+        [DataMember(Name = "lt")]
         LowerThan,
-        [Description("lte")]
+        [DataMember(Name = "lte")]
         LowerThanOrEquals,
-        [Description("btw")]
+        [DataMember(Name = "btw")]
         Between,
-        [Description("size")]
+        [DataMember(Name = "size")]
         Size,
-        [Description("has")]
+        [DataMember(Name = "has")]
         Has
     }
     public class Filter

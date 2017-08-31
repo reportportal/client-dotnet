@@ -1,110 +1,13 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6E580093-BF06-4B93-9AD3-309A3AB38AFE}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ReportPortal.Client</RootNamespace>
-    <AssemblyName>ReportPortal.Client</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
+    <TargetFramework>netstandard1.1</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <PackageReference Include="System.Net.Http" Version="4.3.2" />
+    <PackageReference Include="System.Runtime.Serialization.Json" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Converters\EnumConverter.cs" />
-    <Compile Include="Converters\ModelSerializer.cs" />
-    <Compile Include="Converters\DateTimeConverter.cs" />
-    <Compile Include="Converters\StringTrimmer.cs" />
-    <Compile Include="Extentions\EnumDescription.cs" />
-    <Compile Include="Extentions\RestClient.cs" />
-    <Compile Include="Models\Container.cs" />
-    <Compile Include="Models\Error.cs" />
-    <Compile Include="Models\TestItemHistory.cs" />
-    <Compile Include="Models\User.cs" />
-    <Compile Include="Requests\AssignTestItemIssuesRequest.cs" />
-    <Compile Include="Requests\MergeLaunchesRequest.cs" />
-    <Compile Include="Requests\UpdateLaunchRequest.cs" />
-    <Compile Include="Requests\UpdateTestItemRequest.cs" />
-    <Compile Include="Service.LogItem.cs" />
-    <Compile Include="Models\LogItem.cs" />
-    <Compile Include="Models\Enum.cs" />
-    <Compile Include="Models\TestItem.cs" />
-    <Compile Include="Filtering\Filter.cs" />
-    <Compile Include="Filtering\Paging.cs" />
-    <Compile Include="Filtering\FilterOption.cs" />
-    <Compile Include="Filtering\Sorting.cs" />
-    <Compile Include="Requests\AddLogItemRequest.cs" />
-    <Compile Include="Requests\FinishTestItemRequest.cs" />
-    <Compile Include="Requests\StartTestItemRequest.cs" />
-    <Compile Include="Service.TestItem.cs" />
-    <Compile Include="Extentions\ServiceException.cs" />
-    <Compile Include="Models\Launch.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Requests\FinishLaunchRequest.cs" />
-    <Compile Include="Requests\StartLaunchRequest.cs" />
-    <Compile Include="Models\Message.cs" />
-    <Compile Include="Service.Launch.cs" />
-    <Compile Include="Service.cs" />
-    <Compile Include="Service.User.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-    <None Include="ReportPortal.Client.nuspec">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

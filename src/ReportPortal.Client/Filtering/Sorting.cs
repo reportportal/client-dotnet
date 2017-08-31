@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Filtering
 {
     public enum SortDirection
     {
-        [Description("ASC")]
+        [DataMember(Name = "ASC")]
         Ascending,
-        [Description("DESC")]
+        [DataMember(Name = "DESC")]
         Descending
     }
     public class Sorting
