@@ -14,9 +14,9 @@ namespace ReportPortal.Client.Tests.LaunchItem
     public class LaunchItemFixture : BaseFixture
     {
         [Fact]
-        public void GetInvalidLaunch()
+        public async Task GetInvalidLaunch()
         {
-            Assert.ThrowsAsync<HttpRequestException>(async () => await Service.GetLaunchAsync("invalid_id"));
+            await Assert.ThrowsAsync<HttpRequestException>(async () => await Service.GetLaunchAsync("invalid_id"));
         }
 
         [Fact]

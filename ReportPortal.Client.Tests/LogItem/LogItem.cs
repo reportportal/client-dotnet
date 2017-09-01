@@ -16,37 +16,37 @@ namespace ReportPortal.Client.Tests.LogItem
 
         public LogItemFixture()
         {
-            _launchId = Service.StartLaunchAsync(new StartLaunchRequest
+            _launchId = Task.Run(async () => await Service.StartLaunchAsync(new StartLaunchRequest
             {
                 Name = "StartFinishDeleteLaunch",
                 StartTime = DateTime.UtcNow
-            }).Result.Id;
+            })).Result.Id;
 
-            _testId = Service.StartTestItemAsync(new StartTestItemRequest
+            _testId = Task.Run(async () => await Service.StartTestItemAsync(new StartTestItemRequest
             {
                 LaunchId = _launchId,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
-            }).Result.Id;
+            })).Result.Id;
         }
 
         public void Dispose()
         {
-            Service.FinishTestItemAsync(_testId, new FinishTestItemRequest
+            Task.Run(async () => await Service.FinishTestItemAsync(_testId, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
-            }).Wait();
+            })).Wait();
 
-            Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
+            Task.Run(async () => await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
-            }).Wait();
+            })).Wait();
 
-            Service.DeleteTestItemAsync(_testId).Wait();
+            Task.Run(async () => await Service.DeleteTestItemAsync(_testId)).Wait();
 
-            Service.DeleteLaunchAsync(_launchId).Wait();
+            Task.Run(async () => await Service.DeleteLaunchAsync(_launchId)).Wait();
         }
 
         [Theory]

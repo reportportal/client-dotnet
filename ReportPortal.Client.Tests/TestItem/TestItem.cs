@@ -15,16 +15,16 @@ namespace ReportPortal.Client.Tests.TestItem
 
         public TestItemFixture()
         {
-            _launchId = Service.StartLaunchAsync(new StartLaunchRequest
+            _launchId = Task.Run(async () => await Service.StartLaunchAsync(new StartLaunchRequest
             {
                 Name = "StartFinishDeleteLaunch",
                 StartTime = DateTime.UtcNow
-            }).Result.Id;
+            })).Result.Id;
         }
         
         public void Dispose()
         {
-            Service.DeleteLaunchAsync(_launchId).Wait();
+            Task.Run(async () => await Service.DeleteLaunchAsync(_launchId)).Wait();
         }
 
         [Fact]
