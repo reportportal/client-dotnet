@@ -12,7 +12,11 @@ namespace ReportPortal.Client.Converters
     {
         public static T Deserialize<T>(string json)
         {
-            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(T));
+            DataContractJsonSerializerSettings settings = new DataContractJsonSerializerSettings
+            {
+                UseSimpleDictionaryFormat = true
+            };
+            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(T), settings);
             MemoryStream stream = new MemoryStream();
             var bytes = Encoding.UTF8.GetBytes(json);
             stream.Write(bytes, 0, bytes.Length);
