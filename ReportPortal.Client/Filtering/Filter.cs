@@ -8,7 +8,7 @@ namespace ReportPortal.Client.Filtering
     {
         [DataMember(Name = "eq")]
         Equals,
-        [DataMember(Name = "!eq")]
+        [DataMember(Name = "ne")]
         NotEquals,
         [DataMember(Name = "cnt")]
         Contains,
