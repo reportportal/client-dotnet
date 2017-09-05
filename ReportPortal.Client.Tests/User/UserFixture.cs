@@ -9,7 +9,7 @@ namespace ReportPortal.Client.Tests.User
         public async Task GetUserInfo()
         {
             var user = await Service.GetUserAsync();
-            Assert.Equal("RP Tester", user.Fullname);
+            Assert.Equal("Used for Net integration check via CI", user.Fullname);
         }
     }
 }
