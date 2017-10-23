@@ -128,7 +128,7 @@ namespace ReportPortal.Client.Tests.TestItem
                             new Filter(FilterOperation.Equals, "launch", _launchId)
                         }
             });
-            Assert.Equal(tests.TestItems.Count(), 2);
+            Assert.Equal(2, tests.TestItems.Count());
 
             var message = await Service.FinishTestItemAsync(test.Id, new FinishTestItemRequest
             {
@@ -167,7 +167,7 @@ namespace ReportPortal.Client.Tests.TestItem
             Assert.NotNull(test.Id);
 
             var getTest = await Service.GetTestItemAsync(test.Id);
-            Assert.Equal(null, getTest.ParentId);
+            Assert.Null(getTest.ParentId);
             Assert.Equal("Test1", getTest.Name);
             Assert.Equal(now.ToString(), getTest.StartTime.ToString());
             Assert.Equal(TestItemType.Test, getTest.Type);
@@ -604,7 +604,7 @@ namespace ReportPortal.Client.Tests.TestItem
             Assert.Equal(issue2.Type, assignedIssues.ElementAt(1).Type);
             Assert.NotNull(assignedIssues.ElementAt(1).ExternalSystemIssues);
 
-            Assert.Equal(1, assignedIssues.ElementAt(1).ExternalSystemIssues.Count());
+            Assert.Single(assignedIssues.ElementAt(1).ExternalSystemIssues);
             Assert.True(assignedIssues.ElementAt(1).ExternalSystemIssues.First().SubmitDate - DateTime.UtcNow < TimeSpan.FromMinutes(1));
             Assert.Equal(Username, assignedIssues.ElementAt(1).ExternalSystemIssues.First().Submitter);
             Assert.Equal(issue2.ExternalSystemIssues.First().TicketId, assignedIssues.ElementAt(1).ExternalSystemIssues.First().TicketId);
@@ -624,7 +624,7 @@ namespace ReportPortal.Client.Tests.TestItem
             Assert.Equal(issue2.Type, step2.Issue.Type);
             Assert.NotNull(step2.Issue.ExternalSystemIssues);
 
-            Assert.Equal(1, step2.Issue.ExternalSystemIssues.Count());
+            Assert.Single(step2.Issue.ExternalSystemIssues);
             Assert.True(step2.Issue.ExternalSystemIssues.First().SubmitDate - DateTime.UtcNow < TimeSpan.FromMinutes(1));
             Assert.Equal(Username, step2.Issue.ExternalSystemIssues.First().Submitter);
             Assert.Equal(issue2.ExternalSystemIssues.First().TicketId, step2.Issue.ExternalSystemIssues.First().TicketId);
