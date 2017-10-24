@@ -1,4 +1,5 @@
 ﻿using ReportPortal.Client.Requests;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -16,6 +17,14 @@ namespace ReportPortal.Shared.LogFormatters
             }
         }
 
+        private Dictionary<string, string> _mimeTypes = new Dictionary<string, string>();
+
+        public FileLogFormatter()
+        {
+            _mimeTypes.Add("png", "image/png");
+            _mimeTypes.Add("jpeg", "image/jpeg");
+        }
+
         public void FormatLog(ref AddLogItemRequest logRequest)
         {
             var regex = new Regex("{rp#file#(.*)}");
@@ -26,7 +35,12 @@ namespace ReportPortal.Shared.LogFormatters
 
                 var filePath = match.Groups[1].Value;
 
-                logRequest.Attach = new Client.Models.Attach(Path.GetFileName(filePath), HeyRed.Mime.MimeTypesMap.GetMimeType(filePath), File.ReadAllBytes(filePath));
+                var fileExtension = Path.GetExtension(filePath);
+
+                var mimeType = "application/octet-stream";
+                _mimeTypes.TryGetValue(fileExtension, out mimeType);
+
+                logRequest.Attach = new Client.Models.Attach(Path.GetFileName(filePath), mimeType, File.ReadAllBytes(filePath));
             }
         }
     }
