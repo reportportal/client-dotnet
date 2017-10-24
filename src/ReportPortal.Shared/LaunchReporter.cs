@@ -15,9 +15,6 @@ namespace ReportPortal.Shared
             _service = service;
 
             TestNodes = new List<TestReporter>();
-
-            ServicePointManager.UseNagleAlgorithm = false;
-            ServicePointManager.DefaultConnectionLimit = 1000;
         }
 
         public string LaunchId;
@@ -26,19 +23,19 @@ namespace ReportPortal.Shared
 
         public void Start(StartLaunchRequest request)
         {
-            StartTask = Task.Run(() => { LaunchId = _service.StartLaunch(request).Id; });
+            StartTask = Task.Run(async () => { LaunchId = (await _service.StartLaunchAsync(request)).Id; });
         }
 
         public Task FinishTask;
         public void Finish(FinishLaunchRequest request)
         {
-            FinishTask = Task.Run(() =>
+            FinishTask = Task.Run(async () =>
             {
                 StartTask.Wait();
 
                 TestNodes.ForEach(tn => tn.FinishTask.Wait());
 
-                _service.FinishLaunch(LaunchId, request);
+                await _service.FinishLaunchAsync(LaunchId, request);
             });
         }
 

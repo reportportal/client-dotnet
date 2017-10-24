@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ReportPortal.Client.Requests;
 using System.Text.RegularExpressions;
-using System.IO;
-using System.Web;
 
 namespace ReportPortal.Shared.LogFormatters
 {

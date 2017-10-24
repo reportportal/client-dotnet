@@ -28,18 +28,18 @@ namespace ReportPortal.Shared
 
         public void Start(StartTestItemRequest request)
         {
-            StartTask = Task.Run(() =>
+            StartTask = Task.Run(async () =>
             {
                 _launchNode.StartTask.Wait();
                 request.LaunchId = _launchNode.LaunchId;
                 if (_parentTestNode == null)
                 {
-                    TestId = _service.StartTestItem(request).Id;
+                    TestId = (await _service.StartTestItemAsync(request)).Id;
                 }
                 else
                 {
                     _parentTestNode.StartTask.Wait();
-                    TestId = _service.StartTestItem(_parentTestNode.TestId, request).Id;
+                    TestId = (await _service.StartTestItemAsync(_parentTestNode.TestId, request)).Id;
                 }
 
                 StartTime = request.StartTime;
@@ -51,7 +51,7 @@ namespace ReportPortal.Shared
         public Task FinishTask;
         public void Finish(FinishTestItemRequest request)
         {
-            FinishTask = Task.Run(() =>
+            FinishTask = Task.Run(async () =>
             {
                 StartTask.Wait();
 
@@ -59,7 +59,7 @@ namespace ReportPortal.Shared
 
                 TestNodes.ForEach(tn => tn.FinishTask.Wait());
 
-                _service.FinishTestItem(TestId, request);
+                await _service.FinishTestItemAsync(TestId, request);
             });
         }
 
@@ -80,11 +80,11 @@ namespace ReportPortal.Shared
         {
             if (FinishTask == null || !FinishTask.IsCompleted)
             {
-                AdditionalTasks.Add(Task.Run(() =>
+                AdditionalTasks.Add(Task.Run(async () =>
                 {
                     StartTask.Wait();
 
-                    _service.UpdateTestItem(TestId, request);
+                    await _service.UpdateTestItemAsync(TestId, request);
                 }));
             }
         }
@@ -93,7 +93,7 @@ namespace ReportPortal.Shared
         {
             if (FinishTask == null || !FinishTask.IsCompleted)
             {
-                AdditionalTasks.Add(Task.Run(() =>
+                AdditionalTasks.Add(Task.Run(async () =>
                 {
                     StartTask.Wait();
 
@@ -103,7 +103,7 @@ namespace ReportPortal.Shared
                     }
 
                     request.TestItemId = TestId;
-                    _service.AddLogItem(request);
+                    await _service.AddLogItemAsync(request);
                 }));
             }
         }

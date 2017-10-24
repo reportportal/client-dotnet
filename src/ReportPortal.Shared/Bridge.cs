@@ -1,11 +1,11 @@
 ﻿using System;
 using ReportPortal.Client;
 using System.Reflection;
-using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
+using System.IO;
 
 namespace ReportPortal.Shared
 {
@@ -70,7 +70,7 @@ namespace ReportPortal.Shared
                 }
             }
 
-            if (!handled && Context.LaunchReporter != null)
+            if (!handled && Context.LaunchReporter != null && Context.LaunchReporter.LastTestNode != null)
             {
                 Context.LaunchReporter.LastTestNode.Log(request);
             }
