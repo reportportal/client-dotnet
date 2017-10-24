@@ -3,14 +3,14 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard1.1;net45;</TargetFrameworks>
 
-    <Authors>nvborisenko</Authors>
+    <Authors>reportportal</Authors>
     <Company>Report Portal</Company>
     <PackageLicenseUrl>https://raw.githubusercontent.com/reportportal/client-net/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>http://reportportal.io</PackageProjectUrl>
     <PackageIconUrl>https://reportportal.github.io/img/rp_logo.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/reportportal/client-net</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
-    <PackageTags>reportportal testing</PackageTags>
+    <PackageTags>reportportal api client testing</PackageTags>
     <Version>2.0.0-beta3</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
