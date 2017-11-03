@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using ReportPortal.Client;
 using ReportPortal.Client.Requests;
@@ -20,12 +21,18 @@ namespace ReportPortal.Shared
             _service = service;
             _launchNode = launchNode;
             _parentTestNode = parentTestNode;
+
+            ThreadId = Thread.CurrentThread.ManagedThreadId;
+            CreateDate = DateTime.UtcNow;
         }
 
         public string TestId;
 
         public Task StartTask;
         public DateTime StartTime;
+
+        public int ThreadId { get; set; }
+        internal DateTime CreateDate { get; set; }
 
         public void Start(StartTestItemRequest request)
         {
