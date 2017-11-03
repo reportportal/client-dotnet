@@ -23,7 +23,6 @@ namespace ReportPortal.Shared
             _parentTestNode = parentTestNode;
 
             ThreadId = Thread.CurrentThread.ManagedThreadId;
-            CreateDate = DateTime.UtcNow;
         }
 
         public string TestId;
@@ -32,7 +31,6 @@ namespace ReportPortal.Shared
         public DateTime StartTime;
 
         public int ThreadId { get; set; }
-        internal DateTime CreateDate { get; set; }
 
         public void Start(StartTestItemRequest request)
         {

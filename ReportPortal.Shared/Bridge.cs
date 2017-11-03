@@ -83,8 +83,7 @@ namespace ReportPortal.Shared
         {
             return Context.LaunchReporter?.TestNodes
                 .SelectMany(n => n.TestNodes)
-                .OrderByDescending(n => n.CreateDate)
-                .FirstOrDefault(n => n.ThreadId == Thread.CurrentThread.ManagedThreadId);
+                .FirstOrDefault(n => n.FinishTask == null && n.ThreadId == Thread.CurrentThread.ManagedThreadId);
         }
     }
 }
