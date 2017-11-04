@@ -73,17 +73,18 @@ namespace ReportPortal.Shared
 
             if (!handled && Context.LaunchReporter?.LastTestNode != null)
             {
-                var testNode = GetThreadTestReporter() ?? Context.LaunchReporter.LastTestNode;
+                var testNode = GetThreadTestReporter(Thread.CurrentThread.ManagedThreadId) ?? Context.LaunchReporter.LastTestNode;
 
                 testNode.Log(request);
             }
         }
 
-        private static TestReporter GetThreadTestReporter()
+        // TODO need find TestReporter by ID through tree structure
+        private static TestReporter GetThreadTestReporter(int threadId)
         {
             return Context.LaunchReporter?.TestNodes
                 .SelectMany(n => n.TestNodes)
-                .FirstOrDefault(n => n.FinishTask == null && n.ThreadId == Thread.CurrentThread.ManagedThreadId);
+                .FirstOrDefault(n => n.FinishTask == null && n.ThreadId == threadId);
         }
     }
 }
