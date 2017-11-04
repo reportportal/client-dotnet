@@ -73,18 +73,9 @@ namespace ReportPortal.Shared
 
             if (!handled && Context.LaunchReporter?.LastTestNode != null)
             {
-                TestReporter testNode = Context.LaunchReporter.LastTestNode;
-
-                foreach(var t in Context.LaunchReporter.TestNodes)
-                {
-                    var candidate = FindNonFinishedTestReporter(t, Thread.CurrentThread.ManagedThreadId);
-
-                    if (candidate != null)
-                    {
-                        testNode = candidate;
-                        break;
-                    }
-                }
+                var testNode = Context.LaunchReporter.TestNodes
+                    .Select(t => FindNonFinishedTestReporter(t, Thread.CurrentThread.ManagedThreadId))
+                    .FirstOrDefault(t => t != null) ?? Context.LaunchReporter.LastTestNode;
 
                 testNode.Log(request);
             }
@@ -92,25 +83,14 @@ namespace ReportPortal.Shared
 
         private static TestReporter FindNonFinishedTestReporter(TestReporter testReporter, int threadId)
         {
-            TestReporter res = null;
-
-            if (testReporter.FinishTask == null && testReporter.ThreadId == threadId)
+            if (testReporter.FinishTask == null && !testReporter.TestNodes.Any() && testReporter.ThreadId == threadId)
             {
                 return testReporter;
             }
-            else
-            {
-                foreach (var t in testReporter.TestNodes)
-                {
-                    res = FindNonFinishedTestReporter(t, threadId);
-                    if (res != null)
-                    {
-                        return res;
-                    }
-                }
-            }
 
-            return res;
+            return testReporter.TestNodes
+                .Select(testNode => FindNonFinishedTestReporter(testNode, threadId))
+                .FirstOrDefault(t => t != null);
         }
     }
 }
