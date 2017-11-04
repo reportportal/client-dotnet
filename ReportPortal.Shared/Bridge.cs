@@ -73,18 +73,44 @@ namespace ReportPortal.Shared
 
             if (!handled && Context.LaunchReporter?.LastTestNode != null)
             {
-                var testNode = GetThreadTestReporter(Thread.CurrentThread.ManagedThreadId) ?? Context.LaunchReporter.LastTestNode;
+                TestReporter testNode = Context.LaunchReporter.LastTestNode;
+
+                foreach(var t in Context.LaunchReporter.TestNodes)
+                {
+                    var candidate = FindNonFinishedTestReporter(t, Thread.CurrentThread.ManagedThreadId);
+
+                    if (candidate != null)
+                    {
+                        testNode = candidate;
+                        break;
+                    }
+                }
 
                 testNode.Log(request);
             }
         }
 
-        // TODO need find TestReporter by ID through tree structure
-        private static TestReporter GetThreadTestReporter(int threadId)
+        private static TestReporter FindNonFinishedTestReporter(TestReporter testReporter, int threadId)
         {
-            return Context.LaunchReporter?.TestNodes
-                .SelectMany(n => n.TestNodes)
-                .FirstOrDefault(n => n.FinishTask == null && n.ThreadId == threadId);
+            TestReporter res = null;
+
+            if (testReporter.FinishTask == null && testReporter.ThreadId == threadId)
+            {
+                return testReporter;
+            }
+            else
+            {
+                foreach (var t in testReporter.TestNodes)
+                {
+                    res = FindNonFinishedTestReporter(t, threadId);
+                    if (res != null)
+                    {
+                        return res;
+                    }
+                }
+            }
+
+            return res;
         }
     }
 }
