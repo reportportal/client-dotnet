@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Net;
+﻿using System.Collections.Concurrent;
+using System.Linq;
 using System.Threading.Tasks;
 using ReportPortal.Client;
 using ReportPortal.Client.Requests;
@@ -14,7 +14,7 @@ namespace ReportPortal.Shared
         {
             _service = service;
 
-            TestNodes = new List<TestReporter>();
+            TestNodes = new ConcurrentBag<TestReporter>();
         }
 
         public string LaunchId;
@@ -33,13 +33,13 @@ namespace ReportPortal.Shared
             {
                 StartTask.Wait();
 
-                TestNodes.ForEach(tn => tn.FinishTask.Wait());
+                TestNodes.ToList().ForEach(tn => tn.FinishTask.Wait());
 
                 await _service.FinishLaunchAsync(LaunchId, request);
             });
         }
 
-        public List<TestReporter> TestNodes { get; set; }
+        public ConcurrentBag<TestReporter> TestNodes { get; set; }
 
         public TestReporter StartNewTestNode(StartTestItemRequest request)
         {

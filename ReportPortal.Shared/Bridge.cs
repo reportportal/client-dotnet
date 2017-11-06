@@ -1,11 +1,12 @@
 ﻿using System;
-using ReportPortal.Client;
-using System.Reflection;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Threading;
+using ReportPortal.Client;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
-using System.IO;
 
 namespace ReportPortal.Shared
 {
@@ -70,10 +71,26 @@ namespace ReportPortal.Shared
                 }
             }
 
-            if (!handled && Context.LaunchReporter != null && Context.LaunchReporter.LastTestNode != null)
+            if (!handled && Context.LaunchReporter?.LastTestNode != null)
             {
-                Context.LaunchReporter.LastTestNode.Log(request);
+                var testNode = Context.LaunchReporter.TestNodes
+                    .Select(t => FindNonFinishedTestReporter(t, Thread.CurrentThread.ManagedThreadId))
+                    .FirstOrDefault(t => t != null) ?? Context.LaunchReporter.LastTestNode;
+
+                testNode.Log(request);
             }
+        }
+
+        private static TestReporter FindNonFinishedTestReporter(TestReporter testReporter, int threadId)
+        {
+            if (testReporter.FinishTask == null && !testReporter.TestNodes.Any() && testReporter.ThreadId == threadId)
+            {
+                return testReporter;
+            }
+
+            return testReporter.TestNodes
+                .Select(testNode => FindNonFinishedTestReporter(testNode, threadId))
+                .FirstOrDefault(t => t != null);
         }
     }
 }
