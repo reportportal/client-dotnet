@@ -43,23 +43,6 @@ namespace ReportPortal.Client.Models
     }
 
     /// <summary>
-    /// Describes issue types for test items.
-    /// </summary>
-    public enum IssueType
-    {
-        [DataMember(Name = "PB001")]
-        ProductionBug,
-        [DataMember(Name = "AB001")]
-        AutomationBug,
-        [DataMember(Name = "SI001")]
-        SystemIssue,
-        [DataMember(Name = "TI001")]
-        ToInvestigate,
-        [DataMember(Name = "ND001")]
-        NoDefect
-    }
-
-    /// <summary>
     /// Describes levels for log items.
     /// </summary>
     public enum LogLevel

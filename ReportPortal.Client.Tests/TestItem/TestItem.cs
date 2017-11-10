@@ -265,7 +265,7 @@ namespace ReportPortal.Client.Tests.TestItem
                 Issue = new Issue
                 {
                     Comment = "Comment",
-                    Type = IssueType.ProductionBug
+                    Type = "PB001"
                 }
             });
             Assert.Contains("successfully", message.Info);
@@ -278,12 +278,12 @@ namespace ReportPortal.Client.Tests.TestItem
         }
 
         [Theory]
-        [InlineData(IssueType.AutomationBug)]
-        [InlineData(IssueType.ProductionBug)]
-        [InlineData(IssueType.SystemIssue)]
-        [InlineData(IssueType.ToInvestigate)]
-        [InlineData(IssueType.NoDefect)]
-        public async Task VerifyTestIssueTypes(IssueType type)
+        [InlineData("AB001")]
+        [InlineData("PB001")]
+        [InlineData("SI001")]
+        [InlineData("TI001")]
+        [InlineData("ND001")]
+        public async Task VerifyTestIssueTypes(string type)
         {
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
             {
@@ -501,7 +501,7 @@ namespace ReportPortal.Client.Tests.TestItem
                 Issue = new Issue
                 {
                     Comment = "Comment 1",
-                    Type = IssueType.ToInvestigate
+                    Type = "TI001"
                 }
             });
 
@@ -541,7 +541,7 @@ namespace ReportPortal.Client.Tests.TestItem
                 Issue = new Issue
                 {
                     Comment = "Comment 2",
-                    Type = IssueType.AutomationBug
+                    Type = "AB001"
                 }
             });
 
@@ -564,13 +564,13 @@ namespace ReportPortal.Client.Tests.TestItem
             var issue1 = new Issue
             {
                 Comment = "New Comment 1",
-                Type = IssueType.ProductionBug
+                Type = "PB001"
             };
 
             var issue2 = new Issue
             {
                 Comment = "New Comment 2",
-                Type = IssueType.SystemIssue,
+                Type = "SI001",
                 ExternalSystemIssues = new List<ExternalSystemIssue>
                 {
                     new ExternalSystemIssue { TicketId = "XXXXX-15", Url = "https://jira.epam.com/jira/browse/XXXXX-15" }
