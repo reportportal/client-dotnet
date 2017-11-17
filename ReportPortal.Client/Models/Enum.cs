@@ -69,4 +69,13 @@ namespace ReportPortal.Client.Models
         [DataMember(Name = "DEBUG")]
         Debug
     }
+
+    public struct WellKnownIssueType
+    {
+        public static string ProductBug => "PB001";
+        public static string AutomationBug => "AB001";
+        public static string SystemIssue => "SI001";
+        public static string ToInvestigate => "TI001";
+        public static string NotDefect => "ND001";
+    }
 }

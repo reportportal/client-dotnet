@@ -21,7 +21,7 @@ namespace ReportPortal.Client.Tests.TestItem
                 StartTime = DateTime.UtcNow
             })).Result.Id;
         }
-        
+
         public void Dispose()
         {
             Task.Run(async () => await Service.DeleteLaunchAsync(_launchId)).Wait();
@@ -277,12 +277,16 @@ namespace ReportPortal.Client.Tests.TestItem
             Assert.Contains("successfully", delMessage.Info);
         }
 
+        public static List<object[]> WellKnownIssueTypesTestData => new List<object[]>
+        { new object[] { WellKnownIssueType.ProductBug },
+          new object[] { WellKnownIssueType.AutomationBug },
+          new object[] { WellKnownIssueType.SystemIssue },
+          new object[] { WellKnownIssueType.ToInvestigate },
+          new object[] { WellKnownIssueType.NotDefect }
+        };
+
         [Theory]
-        [InlineData("AB001")]
-        [InlineData("PB001")]
-        [InlineData("SI001")]
-        [InlineData("TI001")]
-        [InlineData("ND001")]
+        [MemberData(nameof(WellKnownIssueTypesTestData), MemberType = typeof(TestItemFixture))]
         public async Task VerifyTestIssueTypes(string type)
         {
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
