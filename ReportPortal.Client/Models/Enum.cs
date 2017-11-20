@@ -72,10 +72,10 @@ namespace ReportPortal.Client.Models
 
     public struct WellKnownIssueType
     {
-        public static string ProductBug => "PB001";
-        public static string AutomationBug => "AB001";
-        public static string SystemIssue => "SI001";
-        public static string ToInvestigate => "TI001";
-        public static string NotDefect => "ND001";
+        public const string ProductBug = "PB001";
+        public const string AutomationBug = "AB001";
+        public const string SystemIssue = "SI001";
+        public const string ToInvestigate = "TI001";
+        public const string NotDefect = "ND001";
     }
 }
