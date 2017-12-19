@@ -27,7 +27,7 @@ namespace ReportPortal.Shared
         }
 
         public Task FinishTask;
-        public void Finish(FinishLaunchRequest request)
+        public void Finish(FinishLaunchRequest request, bool force = false)
         {
             FinishTask = Task.Run(async () =>
             {
@@ -35,7 +35,7 @@ namespace ReportPortal.Shared
 
                 TestNodes.ToList().ForEach(tn => tn.FinishTask.Wait());
 
-                await _service.FinishLaunchAsync(LaunchId, request);
+                await _service.FinishLaunchAsync(LaunchId, request, force);
             });
         }
 
