@@ -5,6 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using ReportPortal.Client;
 using ReportPortal.Client.Requests;
+using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace ReportPortal.Shared
 {
@@ -99,7 +101,23 @@ namespace ReportPortal.Shared
         {
             if (FinishTask == null || !FinishTask.IsCompleted)
             {
-                AdditionalTasks.Add(Task.Run(async () =>
+                //_logTask.ContinueWith(async (t) =>
+                //{
+                //    StartTask.Wait();
+
+                //    if (request.Time < StartTime)
+                //    {
+                //        request.Time = StartTime.AddMilliseconds(1);
+                //    }
+
+                //    request.TestItemId = TestId;
+                //    Debug.WriteLine($"Log message: '{request.Text}'");
+                //    await _service.AddLogItemAsync(request);
+                //});
+
+
+
+                var task = Task.WhenAll(AdditionalTasks).ContinueWith(async (t) =>
                 {
                     StartTask.Wait();
 
@@ -109,9 +127,13 @@ namespace ReportPortal.Shared
                     }
 
                     request.TestItemId = TestId;
+                    Debug.WriteLine($"Log message: '{request.Text}'");
                     await _service.AddLogItemAsync(request);
-                }));
+                });
+
+                AdditionalTasks.Add(task);
             }
         }
     }
+
 }
