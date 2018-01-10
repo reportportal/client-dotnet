@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ReportPortal.Client;
 using ReportPortal.Client.Requests;
+using System.Diagnostics;
 
 namespace ReportPortal.Shared
 {
@@ -52,7 +53,7 @@ namespace ReportPortal.Shared
             });
         }
 
-        public ConcurrentQueue<Task> AdditionalTasks = new ConcurrentQueue<Task>();
+        public ConcurrentBag<Task> AdditionalTasks = new ConcurrentBag<Task>();
 
         public Task FinishTask;
         public void Finish(FinishTestItemRequest request)
@@ -86,7 +87,7 @@ namespace ReportPortal.Shared
         {
             if (FinishTask == null || !FinishTask.IsCompleted)
             {
-                AdditionalTasks.Enqueue(Task.Run(async () =>
+                AdditionalTasks.Add(Task.Run(async () =>
                 {
                     StartTask.Wait();
 
@@ -99,33 +100,23 @@ namespace ReportPortal.Shared
         {
             if (FinishTask == null || !FinishTask.IsCompleted)
             {
+                var task = Task.WhenAll(AdditionalTasks).ContinueWith(async (t) =>
+                {
+                    StartTask.Wait();
 
-                    StartTask.ContinueWith(async (t) =>
+                    if (request.Time < StartTime)
                     {
-                        StartTask.Wait();
+                        request.Time = StartTime.AddMilliseconds(1);
+                    }
 
-                        if (request.Time < StartTime)
-                        {
-                            request.Time = StartTime.AddMilliseconds(1);
-                        }
+                    request.TestItemId = TestId;
+                    Debug.WriteLine($"Log message: '{request.Text}'");
+                    await _service.AddLogItemAsync(request);
+                });
 
-                        request.TestItemId = TestId;
-                        await _service.AddLogItemAsync(request);
-                    });
-
-                //AdditionalTasks.Enqueue(Task.Run(async () =>
-                //{
-                //    StartTask.Wait();
-
-                //    if (request.Time < StartTime)
-                //    {
-                //        request.Time = StartTime.AddMilliseconds(1);
-                //    }
-
-                //    request.TestItemId = TestId;
-                //    await _service.AddLogItemAsync(request);
-                //}));
+                AdditionalTasks.Add(task);
             }
         }
     }
+
 }

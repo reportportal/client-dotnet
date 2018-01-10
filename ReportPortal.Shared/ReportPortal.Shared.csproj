@@ -4,7 +4,7 @@
     <TargetFrameworks>netstandard2.0;net45;</TargetFrameworks>
     <Authors>reportportal</Authors>
     <Company>Report Portal</Company>
-    <Version>2.0.0-beta2</Version>
+    <Version>2.0.0-beta3</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
