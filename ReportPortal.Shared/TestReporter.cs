@@ -52,7 +52,7 @@ namespace ReportPortal.Shared
             });
         }
 
-        public ConcurrentBag<Task> AdditionalTasks = new ConcurrentBag<Task>();
+        public ConcurrentQueue<Task> AdditionalTasks = new ConcurrentQueue<Task>();
 
         public Task FinishTask;
         public void Finish(FinishTestItemRequest request)
@@ -86,7 +86,7 @@ namespace ReportPortal.Shared
         {
             if (FinishTask == null || !FinishTask.IsCompleted)
             {
-                AdditionalTasks.Add(Task.Run(async () =>
+                AdditionalTasks.Enqueue(Task.Run(async () =>
                 {
                     StartTask.Wait();
 
@@ -99,18 +99,32 @@ namespace ReportPortal.Shared
         {
             if (FinishTask == null || !FinishTask.IsCompleted)
             {
-                AdditionalTasks.Add(Task.Run(async () =>
-                {
-                    StartTask.Wait();
 
-                    if (request.Time < StartTime)
+                    StartTask.ContinueWith(async (t) =>
                     {
-                        request.Time = StartTime.AddMilliseconds(1);
-                    }
+                        StartTask.Wait();
 
-                    request.TestItemId = TestId;
-                    await _service.AddLogItemAsync(request);
-                }));
+                        if (request.Time < StartTime)
+                        {
+                            request.Time = StartTime.AddMilliseconds(1);
+                        }
+
+                        request.TestItemId = TestId;
+                        await _service.AddLogItemAsync(request);
+                    });
+
+                //AdditionalTasks.Enqueue(Task.Run(async () =>
+                //{
+                //    StartTask.Wait();
+
+                //    if (request.Time < StartTime)
+                //    {
+                //        request.Time = StartTime.AddMilliseconds(1);
+                //    }
+
+                //    request.TestItemId = TestId;
+                //    await _service.AddLogItemAsync(request);
+                //}));
             }
         }
     }
