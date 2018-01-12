@@ -53,6 +53,9 @@ namespace ReportPortal.Client.Models
         [DataMember(Name = "status")]
         public string StatusString { get; set; }
 
+        [DataMember(Name = "retry")]
+        public bool IsRetry { get; set; }
+
         public Status Status { get { return EnumConverter.ConvertTo<Status>(StatusString); } set { StatusString = EnumConverter.ConvertFrom(value); } }
 
         [DataMember(Name = "type")]

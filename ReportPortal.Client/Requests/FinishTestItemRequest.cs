@@ -37,6 +37,9 @@ namespace ReportPortal.Client.Requests
 
         public Status Status = Models.Status.Passed;
 
+        [DataMember(Name = "retry", EmitDefaultValue = false)]
+        public bool IsRetry { get; set; }
+
         /// <summary>
         /// A issue of test item if execution was proceeded with error.
         /// </summary>
