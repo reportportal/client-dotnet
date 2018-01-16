@@ -9,6 +9,7 @@ using Xunit;
 
 namespace ReportPortal.Client.Tests.TestItem
 {
+    [Trait("TestItem", "")]
     public class TestItemFixture : BaseFixture, IDisposable
     {
         private string _launchId;
