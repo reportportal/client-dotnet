@@ -74,6 +74,14 @@ namespace ReportPortal.Client.Models
 
         [DataMember(Name = "has_childs")]
         public bool HasChilds { get; set; }
+
+        [DataMember(Name = "parameters")]
+        //public Parameters Parameters { get; set; }
+        //public Dictionary<string, string> Parameters { get; set; }
+        public List<KeyValuePair<string, string>> Parameters { get; set; }
+
+        [DataMember(Name = "uniqueId")]
+        public string UniqueId { get; set; }
     }
 
     [DataContract]
@@ -84,6 +92,12 @@ namespace ReportPortal.Client.Models
 
         [DataMember(Name = "comment")]
         public string Comment { get; set; }
+
+        [DataMember(Name = "autoAnalyzed")]
+        public bool AutoAnalyzed { get; set; }
+
+        [DataMember(Name = "ignoreAnalyzer")]
+        public bool IgnoreAnalyzer { get; set; }
 
         [DataMember(Name = "externalSystemIssues")]
         public List<ExternalSystemIssue> ExternalSystemIssues { get; set; }
