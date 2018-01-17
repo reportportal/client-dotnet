@@ -12,7 +12,7 @@ namespace ReportPortal.Client
         {
             var uri = $"user";
             var response = await _httpClient.GetAsync(uri);
-            response.EnsureSuccessStatusCode();
+            response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<User>(await response.Content.ReadAsStringAsync());
         }
     }
