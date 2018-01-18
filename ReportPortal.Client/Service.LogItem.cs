@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using ReportPortal.Client.Converters;
 using System;
 using System.Net.Http;
+using ReportPortal.Client.Extentions;
 
 namespace ReportPortal.Client
 {
@@ -27,7 +28,7 @@ namespace ReportPortal.Client
             }
 
             var response = await _httpClient.GetAsync(uriBuilder.Uri);
-            response.EnsureSuccessStatusCode();
+            response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<LogItemsContainer>(await response.Content.ReadAsStringAsync());
         }
 
@@ -40,7 +41,7 @@ namespace ReportPortal.Client
         {
             var uri = $"{Project}/log/{id}";
             var response = await _httpClient.GetAsync(uri);
-            response.EnsureSuccessStatusCode();
+            response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<LogItem>(await response.Content.ReadAsStringAsync());
         }
 
@@ -53,7 +54,7 @@ namespace ReportPortal.Client
         {
             var uri = $"{Project}/data/{id}";
             var response = await _httpClient.GetAsync(uri);
-            response.EnsureSuccessStatusCode();
+            response.VerifySuccessStatusCode();
             return await response.Content.ReadAsByteArrayAsync();
         }
 
@@ -70,7 +71,7 @@ namespace ReportPortal.Client
             {
                 var body = ModelSerializer.Serialize<AddLogItemRequest>(model);
                 var response = await _httpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json"));
-                response.EnsureSuccessStatusCode();
+                response.VerifySuccessStatusCode();
                 return ModelSerializer.Deserialize<LogItem>(await response.Content.ReadAsStringAsync());
             }
             else
@@ -80,7 +81,7 @@ namespace ReportPortal.Client
                 multipartContent.Add(new StringContent(body, Encoding.UTF8, "application/json"), "json_request_part");
                 multipartContent.Add(new ByteArrayContent(model.Attach.Data, 0, model.Attach.Data.Length), "file", model.Attach.Name);
                 var response = await _httpClient.PostAsync(uri, multipartContent);
-                response.EnsureSuccessStatusCode();
+                response.VerifySuccessStatusCode();
                 var c = await response.Content.ReadAsStringAsync();
                 return ModelSerializer.Deserialize<Responses>(c).LogItems[0];
             }
@@ -102,7 +103,7 @@ namespace ReportPortal.Client
         {
             var uri = $"{Project}/log/{id}";
             var response = await _httpClient.DeleteAsync(uri);
-            response.EnsureSuccessStatusCode();
+            response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync());
         }
     }

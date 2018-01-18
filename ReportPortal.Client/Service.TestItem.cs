@@ -7,6 +7,7 @@ using ReportPortal.Client.Converters;
 using System;
 using System.Net.Http;
 using System.Text;
+using ReportPortal.Client.Extentions;
 
 namespace ReportPortal.Client
 {
@@ -25,7 +26,7 @@ namespace ReportPortal.Client
                 uriBuilder.Query += filterOption;
             }
             var response = await _httpClient.GetAsync(uriBuilder.Uri);
-            response.EnsureSuccessStatusCode();
+            response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<TestItemsContainer>(await response.Content.ReadAsStringAsync());
         }
 
@@ -38,7 +39,7 @@ namespace ReportPortal.Client
         {
             var uri = $"{Project}/item/{id}";
             var response = await _httpClient.GetAsync(uri);
-            response.EnsureSuccessStatusCode();
+            response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<TestItem>(await response.Content.ReadAsStringAsync());
         }
 
@@ -53,7 +54,7 @@ namespace ReportPortal.Client
             var uri = $"{Project}/item/tags?launch={launchId}&filter.cnt.tags={tagContains}";
 
             var response = await _httpClient.GetAsync(uri);
-            response.EnsureSuccessStatusCode();
+            response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<List<string>>(await response.Content.ReadAsStringAsync());
         }
 
@@ -67,7 +68,7 @@ namespace ReportPortal.Client
             var uri = $"{Project}/item";
             var body = ModelSerializer.Serialize<StartTestItemRequest>(model);
             var response = await _httpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json"));
-            response.EnsureSuccessStatusCode();
+            response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<TestItem>(await response.Content.ReadAsStringAsync());
         }
 
@@ -82,7 +83,7 @@ namespace ReportPortal.Client
             var uri = $"{Project}/item/{id}";
             var body = ModelSerializer.Serialize<StartTestItemRequest>(model);
             var response = await _httpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json"));
-            response.EnsureSuccessStatusCode();
+            response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<TestItem>(await response.Content.ReadAsStringAsync());
         }
 
@@ -97,7 +98,7 @@ namespace ReportPortal.Client
             var uri = $"{Project}/item/{id}";
             var body = ModelSerializer.Serialize<FinishTestItemRequest>(model);
             var response = await _httpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json"));
-            response.EnsureSuccessStatusCode();
+            response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync());
         }
 
@@ -112,7 +113,7 @@ namespace ReportPortal.Client
             var uri = $"{Project}/item/{id}/update";
             var body = ModelSerializer.Serialize<UpdateTestItemRequest>(model);
             var response = await _httpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json"));
-            response.EnsureSuccessStatusCode();
+            response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync());
         }
 
@@ -125,7 +126,7 @@ namespace ReportPortal.Client
         {
             var uri = $"{Project}/item/{id}";
             var response = await _httpClient.DeleteAsync(uri);
-            response.EnsureSuccessStatusCode();
+            response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync());
         }
 
@@ -139,7 +140,7 @@ namespace ReportPortal.Client
             var uri = $"{Project}/item";
             var body = ModelSerializer.Serialize<AssignTestItemIssuesRequest>(model);
             var response = await _httpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json"));
-            response.EnsureSuccessStatusCode();
+            response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<List<Issue>>(await response.Content.ReadAsStringAsync());
         }
 
@@ -155,7 +156,7 @@ namespace ReportPortal.Client
             var uri = $"{Project}/item/history?ids={testItemId}&history_depth={depth}&is_full={full}";
 
             var response = await _httpClient.GetAsync(uri);
-            response.EnsureSuccessStatusCode();
+            response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<List<TestItemHistory>>(await response.Content.ReadAsStringAsync());
         }
     }
