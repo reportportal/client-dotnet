@@ -30,7 +30,7 @@ namespace ReportPortal.Client.Requests
         /// Specify whether the launch is executed under debugging.
         /// </summary>
         [DataMember(Name = "mode")]
-        public string ModeString { get { return EnumConverter.ConvertFrom(Mode); } set { Mode = EnumConverter.ConvertTo<LaunchMode>(ModeString); } }
+        public string ModeString { get { return EnumConverter.ConvertFrom(Mode); } set { Mode = EnumConverter.ConvertTo<LaunchMode>(value); } }
 
         public LaunchMode Mode = LaunchMode.Default;
 
