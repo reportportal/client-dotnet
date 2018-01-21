@@ -712,7 +712,6 @@ namespace ReportPortal.Client.Tests.TestItem
 
             var test = await Service.StartTestItemAsync(suite.Id, testItemRequest);
             Assert.NotNull(test.Id);
-            Assert.NotNull(test.UniqueId);
 
             var testFinishMessage = await Service.FinishTestItemAsync(test.Id, new FinishTestItemRequest
             {
@@ -727,7 +726,6 @@ namespace ReportPortal.Client.Tests.TestItem
             
             var retry = await Service.StartTestItemAsync(suite.Id, testItemRequest);
             Assert.NotNull(retry.Id);
-            Assert.NotNull(retry.UniqueId);
 
             var retryFinishMessage = await Service.FinishTestItemAsync(retry.Id, new FinishTestItemRequest
             {
