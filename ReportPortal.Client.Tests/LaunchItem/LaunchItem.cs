@@ -11,7 +11,7 @@ using Xunit;
 
 namespace ReportPortal.Client.Tests.LaunchItem
 {
-    [Trait("LaunchItem", "")]
+    [Trait("Endpoint", "Launches")]
     public class LaunchItemFixture : BaseFixture
     {
         [Fact]
