@@ -63,5 +63,23 @@ namespace ReportPortal.Client.Requests
         /// </summary>
         [DataMember(Name = "tags")]
         public List<string> Tags { get; set; }
+
+        /// <summary>
+        /// Retry status indicator.
+        /// </summary>
+        [DataMember(Name = "retry")]
+        public bool IsRetry { get; set; }
+
+        /// <summary>
+        /// A list of parameters.
+        /// </summary>
+        [DataMember(Name = "parameters")]
+        public List<KeyValuePair<string, string>> Parameters { get; set; }
+
+        /// <summary>
+        /// A test item unique id.
+        /// </summary>
+        [DataMember(Name = "uniqueId", EmitDefaultValue = true)]
+        public string UniqueId { get; set; }
     }
 }

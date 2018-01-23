@@ -9,6 +9,7 @@ using Xunit;
 
 namespace ReportPortal.Client.Tests.TestItem
 {
+    [Trait("Endpoint", "TestItems")]
     public class TestItemFixture : BaseFixture, IDisposable
     {
         private string _launchId;
@@ -682,6 +683,76 @@ namespace ReportPortal.Client.Tests.TestItem
                 EndTime = DateTime.UtcNow
             });
             var delMessage = await Service.DeleteTestItemAsync(test.Id);
+            Assert.Contains("successfully", delMessage.Info);
+        }
+
+        [Fact]
+        public async Task StartRetryDeleteTest()
+        {
+            var suite = await Service.StartTestItemAsync(new StartTestItemRequest
+            {
+                LaunchId = _launchId,
+                Name = "Suite1",
+                StartTime = DateTime.UtcNow,
+                Type = TestItemType.Suite,
+                Description = "Description for suite",
+            });
+            Assert.NotNull(suite.Id);
+
+            var testItemRequest = new StartTestItemRequest
+            {
+                LaunchId = _launchId,
+                Name = "Test1",
+                StartTime = DateTime.UtcNow,
+                Type = TestItemType.Test,
+                Description = "Description for test",
+                Parameters = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("key 1", "value 1") },
+                IsRetry = true
+            };
+
+            var test = await Service.StartTestItemAsync(suite.Id, testItemRequest);
+            Assert.NotNull(test.Id);
+
+            var testFinishMessage = await Service.FinishTestItemAsync(test.Id, new FinishTestItemRequest
+            {
+                EndTime = DateTime.UtcNow,
+                Status = Status.Passed
+            });
+            Assert.Contains("successfully", testFinishMessage.Info);
+
+            var getTest = await Service.GetTestItemAsync(test.Id);
+            Assert.Equal(testItemRequest.Parameters, getTest.Parameters);
+            Assert.Equal(Status.Passed, getTest.Status);
+            
+            var retry = await Service.StartTestItemAsync(suite.Id, testItemRequest);
+            Assert.NotNull(retry.Id);
+
+            var retryFinishMessage = await Service.FinishTestItemAsync(retry.Id, new FinishTestItemRequest
+            {
+                EndTime = DateTime.UtcNow,
+                Status = Status.Failed
+            });
+            Assert.Contains("successfully", retryFinishMessage.Info);
+
+            var suiteFinishMessage = await Service.FinishTestItemAsync(suite.Id, new FinishTestItemRequest
+            {
+                EndTime = DateTime.UtcNow
+            });
+            Assert.Contains("successfully", suiteFinishMessage.Info);
+
+            var launchFinishMessage = await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
+            {
+                EndTime = DateTime.UtcNow
+            });
+            Assert.Contains("successfully", launchFinishMessage.Info);
+
+            var getRetry = await Service.GetTestItemAsync(retry.Id);
+            Assert.Equal(testItemRequest.Parameters, getRetry.Parameters);
+            Assert.Equal(Status.Failed, getRetry.Status);
+
+            Assert.Equal(getTest.UniqueId, getRetry.UniqueId);
+            
+            var delMessage = await Service.DeleteTestItemAsync(retry.Id);
             Assert.Contains("successfully", delMessage.Info);
         }
     }

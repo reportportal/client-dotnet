@@ -12,6 +12,7 @@ using Xunit;
 
 namespace ReportPortal.Client.Tests.LaunchItem
 {
+    [Trait("Endpoint", "Negative")]
     public class NegativeFixture : BaseFixture
     {
         [Fact]

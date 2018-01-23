@@ -2,6 +2,7 @@
 using ReportPortal.Client.Converters;
 using ReportPortal.Client.Models;
 using System.Runtime.Serialization;
+using System.Collections.Generic;
 
 namespace ReportPortal.Client.Requests
 {
@@ -11,6 +12,12 @@ namespace ReportPortal.Client.Requests
     [DataContract]
     public class FinishTestItemRequest
     {
+        /// <summary>
+        /// A long description of test item.
+        /// </summary>
+        [DataMember(Name = "description", EmitDefaultValue = true)]
+        public string Description { get; set; }
+
         /// <summary>
         /// Date time when test item is finished.
         /// </summary>
@@ -36,14 +43,23 @@ namespace ReportPortal.Client.Requests
         public string StatusString { get { return EnumConverter.ConvertFrom(Status); } set { Status = EnumConverter.ConvertTo<Status>(value); } }
 
         public Status Status = Models.Status.Passed;
-
-        [DataMember(Name = "retry", EmitDefaultValue = false)]
-        public bool IsRetry { get; set; }
-
+        
         /// <summary>
         /// A issue of test item if execution was proceeded with error.
         /// </summary>
-        [DataMember(Name = "issue", EmitDefaultValue = true)]
+        [DataMember(Name = "issue")]
         public Issue Issue { get; set; }
+
+        /// <summary>
+        /// A list of tags.
+        /// </summary>
+        [DataMember(Name = "tags")]
+        public List<string> Tags { get; set; }
+
+        /// <summary>
+        /// Retry status indicator.
+        /// </summary>
+        [DataMember(Name = "retry")]
+        public bool IsRetry { get; set; }
     }
 }
