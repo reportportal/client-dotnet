@@ -13,6 +13,12 @@ namespace ReportPortal.Client.Requests
     public class FinishTestItemRequest
     {
         /// <summary>
+        /// A long description of test item.
+        /// </summary>
+        [DataMember(Name = "description", EmitDefaultValue = true)]
+        public string Description { get; set; }
+
+        /// <summary>
         /// Date time when test item is finished.
         /// </summary>
         [DataMember(Name = "end_time")]
@@ -49,5 +55,11 @@ namespace ReportPortal.Client.Requests
         /// </summary>
         [DataMember(Name = "tags")]
         public List<string> Tags { get; set; }
+
+        /// <summary>
+        /// Retry status indicator.
+        /// </summary>
+        [DataMember(Name = "retry")]
+        public bool IsRetry { get; set; }
     }
 }
