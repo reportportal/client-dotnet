@@ -20,15 +20,15 @@ namespace ReportPortal.Client
         /// <returns>A list of launches.</returns>
         public async Task<LaunchesContainer> GetLaunchesAsync(FilterOption filterOption = null, bool debug = false)
         {
-            UriBuilder uriBuilder = new UriBuilder($"{BaseUri}/{Project}/launch");
-            if (debug) { uriBuilder.Path += "/mode"; }
+            var uri = BaseUri.Append($"{Project}/launch");
+            if (debug) { uri = uri.Append("mode"); }
 
             if (filterOption != null)
             {
-                uriBuilder.Query += filterOption;
+                uri = uri.Append($"?{filterOption}");
             }
 
-            var response = await _httpClient.GetAsync(uriBuilder.Uri);
+            var response = await _httpClient.GetAsync(uri);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<LaunchesContainer>(await response.Content.ReadAsStringAsync());
         }
@@ -40,7 +40,7 @@ namespace ReportPortal.Client
         /// <returns>A representation of launch.</returns>
         public async Task<Launch> GetLaunchAsync(string id)
         {
-            var uri = $"{Project}/launch/{id}";
+            var uri = BaseUri.Append($"{Project}/launch/{id}");
             var response = await _httpClient.GetAsync(uri);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<Launch>(await response.Content.ReadAsStringAsync());
@@ -53,7 +53,7 @@ namespace ReportPortal.Client
         /// <returns>Representation of just created launch.</returns>
         public async Task<Launch> StartLaunchAsync(StartLaunchRequest model)
         {
-            var uri = $"{Project}/launch";
+            var uri = BaseUri.Append($"{Project}/launch");
             var body = ModelSerializer.Serialize<StartLaunchRequest>(model);
             var response = await _httpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json"));
             response.VerifySuccessStatusCode();
@@ -69,8 +69,8 @@ namespace ReportPortal.Client
         /// <returns>A message from service.</returns>
         public async Task<Message> FinishLaunchAsync(string id, FinishLaunchRequest model, bool force = false)
         {
-            var uri = $"{Project}/launch/{id}";
-            uri += force == true ? "/stop" : "/finish";
+            var uri = BaseUri.Append($"{Project}/launch/{id}");
+            uri = force == true ? uri.Append("/stop") : uri.Append("/finish");
             var body = ModelSerializer.Serialize<FinishLaunchRequest>(model);
             var response = await _httpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json"));
             response.VerifySuccessStatusCode();
@@ -84,7 +84,7 @@ namespace ReportPortal.Client
         /// <returns>A message from service.</returns>
         public async Task<Message> DeleteLaunchAsync(string id)
         {
-            var uri = $"{Project}/launch/{id}";
+            var uri = BaseUri.Append($"{Project}/launch/{id}");
             var response = await _httpClient.DeleteAsync(uri);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync());
@@ -97,7 +97,7 @@ namespace ReportPortal.Client
         /// <returns>Returns the model of merged launches.</returns>
         public async Task<Launch> MergeLaunchesAsync(MergeLaunchesRequest model)
         {
-            var uri = $"{Project}/launch/merge";
+            var uri = BaseUri.Append($"{Project}/launch/merge");
             var body = ModelSerializer.Serialize<MergeLaunchesRequest>(model);
             var response = await _httpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json"));
             response.VerifySuccessStatusCode();
@@ -112,7 +112,7 @@ namespace ReportPortal.Client
         /// <returns>A message from service.</returns>
         public async Task<Message> UpdateLaunchAsync(string id, UpdateLaunchRequest model)
         {
-            var uri = $"{Project}/launch/{id}/update";
+            var uri = BaseUri.Append($"{Project}/launch/{id}/update");
             var body = ModelSerializer.Serialize<UpdateLaunchRequest>(model);
             var response = await _httpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json"));
             response.VerifySuccessStatusCode();
@@ -127,7 +127,7 @@ namespace ReportPortal.Client
         /// <returns>A message from service.</returns>
         public async Task<Message> AnalyzeLaunchAsync(string id, string strategy)
         {
-            var uri = $"{Project}/launch/{id}/analyze/{strategy}";
+            var uri = BaseUri.Append($"{Project}/launch/{id}/analyze/{strategy}");
             var response = await _httpClient.PostAsync(uri, new StringContent(string.Empty));
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync());
