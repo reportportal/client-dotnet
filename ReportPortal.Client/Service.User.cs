@@ -11,9 +11,9 @@ namespace ReportPortal.Client
         public async Task<User> GetUserAsync()
         {
             var uri = BaseUri.Append($"user");
-            var response = await _httpClient.GetAsync(uri);
+            var response = await _httpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<User>(await response.Content.ReadAsStringAsync());
+            return ModelSerializer.Deserialize<User>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
     }
 }
