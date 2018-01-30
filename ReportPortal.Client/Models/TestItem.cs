@@ -76,8 +76,6 @@ namespace ReportPortal.Client.Models
         public bool HasChilds { get; set; }
 
         [DataMember(Name = "parameters")]
-        //public Parameters Parameters { get; set; }
-        //public Dictionary<string, string> Parameters { get; set; }
         public List<KeyValuePair<string, string>> Parameters { get; set; }
 
         [DataMember(Name = "uniqueId")]
