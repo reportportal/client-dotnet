@@ -4,12 +4,12 @@
     <TargetFrameworks>netstandard2.0;net45;</TargetFrameworks>
     <Authors>reportportal</Authors>
     <Company>Report Portal</Company>
-    <Version>2.0.0-beta3</Version>
+    <Version>2.0.0-beta4</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ReportPortal.Client" Version="2.0.0-beta3" />
+    <PackageReference Include="ReportPortal.Client" Version="2.0.*" />
   </ItemGroup>
 
 </Project>
