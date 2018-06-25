@@ -2,14 +2,20 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net45;</TargetFrameworks>
+    
     <Authors>reportportal</Authors>
     <Company>Report Portal</Company>
-    <Version>2.0.0-beta3</Version>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/reportportal/commons-net/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>http://reportportal.io</PackageProjectUrl>
+    <PackageIconUrl>https://reportportal.github.io/img/rp_logo.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/reportportal/commons-net</RepositoryUrl>
+    <RepositoryType>GitHub</RepositoryType>
+    <PackageTags>reportportal api testing</PackageTags>
+    <Version>1.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ReportPortal.Client" Version="2.0.0-beta3" />
+    <PackageReference Include="ReportPortal.Client" Version="2.0.*" />
   </ItemGroup>
 
 </Project>
