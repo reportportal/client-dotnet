@@ -7,12 +7,12 @@ using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 using System.Threading.Tasks;
 using System.Net.Http;
-using Xunit;
+using Xunit;  
 
 namespace ReportPortal.Client.Tests.LaunchItem
-{
+{ 
     public class LaunchItemFixture : BaseFixture
-    {
+    { 
         [Fact]
         public async Task GetInvalidLaunch()
         {
@@ -29,7 +29,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
 
         [Fact]
         public async Task GetDebugLaunches()
-        {
+        { 
             var launches = await Service.GetLaunchesAsync(debug: true);
             launches.Launches.ForEach((l) => Assert.Equal(LaunchMode.Debug, l.Mode));
         }
@@ -184,7 +184,8 @@ namespace ReportPortal.Client.Tests.LaunchItem
             var launch = await Service.StartLaunchAsync(new StartLaunchRequest
             {
                 Name = "StartFinishDeleteLaunch",
-                StartTime = DateTime.UtcNow
+                StartTime = DateTime.UtcNow,
+                Mode = LaunchMode.Default
             });
             Assert.NotNull(launch.Id);
             var message = await Service.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
@@ -196,7 +197,12 @@ namespace ReportPortal.Client.Tests.LaunchItem
             var gotLaunch = await Service.GetLaunchAsync(launch.Id);
             Assert.Equal("StartFinishDeleteLaunch", gotLaunch.Name);
 
-            var analyzeMessage = await Service.AnalyzeLaunchAsync(launch.Id, "history");
+            var analyzeMessage = await Service.AnalyzeLaunchAsync(new AnalyzeLaunchRequest
+            {
+                LaunchId = launch.Id,
+                AnalyzerMode = AnalyzerMode.LaunchName,
+                AnalyzerItemsMode = new List<AnalyzerItemsMode> { AnalyzerItemsMode.ToInvestigate }
+            });
             Assert.Contains("started", analyzeMessage.Info);
 
             var delMessage = await Service.DeleteLaunchAsync(launch.Id);

@@ -122,13 +122,12 @@ namespace ReportPortal.Client
         /// <summary>
         /// Merge several launches.
         /// </summary>
-        /// <param name="id">Request for merging.</param>
-        /// <param name="strategy">Known strategy is 'history'.</param>
         /// <returns>A message from service.</returns>
-        public async Task<Message> AnalyzeLaunchAsync(string id, string strategy)
+        public async Task<Message> AnalyzeLaunchAsync(AnalyzeLaunchRequest model)
         {
-            var uri = BaseUri.Append($"{Project}/launch/{id}/analyze/{strategy}");
-            var response = await _httpClient.PostAsync(uri, new StringContent(string.Empty, Encoding.UTF8, "application/json")).ConfigureAwait(false);
+            var uri = BaseUri.Append($"{Project}/launch/analyze");
+            var body = ModelSerializer.Serialize<AnalyzeLaunchRequest>(model);
+            var response = await _httpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }

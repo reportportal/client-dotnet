@@ -78,4 +78,24 @@ namespace ReportPortal.Client.Models
         public const string ToInvestigate = "TI001";
         public const string NotDefect = "ND001";
     }
+
+    public enum AnalyzerMode
+    {
+        [DataMember(Name = "ALL")]
+        All,
+        [DataMember(Name = "CURRENT_LAUNCH")]
+        CurrentLaunch,
+        [DataMember(Name = "LAUNCH_NAME")]
+        LaunchName
+    }
+
+    public enum AnalyzerItemsMode
+    {
+        [DataMember(Name = "TO_INVESTIGATE")]
+        ToInvestigate,
+        [DataMember(Name = "AUTO_ANALYZED")]
+        AutoAnalyzed,
+        [DataMember(Name = "MANUALLY_ANALYZED")]
+        ManuallyAnalyzed
+    }
 }

@@ -1,0 +1,19 @@
+﻿
+install:
+  - ps: gitversion /l console /output buildserver
+
+dotnet_csproj:
+  patch: true
+  version: '$(GitVersion_NuGetVersion)'
+
+build_script:
+  - cmd: dotnet build
+
+test_script:
+  - cmd: dotnet test .\ReportPortal.Client.Tests\ReportPortal.Client.Tests.csproj --no-build
+
+after_test:
+  - cmd: dotnet pack
+
+artifacts:
+  - path: '**\*.nupkg'
