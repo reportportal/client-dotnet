@@ -77,6 +77,11 @@ namespace ReportPortal.Shared
 
                 TestNodes.ToList().ForEach(tn => tn.FinishTask.Wait());
 
+                if (request.EndTime < StartTime)
+                {
+                    request.EndTime = StartTime;
+                }
+
                 await _service.FinishTestItemAsync(TestId, request);
             });
         }

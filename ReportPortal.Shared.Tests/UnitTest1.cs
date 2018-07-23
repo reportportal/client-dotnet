@@ -18,7 +18,7 @@ namespace ReportPortal.Shared.Tests
             launchReporter.Start(new Client.Requests.StartLaunchRequest
             {
                 Name = "ReportPortal Shared",
-                StartTime = launchDateTime.AddMilliseconds(-1),
+                StartTime = launchDateTime,
                 Mode = Client.Models.LaunchMode.Debug,
                 Tags = new System.Collections.Generic.List<string>()
             });
@@ -26,7 +26,7 @@ namespace ReportPortal.Shared.Tests
             var suiteNode = launchReporter.StartNewTestNode(new Client.Requests.StartTestItemRequest
             {
                 Name = "Suite",
-                StartTime = launchDateTime.AddMilliseconds(-5),
+                StartTime = launchDateTime.AddMilliseconds(-1),
                 Type = Client.Models.TestItemType.Suite
             });
 
@@ -61,7 +61,7 @@ namespace ReportPortal.Shared.Tests
 
             launchReporter.Finish(new Client.Requests.FinishLaunchRequest
             {
-                EndTime = launchDateTime
+                EndTime = launchDateTime.AddMilliseconds(-1)
             });
             launchReporter.FinishTask.Wait();
         }
