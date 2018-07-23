@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 using ReportPortal.Client;
@@ -20,10 +21,15 @@ namespace ReportPortal.Shared
         public string LaunchId;
 
         public Task StartTask;
+        public DateTime StartTime;
 
         public void Start(StartLaunchRequest request)
         {
-            StartTask = Task.Run(async () => { LaunchId = (await _service.StartLaunchAsync(request)).Id; });
+            StartTask = Task.Run(async () =>
+            {
+                LaunchId = (await _service.StartLaunchAsync(request)).Id;
+                StartTime = request.StartTime;
+            });
         }
 
         public Task FinishTask;

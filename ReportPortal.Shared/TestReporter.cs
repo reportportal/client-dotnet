@@ -41,11 +41,22 @@ namespace ReportPortal.Shared
                 request.LaunchId = _launchNode.LaunchId;
                 if (_parentTestNode == null)
                 {
+                    if (request.StartTime < _launchNode.StartTime)
+                    {
+                        request.StartTime = _launchNode.StartTime;
+                    }
+
                     TestId = (await _service.StartTestItemAsync(request)).Id;
                 }
                 else
                 {
                     _parentTestNode.StartTask.Wait();
+
+                    if (request.StartTime < _parentTestNode.StartTime)
+                    {
+                        request.StartTime = _parentTestNode.StartTime;
+                    }
+
                     TestId = (await _service.StartTestItemAsync(_parentTestNode.TestId, request)).Id;
                 }
 
