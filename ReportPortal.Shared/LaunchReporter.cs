@@ -1,4 +1,6 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using ReportPortal.Client;
@@ -23,20 +25,39 @@ namespace ReportPortal.Shared
 
         public void Start(StartLaunchRequest request)
         {
-            StartTask = Task.Run(async () => { LaunchId = (await _service.StartLaunchAsync(request)).Id; });
+            StartTask = Task.Factory.StartNew(async () =>
+            {
+                LaunchId = (await _service.StartLaunchAsync(request)).Id;
+            }).Unwrap();
         }
 
         public Task FinishTask;
         public void Finish(FinishLaunchRequest request, bool force = false)
         {
-            FinishTask = Task.Run(async () =>
+            var dependentTasks = TestNodes.Select(tn => tn.FinishTask).ToList();
+            dependentTasks.Add(StartTask);
+
+            FinishTask = Task.Factory.ContinueWhenAll(dependentTasks.ToArray(), async (a) =>
             {
-                StartTask.Wait();
+                if (force)
+                {
+                    await _service.FinishLaunchAsync(LaunchId, request, force);
+                }
+                else
+                {
+                    try
+                    {
+                        Task.WaitAll(TestNodes.Select(tn => tn.FinishTask).ToArray());
+                    }
+                    catch(Exception exp)
+                    {
+                        throw new Exception("Cannot finish launch due inner items failed to finish.", exp);
+                    }
 
-                TestNodes.ToList().ForEach(tn => tn.FinishTask.Wait());
-
-                await _service.FinishLaunchAsync(LaunchId, request, force);
-            });
+                    await _service.FinishLaunchAsync(LaunchId, request, force);
+                }
+                
+            }).Unwrap();
         }
 
         public ConcurrentBag<TestReporter> TestNodes { get; set; }

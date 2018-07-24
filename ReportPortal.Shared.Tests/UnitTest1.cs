@@ -20,46 +20,54 @@ namespace ReportPortal.Shared.Tests
                 Tags = new System.Collections.Generic.List<string>()
             });
 
-            var suiteNode = launchReporter.StartNewTestNode(new Client.Requests.StartTestItemRequest
+            for (int s = 0; s < 2; s++)
             {
-                Name = "Suite",
-                StartTime = DateTime.UtcNow,
-                Type = Client.Models.TestItemType.Suite
-            });
-
-            var testNode = suiteNode.StartNewTestNode(new Client.Requests.StartTestItemRequest
-            {
-                Name = "Test",
-                StartTime = DateTime.UtcNow,
-                Type = Client.Models.TestItemType.Step
-            });
-
-            for (int i = 0; i < 10; i++)
-            {
-                testNode.Log(new Client.Requests.AddLogItemRequest
+                var suiteNode = launchReporter.StartNewTestNode(new Client.Requests.StartTestItemRequest
                 {
-                    Level = Client.Models.LogLevel.Info,
-                    Text = $"Log message #{i}",
-                    Time = DateTime.UtcNow
+                    Name = $"Suite {s}",
+                    StartTime = DateTime.UtcNow,
+                    Type = Client.Models.TestItemType.Suite
+                });
+
+                for (int t = 0; t < 2; t++)
+                {
+                    var testNode = suiteNode.StartNewTestNode(new Client.Requests.StartTestItemRequest
+                    {
+                        Name = $"Test {t}",
+                        StartTime = DateTime.UtcNow,
+                        Type = Client.Models.TestItemType.Step
+                    });
+
+                    for (int j = 0; j < 0; j++)
+                    {
+                        testNode.Log(new Client.Requests.AddLogItemRequest
+                        {
+                            Level = Client.Models.LogLevel.Info,
+                            Text = $"Log message #{j}",
+                            Time = DateTime.UtcNow
+                        });
+                    }
+
+                    testNode.Finish(new Client.Requests.FinishTestItemRequest
+                    {
+                        EndTime = DateTime.UtcNow,
+                        Status = Client.Models.Status.Passed
+                    });
+                }
+
+
+                suiteNode.Finish(new Client.Requests.FinishTestItemRequest
+                {
+                    EndTime = DateTime.UtcNow,
+                    Status = Client.Models.Status.Passed
                 });
             }
-
-            testNode.Finish(new Client.Requests.FinishTestItemRequest
-            {
-                EndTime = DateTime.UtcNow,
-                Status = Client.Models.Status.Passed
-            });
-
-            suiteNode.Finish(new Client.Requests.FinishTestItemRequest
-            {
-                EndTime = DateTime.UtcNow,
-                Status = Client.Models.Status.Passed
-            });
 
             launchReporter.Finish(new Client.Requests.FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });
+
             launchReporter.FinishTask.Wait();
         }
     }

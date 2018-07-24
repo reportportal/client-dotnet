@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ReportPortal.Client;
 using ReportPortal.Client.Requests;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace ReportPortal.Shared
 {
@@ -35,9 +36,24 @@ namespace ReportPortal.Shared
 
         public void Start(StartTestItemRequest request)
         {
-            StartTask = Task.Run(async () =>
+            var dependentTasks = new List<Task>();
+            dependentTasks.Add(_launchNode.StartTask);
+            if (_parentTestNode != null)
             {
-                _launchNode.StartTask.Wait();
+                dependentTasks.Add(_parentTestNode.StartTask);
+            }
+
+            StartTask = Task.Factory.ContinueWhenAll(dependentTasks.ToArray(), async (a) =>
+            {
+                try
+                {
+                    Task.WaitAll(dependentTasks.ToArray());
+                }
+                catch (Exception exp)
+                {
+                    throw new Exception("Cannot start a test item due parent failed to start.", exp);
+                }
+
                 request.LaunchId = _launchNode.LaunchId;
                 if (_parentTestNode == null)
                 {
@@ -45,12 +61,12 @@ namespace ReportPortal.Shared
                 }
                 else
                 {
-                    _parentTestNode.StartTask.Wait();
                     TestId = (await _service.StartTestItemAsync(_parentTestNode.TestId, request)).Id;
                 }
 
                 StartTime = request.StartTime;
-            });
+
+            }).Unwrap();
         }
 
         public ConcurrentBag<Task> AdditionalTasks = new ConcurrentBag<Task>();
@@ -58,16 +74,33 @@ namespace ReportPortal.Shared
         public Task FinishTask;
         public void Finish(FinishTestItemRequest request)
         {
-            FinishTask = Task.Run(async () =>
+            var dependentTasks = new List<Task>();
+            dependentTasks.Add(StartTask);
+            dependentTasks.AddRange(AdditionalTasks);
+            dependentTasks.AddRange(TestNodes.Select(tn => tn.FinishTask));
+
+            FinishTask = Task.Factory.ContinueWhenAll(dependentTasks.ToArray(), async (a) =>
             {
-                StartTask.Wait();
+                try
+                {
+                    StartTask.Wait();
+                }
+                catch (Exception exp)
+                {
+                    throw new Exception("Cannot finish test item due starting item failed.", exp);
+                }
 
-                AdditionalTasks.ToList().ForEach(at => at.Wait());
-
-                TestNodes.ToList().ForEach(tn => tn.FinishTask.Wait());
+                try
+                {
+                    Task.WaitAll(TestNodes.Select(tn => tn.FinishTask).ToArray());
+                }
+                catch (Exception exp)
+                {
+                    throw new Exception("Cannot finish test item due finishing of child items failed.", exp);
+                }
 
                 await _service.FinishTestItemAsync(TestId, request);
-            });
+            }).Unwrap();
         }
 
         public ConcurrentBag<TestReporter> TestNodes = new ConcurrentBag<TestReporter>();
@@ -87,12 +120,10 @@ namespace ReportPortal.Shared
         {
             if (FinishTask == null || !FinishTask.IsCompleted)
             {
-                AdditionalTasks.Add(Task.Run(async () =>
+                AdditionalTasks.Add(StartTask.ContinueWith(async (a) =>
                 {
-                    StartTask.Wait();
-
                     await _service.UpdateTestItemAsync(TestId, request);
-                }));
+                }).Unwrap());
             }
         }
 
@@ -100,19 +131,23 @@ namespace ReportPortal.Shared
         {
             if (FinishTask == null || !FinishTask.IsCompleted)
             {
-                var task = Task.WhenAll(AdditionalTasks).ContinueWith(async (t) =>
+                var dependentTasks = new List<Task>();
+                dependentTasks.Add(StartTask);
+                dependentTasks.AddRange(AdditionalTasks);
+
+                var task = Task.Factory.ContinueWhenAll(dependentTasks.ToArray(), async (t) =>
                 {
                     StartTask.Wait();
 
                     if (request.Time < StartTime)
                     {
-                        request.Time = StartTime.AddMilliseconds(1);
+                        request.Time = StartTime;
                     }
 
                     request.TestItemId = TestId;
-                    Debug.WriteLine($"Log message: '{request.Text}'");
+
                     await _service.AddLogItemAsync(request);
-                });
+                }).Unwrap();
 
                 AdditionalTasks.Add(task);
             }
