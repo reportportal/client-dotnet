@@ -57,10 +57,20 @@ namespace ReportPortal.Shared
                 request.LaunchId = _launchNode.LaunchId;
                 if (_parentTestNode == null)
                 {
+                    if (request.StartTime < _launchNode.StartTime)
+                    {
+                        request.StartTime = _launchNode.StartTime;
+                    }
+
                     TestId = (await _service.StartTestItemAsync(request)).Id;
                 }
                 else
                 {
+                    if (request.StartTime < _parentTestNode.StartTime)
+                    {
+                        request.StartTime = _parentTestNode.StartTime;
+                    }
+
                     TestId = (await _service.StartTestItemAsync(_parentTestNode.TestId, request)).Id;
                 }
 
@@ -97,6 +107,11 @@ namespace ReportPortal.Shared
                 catch (Exception exp)
                 {
                     throw new Exception("Cannot finish test item due finishing of child items failed.", exp);
+                }
+
+                if (request.EndTime < StartTime)
+                {
+                    request.EndTime = StartTime;
                 }
 
                 await _service.FinishTestItemAsync(TestId, request);

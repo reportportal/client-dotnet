@@ -22,12 +22,14 @@ namespace ReportPortal.Shared
         public string LaunchId;
 
         public Task StartTask;
+        public DateTime StartTime;
 
         public void Start(StartLaunchRequest request)
         {
             StartTask = Task.Factory.StartNew(async () =>
             {
                 LaunchId = (await _service.StartLaunchAsync(request)).Id;
+                StartTime = request.StartTime;
             }).Unwrap();
         }
 
@@ -49,14 +51,19 @@ namespace ReportPortal.Shared
                     {
                         Task.WaitAll(TestNodes.Select(tn => tn.FinishTask).ToArray());
                     }
-                    catch(Exception exp)
+                    catch (Exception exp)
                     {
                         throw new Exception("Cannot finish launch due inner items failed to finish.", exp);
                     }
 
+                    if (request.EndTime < StartTime)
+                    {
+                        request.EndTime = StartTime;
+                    }
+
                     await _service.FinishLaunchAsync(LaunchId, request, force);
                 }
-                
+
             }).Unwrap();
         }
 
