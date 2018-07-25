@@ -7,12 +7,12 @@ using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 using System.Threading.Tasks;
 using System.Net.Http;
-using Xunit;  
+using Xunit;
 
 namespace ReportPortal.Client.Tests.LaunchItem
-{ 
+{
     public class LaunchItemFixture : BaseFixture
-    { 
+    {
         [Fact]
         public async Task GetInvalidLaunch()
         {
@@ -29,7 +29,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
 
         [Fact]
         public async Task GetDebugLaunches()
-        { 
+        {
             var launches = await Service.GetLaunchesAsync(debug: true);
             launches.Launches.ForEach((l) => Assert.Equal(LaunchMode.Debug, l.Mode));
         }

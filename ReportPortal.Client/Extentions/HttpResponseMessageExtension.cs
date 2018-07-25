@@ -7,6 +7,7 @@ namespace ReportPortal.Client.Extentions
     {
         public static void VerifySuccessStatusCode(this HttpResponseMessage httpResponseMessage)
         {
+            var requestUri = httpResponseMessage.RequestMessage.RequestUri;
             var body = httpResponseMessage.Content.ReadAsStringAsync().Result;
 
             try
@@ -15,7 +16,7 @@ namespace ReportPortal.Client.Extentions
             }
             catch(Exception exp)
             {
-                throw new HttpRequestException(body, exp);
+                throw new HttpRequestException($"Unexpected response status code. Request URI: {requestUri}{Environment.NewLine}Response Body: {body}", exp);
             }
         }
     }
