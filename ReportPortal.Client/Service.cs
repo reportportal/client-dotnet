@@ -33,6 +33,10 @@ namespace ReportPortal.Client
             _httpClient.DefaultRequestHeaders.Add("User-Agent", ".NET Reporter");
             BaseUri = uri;
             Project = project;
+
+#if NET45
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+#endif
         }
 
         /// <summary>
