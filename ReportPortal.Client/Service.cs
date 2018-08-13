@@ -77,11 +77,7 @@ namespace ReportPortal.Client
             {
                 try
                 {
-                    response = await base.SendAsync(request, cancellationToken);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return response;
-                    }
+                    return response = await base.SendAsync(request, cancellationToken);
                 }
                 // timeout
                 catch(TaskCanceledException) { }
