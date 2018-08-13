@@ -3,6 +3,8 @@ using System.Net;
 using ReportPortal.Client.Extentions;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace ReportPortal.Client
 {
@@ -23,8 +25,9 @@ namespace ReportPortal.Client
         public Service(Uri uri, string project, string password)
         {
             _httpHandler = new HttpClientHandler();
-
-            _httpClient = new HttpClient(_httpHandler);
+            var retryHttpHandler = new RetryHttpClientHandler(_httpHandler);
+            
+            _httpClient = new HttpClient(retryHttpHandler);
             _httpClient.BaseAddress = uri;
 
             _httpClient.DefaultRequestHeaders.Clear();
@@ -58,5 +61,33 @@ namespace ReportPortal.Client
         public string Project { get; set; }
 
         public Uri BaseUri { get; set; }
+    }
+
+    public class RetryHttpClientHandler : DelegatingHandler
+    {
+        public RetryHttpClientHandler(HttpMessageHandler innerHandler)
+        : base(innerHandler)
+        { }
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            HttpResponseMessage response = null;
+
+            for (int i = 0; i < 3; i++)
+            {
+                try
+                {
+                    response = await base.SendAsync(request, cancellationToken);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return response;
+                    }
+                }
+                // timeout
+                catch(TaskCanceledException) { }
+            }
+
+            return response;
+        }
     }
 }
