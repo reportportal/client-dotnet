@@ -2,16 +2,14 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net45;</TargetFrameworks>
-    
-    <Authors>reportportal</Authors>
-    <Company>Report Portal</Company>
+    <Description>Multithreaded reporter of test results to Report Portal</Description>
+    <Authors>Nikolay Borisenko, Report Portal Community</Authors>
     <PackageLicenseUrl>https://raw.githubusercontent.com/reportportal/commons-net/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>http://reportportal.io</PackageProjectUrl>
-    <PackageIconUrl>https://reportportal.github.io/img/rp_logo.png</PackageIconUrl>
-    <RepositoryUrl>https://github.com/reportportal/commons-net</RepositoryUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/reportportal/commons-net/master/Logo.png</PackageIconUrl>
     <RepositoryType>GitHub</RepositoryType>
-    <PackageTags>reportportal api testing</PackageTags>
-    <Version>1.0.0</Version>
+    <RepositoryUrl>https://github.com/reportportal/commons-net</RepositoryUrl>
+    <PackageTags>reportportal reporter api testing</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
