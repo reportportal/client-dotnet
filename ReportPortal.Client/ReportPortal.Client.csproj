@@ -2,21 +2,15 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard1.1;net45;</TargetFrameworks>
-
-    <Authors>reportportal</Authors>
-    <Company>Report Portal</Company>
+    <Description>Async client for ReportPortal Web API</Description>
+    <Authors>Nikolay Borisenko, Report Portal Community</Authors>
     <PackageLicenseUrl>https://raw.githubusercontent.com/reportportal/client-net/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>http://reportportal.io</PackageProjectUrl>
-    <PackageIconUrl>https://reportportal.github.io/img/rp_logo.png</PackageIconUrl>
-    <RepositoryUrl>https://github.com/reportportal/client-net</RepositoryUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/reportportal/client-net/master/Logo.png</PackageIconUrl>
     <RepositoryType>GitHub</RepositoryType>
+    <RepositoryUrl>https://github.com/reportportal/client-net</RepositoryUrl>
     <PackageTags>reportportal api client testing</PackageTags>
-    <Version>1.0.0</Version>
   </PropertyGroup>
-
-  <ItemGroup>
-    
-  </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.1'">
     <PackageReference Include="System.Net.Http" Version="4.3.3" />
