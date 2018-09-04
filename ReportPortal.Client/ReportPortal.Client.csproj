@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard1.1;net45;</TargetFrameworks>
+    <Version>1.0.0</Version>
     <Description>Async client for ReportPortal Web API</Description>
     <Authors>Nikolay Borisenko, Report Portal Community</Authors>
     <PackageLicenseUrl>https://raw.githubusercontent.com/reportportal/client-net/master/LICENSE</PackageLicenseUrl>
