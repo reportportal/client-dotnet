@@ -98,4 +98,26 @@ namespace ReportPortal.Client.Models
         [DataMember(Name = "MANUALLY_ANALYZED")]
         ManuallyAnalyzed
     }
+
+    public enum UserFilterType
+    {
+        [DataMember(Name = "launch")]
+        Launch,
+        [DataMember(Name = "testitem")]
+        TestItem,
+        [DataMember(Name = "log")]
+        Log
+    }
+
+    public enum UserFilterCondition
+    {
+        [DataMember(Name = "cnt")]
+        Contains,
+        [DataMember(Name = "!cnt")]
+        NotContains,
+        [DataMember(Name = "eq")]
+        Equals,
+        [DataMember(Name = "!eq")]
+        NotEquals,
+    }
 }
