@@ -4,7 +4,7 @@ namespace ReportPortal.Client.Tests
 {
     public class BaseFixture
     {
-        protected static readonly string Username = "vsonchik";
-        protected readonly Service Service = new Service(new Uri("http://10.129.107.10/api/v1"), "mysite-ui-automation", "d7c8053c-b706-4fdb-81e5-8b8a1e24dae7");
+        protected static readonly string Username = "ci_check_net_client";
+        protected readonly Service Service = new Service(new Uri("https://rp.epam.com/api/v1"), "default_project", "7853c7a9-7f27-43ea-835a-cab01355fd17");
     }
 }
