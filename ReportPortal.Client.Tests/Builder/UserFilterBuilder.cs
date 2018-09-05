@@ -34,7 +34,7 @@ namespace ReportPortal.Client.Tests.Builder
 
             return new FilterElement
             {
-                Name = "testName_1",
+                Name = Guid.NewGuid().ToString(),
                 Description = "testDscr_1",
                 IsLink = false,
                 Share = true,
