@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using FizzWare.NBuilder;
 using System.Threading.Tasks;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
@@ -23,7 +22,7 @@ namespace ReportPortal.Client.Tests.UserFilter
         [Fact]
         public async Task GetFilters()
         {
-            var filterElement = UserFilterBuilder.BuildRandomFlterElement();
+            var filterElement = UserFilterBuilder.BuildFlterElement();
             var userFilters = await Service.AddUserFilterAsync(new AddUserFilterRequest { FilterElements = new List<FilterElement> { filterElement } });
             _userFiltersToDelete.AddRange(userFilters.ToList());
 
@@ -34,10 +33,10 @@ namespace ReportPortal.Client.Tests.UserFilter
         [Fact]
         public async Task AddFilter()
         {
-            var filterElement = UserFilterBuilder.BuildRandomFlterElement();
+            var filterElement = UserFilterBuilder.BuildFlterElement();
 
             var userFilters = await Service.AddUserFilterAsync(new AddUserFilterRequest{FilterElements = new List<FilterElement>{ filterElement } });
-            _userFiltersToDelete.ToList().AddRange(userFilters);;
+            _userFiltersToDelete.AddRange(userFilters);
 
             var userFiltercontainer = await Service.GetUserFiltersAsync();
             Assert.Contains(userFiltercontainer.FilterElements, f => f.Id.Equals(userFilters.First().Id));
@@ -46,7 +45,7 @@ namespace ReportPortal.Client.Tests.UserFilter
         [Fact]
         public async Task DeleteFilter()
         {
-            var filterElement = UserFilterBuilder.BuildRandomFlterElement();
+            var filterElement = UserFilterBuilder.BuildFlterElement();
             var userFilter = await Service.AddUserFilterAsync(new AddUserFilterRequest { FilterElements = new List<FilterElement> { filterElement } });
 
             var message = await Service.DeleteUserFilterAsync(userFilter.First().Id);

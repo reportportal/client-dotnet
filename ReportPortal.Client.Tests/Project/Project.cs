@@ -22,7 +22,7 @@ namespace ReportPortal.Client.Tests.Project
         [Fact]
         public async Task UpdatePreferences()
         {
-            var filterElement = UserFilterBuilder.BuildRandomFlterElement();
+            var filterElement = UserFilterBuilder.BuildFlterElement();
             var userFilters = await Service.AddUserFilterAsync(new AddUserFilterRequest { FilterElements = new List<FilterElement> { filterElement } });
             _userFiltersToDelete.AddRange(userFilters);
 

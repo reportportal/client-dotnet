@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FizzWare.NBuilder;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 using ReportPortal.Client.Converters;
@@ -12,34 +11,37 @@ namespace ReportPortal.Client.Tests.Builder
 {
     public class UserFilterBuilder
     {
-        private static readonly RandomGenerator _randomGenerator = new RandomGenerator();
-        
-        public static FilterElement BuildRandomFlterElement()
+        public static FilterElement BuildFlterElement()
         {
-            var filterEntity = Builder<FilterEntity>.CreateNew()
-                .With(x => x.UserFilterCondition = UserFilterCondition.Contains)
-                .With(x => x.FilteringField = "name")
-                .With(x => x.Value = _randomGenerator.NextString(10, 30))
-                .Build();
+            var filterEntity = new FilterEntity
+            {
+                UserFilterCondition = UserFilterCondition.Contains,
+                FilteringField = "name",
+                Value = "test value"
+            };
 
-            var order1 = Builder<FilterOrder>.CreateNew()
-                .With(x => x.Asc = _randomGenerator.Boolean())
-                .With(x => x.SortingColumn = "name")
-                .Build();
+            var order1 = new FilterOrder
+            {
+                Asc = true,
+                SortingColumn = "name",
+            };
 
-            var selectionParameters = Builder<FilterSelectionParameter>.CreateNew()
-                .With(x => x.Orders = new List<FilterOrder> { order1 })
-                .Build();
+            var selectionParameters = new FilterSelectionParameter
+            {
+                Orders = new List<FilterOrder> {order1},
+                PageNumber = 1
+            };
 
-            return Builder<FilterElement>.CreateNew()
-                .With(x => x.Name = _randomGenerator.NextString(5, 50))
-                .With(x => x.Description = _randomGenerator.Phrase(15))
-                .With(x => x.IsLink = _randomGenerator.Boolean())
-                .With(x => x.Share = true)
-                .With(x => x.UserFilterType = UserFilterType.Launch)
-                .With(x => x.Entities = new List<FilterEntity> { filterEntity })
-                .With(x => x.SelectionParameters = selectionParameters)
-                .Build();
+            return new FilterElement
+            {
+                Name = "testName_1",
+                Description = "testDscr_1",
+                IsLink = false,
+                Share = true,
+                UserFilterType = UserFilterType.Launch,
+                Entities = new List<FilterEntity> {filterEntity},
+                SelectionParameters = selectionParameters
+            };
         }
     }
 }
