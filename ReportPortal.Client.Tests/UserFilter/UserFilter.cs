@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ReportPortal.Client.Filtering;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 using ReportPortal.Client.Tests.Builder;
@@ -38,7 +39,10 @@ namespace ReportPortal.Client.Tests.UserFilter
             var userFilters = await Service.AddUserFilterAsync(new AddUserFilterRequest{FilterElements = new List<FilterElement>{ filterElement } });
             _userFiltersToDelete.AddRange(userFilters);
 
-            var userFiltercontainer = await Service.GetUserFiltersAsync();
+            var userFiltercontainer = await Service.GetUserFiltersAsync(new FilterOption
+            {
+                Paging = new Paging(1, 200)
+            });
             Assert.Contains(userFiltercontainer.FilterElements, f => f.Id.Equals(userFilters.First().Id));
         }
 
