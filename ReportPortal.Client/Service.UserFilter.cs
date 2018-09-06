@@ -24,10 +24,10 @@ namespace ReportPortal.Client
 
             var body = ModelSerializer.Serialize<AddUserFilterRequest>(model);
             var response = await _httpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json"))
-                .ConfigureAwait(false);
+                ;
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<List<EntryCreated>>(await response.Content.ReadAsStringAsync()
-                .ConfigureAwait(false));
+                );
         }
 
         /// <summary>
@@ -42,10 +42,10 @@ namespace ReportPortal.Client
             {
                 uri = uri.Append($"?{filterOption}");
             }
-            var response = await _httpClient.GetAsync(uri).ConfigureAwait(false);
+            var response = await _httpClient.GetAsync(uri);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<UserFilterContainer>(await response.Content.ReadAsStringAsync()
-                .ConfigureAwait(false));
+                );
         }
 
         /// <summary>
@@ -57,10 +57,10 @@ namespace ReportPortal.Client
         {
             var uri = BaseUri.Append($"{Project}/filter/{filterId}");
 
-            var response = await _httpClient.DeleteAsync(uri).ConfigureAwait(false);
+            var response = await _httpClient.DeleteAsync(uri);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync()
-                .ConfigureAwait(false));
+                );
         }
     }
 }
