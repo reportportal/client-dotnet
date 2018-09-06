@@ -12,7 +12,7 @@ namespace ReportPortal.Client.Requests
         /// list of filter ids to update with
         /// </summary>
         [DataMember(Name = "filters")]
-        public IEnumerable<string> filderiDs { get; set; }
+        public IEnumerable<string>  FilderIds { get; set; }
 
         /// <summary>
         /// flag active. seems like nbot used in API
