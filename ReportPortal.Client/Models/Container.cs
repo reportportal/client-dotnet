@@ -48,4 +48,14 @@ namespace ReportPortal.Client.Models
         [DataMember(Name = "number")]
         public int Number { get; set; }
     }
+
+    [DataContract]
+    public class UserFilterContainer
+    {
+        [DataMember(Name = "content")]
+        public IEnumerable<UserFilter> FilterElements { get; set; }
+
+        [DataMember(Name = "page")]
+        public Page Page { get; set; }
+    }
 }
