@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
-using ReportPortal.Client.Tests.Builder;
 using Xunit;
 
 namespace ReportPortal.Client.Tests.Project
@@ -22,7 +21,36 @@ namespace ReportPortal.Client.Tests.Project
         [Fact]
         public async Task UpdatePreferences()
         {
-            var filterElement = UserFilterBuilder.BuildFlterElement();
+            var filterEntity = new FilterEntity
+            {
+                UserFilterCondition = UserFilterCondition.Contains,
+                FilteringField = "name",
+                Value = "test value"
+            };
+
+            var order1 = new FilterOrder
+            {
+                Asc = true,
+                SortingColumn = "name",
+            };
+
+            var selectionParameters = new FilterSelectionParameter
+            {
+                Orders = new List<FilterOrder> { order1 },
+                PageNumber = 1
+            };
+
+            var filterElement = new FilterElement
+            {
+                Name = Guid.NewGuid().ToString(),
+                Description = "testDscr_1",
+                IsLink = false,
+                Share = true,
+                UserFilterType = UserFilterType.Launch,
+                Entities = new List<FilterEntity> { filterEntity },
+                SelectionParameters = selectionParameters
+            };
+
             var userFilters = await Service.AddUserFilterAsync(new AddUserFilterRequest { FilterElements = new List<FilterElement> { filterElement } });
             _userFiltersToDelete.AddRange(userFilters);
 
