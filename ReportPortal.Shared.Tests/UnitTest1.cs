@@ -8,7 +8,7 @@ namespace ReportPortal.Shared.Tests
     public class UnitTest1
     {
         [Fact]
-        public void OneHundredLogMessages()
+        public void BigAsyncTree()
         {
             var service = new Service(new Uri("https://rp.epam.com/api/v1/"), "default_project", "7853c7a9-7f27-43ea-835a-cab01355fd17");
             var launchReporter = new LaunchReporter(service);
@@ -23,45 +23,52 @@ namespace ReportPortal.Shared.Tests
                 Tags = new System.Collections.Generic.List<string>()
             });
 
-            var suiteNode = launchReporter.StartNewTestNode(new Client.Requests.StartTestItemRequest
+            for (int i = 0; i < 10; i++)
             {
-                Name = "Suite",
-                StartTime = launchDateTime.AddMilliseconds(-1),
-                Type = Client.Models.TestItemType.Suite
-            });
-
-            var testNode = suiteNode.StartNewTestNode(new Client.Requests.StartTestItemRequest
-            {
-                Name = "Test",
-                StartTime = launchDateTime,
-                Type = Client.Models.TestItemType.Step
-            });
-
-            for (int i = 0; i < 100; i++)
-            {
-                testNode.Log(new Client.Requests.AddLogItemRequest
+                var suiteNode = launchReporter.StartNewTestNode(new Client.Requests.StartTestItemRequest
                 {
-                    Level = Client.Models.LogLevel.Info,
-                    Text = $"Log message #{i}",
-                    Time = launchDateTime
+                    Name = $"Suite {i}",
+                    StartTime = launchDateTime.AddMilliseconds(-1),
+                    Type = Client.Models.TestItemType.Suite
+                });
+
+                for (int j = 0; j < 10; j++)
+                {
+                    var testNode = suiteNode.StartNewTestNode(new Client.Requests.StartTestItemRequest
+                    {
+                        Name = $"Test {i}",
+                        StartTime = launchDateTime,
+                        Type = Client.Models.TestItemType.Step
+                    });
+
+                    for (int l = 0; l < 1; l++)
+                    {
+                        testNode.Log(new Client.Requests.AddLogItemRequest
+                        {
+                            Level = Client.Models.LogLevel.Info,
+                            Text = $"Log message #{l}",
+                            Time = launchDateTime
+                        });
+                    }
+
+                    testNode.Finish(new Client.Requests.FinishTestItemRequest
+                    {
+                        EndTime = launchDateTime,
+                        Status = Client.Models.Status.Passed
+                    });
+                }
+
+                suiteNode.Finish(new Client.Requests.FinishTestItemRequest
+                {
+                    EndTime = launchDateTime,
+                    Status = Client.Models.Status.Passed
                 });
             }
-
-            testNode.Finish(new Client.Requests.FinishTestItemRequest
-            {
-                EndTime = launchDateTime,
-                Status = Client.Models.Status.Passed
-            });
-
-            suiteNode.Finish(new Client.Requests.FinishTestItemRequest
-            {
-                EndTime = launchDateTime,
-                Status = Client.Models.Status.Passed
-            });
+            
 
             launchReporter.Finish(new Client.Requests.FinishLaunchRequest
             {
-                EndTime = launchDateTime.AddMilliseconds(-1)
+                EndTime = launchDateTime
             });
             launchReporter.FinishTask.Wait();
         }
