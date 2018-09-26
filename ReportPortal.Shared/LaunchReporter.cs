@@ -53,6 +53,9 @@ namespace ReportPortal.Shared
                     }
                     catch (Exception exp)
                     {
+                        var aggregatedExp = exp as AggregateException;
+                        exp = aggregatedExp?.Flatten();
+
                         throw new Exception("Cannot finish launch due inner items failed to finish.", exp);
                     }
 

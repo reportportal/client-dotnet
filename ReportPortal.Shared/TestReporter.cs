@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using ReportPortal.Client;
 using ReportPortal.Client.Requests;
-using System.Diagnostics;
 using System.Collections.Generic;
 using ReportPortal.Client.Models;
 
@@ -60,6 +59,9 @@ namespace ReportPortal.Shared
                 }
                 catch (Exception exp)
                 {
+                    var aggregatedExp = exp as AggregateException;
+                    exp = aggregatedExp?.Flatten();
+
                     throw new Exception("Cannot start a test item due parent failed to start.", exp);
                 }
 
