@@ -13,7 +13,7 @@ build_script:
   - cmd: dotnet build
 
 test_script:
-  - cmd: dotnet test .\ReportPortal.Shared.Tests\ReportPortal.Shared.Tests.csproj --no-build
+  - cmd: dotnet test --no-build
 
 after_test:
   - cmd: dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg
