@@ -60,7 +60,10 @@ namespace ReportPortal.Shared
                 catch (Exception exp)
                 {
                     var aggregatedExp = exp as AggregateException;
-                    exp = aggregatedExp?.Flatten();
+                    if (aggregatedExp != null)
+                    {
+                        exp = aggregatedExp.Flatten();
+                    }
 
                     throw new Exception("Cannot start a test item due parent failed to start.", exp);
                 }
@@ -113,6 +116,12 @@ namespace ReportPortal.Shared
                 }
                 catch (Exception exp)
                 {
+                    var aggregatedExp = exp as AggregateException;
+                    if (aggregatedExp != null)
+                    {
+                        exp = aggregatedExp.Flatten();
+                    }
+
                     throw new Exception("Cannot finish test item due starting item failed.", exp);
                 }
 
@@ -122,6 +131,12 @@ namespace ReportPortal.Shared
                 }
                 catch (Exception exp)
                 {
+                    var aggregatedExp = exp as AggregateException;
+                    if (aggregatedExp != null)
+                    {
+                        exp = aggregatedExp.Flatten();
+                    }
+
                     throw new Exception("Cannot finish test item due finishing of child items failed.", exp);
                 }
 
