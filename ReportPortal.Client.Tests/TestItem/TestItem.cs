@@ -645,7 +645,7 @@ namespace ReportPortal.Client.Tests.TestItem
         [Fact]
         public async Task GetTestItemHistory()
         {
-            var histories = await Service.GetTestItemHistoryAsync("5472e38ee4b098dbedf8e860", 5, true);
+            var histories = await Service.GetTestItemHistoryAsync("5bc4bada2ab79c0001391c15", 5, true);
             Assert.Equal(5, histories.Count);
             await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
             {
