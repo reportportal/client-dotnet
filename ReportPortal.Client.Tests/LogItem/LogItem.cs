@@ -52,6 +52,7 @@ namespace ReportPortal.Client.Tests.LogItem
         [Theory]
         [InlineData(LogLevel.Debug)]
         [InlineData(LogLevel.Error)]
+        [InlineData(LogLevel.Fatal)]
         [InlineData(LogLevel.Info)]
         [InlineData(LogLevel.Trace)]
         [InlineData(LogLevel.Warning)]

@@ -56,7 +56,9 @@ namespace ReportPortal.Client.Models
         [DataMember(Name = "WARN")]
         Warning,
         [DataMember(Name = "ERROR")]
-        Error
+        Error,
+        [DataMember(Name = "FATAL")]
+        Fatal
     }
 
     /// <summary>
