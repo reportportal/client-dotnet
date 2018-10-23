@@ -14,6 +14,9 @@ namespace ReportPortal.Shared
     {
         static Bridge()
         {
+            Extensions = new List<IBridgeExtension>();
+            TestReporterExtensions = new List<Extensions.ITestReporterExtension>();
+
             var currentDirectory = new DirectoryInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
 
             foreach (var file in currentDirectory.GetFiles("ReportPortal.*.dll"))
@@ -32,6 +35,11 @@ namespace ReportPortal.Shared
                             var extension = Activator.CreateInstance(type);
                             Extensions.Add((IBridgeExtension)extension);
                         }
+                        else if (type.GetInterfaces().Contains(typeof(Extensions.ITestReporterExtension)))
+                        {
+                            var extension = Activator.CreateInstance(type);
+                            TestReporterExtensions.Add((Extensions.ITestReporterExtension)extension);
+                        }
                     }
                 }
                 catch (ReflectionTypeLoadException)
@@ -43,7 +51,10 @@ namespace ReportPortal.Shared
             Extensions = Extensions.OrderBy(ext => ext.Order).ToList();
         }
 
-        private static readonly List<IBridgeExtension> Extensions = new List<IBridgeExtension>();
+
+        public static List<IBridgeExtension> Extensions { get; private set; }
+
+        public static List<Extensions.ITestReporterExtension> TestReporterExtensions { get; private set; }
 
         public static Service Service { get; set; }
 
