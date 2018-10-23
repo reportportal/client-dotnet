@@ -36,6 +36,8 @@ namespace ReportPortal.Shared
 
         public void Start(StartTestItemRequest request)
         {
+            Bridge.TestReporterExtensions.ForEach(e => e.TestNodeStarting(this, request));
+
             var dependentTasks = new List<Task>();
             dependentTasks.Add(_launchNode.StartTask);
             if (_parentTestNode != null)
@@ -84,6 +86,8 @@ namespace ReportPortal.Shared
         public Task FinishTask;
         public void Finish(FinishTestItemRequest request)
         {
+            Bridge.TestReporterExtensions.ForEach(e => e.TestNodeFinishing(this, request));
+
             var dependentTasks = new List<Task>();
             dependentTasks.Add(StartTask);
             dependentTasks.AddRange(AdditionalTasks);
