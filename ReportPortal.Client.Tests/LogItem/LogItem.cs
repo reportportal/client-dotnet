@@ -6,6 +6,7 @@ using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 using System.Threading.Tasks;
 using Xunit;
+using System.Text;
 
 namespace ReportPortal.Client.Tests.LogItem
 {
@@ -83,6 +84,28 @@ namespace ReportPortal.Client.Tests.LogItem
                 Time = DateTime.UtcNow,
                 Level = LogLevel.Info,
                 Attach = new Attach("file1", "application/octet-stream", data)
+            });
+            Assert.NotNull(log.Id);
+            var getLog = await Service.GetLogItemAsync(log.Id);
+            Assert.Equal("Log1", getLog.Text);
+
+            var logMessage = await Service.GetLogItemAsync(log.Id);
+            var binaryId = logMessage.Content.Id;
+            var logData = await Service.GetBinaryDataAsync(binaryId);
+            Assert.Equal(data, logData);
+        }
+
+        [Fact]
+        public async Task CreateLogWithJsonAttach()
+        {
+            var data = Encoding.Default.GetBytes("{\"a\" = true }");
+            var log = await Service.AddLogItemAsync(new AddLogItemRequest
+            {
+                TestItemId = _testId,
+                Text = "Log1",
+                Time = DateTime.UtcNow,
+                Level = LogLevel.Info,
+                Attach = new Attach("file1", "application/json", data)
             });
             Assert.NotNull(log.Id);
             var getLog = await Service.GetLogItemAsync(log.Id);

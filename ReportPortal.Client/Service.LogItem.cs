@@ -78,8 +78,14 @@ namespace ReportPortal.Client
             {
                 var body = ModelSerializer.Serialize<List<AddLogItemRequest>>(new List<AddLogItemRequest> { model });
                 var multipartContent = new MultipartFormDataContent();
-                multipartContent.Add(new StringContent(body, Encoding.UTF8, "application/json"), "json_request_part");
-                multipartContent.Add(new ByteArrayContent(model.Attach.Data, 0, model.Attach.Data.Length), "file", model.Attach.Name);
+
+                var jsonContent = new StringContent(body, Encoding.UTF8, "application/json");
+                multipartContent.Add(jsonContent, "json_request_part");
+
+                var byteArrayContent = new ByteArrayContent(model.Attach.Data, 0, model.Attach.Data.Length);
+                byteArrayContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(model.Attach.MimeType);
+                multipartContent.Add(byteArrayContent, "file", model.Attach.Name);
+
                 var response = await _httpClient.PostAsync(uri, multipartContent);
                 response.VerifySuccessStatusCode();
                 var c = await response.Content.ReadAsStringAsync();
