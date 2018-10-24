@@ -46,7 +46,7 @@ namespace ReportPortal.Client.Tests.Project
             var userFilters = await Service.AddUserFilterAsync(new AddUserFilterRequest { FilterElements = new List<FilterElement> { filterElement } });
 
             var message = await Service.UpdatePreferencesAsync(new UpdatePreferenceRequest { FilderIds = userFilters.Select(x => x.Id) }, Username);
-            Assert.Contains("updated", message.Info);
+            Assert.Equal(base.Service.Project, message.ProjectRef);
 
             var allPreferences = await Service.GetAllPreferences(Username);
             Assert.True(allPreferences.FilterIds.Intersect(userFilters.Select(x => x.Id)).Any());

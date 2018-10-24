@@ -18,14 +18,21 @@ namespace ReportPortal.Client
         /// <param name="model"></param>
         /// <param name="userName"></param>
         /// <returns></returns>
-        public async Task<Message> UpdatePreferencesAsync(UpdatePreferenceRequest model, string userName)
+        public async Task<UpdatePreferencesResponse> UpdatePreferencesAsync(UpdatePreferenceRequest model, string userName)
         {
             var uri = BaseUri.Append($"project/{Project}/preference/{userName}");
             var body = ModelSerializer.Serialize<UpdatePreferenceRequest>(model);
             
             var response = await _httpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json"));
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync());
+            return ModelSerializer.Deserialize<UpdatePreferencesResponse>(await response.Content.ReadAsStringAsync());
+        }
+
+        [System.Runtime.Serialization.DataContract]
+        public class UpdatePreferencesResponse
+        {
+            [System.Runtime.Serialization.DataMember(Name = "projectRef")]
+            public string ProjectRef { get; set; }
         }
 
         /// <summary>
