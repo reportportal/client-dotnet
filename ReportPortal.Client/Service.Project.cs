@@ -23,9 +23,9 @@ namespace ReportPortal.Client
             var uri = BaseUri.Append($"project/{Project}/preference/{userName}");
             var body = ModelSerializer.Serialize<UpdatePreferenceRequest>(model);
             
-            var response = await _httpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json"));
+            var response = await _httpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<UpdatePreferencesResponse>(await response.Content.ReadAsStringAsync());
+            return ModelSerializer.Deserialize<UpdatePreferencesResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         [System.Runtime.Serialization.DataContract]
@@ -44,9 +44,9 @@ namespace ReportPortal.Client
         {
             var uri = BaseUri.Append($"project/{Project}/preference/{userName}");
             
-            var response = await _httpClient.GetAsync(uri);
+            var response = await _httpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<Preference>(await response.Content.ReadAsStringAsync());
+            return ModelSerializer.Deserialize<Preference>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
     }
 }

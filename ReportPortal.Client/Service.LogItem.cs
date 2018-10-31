@@ -27,9 +27,9 @@ namespace ReportPortal.Client
                 uri = uri.Append($"?{filterOption}");
             }
 
-            var response = await _httpClient.GetAsync(uri);
+            var response = await _httpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<LogItemsContainer>(await response.Content.ReadAsStringAsync());
+            return ModelSerializer.Deserialize<LogItemsContainer>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         /// <summary>
@@ -40,9 +40,9 @@ namespace ReportPortal.Client
         public async Task<LogItem> GetLogItemAsync(string id)
         {
             var uri = BaseUri.Append($"{Project}/log/{id}");
-            var response = await _httpClient.GetAsync(uri);
+            var response = await _httpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<LogItem>(await response.Content.ReadAsStringAsync());
+            return ModelSerializer.Deserialize<LogItem>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         /// <summary>
@@ -53,9 +53,9 @@ namespace ReportPortal.Client
         public async Task<byte[]> GetBinaryDataAsync(string id)
         {
             var uri = BaseUri.Append($"{Project}/data/{id}");
-            var response = await _httpClient.GetAsync(uri);
+            var response = await _httpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return await response.Content.ReadAsByteArrayAsync();
+            return await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -70,9 +70,9 @@ namespace ReportPortal.Client
             if (model.Attach == null)
             {
                 var body = ModelSerializer.Serialize<AddLogItemRequest>(model);
-                var response = await _httpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json"));
+                var response = await _httpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
                 response.VerifySuccessStatusCode();
-                return ModelSerializer.Deserialize<LogItem>(await response.Content.ReadAsStringAsync());
+                return ModelSerializer.Deserialize<LogItem>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
             }
             else
             {
@@ -86,9 +86,9 @@ namespace ReportPortal.Client
                 byteArrayContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(model.Attach.MimeType);
                 multipartContent.Add(byteArrayContent, "file", model.Attach.Name);
 
-                var response = await _httpClient.PostAsync(uri, multipartContent);
+                var response = await _httpClient.PostAsync(uri, multipartContent).ConfigureAwait(false);
                 response.VerifySuccessStatusCode();
-                var c = await response.Content.ReadAsStringAsync();
+                var c = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 return ModelSerializer.Deserialize<Responses>(c).LogItems[0];
             }
         }
@@ -108,9 +108,9 @@ namespace ReportPortal.Client
         public async Task<Message> DeleteLogItemAsync(string id)
         {
             var uri = BaseUri.Append($"{Project}/log/{id}");
-            var response = await _httpClient.DeleteAsync(uri);
+            var response = await _httpClient.DeleteAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync());
+            return ModelSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
     }
 }
