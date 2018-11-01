@@ -45,7 +45,7 @@ namespace ReportPortal.Client
         /// <param name="project">A project to manage.</param>
         /// <param name="password">A password for user. Can be UID given from user's profile page.</param>
         public Service(Uri uri, string project, string password)
-            : this(uri, project, password, new RetryHttpClientHandler())
+            : this(uri, project, password, new RertryWithExponentialBackoffHttpClientHandler())
         {
         }
 
@@ -57,7 +57,7 @@ namespace ReportPortal.Client
         /// <param name="password">A password for user. Can be UID given from user's profile page.</param>
         /// <param name="proxy">Proxy for all HTTP requests.</param>
         public Service(Uri uri, string project, string password, IWebProxy proxy)
-            : this(uri, project, password, new RetryHttpClientHandler(proxy))
+            : this(uri, project, password, new RertryWithExponentialBackoffHttpClientHandler(proxy))
         {
         }
 
@@ -69,19 +69,19 @@ namespace ReportPortal.Client
         public Uri BaseUri { get; set; }
     }
 
-    public class RetryHttpClientHandler : DelegatingHandler
+    public class RertryWithExponentialBackoffHttpClientHandler : DelegatingHandler
     {
-        public RetryHttpClientHandler()
+        public RertryWithExponentialBackoffHttpClientHandler()
             : this(new HttpClientHandler())
         {
         }
 
-        public RetryHttpClientHandler(IWebProxy proxy)
-            : this(new HttpClientHandler {Proxy = proxy})
+        public RertryWithExponentialBackoffHttpClientHandler(IWebProxy proxy)
+            : this(new HttpClientHandler { Proxy = proxy })
         {
         }
 
-        public RetryHttpClientHandler(HttpMessageHandler innerHandler)
+        public RertryWithExponentialBackoffHttpClientHandler(HttpMessageHandler innerHandler)
             : base(innerHandler)
         {
         }
@@ -99,6 +99,10 @@ namespace ReportPortal.Client
                 // timeout
                 catch (TaskCanceledException)
                 {
+                    if (i < 3)
+                    {
+                        await Task.Delay((int)Math.Pow(2, i + 3) * 1000);
+                    }
                 }
             }
 
