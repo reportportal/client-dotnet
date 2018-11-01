@@ -45,7 +45,7 @@ namespace ReportPortal.Client
         /// <param name="project">A project to manage.</param>
         /// <param name="password">A password for user. Can be UID given from user's profile page.</param>
         public Service(Uri uri, string project, string password)
-            : this(uri, project, password, new RertryWithExponentialBackoffHttpClientHandler())
+            : this(uri, project, password, new RetryWithExponentialBackoffHttpClientHandler())
         {
         }
 
@@ -57,7 +57,7 @@ namespace ReportPortal.Client
         /// <param name="password">A password for user. Can be UID given from user's profile page.</param>
         /// <param name="proxy">Proxy for all HTTP requests.</param>
         public Service(Uri uri, string project, string password, IWebProxy proxy)
-            : this(uri, project, password, new RertryWithExponentialBackoffHttpClientHandler(proxy))
+            : this(uri, project, password, new RetryWithExponentialBackoffHttpClientHandler(proxy))
         {
         }
 
@@ -69,19 +69,19 @@ namespace ReportPortal.Client
         public Uri BaseUri { get; set; }
     }
 
-    public class RertryWithExponentialBackoffHttpClientHandler : DelegatingHandler
+    public class RetryWithExponentialBackoffHttpClientHandler : DelegatingHandler
     {
-        public RertryWithExponentialBackoffHttpClientHandler()
+        public RetryWithExponentialBackoffHttpClientHandler()
             : this(new HttpClientHandler())
         {
         }
 
-        public RertryWithExponentialBackoffHttpClientHandler(IWebProxy proxy)
+        public RetryWithExponentialBackoffHttpClientHandler(IWebProxy proxy)
             : this(new HttpClientHandler { Proxy = proxy })
         {
         }
 
-        public RertryWithExponentialBackoffHttpClientHandler(HttpMessageHandler innerHandler)
+        public RetryWithExponentialBackoffHttpClientHandler(HttpMessageHandler innerHandler)
             : base(innerHandler)
         {
         }
