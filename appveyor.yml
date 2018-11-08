@@ -13,7 +13,7 @@ build_script:
   - cmd: dotnet build
 
 test_script:
-  - cmd: dotnet test .\ReportPortal.Client.Tests\ReportPortal.Client.Tests.csproj --no-build
+  - cmd: dotnet test .\ReportPortal.Client.Tests\ReportPortal.Client.Tests.csproj --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=OpenCover /p:CoverletOutput=./Coverage.xml
 
 after_test:
   - cmd: dotnet pack
