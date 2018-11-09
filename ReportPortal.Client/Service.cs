@@ -94,7 +94,7 @@ namespace ReportPortal.Client
             {
                 try
                 {
-                    return response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
+                    return response = await base.SendAsync(request, cancellationToken);
                 }
                 // timeout
                 catch (Exception exp) when (exp is TaskCanceledException || exp is HttpRequestException)
