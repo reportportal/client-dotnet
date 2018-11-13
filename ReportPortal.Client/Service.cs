@@ -75,12 +75,11 @@ namespace ReportPortal.Client
 
             for (int i = 0; i < 3; i++)
             {
-                try
+                response = await base.SendAsync(request, cancellationToken);
+                if (response.IsSuccessStatusCode)
                 {
-                    return response = await base.SendAsync(request, cancellationToken);
+                    return response;
                 }
-                // timeout
-                catch(TaskCanceledException) { }
             }
 
             return response;
