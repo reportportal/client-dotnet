@@ -60,6 +60,34 @@ namespace ReportPortal.Client.Tests.LaunchItem
         }
 
         [Fact]
+        public async Task GetLaunchesSortedByAscendingDate()
+        {
+            var launches = await Service.GetLaunchesAsync(new FilterOption
+            {
+                Paging = new Paging(1, 10),
+                Sorting = new Sorting(new List<string>{ "start_time"}, SortDirection.Ascending)
+            });
+
+            Assert.True(launches.Launches.Count() > 0);
+
+            Assert.Equal(launches.Launches.OrderBy(l => l.StartTime), launches.Launches);
+        }
+
+        [Fact]
+        public async Task GetLaunchesSortedByDescendingDate()
+        {
+            var launches = await Service.GetLaunchesAsync(new FilterOption
+            {
+                Paging = new Paging(1, 10),
+                Sorting = new Sorting(new List<string> { "start_time" }, SortDirection.Descending)
+            });
+
+            Assert.True(launches.Launches.Count() > 0);
+
+            Assert.Equal(launches.Launches.OrderBy(l => l.StartTime).Reverse(), launches.Launches);
+        }
+
+        [Fact]
         public async Task StartFinishDeleteLaunch()
         {
             var launch = await Service.StartLaunchAsync(new StartLaunchRequest
