@@ -1,6 +1,7 @@
 ﻿
 install:
-  - ps: gitversion /l console /output buildserver
+  - gitversion /l console /output buildserver
+  - choco install codecov
 
 configuration:
   - Release
@@ -10,13 +11,14 @@ dotnet_csproj:
   version: '$(GitVersion_NuGetVersion)'
 
 build_script:
-  - cmd: dotnet build
+  - dotnet build
 
 test_script:
-  - cmd: dotnet test .\ReportPortal.Client.Tests\ReportPortal.Client.Tests.csproj --no-build
+  - dotnet test .\ReportPortal.Client.Tests\ReportPortal.Client.Tests.csproj --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=OpenCover /p:CoverletOutput=./Coverage.xml
 
 after_test:
-  - cmd: dotnet pack
+  - dotnet pack
+  - codecov -f .\ReportPortal.Client.Tests\Coverage.xml
 
 artifacts:
   - path: '**\*.nupkg'

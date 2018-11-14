@@ -91,10 +91,10 @@ namespace ReportPortal.Client.Models
     [DataContract]
     public class Defects
     {
-        [DataMember(Name = "product_bugs")]
+        [DataMember(Name = "product_bug")]
         public Defect ProductBugs { get; set; }
 
-        [DataMember(Name = "automation_bugs")]
+        [DataMember(Name = "automation_bug")]
         public Defect AutomationBugs { get; set; }
 
         [DataMember(Name = "system_issue")]
@@ -102,6 +102,9 @@ namespace ReportPortal.Client.Models
 
         [DataMember(Name = "to_investigate")]
         public Defect ToInvestigate { get; set; }
+
+        [DataMember(Name = "no_defect")]
+        public Defect NoDefect { get; set; }
     }
 
     [DataContract]

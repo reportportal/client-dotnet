@@ -1,7 +1,6 @@
 ﻿using ReportPortal.Client.Converters;
 using ReportPortal.Client.Extentions;
 using ReportPortal.Client.Models;
-using System;
 using System.Threading.Tasks;
 
 namespace ReportPortal.Client
