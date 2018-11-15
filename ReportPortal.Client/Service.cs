@@ -75,10 +75,21 @@ namespace ReportPortal.Client
 
             for (int i = 0; i < 3; i++)
             {
-                response = await base.SendAsync(request, cancellationToken);
-                if (response.IsSuccessStatusCode)
+                try
                 {
-                    return response;
+                    response = await base.SendAsync(request, cancellationToken);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return response;
+                    }
+                }
+
+                catch (Exception exp) when (exp is TaskCanceledException || exp is HttpRequestException)
+                {
+                    if (i < 3)
+                    {
+                        await Task.Delay((int) Math.Pow(2, i + 3) * 1000);
+                    }
                 }
             }
 
