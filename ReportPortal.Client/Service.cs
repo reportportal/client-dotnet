@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Threading;
+using ReportPortal.Client.Extentions;
 
 namespace ReportPortal.Client
 {
@@ -89,13 +90,14 @@ namespace ReportPortal.Client
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             HttpResponseMessage response = null;
+            int loopCount = 3;
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < loopCount; i++)
             {
                 try
                 {
                     response = await base.SendAsync(request, cancellationToken);
-                    if (response.IsSuccessStatusCode)
+                    if (!response.IsServerError())
                     {
                         return response;
                     }
@@ -103,9 +105,14 @@ namespace ReportPortal.Client
 
                 catch (Exception exp) when (exp is TaskCanceledException || exp is HttpRequestException)
                 {
-                    if (i < 3)
+                    if (i < loopCount - 1)
                     {
-                        await Task.Delay((int) Math.Pow(2, i + 3) * 1000);
+                        await Task.Delay((int) Math.Pow(2, i + loopCount) * 1000);
+                    }
+
+                    else
+                    {
+                        throw;
                     }
                 }
             }
