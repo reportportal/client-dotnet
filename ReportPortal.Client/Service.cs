@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Threading;
 using ReportPortal.Client.Extentions;
+using System.Collections.Generic;
 
 namespace ReportPortal.Client
 {
@@ -90,6 +91,7 @@ namespace ReportPortal.Client
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             HttpResponseMessage response = null;
+            var serverErrorResponseCodes = new List<HttpStatusCode> { HttpStatusCode.InternalServerError, HttpStatusCode.NotImplemented, HttpStatusCode.BadGateway, HttpStatusCode.ServiceUnavailable, HttpStatusCode.GatewayTimeout, HttpStatusCode.HttpVersionNotSupported };
             int loopCount = 3;
 
             for (int i = 0; i < loopCount; i++)
@@ -97,10 +99,12 @@ namespace ReportPortal.Client
                 try
                 {
                     response = await base.SendAsync(request, cancellationToken);
-                    if (!response.IsServerError())
+                    if (!serverErrorResponseCodes.Contains(response.StatusCode))
                     {
                         return response;
                     }
+
+                    await Task.Delay((int)Math.Pow(2, i + loopCount) * 1000);
                 }
 
                 catch (Exception exp) when (exp is TaskCanceledException || exp is HttpRequestException)
