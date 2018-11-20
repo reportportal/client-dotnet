@@ -45,7 +45,7 @@ namespace ReportPortal.Client
         /// <param name="project">A project to manage.</param>
         /// <param name="password">A password for user. Can be UID given from user's profile page.</param>
         public Service(Uri uri, string project, string password)
-            : this(uri, project, password, new RetryWithExponentialBackoffHttpClientHandler())
+            : this(uri, project, password, new RetryWithExponentialBackoffHttpClientHandler(3))
         {
         }
 
@@ -57,7 +57,7 @@ namespace ReportPortal.Client
         /// <param name="password">A password for user. Can be UID given from user's profile page.</param>
         /// <param name="proxy">Proxy for all HTTP requests.</param>
         public Service(Uri uri, string project, string password, IWebProxy proxy)
-            : this(uri, project, password, new RetryWithExponentialBackoffHttpClientHandler(proxy))
+            : this(uri, project, password, new RetryWithExponentialBackoffHttpClientHandler(3, proxy))
         {
         }
 
@@ -71,33 +71,48 @@ namespace ReportPortal.Client
 
     public class RetryWithExponentialBackoffHttpClientHandler : DelegatingHandler
     {
-        public RetryWithExponentialBackoffHttpClientHandler()
-            : this(new HttpClientHandler())
+        public int MaxRetries { get; private set; }
+
+        public RetryWithExponentialBackoffHttpClientHandler(int maxRetries)
+            : this(maxRetries, new HttpClientHandler())
         {
         }
 
-        public RetryWithExponentialBackoffHttpClientHandler(IWebProxy proxy)
-            : this(new HttpClientHandler { Proxy = proxy })
+        public RetryWithExponentialBackoffHttpClientHandler(int maxRetries, IWebProxy proxy)
+            : this(maxRetries, new HttpClientHandler { Proxy = proxy })
         {
         }
 
-        public RetryWithExponentialBackoffHttpClientHandler(HttpMessageHandler innerHandler)
+        public RetryWithExponentialBackoffHttpClientHandler(int maxRetries, HttpMessageHandler innerHandler)
             : base(innerHandler)
         {
+            MaxRetries = maxRetries;
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             HttpResponseMessage response = null;
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < MaxRetries; i++)
             {
-                response = await base.SendAsync(request, cancellationToken);
-                if (response.IsSuccessStatusCode)
+                try
                 {
-                    return response;
+                    return response = await base.SendAsync(request, cancellationToken);
+                }
+                // timeout
+                catch (Exception exp) when (exp is TaskCanceledException || exp is HttpRequestException)
+                {
+                    if (i < MaxRetries - 1)
+                    {
+                        await Task.Delay((int)Math.Pow(2, i + 3) * 1000);
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
             }
+
             return response;
         }
     }
