@@ -4,7 +4,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Threading;
-using ReportPortal.Client.Extentions;
 using System.Collections.Generic;
 
 namespace ReportPortal.Client
