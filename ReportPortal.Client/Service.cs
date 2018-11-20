@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Collections.Generic;
+using ReportPortal.Client.Extentions;
 
 namespace ReportPortal.Client
 {
@@ -90,22 +91,26 @@ namespace ReportPortal.Client
             MaxRetries = maxRetries;
         }
 
+        private List<HttpStatusCode> ResponseStatusCodesForRetrying => new List<HttpStatusCode> { HttpStatusCode.InternalServerError, HttpStatusCode.NotImplemented, HttpStatusCode.BadGateway, HttpStatusCode.ServiceUnavailable, HttpStatusCode.GatewayTimeout, HttpStatusCode.HttpVersionNotSupported };
+
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             HttpResponseMessage response = null;
-            var serverErrorResponseCodes = new List<HttpStatusCode> { HttpStatusCode.InternalServerError, HttpStatusCode.NotImplemented, HttpStatusCode.BadGateway, HttpStatusCode.ServiceUnavailable, HttpStatusCode.GatewayTimeout, HttpStatusCode.HttpVersionNotSupported };
 
             for (int i = 0; i < MaxRetries; i++)
             {
                 try
                 {
                     response = await base.SendAsync(request, cancellationToken);
-                    if (!serverErrorResponseCodes.Contains(response.StatusCode))
+
+                    if (!ResponseStatusCodesForRetrying.Contains(response.StatusCode))
                     {
                         return response;
                     }
-
-                    await Task.Delay((int)Math.Pow(2, i + MaxRetries) * 1000);
+                    else
+                    {
+                        response.VerifySuccessStatusCode();
+                    }
                 }
 
                 catch (Exception exp) when (exp is TaskCanceledException || exp is HttpRequestException)
