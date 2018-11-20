@@ -111,7 +111,7 @@ namespace ReportPortal.Client
                 {
                     if (i < loopCount - 1)
                     {
-                        await Task.Delay((int) Math.Pow(2, i + loopCount) * 1000);
+                        await Task.Delay((int)Math.Pow(2, i + loopCount) * 1000);
                     }
 
                     else
