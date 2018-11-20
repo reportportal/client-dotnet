@@ -65,7 +65,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
             var launches = await Service.GetLaunchesAsync(new FilterOption
             {
                 Paging = new Paging(1, 10),
-                Sorting = new Sorting(new List<string>{ "start_time"}, SortDirection.Ascending)
+                Sorting = new Sorting(new List<string> { "start_time" }, SortDirection.Ascending)
             });
 
             Assert.True(launches.Launches.Count() > 0);
@@ -260,6 +260,31 @@ namespace ReportPortal.Client.Tests.LaunchItem
 
             var delMessage = await Service.DeleteLaunchAsync(launch.Id);
             Assert.Contains("successfully", delMessage.Info);
+        }
+
+        [Fact]
+        public async Task StartForceFinishIncompleteLaunch()
+        {
+            var launch = await Service.StartLaunchAsync(new StartLaunchRequest
+            {
+                Name = "StartForceFinishIncompleteLaunch",
+                StartTime = DateTime.UtcNow,
+                Mode = LaunchMode.Default
+            });
+
+            var test = await Service.StartTestItemAsync(new StartTestItemRequest
+            {
+                LaunchId = launch.Id,
+                Name = "Test1",
+                StartTime = DateTime.UtcNow,
+                Type = TestItemType.Test
+            });
+            Assert.NotNull(test.Id);
+
+            await Service.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
+            {
+                EndTime = DateTime.UtcNow
+            }, true);
         }
     }
 }
