@@ -9,26 +9,6 @@ using Xunit;
 
 namespace ReportPortal.Client.Tests.TestItem
 {
-    public class TestItemFixtureBase : BaseFixture, IDisposable
-    {
-        public string LaunchId { get; set; }
-
-        public TestItemFixtureBase()
-        {
-            LaunchId = Task.Run(async () => await Service.StartLaunchAsync(new StartLaunchRequest
-            {
-                Name = "StartFinishDeleteLaunch",
-                StartTime = DateTime.UtcNow
-            })).Result.Id;
-        }
-
-        public void Dispose()
-        {
-            Task.Run(async () => await Service.FinishLaunchAsync(LaunchId, new FinishLaunchRequest { EndTime = DateTime.UtcNow }, true)).Wait();
-            Task.Run(async () => await Service.DeleteLaunchAsync(LaunchId)).Wait();
-        }
-    }
-
     public class TestItemFixture : BaseFixture, IClassFixture<TestItemFixtureBase>
     {
         private TestItemFixtureBase _fixture;
@@ -55,24 +35,6 @@ namespace ReportPortal.Client.Tests.TestItem
                 Status = Status.Passed
             });
             Assert.Contains("successfully", message.Info);
-        }
-
-        [Fact(Skip = "Need move to other fixture due this finishes shared launch")]
-        public async Task StartForceFinishIncompleteLaunch()
-        {
-            var test = await Service.StartTestItemAsync(new StartTestItemRequest
-            {
-                LaunchId = _fixture.LaunchId,
-                Name = "Test1",
-                StartTime = DateTime.UtcNow,
-                Type = TestItemType.Test
-            });
-            Assert.NotNull(test.Id);
-
-            await Service.FinishLaunchAsync(_fixture.LaunchId, new FinishLaunchRequest
-            {
-                EndTime = DateTime.UtcNow
-            }, true);
         }
 
         [Fact]
