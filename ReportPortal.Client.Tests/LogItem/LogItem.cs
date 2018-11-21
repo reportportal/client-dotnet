@@ -10,12 +10,44 @@ using System.Text;
 
 namespace ReportPortal.Client.Tests.LogItem
 {
-    public class LogItemFixture : BaseFixture, IClassFixture<LogItemFixtureBase>
+    public class LogItemFixture : BaseFixture, IDisposable
     {
-        private LogItemFixtureBase _fixture;
-        public LogItemFixture(LogItemFixtureBase fixture)
+        private string _launchId;
+        private string _testId;
+
+        public LogItemFixture()
         {
-            _fixture = fixture;
+            _launchId = Task.Run(async () => await Service.StartLaunchAsync(new StartLaunchRequest
+            {
+                Name = "StartFinishDeleteLaunch",
+                StartTime = DateTime.UtcNow
+            })).Result.Id;
+
+            _testId = Task.Run(async () => await Service.StartTestItemAsync(new StartTestItemRequest
+            {
+                LaunchId = _launchId,
+                Name = "Test1",
+                StartTime = DateTime.UtcNow,
+                Type = TestItemType.Test
+            })).Result.Id;
+        }
+
+        public void Dispose()
+        {
+            Task.Run(async () => await Service.FinishTestItemAsync(_testId, new FinishTestItemRequest
+            {
+                EndTime = DateTime.UtcNow,
+                Status = Status.Passed
+            })).Wait();
+
+            Task.Run(async () => await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
+            {
+                EndTime = DateTime.UtcNow
+            })).Wait();
+
+            Task.Run(async () => await Service.DeleteTestItemAsync(_testId)).Wait();
+
+            Task.Run(async () => await Service.DeleteLaunchAsync(_launchId)).Wait();
         }
 
         [Theory]
@@ -30,7 +62,7 @@ namespace ReportPortal.Client.Tests.LogItem
             var now = DateTime.UtcNow;
             var log = await Service.AddLogItemAsync(new AddLogItemRequest
             {
-                TestItemId = _fixture.TestId,
+                TestItemId = _testId,
                 Text = "Log1",
                 Time = now,
                 Level = level
@@ -47,7 +79,7 @@ namespace ReportPortal.Client.Tests.LogItem
             var data = new byte[] { 1, 2, 3 };
             var log = await Service.AddLogItemAsync(new AddLogItemRequest
             {
-                TestItemId = _fixture.TestId,
+                TestItemId = _testId,
                 Text = "Log1",
                 Time = DateTime.UtcNow,
                 Level = LogLevel.Info,
@@ -69,7 +101,7 @@ namespace ReportPortal.Client.Tests.LogItem
             var data = Encoding.Default.GetBytes("{\"a\" = true }");
             var log = await Service.AddLogItemAsync(new AddLogItemRequest
             {
-                TestItemId = _fixture.TestId,
+                TestItemId = _testId,
                 Text = "Log1",
                 Time = DateTime.UtcNow,
                 Level = LogLevel.Info,
@@ -90,7 +122,7 @@ namespace ReportPortal.Client.Tests.LogItem
         {
             var newTestId = (await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _fixture.LaunchId,
+                LaunchId = _launchId,
                 Name = "Test2",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
@@ -121,7 +153,7 @@ namespace ReportPortal.Client.Tests.LogItem
         {
             var newTestId = (await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _fixture.LaunchId,
+                LaunchId = _launchId,
                 Name = "Test3",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
