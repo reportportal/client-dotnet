@@ -9,30 +9,21 @@ using Xunit;
 
 namespace ReportPortal.Client.Tests.TestItem
 {
-    public class TestItemFixture : BaseFixture, IDisposable
+    public class TestItemFixture : BaseFixture, IClassFixture<TestItemFixtureBase>
     {
-        private string _launchId;
+        private TestItemFixtureBase _fixture;
 
-        public TestItemFixture()
+        public TestItemFixture(TestItemFixtureBase fixture)
         {
-            _launchId = Task.Run(async () => await Service.StartLaunchAsync(new StartLaunchRequest
-            {
-                Name = "StartFinishDeleteLaunch",
-                StartTime = DateTime.UtcNow
-            })).Result.Id;
-        }
-
-        public void Dispose()
-        {
-            Task.Run(async () => await Service.DeleteLaunchAsync(_launchId)).Wait();
+            _fixture = fixture;
         }
 
         [Fact]
-        public async Task StartFinishDeleteTest()
+        public async Task StartFinishTest()
         {
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _launchId,
+                LaunchId = _fixture.LaunchId,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
@@ -44,45 +35,21 @@ namespace ReportPortal.Client.Tests.TestItem
                 Status = Status.Passed
             });
             Assert.Contains("successfully", message.Info);
-            await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
-            {
-                EndTime = DateTime.UtcNow
-            });
-            var delMessage = await Service.DeleteTestItemAsync(test.Id);
-            Assert.Contains("successfully", delMessage.Info);
         }
 
         [Fact]
-        public async Task StartForceFinishIncompleteLaunch()
+        public async Task StartFinishTestWithTag()
         {
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _launchId,
-                Name = "Test1",
-                StartTime = DateTime.UtcNow,
-                Type = TestItemType.Test
-            });
-            Assert.NotNull(test.Id);
-
-            await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
-            {
-                EndTime = DateTime.UtcNow
-            }, true);
-        }
-
-        [Fact]
-        public async Task StartFinishDeleteTestWithTag()
-        {
-            var test = await Service.StartTestItemAsync(new StartTestItemRequest
-            {
-                LaunchId = _launchId,
+                LaunchId = _fixture.LaunchId,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test,
                 Tags = new List<string> { "MyTag1" }
             });
 
-            var uniqueTags = await Service.GetUniqueTagsAsync(_launchId, "myta");
+            var uniqueTags = await Service.GetUniqueTagsAsync(_fixture.LaunchId, "myta");
             Assert.Contains("MyTag1", uniqueTags);
 
             Assert.NotNull(test.Id);
@@ -92,21 +59,17 @@ namespace ReportPortal.Client.Tests.TestItem
                 Status = Status.Passed
             });
             Assert.Contains("successfully", message.Info);
-            await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
-            {
-                EndTime = DateTime.UtcNow
-            });
-            var delMessage = await Service.DeleteTestItemAsync(test.Id);
-            Assert.Contains("successfully", delMessage.Info);
         }
 
         [Fact]
-        public async Task StartFinishDeleteSeveralTests()
+        public async Task StartFinishSeveralTests()
         {
+            var testItemName = Guid.NewGuid().ToString();
+
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _launchId,
-                Name = "Test1",
+                LaunchId = _fixture.LaunchId,
+                Name = testItemName,
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
             });
@@ -114,8 +77,8 @@ namespace ReportPortal.Client.Tests.TestItem
 
             var test2 = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _launchId,
-                Name = "Test2",
+                LaunchId = _fixture.LaunchId,
+                Name = testItemName,
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
             });
@@ -125,7 +88,8 @@ namespace ReportPortal.Client.Tests.TestItem
             {
                 Filters = new List<Filter>
                         {
-                            new Filter(FilterOperation.Equals, "launch", _launchId)
+                            new Filter(FilterOperation.Equals, "launch", _fixture.LaunchId),
+                            new Filter(FilterOperation.Equals, "name", testItemName)
                         }
             });
             Assert.Equal(2, tests.TestItems.Count());
@@ -143,22 +107,15 @@ namespace ReportPortal.Client.Tests.TestItem
                 Status = Status.Passed
             });
             Assert.Contains("successfully", message2.Info);
-
-            await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
-            {
-                EndTime = DateTime.UtcNow
-            });
-            var delMessage = await Service.DeleteTestItemAsync(test.Id);
-            Assert.Contains("successfully", delMessage.Info);
         }
 
         [Fact]
-        public async Task StartFinishDeleteFullTest()
+        public async Task StartFinishFullTest()
         {
             var now = DateTime.UtcNow;
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _launchId,
+                LaunchId = _fixture.LaunchId,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test,
@@ -179,14 +136,6 @@ namespace ReportPortal.Client.Tests.TestItem
                 Status = Status.Passed
             });
             Assert.Contains("successfully", message.Info);
-
-            await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
-            {
-                EndTime = DateTime.UtcNow
-            });
-
-            var delMessage = await Service.DeleteTestItemAsync(test.Id);
-            Assert.Contains("successfully", delMessage.Info);
         }
 
         [Theory]
@@ -201,7 +150,7 @@ namespace ReportPortal.Client.Tests.TestItem
         {
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _launchId,
+                LaunchId = _fixture.LaunchId,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = type
@@ -213,11 +162,6 @@ namespace ReportPortal.Client.Tests.TestItem
                 Status = Status.Passed
             });
             Assert.Contains("successfully", message.Info);
-
-            await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
-            {
-                EndTime = DateTime.UtcNow
-            });
         }
 
         [Theory]
@@ -228,7 +172,7 @@ namespace ReportPortal.Client.Tests.TestItem
         {
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _launchId,
+                LaunchId = _fixture.LaunchId,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
@@ -240,11 +184,6 @@ namespace ReportPortal.Client.Tests.TestItem
                 Status = status
             });
             Assert.Contains("successfully", message.Info);
-
-            await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
-            {
-                EndTime = DateTime.UtcNow
-            });
         }
 
         [Fact]
@@ -252,7 +191,7 @@ namespace ReportPortal.Client.Tests.TestItem
         {
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _launchId,
+                LaunchId = _fixture.LaunchId,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Step
@@ -269,12 +208,6 @@ namespace ReportPortal.Client.Tests.TestItem
                 }
             });
             Assert.Contains("successfully", message.Info);
-            await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
-            {
-                EndTime = DateTime.UtcNow
-            });
-            var delMessage = await Service.DeleteTestItemAsync(test.Id);
-            Assert.Contains("successfully", delMessage.Info);
         }
 
         public static List<object[]> WellKnownIssueTypesTestData => new List<object[]>
@@ -291,7 +224,7 @@ namespace ReportPortal.Client.Tests.TestItem
         {
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _launchId,
+                LaunchId = _fixture.LaunchId,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Step
@@ -308,11 +241,6 @@ namespace ReportPortal.Client.Tests.TestItem
                 }
             });
             Assert.Contains("successfully", message.Info);
-
-            await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
-            {
-                EndTime = DateTime.UtcNow
-            });
         }
 
         [Fact]
@@ -320,7 +248,7 @@ namespace ReportPortal.Client.Tests.TestItem
         {
             var suite = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _launchId,
+                LaunchId = _fixture.LaunchId,
                 Name = "Suite1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Suite,
@@ -329,7 +257,7 @@ namespace ReportPortal.Client.Tests.TestItem
 
             var test = await Service.StartTestItemAsync(suite.Id, new StartTestItemRequest
             {
-                LaunchId = _launchId,
+                LaunchId = _fixture.LaunchId,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
@@ -350,17 +278,6 @@ namespace ReportPortal.Client.Tests.TestItem
                 Status = Status.Passed
             });
             Assert.Contains("successfully", messageSuite.Info);
-
-            await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
-            {
-                EndTime = DateTime.UtcNow
-            });
-
-            var delMessage = await Service.DeleteTestItemAsync(test.Id);
-            Assert.Contains("successfully", delMessage.Info);
-
-            var delMessageSuite = await Service.DeleteTestItemAsync(suite.Id);
-            Assert.Contains("successfully", delMessageSuite.Info);
         }
 
         [Fact]
@@ -368,7 +285,7 @@ namespace ReportPortal.Client.Tests.TestItem
         {
             var suite = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _launchId,
+                LaunchId = _fixture.LaunchId,
                 Name = "Suite1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Suite
@@ -376,7 +293,7 @@ namespace ReportPortal.Client.Tests.TestItem
 
             var test = await Service.StartTestItemAsync(suite.Id, new StartTestItemRequest
             {
-                LaunchId = _launchId,
+                LaunchId = _fixture.LaunchId,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
@@ -388,7 +305,7 @@ namespace ReportPortal.Client.Tests.TestItem
 
             var step = await Service.StartTestItemAsync(test.Id, new StartTestItemRequest
             {
-                LaunchId = _launchId,
+                LaunchId = _fixture.LaunchId,
                 Name = "Step1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Step
@@ -417,25 +334,14 @@ namespace ReportPortal.Client.Tests.TestItem
                 Status = Status.Passed
             });
             Assert.Contains("successfully", messageSuite.Info);
-
-            await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
-            {
-                EndTime = DateTime.UtcNow
-            });
-
-            var delMessage = await Service.DeleteTestItemAsync(test.Id);
-            Assert.Contains("successfully", delMessage.Info);
-
-            var delMessageSuite = await Service.DeleteTestItemAsync(suite.Id);
-            Assert.Contains("successfully", delMessageSuite.Info);
         }
 
         [Fact]
-        public async Task StartUpdateFinishDeleteTest()
+        public async Task StartUpdateFinishTest()
         {
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _launchId,
+                LaunchId = _fixture.LaunchId,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
@@ -459,12 +365,6 @@ namespace ReportPortal.Client.Tests.TestItem
                 Status = Status.Passed
             });
             Assert.Contains("successfully", message.Info);
-            await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
-            {
-                EndTime = DateTime.UtcNow
-            });
-            var delMessage = await Service.DeleteTestItemAsync(test.Id);
-            Assert.Contains("successfully", delMessage.Info);
         }
 
         [Fact]
@@ -472,7 +372,7 @@ namespace ReportPortal.Client.Tests.TestItem
         {
             var suite = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _launchId,
+                LaunchId = _fixture.LaunchId,
                 Name = "Suite1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Suite
@@ -480,7 +380,7 @@ namespace ReportPortal.Client.Tests.TestItem
 
             var test1 = await Service.StartTestItemAsync(suite.Id, new StartTestItemRequest
             {
-                LaunchId = _launchId,
+                LaunchId = _fixture.LaunchId,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
@@ -490,7 +390,7 @@ namespace ReportPortal.Client.Tests.TestItem
 
             var step1 = await Service.StartTestItemAsync(test1.Id, new StartTestItemRequest
             {
-                LaunchId = _launchId,
+                LaunchId = _fixture.LaunchId,
                 Name = "Step1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Step
@@ -520,7 +420,7 @@ namespace ReportPortal.Client.Tests.TestItem
 
             var test2 = await Service.StartTestItemAsync(suite.Id, new StartTestItemRequest
             {
-                LaunchId = _launchId,
+                LaunchId = _fixture.LaunchId,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
@@ -530,7 +430,7 @@ namespace ReportPortal.Client.Tests.TestItem
 
             var step2 = await Service.StartTestItemAsync(test2.Id, new StartTestItemRequest
             {
-                LaunchId = _launchId,
+                LaunchId = _fixture.LaunchId,
                 Name = "Step1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Step
@@ -633,13 +533,6 @@ namespace ReportPortal.Client.Tests.TestItem
             Assert.Equal(Username, step2.Issue.ExternalSystemIssues.First().Submitter);
             Assert.Equal(issue2.ExternalSystemIssues.First().TicketId, step2.Issue.ExternalSystemIssues.First().TicketId);
             Assert.Equal(issue2.ExternalSystemIssues.First().Url, step2.Issue.ExternalSystemIssues.First().Url);
-
-            await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
-            {
-                EndTime = DateTime.UtcNow
-            });
-            var delMessage = await Service.DeleteTestItemAsync(test1.Id);
-            Assert.Contains("successfully", delMessage.Info);
         }
 
         [Fact]
@@ -647,10 +540,6 @@ namespace ReportPortal.Client.Tests.TestItem
         {
             var histories = await Service.GetTestItemHistoryAsync("5bc4bada2ab79c0001391c15", 5, true);
             Assert.Equal(5, histories.Count);
-            await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
-            {
-                EndTime = DateTime.UtcNow
-            });
         }
 
         [Fact]
@@ -661,7 +550,7 @@ namespace ReportPortal.Client.Tests.TestItem
 
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _launchId,
+                LaunchId = _fixture.LaunchId,
                 Name = testItemName,
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
@@ -677,12 +566,6 @@ namespace ReportPortal.Client.Tests.TestItem
                 Status = Status.Passed
             });
             Assert.Contains("successfully", message.Info);
-            await Service.FinishLaunchAsync(_launchId, new FinishLaunchRequest
-            {
-                EndTime = DateTime.UtcNow
-            });
-            var delMessage = await Service.DeleteTestItemAsync(test.Id);
-            Assert.Contains("successfully", delMessage.Info);
         }
     }
 }
