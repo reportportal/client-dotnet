@@ -286,5 +286,26 @@ namespace ReportPortal.Client.Tests.LaunchItem
                 EndTime = DateTime.UtcNow
             }, true);
         }
+
+        [Fact]
+        public async Task GetInProgressLaunch()
+        {
+            var launch = await Service.StartLaunchAsync(new StartLaunchRequest
+            {
+                Name = "GetInProgressLaunch",
+                StartTime = DateTime.UtcNow,
+                Mode = LaunchMode.Debug
+            });
+
+            var getLaunch = await Service.GetLaunchAsync(launch.Id);
+
+            Assert.NotNull(getLaunch.StartTime);
+            Assert.Null(getLaunch.EndTime);
+
+            await Service.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
+            {
+                EndTime = DateTime.UtcNow
+            }, true);
+        }
     }
 }
