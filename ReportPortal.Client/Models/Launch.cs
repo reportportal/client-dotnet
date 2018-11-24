@@ -23,36 +23,28 @@ namespace ReportPortal.Client.Models
         [DataMember(Name = "mode")]
         public string ModeString { get; set; }
 
-        public LaunchMode Mode { get { return EnumConverter.ConvertTo<LaunchMode>(ModeString); } set { ModeString = EnumConverter.ConvertFrom(value); } }
+        public LaunchMode Mode 
+        {
+            get => EnumConverter.ConvertTo<LaunchMode>(ModeString);
+            set => ModeString = EnumConverter.ConvertFrom(value);
+        }
 
         [DataMember(Name = "start_time")]
         public string StartTimeString { get; set; }
 
         public DateTime StartTime
         {
-            get
-            {
-                return DateTimeConverter.ConvertTo(StartTimeString);
-            }
-            set
-            {
-                StartTimeString = DateTimeConverter.ConvertFrom(value);
-            }
+            get => DateTimeConverter.ConvertTo(StartTimeString);
+            set => StartTimeString = DateTimeConverter.ConvertFrom(value);
         }
 
         [DataMember(Name = "end_time")]
         public string EndTimeString { get; set; }
 
-        public DateTime EndTime
+        public DateTime? EndTime
         {
-            get
-            {
-                return DateTimeConverter.ConvertTo(EndTimeString);
-            }
-            set
-            {
-                EndTimeString = DateTimeConverter.ConvertFrom(value);
-            }
+            get => EndTimeString == null ? (DateTime?)null : DateTimeConverter.ConvertTo(StartTimeString);
+            set => EndTimeString = DateTimeConverter.ConvertFrom(value.GetValueOrDefault());
         }
 
         [DataMember(Name = "tags")]
