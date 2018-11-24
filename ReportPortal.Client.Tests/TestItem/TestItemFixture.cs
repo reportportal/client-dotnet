@@ -9,11 +9,11 @@ using Xunit;
 
 namespace ReportPortal.Client.Tests.TestItem
 {
-    public class TestItemFixture : BaseFixture, IClassFixture<TestItemFixtureBase>
+    public class TestItemFixture : BaseFixture, IClassFixture<LaunchFixtureBase>
     {
-        private TestItemFixtureBase _fixture;
+        private LaunchFixtureBase _fixture;
 
-        public TestItemFixture(TestItemFixtureBase fixture)
+        public TestItemFixture(LaunchFixtureBase fixture)
         {
             _fixture = fixture;
         }
@@ -23,7 +23,7 @@ namespace ReportPortal.Client.Tests.TestItem
         {
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _fixture.LaunchId,
+                LaunchId = _fixture.Launch.Id,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
@@ -42,14 +42,14 @@ namespace ReportPortal.Client.Tests.TestItem
         {
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _fixture.LaunchId,
+                LaunchId = _fixture.Launch.Id,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test,
                 Tags = new List<string> { "MyTag1" }
             });
 
-            var uniqueTags = await Service.GetUniqueTagsAsync(_fixture.LaunchId, "myta");
+            var uniqueTags = await Service.GetUniqueTagsAsync(_fixture.Launch.Id, "myta");
             Assert.Contains("MyTag1", uniqueTags);
 
             Assert.NotNull(test.Id);
@@ -68,7 +68,7 @@ namespace ReportPortal.Client.Tests.TestItem
 
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _fixture.LaunchId,
+                LaunchId = _fixture.Launch.Id,
                 Name = testItemName,
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
@@ -77,7 +77,7 @@ namespace ReportPortal.Client.Tests.TestItem
 
             var test2 = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _fixture.LaunchId,
+                LaunchId = _fixture.Launch.Id,
                 Name = testItemName,
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
@@ -88,7 +88,7 @@ namespace ReportPortal.Client.Tests.TestItem
             {
                 Filters = new List<Filter>
                         {
-                            new Filter(FilterOperation.Equals, "launch", _fixture.LaunchId),
+                            new Filter(FilterOperation.Equals, "launch", _fixture.Launch.Id),
                             new Filter(FilterOperation.Equals, "name", testItemName)
                         }
             });
@@ -115,7 +115,7 @@ namespace ReportPortal.Client.Tests.TestItem
             var now = DateTime.UtcNow;
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _fixture.LaunchId,
+                LaunchId = _fixture.Launch.Id,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test,
@@ -150,7 +150,7 @@ namespace ReportPortal.Client.Tests.TestItem
         {
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _fixture.LaunchId,
+                LaunchId = _fixture.Launch.Id,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = type
@@ -172,7 +172,7 @@ namespace ReportPortal.Client.Tests.TestItem
         {
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _fixture.LaunchId,
+                LaunchId = _fixture.Launch.Id,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
@@ -191,7 +191,7 @@ namespace ReportPortal.Client.Tests.TestItem
         {
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _fixture.LaunchId,
+                LaunchId = _fixture.Launch.Id,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Step
@@ -224,7 +224,7 @@ namespace ReportPortal.Client.Tests.TestItem
         {
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _fixture.LaunchId,
+                LaunchId = _fixture.Launch.Id,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Step
@@ -248,7 +248,7 @@ namespace ReportPortal.Client.Tests.TestItem
         {
             var suite = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _fixture.LaunchId,
+                LaunchId = _fixture.Launch.Id,
                 Name = "Suite1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Suite,
@@ -257,7 +257,7 @@ namespace ReportPortal.Client.Tests.TestItem
 
             var test = await Service.StartTestItemAsync(suite.Id, new StartTestItemRequest
             {
-                LaunchId = _fixture.LaunchId,
+                LaunchId = _fixture.Launch.Id,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
@@ -285,7 +285,7 @@ namespace ReportPortal.Client.Tests.TestItem
         {
             var suite = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _fixture.LaunchId,
+                LaunchId = _fixture.Launch.Id,
                 Name = "Suite1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Suite
@@ -293,7 +293,7 @@ namespace ReportPortal.Client.Tests.TestItem
 
             var test = await Service.StartTestItemAsync(suite.Id, new StartTestItemRequest
             {
-                LaunchId = _fixture.LaunchId,
+                LaunchId = _fixture.Launch.Id,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
@@ -305,7 +305,7 @@ namespace ReportPortal.Client.Tests.TestItem
 
             var step = await Service.StartTestItemAsync(test.Id, new StartTestItemRequest
             {
-                LaunchId = _fixture.LaunchId,
+                LaunchId = _fixture.Launch.Id,
                 Name = "Step1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Step
@@ -341,7 +341,7 @@ namespace ReportPortal.Client.Tests.TestItem
         {
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _fixture.LaunchId,
+                LaunchId = _fixture.Launch.Id,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
@@ -372,7 +372,7 @@ namespace ReportPortal.Client.Tests.TestItem
         {
             var suite = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _fixture.LaunchId,
+                LaunchId = _fixture.Launch.Id,
                 Name = "Suite1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Suite
@@ -380,7 +380,7 @@ namespace ReportPortal.Client.Tests.TestItem
 
             var test1 = await Service.StartTestItemAsync(suite.Id, new StartTestItemRequest
             {
-                LaunchId = _fixture.LaunchId,
+                LaunchId = _fixture.Launch.Id,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
@@ -390,7 +390,7 @@ namespace ReportPortal.Client.Tests.TestItem
 
             var step1 = await Service.StartTestItemAsync(test1.Id, new StartTestItemRequest
             {
-                LaunchId = _fixture.LaunchId,
+                LaunchId = _fixture.Launch.Id,
                 Name = "Step1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Step
@@ -420,7 +420,7 @@ namespace ReportPortal.Client.Tests.TestItem
 
             var test2 = await Service.StartTestItemAsync(suite.Id, new StartTestItemRequest
             {
-                LaunchId = _fixture.LaunchId,
+                LaunchId = _fixture.Launch.Id,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
@@ -430,7 +430,7 @@ namespace ReportPortal.Client.Tests.TestItem
 
             var step2 = await Service.StartTestItemAsync(test2.Id, new StartTestItemRequest
             {
-                LaunchId = _fixture.LaunchId,
+                LaunchId = _fixture.Launch.Id,
                 Name = "Step1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Step
@@ -550,7 +550,7 @@ namespace ReportPortal.Client.Tests.TestItem
 
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _fixture.LaunchId,
+                LaunchId = _fixture.Launch.Id,
                 Name = testItemName,
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test

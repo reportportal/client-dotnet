@@ -7,12 +7,21 @@ using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 using System.Threading.Tasks;
 using System.Net.Http;
+using ReportPortal.Client.Tests;
 using Xunit;
 
 namespace ReportPortal.Client.Tests.LaunchItem
 {
-    public class LaunchItemFixture : BaseFixture
+    public class LaunchItemFixture : BaseFixture, IClassFixture<LaunchFixtureBase>
     {
+
+        private LaunchFixtureBase _baseFixture;
+
+        public LaunchItemFixture(LaunchFixtureBase baseFixture)
+        {
+            _baseFixture = baseFixture;
+        }
+
         [Fact]
         public async Task GetInvalidLaunch()
         {
@@ -265,47 +274,23 @@ namespace ReportPortal.Client.Tests.LaunchItem
         [Fact]
         public async Task StartForceFinishIncompleteLaunch()
         {
-            var launch = await Service.StartLaunchAsync(new StartLaunchRequest
-            {
-                Name = "StartForceFinishIncompleteLaunch",
-                StartTime = DateTime.UtcNow,
-                Mode = LaunchMode.Default
-            });
-
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = launch.Id,
+                LaunchId = _baseFixture.Launch.Id,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
             });
             Assert.NotNull(test.Id);
-
-            await Service.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
-            {
-                EndTime = DateTime.UtcNow
-            }, true);
         }
 
         [Fact]
         public async Task GetInProgressLaunch()
         {
-            var launch = await Service.StartLaunchAsync(new StartLaunchRequest
-            {
-                Name = "GetInProgressLaunch",
-                StartTime = DateTime.UtcNow,
-                Mode = LaunchMode.Debug
-            });
-
-            var getLaunch = await Service.GetLaunchAsync(launch.Id);
+            var getLaunch = await Service.GetLaunchAsync(_baseFixture.Launch.Id);
 
             Assert.NotNull(getLaunch.StartTime);
             Assert.Null(getLaunch.EndTime);
-
-            await Service.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
-            {
-                EndTime = DateTime.UtcNow
-            }, true);
         }
     }
 }
