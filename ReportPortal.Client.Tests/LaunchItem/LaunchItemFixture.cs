@@ -13,7 +13,6 @@ namespace ReportPortal.Client.Tests.LaunchItem
 {
     public class LaunchItemFixture : BaseFixture, IClassFixture<LaunchFixtureBase>
     {
-
         private LaunchFixtureBase _baseFixture;
 
         public LaunchItemFixture(LaunchFixtureBase baseFixture)
