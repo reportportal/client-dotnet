@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ReportPortal.Client.Extentions;
 using ReportPortal.Client.Filtering;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
@@ -12,15 +11,8 @@ using Xunit;
 
 namespace ReportPortal.Client.Tests.LaunchItem
 {
-    public class LaunchItemFixture : BaseFixture, IClassFixture<LaunchFixtureBase>
+    public class LaunchItemFixture : BaseFixture
     {
-        private LaunchFixtureBase _baseFixture;
-
-        public LaunchItemFixture(LaunchFixtureBase baseFixture)
-        {
-            _baseFixture = baseFixture;
-        }
-
         [Fact]
         public async Task GetInvalidLaunch()
         {
@@ -301,7 +293,14 @@ namespace ReportPortal.Client.Tests.LaunchItem
         [Fact]
         public async Task GetInProgressLaunch()
         {
-            var getLaunch = await Service.GetLaunchAsync(_baseFixture.LaunchId);
+            var launch = await Service.StartLaunchAsync(new StartLaunchRequest
+            {
+                Name = "StartForceFinishIncompleteLaunch",
+                StartTime = DateTime.UtcNow,
+                Mode = LaunchMode.Default
+            });
+
+            var getLaunch = await Service.GetLaunchAsync(launch.Id);
 
             Assert.NotNull(getLaunch.StartTime);
             Assert.Null(getLaunch.EndTime);
