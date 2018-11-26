@@ -304,6 +304,14 @@ namespace ReportPortal.Client.Tests.LaunchItem
 
             Assert.NotNull(getLaunch.StartTime);
             Assert.Null(getLaunch.EndTime);
+
+            await Service.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
+            {
+                EndTime = DateTime.UtcNow
+            }, true);
+
+            var delMessage = await Service.DeleteLaunchAsync(launch.Id);
+            Assert.Contains("successfully", delMessage.Info);
         }
     }
 }
