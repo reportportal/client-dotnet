@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ReportPortal.Client.Tests
+namespace ReportPortal.Client.Tests.Base
 {
     public class BaseFixture
     {

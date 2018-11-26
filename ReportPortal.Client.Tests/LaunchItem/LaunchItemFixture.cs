@@ -7,6 +7,7 @@ using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 using System.Threading.Tasks;
 using System.Net.Http;
+using ReportPortal.Client.Tests.Base;
 using Xunit;
 
 namespace ReportPortal.Client.Tests.LaunchItem
@@ -272,20 +273,35 @@ namespace ReportPortal.Client.Tests.LaunchItem
         [Fact]
         public async Task StartForceFinishIncompleteLaunch()
         {
+            var launch = await Service.StartLaunchAsync(new StartLaunchRequest
+            {
+                Name = "StartForceFinishIncompleteLaunch",
+                StartTime = DateTime.UtcNow,
+                Mode = LaunchMode.Default
+            });
+
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _baseFixture.Launch.Id,
+                LaunchId = launch.Id,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
             });
             Assert.NotNull(test.Id);
+
+            await Service.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
+            {
+                EndTime = DateTime.UtcNow
+            }, true);
+
+            var delMessage = await Service.DeleteLaunchAsync(launch.Id);
+            Assert.Contains("successfully", delMessage.Info);
         }
 
         [Fact]
         public async Task GetInProgressLaunch()
         {
-            var getLaunch = await Service.GetLaunchAsync(_baseFixture.Launch.Id);
+            var getLaunch = await Service.GetLaunchAsync(_baseFixture.LaunchId);
 
             Assert.NotNull(getLaunch.StartTime);
             Assert.Null(getLaunch.EndTime);

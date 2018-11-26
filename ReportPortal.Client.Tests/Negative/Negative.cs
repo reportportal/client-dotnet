@@ -1,11 +1,12 @@
 ﻿using System;
-using ReportPortal.Client.Requests;
-using System.Threading.Tasks;
 using System.Net.Http;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
+using ReportPortal.Client.Requests;
+using ReportPortal.Client.Tests.Base;
 using Xunit;
 
-namespace ReportPortal.Client.Tests
+namespace ReportPortal.Client.Tests.Negative
 {
     public class NegativeFixture : BaseFixture
     {
