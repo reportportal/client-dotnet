@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ReportPortal.Client.Extentions;
 using ReportPortal.Client.Filtering;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
@@ -285,6 +284,9 @@ namespace ReportPortal.Client.Tests.LaunchItem
             {
                 EndTime = DateTime.UtcNow
             }, true);
+
+            var delMessage = await Service.DeleteLaunchAsync(launch.Id);
+            Assert.Contains("successfully", delMessage.Info);
         }
 
         [Fact]
@@ -292,9 +294,9 @@ namespace ReportPortal.Client.Tests.LaunchItem
         {
             var launch = await Service.StartLaunchAsync(new StartLaunchRequest
             {
-                Name = "GetInProgressLaunch",
+                Name = "StartForceFinishIncompleteLaunch",
                 StartTime = DateTime.UtcNow,
-                Mode = LaunchMode.Debug
+                Mode = LaunchMode.Default
             });
 
             var getLaunch = await Service.GetLaunchAsync(launch.Id);
@@ -306,6 +308,9 @@ namespace ReportPortal.Client.Tests.LaunchItem
             {
                 EndTime = DateTime.UtcNow
             }, true);
+
+            var delMessage = await Service.DeleteLaunchAsync(launch.Id);
+            Assert.Contains("successfully", delMessage.Info);
         }
     }
 }

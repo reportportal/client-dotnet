@@ -1,14 +1,14 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using ReportPortal.Client.Requests;
 
-namespace ReportPortal.Client.Tests.TestItem
+namespace ReportPortal.Client.Tests
 {
-    public class TestItemFixtureBase : BaseFixture, IDisposable
+    public class LaunchFixtureBase: BaseFixture, IDisposable
     {
         public string LaunchId { get; set; }
 
-        public TestItemFixtureBase()
+        public LaunchFixtureBase()
         {
             LaunchId = Task.Run(async () => await Service.StartLaunchAsync(new StartLaunchRequest
             {

@@ -9,11 +9,11 @@ using Xunit;
 
 namespace ReportPortal.Client.Tests.TestItem
 {
-    public class TestItemFixture : BaseFixture, IClassFixture<TestItemFixtureBase>
+    public class TestItemFixture : BaseFixture, IClassFixture<LaunchFixtureBase>
     {
-        private TestItemFixtureBase _fixture;
+        private LaunchFixtureBase _fixture;
 
-        public TestItemFixture(TestItemFixtureBase fixture)
+        public TestItemFixture(LaunchFixtureBase fixture)
         {
             _fixture = fixture;
         }
