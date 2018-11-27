@@ -6,7 +6,6 @@ using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 using System.Threading.Tasks;
 using System.Net.Http;
-using ReportPortal.Client.Tests.Base;
 using Xunit;
 
 namespace ReportPortal.Client.Tests.LaunchItem

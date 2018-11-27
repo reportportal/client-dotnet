@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using ReportPortal.Client.Tests.Base;
 using Xunit;
 
 namespace ReportPortal.Client.Tests.User

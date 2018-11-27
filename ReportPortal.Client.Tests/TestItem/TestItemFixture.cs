@@ -5,7 +5,6 @@ using ReportPortal.Client.Filtering;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 using System.Threading.Tasks;
-using ReportPortal.Client.Tests.Base;
 using Xunit;
 
 namespace ReportPortal.Client.Tests.TestItem

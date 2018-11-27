@@ -7,7 +7,6 @@ using ReportPortal.Client.Requests;
 using System.Threading.Tasks;
 using Xunit;
 using System.Text;
-using ReportPortal.Client.Tests.Base;
 
 namespace ReportPortal.Client.Tests.LogItem
 {
