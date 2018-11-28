@@ -117,6 +117,26 @@ namespace ReportPortal.Client.Tests.LogItem
         }
 
         [Fact]
+        public async Task GetLogItem()
+        {
+            var addLogItemRequest = new AddLogItemRequest
+            {
+                TestItemId = _fixture.TestId,
+                Text = "Log1",
+                Time = DateTime.UtcNow,
+                Level = LogLevel.Info
+            };
+
+            var log = await Service.AddLogItemAsync(addLogItemRequest);
+            Assert.NotNull(log.Id);
+
+            var gotLogItem = await Service.GetLogItemAsync(log.Id);
+            Assert.Equal(addLogItemRequest.Text, gotLogItem.Text);
+            Assert.Equal(addLogItemRequest.Level, gotLogItem.Level);
+            Assert.Equal(addLogItemRequest.Time, gotLogItem.Time);
+        }
+
+        [Fact]
         public async Task GetLogItems()
         {
             var newTestId = (await Service.StartTestItemAsync(new StartTestItemRequest
