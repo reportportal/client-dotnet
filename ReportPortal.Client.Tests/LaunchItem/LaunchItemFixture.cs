@@ -89,20 +89,27 @@ namespace ReportPortal.Client.Tests.LaunchItem
         [Fact]
         public async Task StartFinishDeleteLaunch()
         {
-            var launch = await Service.StartLaunchAsync(new StartLaunchRequest
+            var startLaunchRequest = new StartLaunchRequest
             {
                 Name = "StartFinishDeleteLaunch",
                 StartTime = DateTime.UtcNow
-            });
+            };
+
+            var launch = await Service.StartLaunchAsync(startLaunchRequest);
             Assert.NotNull(launch.Id);
-            var message = await Service.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
+
+            var finishLaunchRequest = new FinishLaunchRequest
             {
-                EndTime = DateTime.UtcNow
-            });
+                EndTime = DateTime.UtcNow.AddHours(1)
+            };
+
+            var message = await Service.FinishLaunchAsync(launch.Id, finishLaunchRequest);
             Assert.Contains("successfully", message.Info);
 
             var gotLaunch = await Service.GetLaunchAsync(launch.Id);
             Assert.Equal("StartFinishDeleteLaunch", gotLaunch.Name);
+            Assert.Equal(startLaunchRequest.StartTime, gotLaunch.StartTime);
+            Assert.Equal(finishLaunchRequest.EndTime, gotLaunch.EndTime);
 
             var delMessage = await Service.DeleteLaunchAsync(launch.Id);
             Assert.Contains("successfully", delMessage.Info);

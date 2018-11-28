@@ -43,7 +43,7 @@ namespace ReportPortal.Client.Models
 
         public DateTime? EndTime
         {
-            get => EndTimeString == null ? (DateTime?)null : DateTimeConverter.ConvertTo(StartTimeString);
+            get => EndTimeString == null ? (DateTime?)null : DateTimeConverter.ConvertTo(EndTimeString);
             set => EndTimeString = DateTimeConverter.ConvertFrom(value.GetValueOrDefault());
         }
 
