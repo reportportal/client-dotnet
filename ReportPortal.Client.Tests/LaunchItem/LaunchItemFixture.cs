@@ -199,14 +199,18 @@ namespace ReportPortal.Client.Tests.LaunchItem
             });
             Assert.Contains("successfully", message.Info);
 
-            var mergedLaunch = await Service.MergeLaunchesAsync(new MergeLaunchesRequest
+            var mergeRequest = new MergeLaunchesRequest
             {
                 Name = "MergedLaunch",
                 Launches = new List<string> { launch1.Id, launch2.Id },
                 MergeType = "BASIC",
                 StartTime = DateTime.UtcNow,
                 EndTime = DateTime.UtcNow
-            });
+            };
+
+            var mergedLaunch = await Service.MergeLaunchesAsync(mergeRequest);
+            Assert.Equal(mergeRequest.StartTime, mergedLaunch.StartTime);
+            Assert.Equal(mergeRequest.EndTime, mergedLaunch.EndTime);
 
             var delMessage = await Service.DeleteLaunchAsync(mergedLaunch.Id);
             Assert.Contains("successfully", delMessage.Info);
