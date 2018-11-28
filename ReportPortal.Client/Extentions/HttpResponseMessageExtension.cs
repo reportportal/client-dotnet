@@ -16,7 +16,7 @@ namespace ReportPortal.Client.Extentions
             }
             catch(Exception exp)
             {
-                throw new HttpRequestException($"Unexpected response status code. Request URI: {requestUri}{Environment.NewLine}Response Body: {body}", exp);
+                throw new HttpRequestException($"Unexpected response status code. {httpResponseMessage.RequestMessage.Method} {requestUri}{Environment.NewLine}Response Body: {body}", exp);
             }
         }
     }

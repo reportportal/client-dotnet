@@ -53,6 +53,8 @@ namespace ReportPortal.Client.Tests.UserFilter
         [Fact]
         public async Task CreateDeleteUserFilter()
         {
+            var filterName = Guid.NewGuid().ToString();
+
             var filterEntity = new FilterEntity
             {
                 UserFilterCondition = UserFilterCondition.Contains,
@@ -74,7 +76,7 @@ namespace ReportPortal.Client.Tests.UserFilter
 
             var filterElement = new FilterElement
             {
-                Name = Guid.NewGuid().ToString(),
+                Name = filterName,
                 Description = "testDscr_1",
                 IsLink = false,
                 Share = true,
@@ -87,6 +89,7 @@ namespace ReportPortal.Client.Tests.UserFilter
 
             var userFilterContainer = await Service.GetUserFiltersAsync(new FilterOption
             {
+                Filters = new List<Filter> { new Filter(FilterOperation.Equals, "name", filterName)},
                 Paging = new Paging(1, 200)
             });
             Assert.Contains(userFilterContainer.FilterElements, f => f.Id.Equals(userFilters.First().Id));
