@@ -69,7 +69,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
 
             Assert.True(launches.Launches.Count() > 0);
 
-            Assert.Equal(launches.Launches.OrderBy(l => l.StartTime), launches.Launches);
+            Assert.Equal(launches.Launches.Select(l => l.StartTime).OrderBy(st => st), launches.Launches.Select(l => l.StartTime));
         }
 
         [Fact]
@@ -83,7 +83,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
 
             Assert.True(launches.Launches.Count() > 0);
 
-            Assert.Equal(launches.Launches.OrderBy(l => l.StartTime).Reverse(), launches.Launches);
+            Assert.Equal(launches.Launches.Select(l => l.StartTime).OrderByDescending(st => st), launches.Launches.Select(l => l.StartTime));
         }
 
         [Fact]
