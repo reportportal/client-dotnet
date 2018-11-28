@@ -112,30 +112,37 @@ namespace ReportPortal.Client.Tests.TestItem
         [Fact]
         public async Task StartFinishFullTest()
         {
-            var now = DateTime.UtcNow;
-            var test = await Service.StartTestItemAsync(new StartTestItemRequest
+            var startTestItemRequest = new StartTestItemRequest
             {
                 LaunchId = _fixture.LaunchId,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test,
                 Description = "Desc for test"
-            });
+            };
+
+            var test = await Service.StartTestItemAsync(startTestItemRequest);
             Assert.NotNull(test.Id);
 
             var getTest = await Service.GetTestItemAsync(test.Id);
             Assert.Null(getTest.ParentId);
-            Assert.Equal("Test1", getTest.Name);
-            Assert.Equal(now.ToString(), getTest.StartTime.ToString());
-            Assert.Equal(TestItemType.Test, getTest.Type);
-            Assert.Equal("Desc for test", getTest.Description);
+            Assert.Equal(startTestItemRequest.Name, getTest.Name);
+            Assert.Equal(startTestItemRequest.StartTime, getTest.StartTime);
+            Assert.Equal(startTestItemRequest.Type, getTest.Type);
+            Assert.Equal(startTestItemRequest.Description, getTest.Description);
 
-            var message = await Service.FinishTestItemAsync(test.Id, new FinishTestItemRequest
+            var finishTestItemRequest = new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
-            });
+            };
+
+            var message = await Service.FinishTestItemAsync(test.Id, finishTestItemRequest);
             Assert.Contains("successfully", message.Info);
+
+            getTest = await Service.GetTestItemAsync(test.Id);
+            Assert.Equal(finishTestItemRequest.Status, getTest.Status);
+            Assert.Equal(finishTestItemRequest.EndTime, getTest.EndTime);
         }
 
         [Theory]
