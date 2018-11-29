@@ -16,7 +16,7 @@ namespace ReportPortal.Client.Tests.UserFilter
         {
             var filterEntity = new FilterEntity
             {
-                UserFilterCondition = UserFilterCondition.Contains,
+                UserFilterCondition = FilterOperation.Contains,
                 FilteringField = "name",
                 Value = "test value"
             };
@@ -57,7 +57,7 @@ namespace ReportPortal.Client.Tests.UserFilter
 
             var filterEntity = new FilterEntity
             {
-                UserFilterCondition = UserFilterCondition.Contains,
+                UserFilterCondition = FilterOperation.Contains,
                 FilteringField = "name",
                 Value = "test value"
             };

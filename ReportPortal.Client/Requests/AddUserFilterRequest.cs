@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
 using ReportPortal.Client.Converters;
+using ReportPortal.Client.Filtering;
 using ReportPortal.Client.Models;
 
 namespace ReportPortal.Client.Requests
@@ -82,9 +83,9 @@ namespace ReportPortal.Client.Requests
         [DataMember(Name = "condition")]
         public string ConditionStr { get; set; }
 
-        public UserFilterCondition UserFilterCondition
+        public FilterOperation UserFilterCondition
         {
-            get => EnumConverter.ConvertTo<UserFilterCondition>(ConditionStr);
+            get => EnumConverter.ConvertTo<FilterOperation>(ConditionStr);
             set => ConditionStr = EnumConverter.ConvertFrom(value);
         }
 

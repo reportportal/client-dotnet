@@ -15,7 +15,7 @@ namespace ReportPortal.Client.Tests.Project
         {
             var filterEntity = new FilterEntity
             {
-                UserFilterCondition = UserFilterCondition.Contains,
+                UserFilterCondition = Filtering.FilterOperation.Contains,
                 FilteringField = "name",
                 Value = "test value"
             };
