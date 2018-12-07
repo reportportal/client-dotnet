@@ -7,6 +7,7 @@ using ReportPortal.Client;
 using ReportPortal.Client.Requests;
 using System.Diagnostics;
 using System.Collections.Generic;
+using ReportPortal.Client.Models;
 
 namespace ReportPortal.Shared
 {
@@ -27,15 +28,21 @@ namespace ReportPortal.Shared
             ThreadId = Thread.CurrentThread.ManagedThreadId;
         }
 
+        // TODO public fields :( Reworking it to properties is breaking change for agents
         public string TestId;
+        public string TestName;
+        public Status Status;
 
         public Task StartTask;
         public DateTime StartTime;
+        public DateTime FinishTime;
 
         public int ThreadId { get; set; }
 
         public void Start(StartTestItemRequest request)
         {
+            TestName = request.Name;
+
             Bridge.TestReporterExtensions.ForEach(e => e.TestNodeStarting(this, request));
 
             var dependentTasks = new List<Task>();
@@ -86,6 +93,9 @@ namespace ReportPortal.Shared
         public Task FinishTask;
         public void Finish(FinishTestItemRequest request)
         {
+            FinishTime = request.EndTime;
+            Status = request.Status;
+
             Bridge.TestReporterExtensions.ForEach(e => e.TestNodeFinishing(this, request));
 
             var dependentTasks = new List<Task>();
