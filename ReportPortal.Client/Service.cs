@@ -36,7 +36,7 @@ namespace ReportPortal.Client
             Project = project;
 
 #if NET45
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
+            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
 #endif
         }
 
