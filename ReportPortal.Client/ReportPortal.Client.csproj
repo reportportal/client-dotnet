@@ -5,7 +5,7 @@
     <Version>1.0.0</Version>
     <Description>Async client for ReportPortal Web API</Description>
     <Authors>Nikolay Borisenko, Report Portal Community</Authors>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/reportportal/client-net/master/LICENSE</PackageLicenseUrl>
+    <License>https://raw.githubusercontent.com/reportportal/client-net/master/LICENSE</License>
     <PackageProjectUrl>http://reportportal.io</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/reportportal/client-net/master/Logo.png</PackageIconUrl>
     <RepositoryType>GitHub</RepositoryType>
@@ -21,6 +21,10 @@
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45'">
     <Reference Include="System.Net.Http" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Build\**" Pack="true" PackagePath="build\" />
   </ItemGroup>
 
 </Project>
