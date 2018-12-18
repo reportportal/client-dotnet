@@ -1,0 +1,11 @@
+﻿<Project>
+
+  <PropertyGroup>
+
+    <_ReportPortal_Shared_Runtime Condition=" '$(TargetFrameworkIdentifier)' == '.NETCoreApp' ">netstandard2.0</_ReportPortal_Shared_Runtime>
+    <_ReportPortal_Shared_Runtime Condition=" '$(TargetFrameworkIdentifier)' == '.NETFramework' ">net45</_ReportPortal_Shared_Runtime>
+    <_ReportPortal_Shared_Runtime_Path>$(MSBuildThisFileDirectory)\..\lib\$(_ReportPortal_Shared_Runtime)\ReportPortal.Shared.dll</_ReportPortal_Shared_Runtime_Path>
+
+  </PropertyGroup>
+
+</Project>
