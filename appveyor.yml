@@ -17,7 +17,7 @@ test_script:
   - dotnet test .\ReportPortal.Client.Tests\ReportPortal.Client.Tests.csproj --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=OpenCover /p:CoverletOutput=./Coverage.xml
 
 after_test:
-  - dotnet pack
+  - dotnet pack --include-symbols
   - codecov -f .\ReportPortal.Client.Tests\Coverage.xml
 
 artifacts:
