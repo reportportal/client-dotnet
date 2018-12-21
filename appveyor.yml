@@ -1,4 +1,6 @@
 ﻿
+image: Visual Studio 2017
+
 install:
   - gitversion /l console /output buildserver
   - choco install codecov
