@@ -16,7 +16,8 @@ test_script:
   - cmd: dotnet test .\ReportPortal.Shared.Tests\ReportPortal.Shared.Tests.csproj --no-build
 
 after_test:
-  - cmd: dotnet pack
+  - cmd: dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg
 
 artifacts:
   - path: '**\*.nupkg'
+  - path: '**\*.snupkg'
