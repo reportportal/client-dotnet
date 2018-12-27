@@ -5,10 +5,10 @@ using Xunit;
 
 namespace ReportPortal.Shared.Tests
 {
-    public class UnitTest1
+    public class ReportingTest
     {
         [Fact]
-        public void BigAsyncTree()
+        public async Task BigAsyncTree()
         {
             var service = new Service(new Uri("https://rp.epam.com/api/v1/"), "default_project", "7853c7a9-7f27-43ea-835a-cab01355fd17");
             var launchReporter = new LaunchReporter(service);
@@ -64,13 +64,15 @@ namespace ReportPortal.Shared.Tests
                     Status = Client.Models.Status.Passed
                 });
             }
-            
 
             launchReporter.Finish(new Client.Requests.FinishLaunchRequest
             {
                 EndTime = launchDateTime
             });
+
             launchReporter.FinishTask.Wait();
+
+            await service.DeleteLaunchAsync(launchReporter.LaunchId);
         }
     }
 }
