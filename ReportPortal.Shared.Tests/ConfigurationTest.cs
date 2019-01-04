@@ -1,6 +1,7 @@
 using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Configuration.Providers;
 using System;
+using System.IO;
 using Xunit;
 
 namespace ReportPortal.Shared.Tests
@@ -19,6 +20,18 @@ namespace ReportPortal.Shared.Tests
             var variable = config.GetValue<string>(paramName);
 
             Assert.Equal(paramValue, variable);
+        }
+
+        [Fact]
+        public void ShouldGetVariableFromJsonFile()
+        {
+            var filePath = Path.GetTempFileName();
+
+            File.WriteAllText(filePath, "{\"abc\": \"test\"}");
+
+            var config = new ConfigurationBuilder().AddJsonFile(filePath: filePath).Build();
+
+            var variable = config.GetValue<string>("abc");
         }
     }
 }
