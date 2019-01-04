@@ -1,7 +1,8 @@
 ﻿image: Visual Studio 2017
 
 install:
-  - ps: gitversion /l console /output buildserver
+  - gitversion /l console /output buildserver
+  - choco install codecov
 
 configuration:
   - Release
@@ -14,10 +15,11 @@ build_script:
   - cmd: dotnet build
 
 test_script:
-  - cmd: dotnet test --no-build
+  - cmd: dotnet test --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=OpenCover /p:CoverletOutput=./Coverage.xml
 
 after_test:
-  - cmd: dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg
+  - dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg
+  - codecov -f .\ReportPortal.Shared.Tests\Coverage.xml
 
 artifacts:
   - path: '**\*.nupkg'
