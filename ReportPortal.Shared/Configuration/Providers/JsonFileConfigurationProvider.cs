@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using System.Xml;
 
 namespace ReportPortal.Shared.Configuration.Providers
 {
@@ -20,19 +21,67 @@ namespace ReportPortal.Shared.Configuration.Providers
 
         public IDictionary<string, string> Load()
         {
-            var s = new DataContractJsonSerializer(typeof(Dictionary<string, object>), new DataContractJsonSerializerSettings() { UseSimpleDictionaryFormat = true });
-            using (var file = File.OpenRead(_filePath))
+            var json = File.ReadAllText(_filePath);
+
+            var properties = GetFlattenProperties(json);
+
+            foreach (var property in properties)
             {
-                // TODO: support deeper level deserialization
-                var o = (Dictionary<string, object>)s.ReadObject(file);
-
-                foreach (var property in o)
-                {
-                    Properties[property.Key] = property.Value.ToString();
-                }
-
-                return Properties;
+                Properties[property.Key] = property.Value;
             }
+
+            return Properties;
+        }
+
+        private Dictionary<string, string> GetFlattenProperties(string json)
+        {
+            var properties = new Dictionary<string, string>();
+
+            var jsonReader = JsonReaderWriterFactory.CreateJsonReader(Encoding.UTF8.GetBytes(json), new XmlDictionaryReaderQuotas());
+
+            string propertyName = string.Empty;
+            string propertyValue = null;
+
+            //XmlDocument xml = new XmlDocument();
+            //xml.Load(jsonReader);
+            //var nodes = xml.SelectNodes("//*[text()]");
+
+
+
+            while (jsonReader.Read())
+            {
+                if (jsonReader.NodeType == XmlNodeType.Element)
+                {
+                    propertyName += $"__{jsonReader.Name}";
+                }
+                else if (jsonReader.NodeType == XmlNodeType.EndElement)
+                {
+                    if (jsonReader.Name != "item" && jsonReader.Name != "root" && propertyValue != null)
+                    {
+                        properties[propertyName.Replace("__root__", "")] = propertyValue;
+
+                        propertyValue = null;
+                    }
+
+                    propertyName = propertyName.Substring(0, propertyName.Length - jsonReader.Name.Length - 2);
+
+                    
+                }
+                else if (jsonReader.NodeType == XmlNodeType.Text)
+                {
+                    if (propertyName.EndsWith("item"))
+                    {
+                        propertyValue += $"{jsonReader.Value};";
+                    }
+                    else
+                    {
+                        propertyValue = jsonReader.Value;
+                    }
+                }
+            }
+
+            return properties;
+
         }
     }
 }
