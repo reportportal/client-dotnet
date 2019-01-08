@@ -76,6 +76,35 @@ namespace ReportPortal.Shared.Tests
 
             var variable = config.GetValue<string>("prop1");
             Assert.Equal("value1;value2;", variable);
+
+            var list = config.GetValues<string>("prop1");
+            Assert.Equal(new List<string> { "value1", "value2" }, list);
+        }
+
+        [Fact]
+        public void ShouldGetListOfStringsFromJsonFile()
+        {
+            var tempFile = Path.GetTempFileName();
+
+            File.WriteAllText(tempFile, "{\"prop1\": [\"value1\", \"value2\"]}");
+
+            var config = new ConfigurationBuilder().AddJsonFile(filePath: tempFile).Build();
+
+            var list = config.GetValues<string>("prop1");
+            Assert.Equal(new List<string> { "value1", "value2" }, list);
+        }
+
+        [Fact]
+        public void ShouldGetListOfIntegersFromJsonFile()
+        {
+            var tempFile = Path.GetTempFileName();
+
+            File.WriteAllText(tempFile, "{\"prop1\": [1, 2]}");
+
+            var config = new ConfigurationBuilder().AddJsonFile(filePath: tempFile).Build();
+
+            var list = config.GetValues<int>("prop1");
+            Assert.Equal(new List<int> { 1, 2 }, list);
         }
 
         [Fact]
@@ -107,7 +136,7 @@ namespace ReportPortal.Shared.Tests
         }
 
         [Fact]
-        public void ShouldRaiseExceptionIfVariableNotFount()
+        public void ShouldRaiseExceptionIfVariableNotFound()
         {
             var config = new ConfigurationBuilder().Build();
 
@@ -115,13 +144,31 @@ namespace ReportPortal.Shared.Tests
         }
 
         [Fact]
-        public void ShouldReturnDefaultIfVariableNotFount()
+        public void ShouldReturnDefaultIfVariableNotFound()
         {
             var config = new ConfigurationBuilder().Build();
 
             var a = config.GetValue("a", "abc");
 
             Assert.Equal("abc", a);
+        }
+
+        [Fact]
+        public void ShouldRaiseExceptionIfListNotFound()
+        {
+            var config = new ConfigurationBuilder().Build();
+
+            Assert.Throws<KeyNotFoundException>(() => config.GetValues<string>("a"));
+        }
+
+        [Fact]
+        public void ShouldReturnDefaultIfListNotFound()
+        {
+            var config = new ConfigurationBuilder().Build();
+
+            var list = config.GetValues("a", new List<string> { "abc"});
+
+            Assert.Equal(new List<string> { "abc" }, list);
         }
     }
 }

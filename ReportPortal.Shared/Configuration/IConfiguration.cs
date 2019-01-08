@@ -9,5 +9,9 @@ namespace ReportPortal.Shared.Configuration
         T GetValue<T>(string variable);
 
         T GetValue<T>(string variable, T defaultValue);
+
+        IEnumerable<T> GetValues<T>(string variable);
+
+        IEnumerable<T> GetValues<T>(string variable, IEnumerable<T> defaultValue);
     }
 }
