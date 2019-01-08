@@ -15,7 +15,21 @@ namespace ReportPortal.Shared.Configuration
 
         public T GetValue<T>(string variable)
         {
-            return (T)Values[variable];
+            var propertyValue = Values[variable];
+
+            return (T)Convert.ChangeType(propertyValue, typeof(T));
+        }
+
+        public T GetValue<T>(string variable, T defaultValue)
+        {
+            if (!Values.ContainsKey(variable))
+            {
+                return defaultValue;
+            }
+            else
+            {
+                return GetValue<T>(variable);
+            }
         }
     }
 }

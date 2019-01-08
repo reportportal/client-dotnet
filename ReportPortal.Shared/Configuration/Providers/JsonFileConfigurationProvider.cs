@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Xml;
@@ -42,12 +40,6 @@ namespace ReportPortal.Shared.Configuration.Providers
             string propertyName = string.Empty;
             string propertyValue = null;
 
-            //XmlDocument xml = new XmlDocument();
-            //xml.Load(jsonReader);
-            //var nodes = xml.SelectNodes("//*[text()]");
-
-
-
             while (jsonReader.Read())
             {
                 if (jsonReader.NodeType == XmlNodeType.Element)
@@ -64,8 +56,6 @@ namespace ReportPortal.Shared.Configuration.Providers
                     }
 
                     propertyName = propertyName.Substring(0, propertyName.Length - jsonReader.Name.Length - 2);
-
-                    
                 }
                 else if (jsonReader.NodeType == XmlNodeType.Text)
                 {
@@ -81,7 +71,6 @@ namespace ReportPortal.Shared.Configuration.Providers
             }
 
             return properties;
-
         }
     }
 }

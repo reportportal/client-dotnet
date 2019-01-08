@@ -7,5 +7,7 @@ namespace ReportPortal.Shared.Configuration
         IDictionary<string, object> Values { get; }
 
         T GetValue<T>(string variable);
+
+        T GetValue<T>(string variable, T defaultValue);
     }
 }
