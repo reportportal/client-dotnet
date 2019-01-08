@@ -25,7 +25,21 @@ namespace ReportPortal.Shared.Configuration
 
                 foreach(var value in provider.Properties)
                 {
-                    values[value.Key] = value.Value;
+                    if (value.Value.StartsWith("+"))
+                    {
+                        if (values.ContainsKey(value.Key))
+                        {
+                            values[value.Key] += value.Value.Substring(1);
+                        }
+                        else
+                        {
+                            values[value.Key] = value.Value.Substring(1);
+                        }
+                    }
+                    else
+                    {
+                        values[value.Key] = value.Value;
+                    }
                 }
             }
 

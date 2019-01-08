@@ -166,9 +166,33 @@ namespace ReportPortal.Shared.Tests
         {
             var config = new ConfigurationBuilder().Build();
 
-            var list = config.GetValues("a", new List<string> { "abc"});
+            var list = config.GetValues("a", new List<string> { "abc" });
 
             Assert.Equal(new List<string> { "abc" }, list);
+        }
+
+        [Fact]
+        public void ShouldMergeValuesIfStartsWithPlus()
+        {
+            Environment.SetEnvironmentVariable("REPORTPORTAL__A", "+value1");
+
+            var config = new ConfigurationBuilder().AddEnvironmentVariables().AddEnvironmentVariables().Build();
+
+            var variable = config.GetValue<string>("A");
+
+            Assert.Equal("value1value1", variable);
+        }
+
+        [Fact]
+        public void ShouldMergeListOfValuesIfStartsWithPlus()
+        {
+            Environment.SetEnvironmentVariable("REPORTPORTAL__A", "+value1;");
+
+            var config = new ConfigurationBuilder().AddEnvironmentVariables().AddEnvironmentVariables().Build();
+
+            var list = config.GetValues<string>("A");
+
+            Assert.Equal(new List<string> { "value1", "value1" }, list);
         }
     }
 }
