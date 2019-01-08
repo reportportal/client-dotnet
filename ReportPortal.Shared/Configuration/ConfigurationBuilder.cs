@@ -6,9 +6,6 @@ namespace ReportPortal.Shared.Configuration
 {
     public class ConfigurationBuilder : IConfigurationBuilder
     {
-        public const string PREFIX = "REPORTPORTAL";
-        public const string DELIMETER = "__";
-
         public IList<IConfigurationProvider> Providers { get; } = new List<IConfigurationProvider>();
 
         public IConfigurationBuilder Add(IConfigurationProvider provider)

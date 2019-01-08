@@ -4,7 +4,7 @@
     {
         public static IConfigurationBuilder AddEnvironmentVariables(this IConfigurationBuilder builder)
         {
-            return builder.Add(new EnvironmentVariablesConfigurationProvider(ConfigurationBuilder.PREFIX, ConfigurationBuilder.DELIMETER));
+            return builder.Add(new EnvironmentVariablesConfigurationProvider("REPORTPORTAL", "__"));
         }
     }
 }
