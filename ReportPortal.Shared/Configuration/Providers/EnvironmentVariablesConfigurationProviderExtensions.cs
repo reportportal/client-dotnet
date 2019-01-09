@@ -2,8 +2,8 @@
 {
     public static class EnvironmentVariablesConfigurationProviderExtensions
     {
-        public const string PREFIX = "REPORTPORTAL";
-        public const string DELIMETER = "__";
+        public const string PREFIX = "REPORTPORTAL_";
+        public const string DELIMETER = "_";
 
         public static IConfigurationBuilder AddEnvironmentVariables(this IConfigurationBuilder builder)
         {

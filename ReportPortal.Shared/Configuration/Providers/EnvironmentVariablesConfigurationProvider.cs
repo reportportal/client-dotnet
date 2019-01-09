@@ -26,7 +26,7 @@ namespace ReportPortal.Shared.Configuration.Providers
 
             foreach (var variable in variables)
             {
-                Properties[((string)variable.Key).Substring(_prefix.Length + _delimeter.Length)] = (string)variable.Value;
+                Properties[((string)variable.Key).Substring(_prefix.Length).Replace(_delimeter, ConfigurationPath.KEYDELIMETER)] = (string)variable.Value;
             }
 
             return Properties;

@@ -6,7 +6,7 @@ namespace ReportPortal.Shared.Configuration.Providers
     {
         public static IConfigurationBuilder AddJsonFile(this IConfigurationBuilder builder, string filePath)
         {
-            return builder.Add(new JsonFileConfigurationProvider(filePath));
+            return builder.Add(new JsonFileConfigurationProvider(ConfigurationPath.KEYDELIMETER, filePath));
         }
     }
 }

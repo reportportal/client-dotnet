@@ -11,8 +11,9 @@ namespace ReportPortal.Shared.Tests
     public class ConfigurationTest
     {
         [Theory]
-        [InlineData("REPORTPORTAL__ABC", "ABC", "test")]
-        [InlineData("REPORTPORTAL__ABC", "abc", "test")]
+        [InlineData("REPORTPORTAL_ABC", "ABC", "test")]
+        [InlineData("REPORTPORTAL_ABC", "abc", "test")]
+        [InlineData("REPORTPORTAL_A_B", "a:b", "test")]
         public void ShouldGetEnvironmentVariable(string paramFullName, string paramName, string paramValue)
         {
             Environment.SetEnvironmentVariable(paramFullName, paramValue);
@@ -61,7 +62,7 @@ namespace ReportPortal.Shared.Tests
 
             Assert.Equal(1, config.Values.Count);
 
-            var variable = config.GetValue<string>("prop1__prop2");
+            var variable = config.GetValue<string>("prop1:prop2");
             Assert.Equal("value2", variable);
         }
 
@@ -76,9 +77,6 @@ namespace ReportPortal.Shared.Tests
 
             var variable = config.GetValue<string>("prop1");
             Assert.Equal("value1;value2;", variable);
-
-            var list = config.GetValues<string>("prop1");
-            Assert.Equal(new List<string> { "value1", "value2" }, list);
         }
 
         [Fact]
@@ -174,7 +172,7 @@ namespace ReportPortal.Shared.Tests
         [Fact]
         public void ShouldMergeValuesIfStartsWithPlus()
         {
-            Environment.SetEnvironmentVariable("REPORTPORTAL__A", "+=value1");
+            Environment.SetEnvironmentVariable("REPORTPORTAL_A", "+=value1");
 
             var config = new ConfigurationBuilder().AddEnvironmentVariables().AddEnvironmentVariables().Build();
 
@@ -186,13 +184,25 @@ namespace ReportPortal.Shared.Tests
         [Fact]
         public void ShouldMergeListOfValuesIfStartsWithPlus()
         {
-            Environment.SetEnvironmentVariable("REPORTPORTAL__A", "+=value1;");
+            Environment.SetEnvironmentVariable("REPORTPORTAL_A", "+=value1;");
 
             var config = new ConfigurationBuilder().AddEnvironmentVariables().AddEnvironmentVariables().Build();
 
             var list = config.GetValues<string>("A");
 
             Assert.Equal(new List<string> { "value1", "value1" }, list);
+        }
+
+        [Fact]
+        public void ShouldWorkWithCustomDelimeterAndPrefix()
+        {
+            Environment.SetEnvironmentVariable("CUSTOMPREFIX_prop1-prop2", "value1");
+
+            var config = new ConfigurationBuilder().Add(new EnvironmentVariablesConfigurationProvider("CUSTOMPREFIX_", "-", EnvironmentVariableTarget.Process)).Build();
+
+            var value = config.GetValue<string>("prop1:prop2");
+
+            Assert.Equal("value1", value);
         }
     }
 }

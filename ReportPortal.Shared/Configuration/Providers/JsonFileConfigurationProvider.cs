@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Xml;
@@ -8,10 +9,12 @@ namespace ReportPortal.Shared.Configuration.Providers
 {
     public class JsonFileConfigurationProvider : IConfigurationProvider
     {
+        private string _delimeter;
         private string _filePath;
 
-        public JsonFileConfigurationProvider(string filePath)
+        public JsonFileConfigurationProvider(string delimeter, string filePath)
         {
+            _delimeter = delimeter;
             _filePath = filePath;
         }
 
@@ -44,18 +47,18 @@ namespace ReportPortal.Shared.Configuration.Providers
             {
                 if (jsonReader.NodeType == XmlNodeType.Element)
                 {
-                    propertyName += $"__{jsonReader.Name}";
+                    propertyName += $"{_delimeter}{jsonReader.Name}";
                 }
                 else if (jsonReader.NodeType == XmlNodeType.EndElement)
                 {
                     if (jsonReader.Name != "item" && jsonReader.Name != "root" && propertyValue != null)
                     {
-                        properties[propertyName.Replace("__root__", "")] = propertyValue;
+                        properties[propertyName.Replace($"{_delimeter}root{_delimeter}", "").Replace(_delimeter, ConfigurationPath.KEYDELIMETER)] = propertyValue;
 
                         propertyValue = null;
                     }
 
-                    propertyName = propertyName.Substring(0, propertyName.Length - jsonReader.Name.Length - 2);
+                    propertyName = propertyName.Substring(0, propertyName.Length - jsonReader.Name.Length - _delimeter.Length);
                 }
                 else if (jsonReader.NodeType == XmlNodeType.Text)
                 {
