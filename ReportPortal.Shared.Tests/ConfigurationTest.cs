@@ -49,7 +49,7 @@ namespace ReportPortal.Shared.Tests
             var config = new ConfigurationBuilder().AddEnvironmentVariables().AddJsonFile(filePath: tempFile).Build();
 
             var value = config.GetValue<string>("prop1");
-            Assert.Equal(1, config.Values.Count);
+
             Assert.Equal("over_value1", value);
         }
 
