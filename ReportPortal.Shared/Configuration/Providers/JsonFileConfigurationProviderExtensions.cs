@@ -4,9 +4,9 @@ namespace ReportPortal.Shared.Configuration.Providers
 {
     public static class JsonFileConfigurationProviderExtensions
     {
-        public static IConfigurationBuilder AddJsonFile(this IConfigurationBuilder builder, string filePath)
+        public static IConfigurationBuilder AddJsonFile(this IConfigurationBuilder builder, string filePath, bool optional = true)
         {
-            return builder.Add(new JsonFileConfigurationProvider(ConfigurationPath.KEYDELIMETER, filePath));
+            return builder.Add(new JsonFileConfigurationProvider(ConfigurationPath.KEYDELIMETER, filePath, optional));
         }
     }
 }

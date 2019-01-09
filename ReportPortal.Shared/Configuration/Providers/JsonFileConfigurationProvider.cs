@@ -11,24 +11,33 @@ namespace ReportPortal.Shared.Configuration.Providers
     {
         private string _delimeter;
         private string _filePath;
+        private bool _optional;
 
-        public JsonFileConfigurationProvider(string delimeter, string filePath)
+        public JsonFileConfigurationProvider(string delimeter, string filePath, bool optional)
         {
             _delimeter = delimeter;
             _filePath = filePath;
+            _optional = optional;
         }
 
         public IDictionary<string, string> Properties { get; } = new Dictionary<string, string>();
 
         public IDictionary<string, string> Load()
         {
-            var json = File.ReadAllText(_filePath);
-
-            var properties = GetFlattenProperties(json);
-
-            foreach (var property in properties)
+            if (File.Exists(_filePath))
             {
-                Properties[property.Key] = property.Value;
+                var json = File.ReadAllText(_filePath);
+
+                var properties = GetFlattenProperties(json);
+
+                foreach (var property in properties)
+                {
+                    Properties[property.Key] = property.Value;
+                }
+            }
+            else if (!_optional)
+            {
+                throw new FileLoadException($"Required configuration file '{_filePath}' was not found.");
             }
 
             return Properties;

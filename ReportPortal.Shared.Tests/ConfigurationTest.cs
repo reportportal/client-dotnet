@@ -204,5 +204,17 @@ namespace ReportPortal.Shared.Tests
 
             Assert.Equal("value1", value);
         }
+
+        [Fact]
+        public void ShouldNotThrowExceptionIfJsonFileNotFound()
+        {
+             new ConfigurationBuilder().AddJsonFile("qwe.json").Build();
+        }
+
+        [Fact]
+        public void ShouldThrowExceptionIfJsonFileNotFound()
+        {
+            Assert.Throws<FileLoadException>(() => new ConfigurationBuilder().AddJsonFile("qwe.json", optional: false).Build());
+        }
     }
 }
