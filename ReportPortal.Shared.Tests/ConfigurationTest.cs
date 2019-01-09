@@ -39,6 +39,21 @@ namespace ReportPortal.Shared.Tests
         }
 
         [Fact]
+        public void ShouldOverrideVariableWithTheSameProperty()
+        {
+            Environment.SetEnvironmentVariable("REPORTPORTAL_prop1", "value1");
+
+            var tempFile = Path.GetTempFileName();
+            File.WriteAllText(tempFile, @"{""prop1"": ""over_value1""}");
+
+            var config = new ConfigurationBuilder().AddEnvironmentVariables().AddJsonFile(filePath: tempFile).Build();
+
+            var value = config.GetValue<string>("prop1");
+            Assert.Equal(1, config.Values.Count);
+            Assert.Equal("over_value1", value);
+        }
+
+        [Fact]
         public void ShouldGetIntegerVariableFromJsonFile()
         {
             var tempFile = Path.GetTempFileName();
