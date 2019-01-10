@@ -23,8 +23,4 @@
     <None Include="Build\**" Pack="true" PackagePath="build\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Extensions\" />
-  </ItemGroup>
-
 </Project>

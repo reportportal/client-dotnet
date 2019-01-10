@@ -1,4 +1,6 @@
-﻿namespace ReportPortal.Shared
+﻿using ReportPortal.Shared.Reporter;
+
+namespace ReportPortal.Shared
 {
     public class ContextInfo
     {

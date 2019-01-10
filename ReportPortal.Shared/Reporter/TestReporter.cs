@@ -8,45 +8,38 @@ using ReportPortal.Client.Requests;
 using System.Collections.Generic;
 using ReportPortal.Client.Models;
 
-namespace ReportPortal.Shared
+namespace ReportPortal.Shared.Reporter
 {
-    public class TestReporter
+    public class TestReporter : ITestReporter
     {
         private readonly Service _service;
 
-        private readonly LaunchReporter _launchNode;
-
-        private readonly TestReporter _parentTestNode;
-
-        public TestReporter(Service service, LaunchReporter launchNode, TestReporter parentTestNode)
+        public TestReporter(Service service, ILaunchReporter launchReporter, ITestReporter parentTestReporter)
         {
             _service = service;
-            _launchNode = launchNode;
-            _parentTestNode = parentTestNode;
+            LaunchReporter = launchReporter;
+            ParentTestReporter = parentTestReporter;
 
             ThreadId = Thread.CurrentThread.ManagedThreadId;
         }
 
-        // TODO public fields :( Reworking it to properties is breaking change for agents
-        public string TestId;
-        public string TestName;
-        public Status Status;
+        public TestItem TestInfo { get; } = new TestItem();
 
-        public Task StartTask;
-        public DateTime StartTime;
-        public DateTime FinishTime;
+        public ILaunchReporter LaunchReporter { get; }
 
-        public int ThreadId { get; set; }
+        public ITestReporter ParentTestReporter { get; }
+
+        public Task StartTask { get; private set; }
 
         public void Start(StartTestItemRequest request)
         {
-            TestName = request.Name;
+            TestInfo.Name = request.Name;
 
             var dependentTasks = new List<Task>();
-            dependentTasks.Add(_launchNode.StartTask);
-            if (_parentTestNode != null)
+            dependentTasks.Add(LaunchReporter.StartTask);
+            if (ParentTestReporter != null)
             {
-                dependentTasks.Add(_parentTestNode.StartTask);
+                dependentTasks.Add(ParentTestReporter.StartTask);
             }
 
             StartTask = Task.Factory.ContinueWhenAll(dependentTasks.ToArray(), async (a) =>
@@ -66,43 +59,41 @@ namespace ReportPortal.Shared
                     throw new Exception("Cannot start a test item due parent failed to start.", exp);
                 }
 
-                request.LaunchId = _launchNode.LaunchId;
-                if (_parentTestNode == null)
+                request.LaunchId = LaunchReporter.LaunchInfo.Id;
+                if (ParentTestReporter == null)
                 {
-                    if (request.StartTime < _launchNode.StartTime)
+                    if (request.StartTime < LaunchReporter.LaunchInfo.StartTime)
                     {
-                        request.StartTime = _launchNode.StartTime;
+                        request.StartTime = LaunchReporter.LaunchInfo.StartTime;
                     }
 
-                    TestId = (await _service.StartTestItemAsync(request)).Id;
+                    TestInfo.Id = (await _service.StartTestItemAsync(request)).Id;
                 }
                 else
                 {
-                    if (request.StartTime < _parentTestNode.StartTime)
+                    if (request.StartTime < ParentTestReporter.TestInfo.StartTime)
                     {
-                        request.StartTime = _parentTestNode.StartTime;
+                        request.StartTime = ParentTestReporter.TestInfo.StartTime;
                     }
 
-                    TestId = (await _service.StartTestItemAsync(_parentTestNode.TestId, request)).Id;
+                    TestInfo.Id = (await _service.StartTestItemAsync(ParentTestReporter.TestInfo.Id, request)).Id;
                 }
 
-                StartTime = request.StartTime;
+                TestInfo.StartTime = request.StartTime;
 
             }).Unwrap();
         }
 
-        public ConcurrentBag<Task> AdditionalTasks = new ConcurrentBag<Task>();
-
-        public Task FinishTask;
+        public Task FinishTask { get; private set; }
         public void Finish(FinishTestItemRequest request)
         {
-            FinishTime = request.EndTime;
-            Status = request.Status;
+            TestInfo.EndTime = request.EndTime;
+            TestInfo.Status = request.Status;
 
             var dependentTasks = new List<Task>();
             dependentTasks.Add(StartTask);
             dependentTasks.AddRange(AdditionalTasks);
-            dependentTasks.AddRange(TestNodes.Select(tn => tn.FinishTask));
+            dependentTasks.AddRange(ChildTestReporters.Select(tn => tn.FinishTask));
 
             FinishTask = Task.Factory.ContinueWhenAll(dependentTasks.ToArray(), async (a) =>
             {
@@ -123,7 +114,7 @@ namespace ReportPortal.Shared
 
                 try
                 {
-                    Task.WaitAll(TestNodes.Select(tn => tn.FinishTask).ToArray());
+                    Task.WaitAll(ChildTestReporters.Select(tn => tn.FinishTask).ToArray());
                 }
                 catch (Exception exp)
                 {
@@ -136,24 +127,25 @@ namespace ReportPortal.Shared
                     throw new Exception("Cannot finish test item due finishing of child items failed.", exp);
                 }
 
-                if (request.EndTime < StartTime)
+                if (request.EndTime < TestInfo.StartTime)
                 {
-                    request.EndTime = StartTime;
+                    request.EndTime = TestInfo.StartTime;
                 }
 
-                await _service.FinishTestItemAsync(TestId, request);
+                await _service.FinishTestItemAsync(TestInfo.Id, request);
             }).Unwrap();
         }
 
-        public ConcurrentBag<TestReporter> TestNodes = new ConcurrentBag<TestReporter>();
+        public ConcurrentBag<Task> AdditionalTasks = new ConcurrentBag<Task>();
+        public ConcurrentBag<ITestReporter> ChildTestReporters { get; } = new ConcurrentBag<ITestReporter>();
 
-        public TestReporter StartNewTestNode(StartTestItemRequest request)
+        public ITestReporter StartChildTestReporter(StartTestItemRequest request)
         {
-            var newTestNode = new TestReporter(_service, _launchNode, this);
+            var newTestNode = new TestReporter(_service, LaunchReporter, this);
             newTestNode.Start(request);
-            TestNodes.Add(newTestNode);
+            ChildTestReporters.Add(newTestNode);
 
-            _launchNode.LastTestNode = newTestNode;
+            (LaunchReporter as LaunchReporter).LastTestNode = newTestNode;
 
             return newTestNode;
         }
@@ -164,7 +156,7 @@ namespace ReportPortal.Shared
             {
                 AdditionalTasks.Add(StartTask.ContinueWith(async (a) =>
                 {
-                    await _service.UpdateTestItemAsync(TestId, request);
+                    await _service.UpdateTestItemAsync(TestInfo.Id, request);
                 }).Unwrap());
             }
         }
@@ -181,12 +173,12 @@ namespace ReportPortal.Shared
                 {
                     StartTask.Wait();
 
-                    if (request.Time < StartTime)
+                    if (request.Time < TestInfo.StartTime)
                     {
-                        request.Time = StartTime;
+                        request.Time = TestInfo.StartTime;
                     }
 
-                    request.TestItemId = TestId;
+                    request.TestItemId = TestInfo.Id;
 
                     await _service.AddLogItemAsync(request);
                 }).Unwrap();
@@ -194,6 +186,9 @@ namespace ReportPortal.Shared
                 AdditionalTasks.Add(task);
             }
         }
+
+        // TODO: need remove (used by specflow only)
+        public int ThreadId { get; set; }
     }
 
 }

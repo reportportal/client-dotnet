@@ -1,4 +1,5 @@
 using ReportPortal.Client;
+using ReportPortal.Shared.Reporter;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -26,7 +27,7 @@ namespace ReportPortal.Shared.Tests
 
             for (int i = 0; i < 10; i++)
             {
-                var suiteNode = launchReporter.StartNewTestNode(new Client.Requests.StartTestItemRequest
+                var suiteNode = launchReporter.StartChildTestReporter(new Client.Requests.StartTestItemRequest
                 {
                     Name = $"Suite {i}",
                     StartTime = launchDateTime.AddMilliseconds(-1),
@@ -35,7 +36,7 @@ namespace ReportPortal.Shared.Tests
 
                 for (int j = 0; j < 10; j++)
                 {
-                    var testNode = suiteNode.StartNewTestNode(new Client.Requests.StartTestItemRequest
+                    var testNode = suiteNode.StartChildTestReporter(new Client.Requests.StartTestItemRequest
                     {
                         Name = $"Test {i}",
                         StartTime = launchDateTime,
@@ -73,7 +74,7 @@ namespace ReportPortal.Shared.Tests
 
             launchReporter.FinishTask.Wait();
 
-            await _service.DeleteLaunchAsync(launchReporter.LaunchId);
+            await _service.DeleteLaunchAsync(launchReporter.LaunchInfo.Id);
         }
 
         [Fact]
@@ -101,8 +102,8 @@ namespace ReportPortal.Shared.Tests
 
             launchReporter.FinishTask.Wait();
 
-            Assert.Equal(launch.Id, launchReporter.LaunchId);
-            Assert.Equal(launchDateTime.ToString(), launchReporter.StartTime.ToString());
+            Assert.Equal(launch.Id, launchReporter.LaunchInfo.Id);
+            Assert.Equal(launchDateTime.ToString(), launchReporter.LaunchInfo.StartTime.ToString());
 
             var reportedLaunch = await _service.GetLaunchAsync(launch.Id);
             Assert.Equal("UseExistingLaunchId", reportedLaunch.Name);

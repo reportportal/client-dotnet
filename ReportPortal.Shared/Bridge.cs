@@ -7,6 +7,7 @@ using System.Threading;
 using ReportPortal.Client;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
+using ReportPortal.Shared.Reporter;
 
 namespace ReportPortal.Shared
 {
@@ -76,7 +77,7 @@ namespace ReportPortal.Shared
 
             if (!handled && Context.LaunchReporter?.LastTestNode != null)
             {
-                var testNode = Context.LaunchReporter.TestNodes
+                var testNode = Context.LaunchReporter.ChildTestReporters
                     .Select(t => FindNonFinishedTestReporter(t, Thread.CurrentThread.ManagedThreadId))
                     .FirstOrDefault(t => t != null) ?? Context.LaunchReporter.LastTestNode;
 
@@ -84,14 +85,14 @@ namespace ReportPortal.Shared
             }
         }
 
-        private static TestReporter FindNonFinishedTestReporter(TestReporter testReporter, int threadId)
+        private static ITestReporter FindNonFinishedTestReporter(ITestReporter testReporter, int threadId)
         {
-            if (testReporter.FinishTask == null && !testReporter.TestNodes.Any() && testReporter.ThreadId == threadId)
+            if (testReporter.FinishTask == null && !testReporter.ChildTestReporters.Any() && (testReporter as TestReporter).ThreadId == threadId)
             {
                 return testReporter;
             }
 
-            return testReporter.TestNodes
+            return testReporter.ChildTestReporters
                 .Select(testNode => FindNonFinishedTestReporter(testNode, threadId))
                 .FirstOrDefault(t => t != null);
         }
