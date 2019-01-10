@@ -4,10 +4,13 @@ using System.Text;
 
 namespace ReportPortal.Shared.Configuration
 {
+    /// <inheritdoc />
     public class ConfigurationBuilder : IConfigurationBuilder
     {
+        /// <inheritdoc />
         public IList<IConfigurationProvider> Providers { get; } = new List<IConfigurationProvider>();
 
+        /// <inheritdoc />
         public IConfigurationBuilder Add(IConfigurationProvider provider)
         {
             Providers.Add(provider);
@@ -15,6 +18,7 @@ namespace ReportPortal.Shared.Configuration
             return this;
         }
 
+        /// <inheritdoc />
         public IConfiguration Build()
         {
             var values = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);

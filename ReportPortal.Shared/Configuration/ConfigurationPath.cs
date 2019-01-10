@@ -1,5 +1,8 @@
 ﻿namespace ReportPortal.Shared.Configuration
 {
+    /// <summary>
+    /// Stores well known configuration property names.
+    /// </summary>
     public static class ConfigurationPath
     {
         public static readonly string KeyDelimeter = ":";

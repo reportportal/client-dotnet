@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ReportPortal.Shared.Configuration
 {
+    /// <inheritdoc />
     public class Configuration : IConfiguration
     {
         public Configuration(IDictionary<string, object> values)
@@ -13,45 +12,50 @@ namespace ReportPortal.Shared.Configuration
             Values = values;
         }
 
+        /// <inheritdoc />
         public IDictionary<string, object> Values { get; }
 
-        public T GetValue<T>(string variable)
+        /// <inheritdoc />
+        public T GetValue<T>(string property)
         {
-            var propertyValue = Values[variable];
+            var propertyValue = Values[property];
 
             return (T)Convert.ChangeType(propertyValue, typeof(T));
         }
 
-        public T GetValue<T>(string variable, T defaultValue)
+        /// <inheritdoc />
+        public T GetValue<T>(string property, T defaultValue)
         {
-            if (!Values.ContainsKey(variable))
+            if (!Values.ContainsKey(property))
             {
                 return defaultValue;
             }
             else
             {
-                return GetValue<T>(variable);
+                return GetValue<T>(property);
             }
         }
 
-        public IEnumerable<T> GetValues<T>(string variable)
+        /// <inheritdoc />
+        public IEnumerable<T> GetValues<T>(string property)
         {
-            var propertyValue = Values[variable];
+            var propertyValue = Values[property];
 
             var values = propertyValue.ToString().Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).Select(i => (T)Convert.ChangeType(i, typeof(T))).ToList();
 
             return values;
         }
 
-        public IEnumerable<T> GetValues<T>(string variable, IEnumerable<T> defaultValue)
+        /// <inheritdoc />
+        public IEnumerable<T> GetValues<T>(string property, IEnumerable<T> defaultValue)
         {
-            if (!Values.ContainsKey(variable))
+            if (!Values.ContainsKey(property))
             {
                 return defaultValue;
             }
             else
             {
-                return GetValues<T>(variable);
+                return GetValues<T>(property);
             }
         }
     }

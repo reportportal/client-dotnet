@@ -2,16 +2,28 @@
 
 namespace ReportPortal.Shared.Configuration
 {
+    /// <summary>
+    /// Stores configuration variables from different providers.
+    /// </summary>
     public interface IConfiguration
     {
+        /// <summary>
+        /// Fethed configuration variables.
+        /// </summary>
         IDictionary<string, object> Values { get; }
 
-        T GetValue<T>(string variable);
+        /// <summary>
+        /// Returns value of configuration property.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        T GetValue<T>(string property);
 
-        T GetValue<T>(string variable, T defaultValue);
+        T GetValue<T>(string property, T defaultValue);
 
-        IEnumerable<T> GetValues<T>(string variable);
+        IEnumerable<T> GetValues<T>(string property);
 
-        IEnumerable<T> GetValues<T>(string variable, IEnumerable<T> defaultValue);
+        IEnumerable<T> GetValues<T>(string property, IEnumerable<T> defaultValue);
     }
 }
