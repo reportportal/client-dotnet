@@ -7,11 +7,12 @@ namespace ReportPortal.Shared.Tests
 {
     public class ReportingTest
     {
+        private Service _service = new Service(new Uri("https://rp.epam.com/api/v1/"), "default_project", "7853c7a9-7f27-43ea-835a-cab01355fd17");
+
         [Fact]
         public async Task BigAsyncTree()
         {
-            var service = new Service(new Uri("https://rp.epam.com/api/v1/"), "default_project", "7853c7a9-7f27-43ea-835a-cab01355fd17");
-            var launchReporter = new LaunchReporter(service);
+            var launchReporter = new LaunchReporter(_service);
 
             var launchDateTime = DateTime.UtcNow;
 
@@ -72,7 +73,47 @@ namespace ReportPortal.Shared.Tests
 
             launchReporter.FinishTask.Wait();
 
-            await service.DeleteLaunchAsync(launchReporter.LaunchId);
+            await _service.DeleteLaunchAsync(launchReporter.LaunchId);
+        }
+
+        [Fact]
+        public async Task UseExistingLaunchId()
+        {
+            var launchDateTime = DateTime.UtcNow;
+
+            var launch = await _service.StartLaunchAsync(new Client.Requests.StartLaunchRequest
+            {
+                Name = "UseExistingLaunchId",
+                StartTime = launchDateTime,
+                Mode = Client.Models.LaunchMode.Debug
+            });
+
+            var launchReporter = new LaunchReporter(_service, launch.Id);
+            launchReporter.Start(new Client.Requests.StartLaunchRequest
+            {
+                Name = "SomeOtherName",
+                StartTime = launchDateTime.AddDays(1)
+            });
+            launchReporter.Finish(new Client.Requests.FinishLaunchRequest
+            {
+                EndTime = DateTime.UtcNow
+            });
+
+            launchReporter.FinishTask.Wait();
+
+            Assert.Equal(launch.Id, launchReporter.LaunchId);
+            Assert.Equal(launchDateTime.ToString(), launchReporter.StartTime.ToString());
+
+            var reportedLaunch = await _service.GetLaunchAsync(launch.Id);
+            Assert.Equal("UseExistingLaunchId", reportedLaunch.Name);
+            Assert.Equal(launchDateTime.ToString(), reportedLaunch.StartTime.ToString());
+
+            await _service.FinishLaunchAsync(launch.Id, new Client.Requests.FinishLaunchRequest
+            {
+                EndTime = DateTime.UtcNow
+            });
+
+            await _service.DeleteLaunchAsync(launch.Id);
         }
     }
 }

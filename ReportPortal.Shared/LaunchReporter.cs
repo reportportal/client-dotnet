@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using ReportPortal.Client;
@@ -15,10 +14,15 @@ namespace ReportPortal.Shared
         public LaunchReporter(Service service)
         {
             _service = service;
-
-            TestNodes = new ConcurrentBag<TestReporter>();
         }
 
+        public LaunchReporter(Service service, string launchId) : this(service)
+        {
+            _isExternalLaunchId = true;
+            LaunchId = launchId;
+        }
+
+        private bool _isExternalLaunchId = false;
         public string LaunchId;
 
         public Task StartTask;
@@ -26,11 +30,25 @@ namespace ReportPortal.Shared
 
         public void Start(StartLaunchRequest request)
         {
-            StartTask = Task.Factory.StartNew(async () =>
+            if (!_isExternalLaunchId)
             {
-                LaunchId = (await _service.StartLaunchAsync(request)).Id;
-                StartTime = request.StartTime;
-            }).Unwrap();
+                // start new launch item
+                StartTask = Task.Factory.StartNew(async () =>
+                {
+                    LaunchId = (await _service.StartLaunchAsync(request)).Id;
+                    StartTime = request.StartTime;
+                }).Unwrap();
+            }
+            else
+            {
+                // get launch info
+                StartTask = Task.Factory.StartNew(async () =>
+                {
+                    var launch = await _service.GetLaunchAsync(LaunchId);
+                    LaunchId = launch.Id;
+                    StartTime = launch.StartTime;
+                }).Unwrap();
+            }
         }
 
         public Task FinishTask;
@@ -67,13 +85,15 @@ namespace ReportPortal.Shared
                         request.EndTime = StartTime;
                     }
 
-                    await _service.FinishLaunchAsync(LaunchId, request, force);
+                    if (!_isExternalLaunchId)
+                    {
+                        await _service.FinishLaunchAsync(LaunchId, request, force);
+                    }
                 }
-
             }).Unwrap();
         }
 
-        public ConcurrentBag<TestReporter> TestNodes { get; set; }
+        public ConcurrentBag<TestReporter> TestNodes { get; set; } = new ConcurrentBag<TestReporter>();
 
         public TestReporter StartNewTestNode(StartTestItemRequest request)
         {
