@@ -7,6 +7,6 @@ namespace ReportPortal.Shared
         /// <summary>
         /// Current reporter to send results.
         /// </summary>
-        public LaunchReporter LaunchReporter { get; set; }
+        public ILaunchReporter LaunchReporter { get; set; }
     }
 }
