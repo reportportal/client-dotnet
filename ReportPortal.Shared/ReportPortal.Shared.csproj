@@ -10,7 +10,7 @@
     <PackageIconUrl>https://raw.githubusercontent.com/reportportal/commons-net/master/Logo.png</PackageIconUrl>
     <RepositoryType>GitHub</RepositoryType>
     <RepositoryUrl>https://github.com/reportportal/commons-net</RepositoryUrl>
-    <PackageTags>reportportal reporter api testing</PackageTags>
+    <PackageTags>reportportal report reporter api testing</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
