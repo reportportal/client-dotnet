@@ -75,11 +75,11 @@ namespace ReportPortal.Shared
                 }
             }
 
-            if (!handled && Context.LaunchReporter?.LastTestNode != null)
+            if (!handled && (Context.LaunchReporter as LaunchReporter)?.LastTestNode != null)
             {
                 var testNode = Context.LaunchReporter.ChildTestReporters
                     .Select(t => FindNonFinishedTestReporter(t, Thread.CurrentThread.ManagedThreadId))
-                    .FirstOrDefault(t => t != null) ?? Context.LaunchReporter.LastTestNode;
+                    .FirstOrDefault(t => t != null) ?? (Context.LaunchReporter as LaunchReporter).LastTestNode;
 
                 testNode.Log(request);
             }
