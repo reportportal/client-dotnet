@@ -62,7 +62,7 @@ namespace ReportPortal.Shared.Configuration.Providers
                 {
                     if (jsonReader.Name != "item" && jsonReader.Name != "root" && propertyValue != null)
                     {
-                        properties[propertyName.Replace($"{_delimeter}root{_delimeter}", "").Replace(_delimeter, ConfigurationPath.KEYDELIMETER)] = propertyValue;
+                        properties[propertyName.Replace($"{_delimeter}root{_delimeter}", "").Replace(_delimeter, ConfigurationPath.KeyDelimeter)] = propertyValue;
 
                         propertyValue = null;
                     }
