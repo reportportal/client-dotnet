@@ -42,8 +42,6 @@ namespace ReportPortal.Shared
         {
             TestName = request.Name;
 
-            Bridge.TestReporterExtensions.ForEach(e => e.TestNodeStarting(this, request));
-
             var dependentTasks = new List<Task>();
             dependentTasks.Add(_launchNode.StartTask);
             if (_parentTestNode != null)
@@ -100,8 +98,6 @@ namespace ReportPortal.Shared
         {
             FinishTime = request.EndTime;
             Status = request.Status;
-
-            Bridge.TestReporterExtensions.ForEach(e => e.TestNodeFinishing(this, request));
 
             var dependentTasks = new List<Task>();
             dependentTasks.Add(StartTask);

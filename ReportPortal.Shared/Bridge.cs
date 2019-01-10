@@ -15,7 +15,6 @@ namespace ReportPortal.Shared
         static Bridge()
         {
             Extensions = new List<IBridgeExtension>();
-            TestReporterExtensions = new List<Extensions.ITestReporterExtension>();
 
             var currentDirectory = new DirectoryInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
 
@@ -35,11 +34,6 @@ namespace ReportPortal.Shared
                             var extension = Activator.CreateInstance(type);
                             Extensions.Add((IBridgeExtension)extension);
                         }
-                        else if (type.GetInterfaces().Contains(typeof(Extensions.ITestReporterExtension)))
-                        {
-                            var extension = Activator.CreateInstance(type);
-                            TestReporterExtensions.Add((Extensions.ITestReporterExtension)extension);
-                        }
                     }
                 }
                 catch (ReflectionTypeLoadException)
@@ -53,8 +47,6 @@ namespace ReportPortal.Shared
 
 
         public static List<IBridgeExtension> Extensions { get; private set; }
-
-        public static List<Extensions.ITestReporterExtension> TestReporterExtensions { get; private set; }
 
         public static Service Service { get; set; }
 
