@@ -7,13 +7,14 @@ namespace ReportPortal.Shared.Tests
 {
     public class MimeTypeTest
     {
-        [Fact]
-        public void GetMimeType()
+        [Theory]
+        [InlineData("image/png", ".png")]
+        [InlineData("image/png", ".Png")]
+        [InlineData("image/png", "png")]
+        [InlineData("application/octet-stream", ".unknown")]
+        public void GetMimeType(string expectedMime, string fileExtension)
         {
-            Assert.Equal("image/png", MimeTypes.MimeTypeMap.GetMimeType(".png"));
-            Assert.Equal("image/png", MimeTypes.MimeTypeMap.GetMimeType(".Png"));
-            Assert.Equal("image/png", MimeTypes.MimeTypeMap.GetMimeType("png"));
-            Assert.Equal("application/octet-stream", MimeTypes.MimeTypeMap.GetMimeType(".unknown"));
+            Assert.Equal(expectedMime, MimeTypes.MimeTypeMap.GetMimeType(fileExtension));
         }
     }
 }
