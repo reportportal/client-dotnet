@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ReportPortal.Client" Version="2.1.5">
+    <PackageReference Include="ReportPortal.Client" Version="2.1.7">
       <PrivateAssets>contentfiles;analyzers;</PrivateAssets>
     </PackageReference>
   </ItemGroup>
