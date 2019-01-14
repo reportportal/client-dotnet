@@ -178,6 +178,11 @@ namespace ReportPortal.Shared.Reporter
 
         public void Log(AddLogItemRequest request)
         {
+            if (StartTask == null)
+            {
+                throw new InsufficientExecutionStackException("The test item wasn't scheduled for starting to add log messages.");
+            }
+
             if (FinishTask == null || !FinishTask.IsCompleted)
             {
                 var dependentTasks = new List<Task>();
