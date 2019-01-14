@@ -47,6 +47,9 @@ namespace ReportPortal.Client.Models
             set => EndTimeString = DateTimeConverter.ConvertFrom(value.GetValueOrDefault());
         }
 
+        [DataMember(Name = "hasRetries")]
+        public bool HasRetries { get; set; }
+
         [DataMember(Name = "tags")]
         public List<string> Tags { get; set; }
 

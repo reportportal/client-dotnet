@@ -574,5 +574,56 @@ namespace ReportPortal.Client.Tests.TestItem
             });
             Assert.Contains("successfully", message.Info);
         }
+
+        [Fact]
+        public async Task RetryTest()
+        {
+            var suite = await Service.StartTestItemAsync(new StartTestItemRequest
+            {
+                LaunchId = _fixture.LaunchId,
+                Name = "RetrySuite",
+                StartTime = DateTime.UtcNow,
+                Type = TestItemType.Suite
+            });
+
+            var firstAttempt = await Service.StartTestItemAsync(suite.Id, new StartTestItemRequest
+            {
+                LaunchId = _fixture.LaunchId,
+                Name = "RetryTest",
+                StartTime = DateTime.UtcNow,
+                Type = TestItemType.Step,
+                IsRetry = true // this is reqired to show test as retried
+            });
+
+            await Service.FinishTestItemAsync(firstAttempt.Id, new FinishTestItemRequest
+            {
+                EndTime = DateTime.UtcNow,
+                //IsRetry = true
+            });
+
+            var secondAttempt = await Service.StartTestItemAsync(suite.Id, new StartTestItemRequest
+            {
+                LaunchId = _fixture.LaunchId,
+                Name = "RetryTest",
+                StartTime = DateTime.UtcNow,
+                Type = TestItemType.Step,
+                IsRetry = true
+            });
+
+            await Service.FinishTestItemAsync(secondAttempt.Id, new FinishTestItemRequest
+            {
+                EndTime = DateTime.UtcNow,
+                //IsRetry = true
+            });
+
+            await Service.FinishTestItemAsync(suite.Id, new FinishTestItemRequest
+            {
+                EndTime = DateTime.UtcNow
+            });
+
+            var launch = await Service.GetLaunchAsync(_fixture.LaunchId);
+
+            Assert.True(launch.HasRetries);
+        }
     }
 }
