@@ -116,5 +116,32 @@ namespace ReportPortal.Shared.Tests
 
             await _service.DeleteLaunchAsync(launch.Id);
         }
+
+        [Fact]
+        public void FinishingNonStartedLaunch()
+        {
+            var launchReporter = new LaunchReporter(_service);
+
+            Assert.Throws<InsufficientExecutionStackException>(() => launchReporter.Finish(new Client.Requests.FinishLaunchRequest()));
+        }
+
+        [Fact]
+        public void StartingAlreadyStartedLaunch()
+        {
+            var launchReporter = new LaunchReporter(_service);
+            launchReporter.Start(new Client.Requests.StartLaunchRequest());
+
+            Assert.Throws<InsufficientExecutionStackException>(() => launchReporter.Start(new Client.Requests.StartLaunchRequest()));
+        }
+
+        [Fact]
+        public void FinishingAlreadyFinishedLaunch()
+        {
+            var launchReporter = new LaunchReporter(_service);
+            launchReporter.Start(new Client.Requests.StartLaunchRequest());
+            launchReporter.Finish(new Client.Requests.FinishLaunchRequest());
+
+            Assert.Throws<InsufficientExecutionStackException>(() => launchReporter.Finish(new Client.Requests.FinishLaunchRequest()));
+        }
     }
 }

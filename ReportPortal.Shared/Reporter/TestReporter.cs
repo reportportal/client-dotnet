@@ -33,6 +33,11 @@ namespace ReportPortal.Shared.Reporter
 
         public void Start(StartTestItemRequest request)
         {
+            if (StartTask != null)
+            {
+                throw new InsufficientExecutionStackException("The test item is already scheduled for starting.");
+            }
+
             TestInfo.Name = request.Name;
 
             var dependentTasks = new List<Task>();
@@ -87,6 +92,16 @@ namespace ReportPortal.Shared.Reporter
         public Task FinishTask { get; private set; }
         public void Finish(FinishTestItemRequest request)
         {
+            if (StartTask == null)
+            {
+                throw new InsufficientExecutionStackException("The test item wasn't scheduled for starting to finish it properly.");
+            }
+
+            if (FinishTask != null)
+            {
+                throw new InsufficientExecutionStackException("The test item is already scheduled for finishing.");
+            }
+
             TestInfo.EndTime = request.EndTime;
             TestInfo.Status = request.Status;
 

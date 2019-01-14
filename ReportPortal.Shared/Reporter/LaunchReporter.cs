@@ -31,6 +31,11 @@ namespace ReportPortal.Shared.Reporter
 
         public void Start(StartLaunchRequest request)
         {
+            if (StartTask != null)
+            {
+                throw new InsufficientExecutionStackException("The launch is already scheduled for starting.");
+            }
+
             if (!_isExternalLaunchId)
             {
                 // start new launch item
@@ -54,6 +59,16 @@ namespace ReportPortal.Shared.Reporter
         public Task FinishTask { get; private set; }
         public void Finish(FinishLaunchRequest request)
         {
+            if (StartTask == null)
+            {
+                throw new InsufficientExecutionStackException("The launch wasn't scheduled for starting to finish it properly.");
+            }
+
+            if (FinishTask != null)
+            {
+                throw new InsufficientExecutionStackException("The launch is already scheduled for finishing.");
+            }
+
             var dependentTasks = ChildTestReporters.Select(tn => tn.FinishTask).ToList();
             dependentTasks.Add(StartTask);
 
