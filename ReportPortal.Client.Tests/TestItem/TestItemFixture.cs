@@ -545,7 +545,7 @@ namespace ReportPortal.Client.Tests.TestItem
         [Fact]
         public async Task GetTestItemHistory()
         {
-            var histories = await Service.GetTestItemHistoryAsync("5bfe5b283cdea200012aae28", 5, true);
+            var histories = await Service.GetTestItemHistoryAsync("5bfe5b213cdea200012a9fb7", 5, true);
             Assert.Equal(5, histories.Count);
         }
 
@@ -592,7 +592,7 @@ namespace ReportPortal.Client.Tests.TestItem
                 Name = "RetryTest",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Step,
-                IsRetry = true // this is reqired to show test as retried
+                IsRetry = true // this is required to show test as retried
             });
 
             await Service.FinishTestItemAsync(firstAttempt.Id, new FinishTestItemRequest
