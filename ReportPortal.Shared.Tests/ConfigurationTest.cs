@@ -153,7 +153,8 @@ namespace ReportPortal.Shared.Tests
         {
             var config = new ConfigurationBuilder().Build();
 
-            Assert.Throws<KeyNotFoundException>(() => config.GetValue<string>("a"));
+            var exp = Assert.Throws<KeyNotFoundException>(() => config.GetValue<string>("someproperty"));
+            Assert.Contains("someproperty", exp.Message);
         }
 
         [Fact]
