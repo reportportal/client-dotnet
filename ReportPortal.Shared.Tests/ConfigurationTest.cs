@@ -189,7 +189,7 @@ namespace ReportPortal.Shared.Tests
         [Fact]
         public void ShouldMergeValuesIfStartsWithPlus()
         {
-            Environment.SetEnvironmentVariable("REPORTPORTAL_A", "+=value1");
+            Environment.SetEnvironmentVariable("REPORTPORTAL_A", "+value1");
 
             var config = new ConfigurationBuilder().AddEnvironmentVariables().AddEnvironmentVariables().Build();
 
@@ -201,7 +201,7 @@ namespace ReportPortal.Shared.Tests
         [Fact]
         public void ShouldMergeListOfValuesIfStartsWithPlus()
         {
-            Environment.SetEnvironmentVariable("REPORTPORTAL_A", "+=value1;");
+            Environment.SetEnvironmentVariable("REPORTPORTAL_A", "+value1;");
 
             var config = new ConfigurationBuilder().AddEnvironmentVariables().AddEnvironmentVariables().Build();
 

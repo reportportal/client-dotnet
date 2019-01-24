@@ -6,6 +6,7 @@
     public static class ConfigurationPath
     {
         public static readonly string KeyDelimeter = ":";
+        public static readonly string AppenderPrefix = "+";
 
         public static readonly string ServerUrl = $"Server{KeyDelimeter}Url";
         public static readonly string ServerProject = $"Server{KeyDelimeter}Project";
