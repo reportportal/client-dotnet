@@ -8,7 +8,7 @@ namespace ReportPortal.Shared.Tests
 {
     public class ReportingTest
     {
-        private Service _service = new Service(new Uri("https://rp.epam.com/api/v1/"), "default_project", "7853c7a9-7f27-43ea-835a-cab01355fd17");
+        private Service _service = new Service(new Uri("https://rp.epam.com/api/v1/"), "ci-agents-checks", "7853c7a9-7f27-43ea-835a-cab01355fd17");
 
         [Fact]
         public async Task BigAsyncTree()
