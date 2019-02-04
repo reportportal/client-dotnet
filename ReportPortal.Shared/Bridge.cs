@@ -24,13 +24,15 @@ namespace ReportPortal.Shared
                 AppDomain.CurrentDomain.Load(Path.GetFileNameWithoutExtension(file.Name));
             }
 
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            var iBridgeExtensionInterfaceType = typeof(IBridgeExtension);
+
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies().Where(a => a.GetName().Name.StartsWith("ReportPortal")))
             {
                 try
                 {
-                    foreach (var type in assembly.GetTypes())
+                    foreach (var type in assembly.GetTypes().Where(t => t.IsClass))
                     {
-                        if (type.GetInterfaces().Contains(typeof(IBridgeExtension)))
+                        if (iBridgeExtensionInterfaceType.IsAssignableFrom(type))
                         {
                             var extension = Activator.CreateInstance(type);
                             Extensions.Add((IBridgeExtension)extension);
