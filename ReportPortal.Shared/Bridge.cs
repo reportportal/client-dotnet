@@ -24,7 +24,7 @@ namespace ReportPortal.Shared
                 AppDomain.CurrentDomain.Load(Path.GetFileNameWithoutExtension(file.Name));
             }
 
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies().Where(a => a.GetName().Name.StartsWith("ReportPortal")))
             {
                 try
                 {
