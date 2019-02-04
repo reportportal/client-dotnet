@@ -1,4 +1,7 @@
+using Moq;
 using ReportPortal.Client;
+using ReportPortal.Client.Models;
+using ReportPortal.Client.Requests;
 using ReportPortal.Shared.Reporter;
 using System;
 using System.Threading.Tasks;
@@ -8,10 +11,24 @@ namespace ReportPortal.Shared.Tests
 {
     public class ReportingTest
     {
+        public ReportingTest()
+        {
+            Mock<Service> service = new Mock<Service>(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>());
+            service.Setup(s => s.StartLaunchAsync(It.IsAny<StartLaunchRequest>())).Returns(Task.FromResult(new Launch { Id = Guid.NewGuid().ToString() }));
+            service.Setup(s => s.FinishLaunchAsync(It.IsAny<string>(), It.IsAny<FinishLaunchRequest>(), It.IsAny<bool>())).Returns(Task.FromResult<Message>(null));
+
+            service.Setup(s => s.StartTestItemAsync(It.IsAny<StartTestItemRequest>())).Returns(Task.FromResult(new TestItem { Id = Guid.NewGuid().ToString() }));
+            service.Setup(s => s.StartTestItemAsync(It.IsAny<string>(), It.IsAny<StartTestItemRequest>())).Returns(Task.FromResult(new TestItem { Id = Guid.NewGuid().ToString() }));
+            service.Setup(s => s.FinishTestItemAsync(It.IsAny<string>(), It.IsAny<FinishTestItemRequest>())).Returns(Task.FromResult<Message>(null));
+
+            _mockedService = service.Object;
+        }
+
+        private Service _mockedService;
         private Service _service = new Service(new Uri("https://rp.epam.com/api/v1/"), "ci-agents-checks", "7853c7a9-7f27-43ea-835a-cab01355fd17");
 
         [Fact]
-        public async Task BigAsyncTree()
+        public async Task BigAsyncRealTree()
         {
             var launchReporter = new LaunchReporter(_service);
 
@@ -25,7 +42,7 @@ namespace ReportPortal.Shared.Tests
                 Tags = new System.Collections.Generic.List<string>()
             });
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 3000; i++)
             {
                 var suiteNode = launchReporter.StartChildTestReporter(new Client.Requests.StartTestItemRequest
                 {
@@ -34,7 +51,7 @@ namespace ReportPortal.Shared.Tests
                     Type = Client.Models.TestItemType.Suite
                 });
 
-                for (int j = 0; j < 10; j++)
+                for (int j = 0; j < 3; j++)
                 {
                     var testNode = suiteNode.StartChildTestReporter(new Client.Requests.StartTestItemRequest
                     {
@@ -43,7 +60,7 @@ namespace ReportPortal.Shared.Tests
                         Type = Client.Models.TestItemType.Step
                     });
 
-                    for (int l = 0; l < 1; l++)
+                    for (int l = 0; l < 0; l++)
                     {
                         testNode.Log(new Client.Requests.AddLogItemRequest
                         {
@@ -142,6 +159,71 @@ namespace ReportPortal.Shared.Tests
             launchReporter.Finish(new Client.Requests.FinishLaunchRequest());
 
             Assert.Throws<InsufficientExecutionStackException>(() => launchReporter.Finish(new Client.Requests.FinishLaunchRequest()));
+        }
+
+        [Fact]
+        public void MockedBigTree()
+        {
+            var launchReporter = new LaunchReporter(_mockedService);
+
+            var launchDateTime = DateTime.UtcNow;
+
+            launchReporter.Start(new Client.Requests.StartLaunchRequest
+            {
+                Name = "ReportPortal Shared",
+                StartTime = launchDateTime,
+                Mode = Client.Models.LaunchMode.Debug,
+                Tags = new System.Collections.Generic.List<string>()
+            });
+
+            for (int i = 0; i < 100000; i++)
+            {
+                var suiteNode = launchReporter.StartChildTestReporter(new Client.Requests.StartTestItemRequest
+                {
+                    Name = $"Suite {i}",
+                    StartTime = launchDateTime.AddMilliseconds(-1),
+                    Type = Client.Models.TestItemType.Suite
+                });
+
+                for (int j = 0; j < 0; j++)
+                {
+                    var testNode = suiteNode.StartChildTestReporter(new Client.Requests.StartTestItemRequest
+                    {
+                        Name = $"Test {i}",
+                        StartTime = launchDateTime,
+                        Type = Client.Models.TestItemType.Step
+                    });
+
+                    for (int l = 0; l < 0; l++)
+                    {
+                        testNode.Log(new Client.Requests.AddLogItemRequest
+                        {
+                            Level = Client.Models.LogLevel.Info,
+                            Text = $"Log message #{l}",
+                            Time = launchDateTime
+                        });
+                    }
+
+                    testNode.Finish(new Client.Requests.FinishTestItemRequest
+                    {
+                        EndTime = launchDateTime,
+                        Status = Client.Models.Status.Passed
+                    });
+                }
+
+                suiteNode.Finish(new Client.Requests.FinishTestItemRequest
+                {
+                    EndTime = launchDateTime,
+                    Status = Client.Models.Status.Passed
+                });
+            }
+
+            launchReporter.Finish(new Client.Requests.FinishLaunchRequest
+            {
+                EndTime = launchDateTime
+            });
+
+            launchReporter.FinishTask.Wait();
         }
     }
 }
