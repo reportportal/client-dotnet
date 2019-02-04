@@ -88,6 +88,14 @@ namespace ReportPortal.Shared.Reporter
 
                     throw new Exception("Cannot finish launch due inner items failed to finish.", exp);
                 }
+                finally
+                {
+                    // clean childs
+                    while (!ChildTestReporters.IsEmpty)
+                    {
+                        ChildTestReporters.TryTake(out ITestReporter child);
+                    }
+                }
 
                 if (request.EndTime < LaunchInfo.StartTime)
                 {

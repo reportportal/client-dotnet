@@ -1,9 +1,10 @@
-using Moq;
 using ReportPortal.Client;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 using ReportPortal.Shared.Reporter;
 using System;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -11,20 +12,6 @@ namespace ReportPortal.Shared.Tests
 {
     public class ReportingTest
     {
-        public ReportingTest()
-        {
-            Mock<Service> service = new Mock<Service>(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>());
-            service.Setup(s => s.StartLaunchAsync(It.IsAny<StartLaunchRequest>())).Returns(Task.FromResult(new Launch { Id = Guid.NewGuid().ToString() }));
-            service.Setup(s => s.FinishLaunchAsync(It.IsAny<string>(), It.IsAny<FinishLaunchRequest>(), It.IsAny<bool>())).Returns(Task.FromResult<Message>(null));
-
-            service.Setup(s => s.StartTestItemAsync(It.IsAny<StartTestItemRequest>())).Returns(Task.FromResult(new TestItem { Id = Guid.NewGuid().ToString() }));
-            service.Setup(s => s.StartTestItemAsync(It.IsAny<string>(), It.IsAny<StartTestItemRequest>())).Returns(Task.FromResult(new TestItem { Id = Guid.NewGuid().ToString() }));
-            service.Setup(s => s.FinishTestItemAsync(It.IsAny<string>(), It.IsAny<FinishTestItemRequest>())).Returns(Task.FromResult<Message>(null));
-
-            _mockedService = service.Object;
-        }
-
-        private Service _mockedService;
         private Service _service = new Service(new Uri("https://rp.epam.com/api/v1/"), "ci-agents-checks", "7853c7a9-7f27-43ea-835a-cab01355fd17");
 
         [Fact]
@@ -55,7 +42,7 @@ namespace ReportPortal.Shared.Tests
                 {
                     var testNode = suiteNode.StartChildTestReporter(new Client.Requests.StartTestItemRequest
                     {
-                        Name = $"Test {i}",
+                        Name = $"Test {j}",
                         StartTime = launchDateTime,
                         Type = Client.Models.TestItemType.Step
                     });
@@ -164,7 +151,12 @@ namespace ReportPortal.Shared.Tests
         [Fact]
         public void MockedBigTree()
         {
-            var launchReporter = new LaunchReporter(_mockedService);
+            var fakeService = new FakeService(new Uri("https://rp.epam.com/api/v1/"), "ci-agents-checks", "7853c7a9-7f27-43ea-835a-cab01355fd17");
+            var launchReporter = new LaunchReporter(fakeService);
+
+            var suitesCount = 5;
+            var testsCount = 10000;
+            var logsCount = 10;
 
             var launchDateTime = DateTime.UtcNow;
 
@@ -176,7 +168,7 @@ namespace ReportPortal.Shared.Tests
                 Tags = new System.Collections.Generic.List<string>()
             });
 
-            for (int i = 0; i < 100000; i++)
+            for (int i = 0; i < suitesCount; i++)
             {
                 var suiteNode = launchReporter.StartChildTestReporter(new Client.Requests.StartTestItemRequest
                 {
@@ -185,16 +177,16 @@ namespace ReportPortal.Shared.Tests
                     Type = Client.Models.TestItemType.Suite
                 });
 
-                for (int j = 0; j < 0; j++)
+                for (int j = 0; j < testsCount; j++)
                 {
                     var testNode = suiteNode.StartChildTestReporter(new Client.Requests.StartTestItemRequest
                     {
-                        Name = $"Test {i}",
+                        Name = $"Test {j}",
                         StartTime = launchDateTime,
                         Type = Client.Models.TestItemType.Step
                     });
 
-                    for (int l = 0; l < 0; l++)
+                    for (int l = 0; l < logsCount; l++)
                     {
                         testNode.Log(new Client.Requests.AddLogItemRequest
                         {
@@ -224,6 +216,76 @@ namespace ReportPortal.Shared.Tests
             });
 
             launchReporter.FinishTask.Wait();
+
+            Assert.Equal(suitesCount * testsCount + suitesCount, fakeService.StartTestItemCounter);
+        }
+    }
+
+    public class FakeService : Service
+    {
+        public FakeService(Uri uri, string project, string password)
+            : base(uri, project, password)
+        {
+
+        }
+        public FakeService(Uri uri, string project, string password, HttpMessageHandler messageHandler)
+            : base(uri, project, password, messageHandler)
+        {
+
+        }
+        public FakeService(Uri uri, string project, string password, IWebProxy proxy)
+            : base(uri, project, password, proxy)
+        {
+
+        }
+
+        public int RequestsDelay { get; set; } = 50;
+
+        private object _startTestItemCounterLockObj = new object();
+        public int StartTestItemCounter { get; private set; }
+
+        public override async Task<Launch> StartLaunchAsync(StartLaunchRequest model)
+        {
+            await Task.Delay(RequestsDelay);
+            return await Task.FromResult(new Launch { Id = Guid.NewGuid().ToString() });
+        }
+
+        public override async Task<Message> FinishLaunchAsync(string id, FinishLaunchRequest model, bool force = false)
+        {
+            await Task.Delay(RequestsDelay);
+            return await Task.FromResult(new Message());
+        }
+
+        public override async Task<TestItem> StartTestItemAsync(StartTestItemRequest model)
+        {
+            lock (_startTestItemCounterLockObj)
+            {
+                StartTestItemCounter++;
+            }
+            await Task.Delay(RequestsDelay);
+            return await Task.FromResult(new TestItem { Id = Guid.NewGuid().ToString() });
+        }
+
+        public override async Task<TestItem> StartTestItemAsync(string id, StartTestItemRequest model)
+        {
+            lock (_startTestItemCounterLockObj)
+            {
+                StartTestItemCounter++;
+            }
+            await Task.Delay(RequestsDelay);
+            return await Task.FromResult(new TestItem { Id = Guid.NewGuid().ToString() });
+        }
+
+        public override async Task<Message> FinishTestItemAsync(string id, FinishTestItemRequest model)
+        {
+            await Task.Delay(RequestsDelay);
+            return await Task.FromResult(new Message());
+        }
+
+        public override async Task<LogItem> AddLogItemAsync(AddLogItemRequest model)
+        {
+            //await Task.Delay(RequestsDelay);
+            return await Task.FromResult(new LogItem());
         }
     }
 }

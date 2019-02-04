@@ -141,6 +141,20 @@ namespace ReportPortal.Shared.Reporter
 
                     throw new Exception("Cannot finish test item due finishing of child items failed.", exp);
                 }
+                finally
+                {
+                    // clean up childs
+                    while (!ChildTestReporters.IsEmpty)
+                    {
+                        ChildTestReporters.TryTake(out ITestReporter child);
+                    }
+
+                    // clean up addition tasks
+                    while (!AdditionalTasks.IsEmpty)
+                    {
+                        AdditionalTasks.TryTake(out Task child);
+                    }
+                }
 
                 if (request.EndTime < TestInfo.StartTime)
                 {
