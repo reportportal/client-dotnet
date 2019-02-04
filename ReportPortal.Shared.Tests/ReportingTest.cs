@@ -42,7 +42,7 @@ namespace ReportPortal.Shared.Tests
                 Tags = new System.Collections.Generic.List<string>()
             });
 
-            for (int i = 0; i < 3000; i++)
+            for (int i = 0; i < 10; i++)
             {
                 var suiteNode = launchReporter.StartChildTestReporter(new Client.Requests.StartTestItemRequest
                 {
