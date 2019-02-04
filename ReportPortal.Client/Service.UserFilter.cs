@@ -18,7 +18,7 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<List<EntryCreated>> AddUserFilterAsync(AddUserFilterRequest model)
+        public virtual async Task<List<EntryCreated>> AddUserFilterAsync(AddUserFilterRequest model)
         {
             var uri = BaseUri.Append($"{Project}/filter");
 
@@ -33,7 +33,7 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="filterOption"></param>
         /// <returns></returns>
-        public async Task<UserFilterContainer> GetUserFiltersAsync(FilterOption filterOption = null)
+        public virtual async Task<UserFilterContainer> GetUserFiltersAsync(FilterOption filterOption = null)
         {
             var uri = BaseUri.Append($"{Project}/filter/");
             if (filterOption != null)
@@ -50,7 +50,7 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="filterId"></param>
         /// <returns></returns>
-        public async Task<Message> DeleteUserFilterAsync(string filterId)
+        public virtual async Task<Message> DeleteUserFilterAsync(string filterId)
         {
             var uri = BaseUri.Append($"{Project}/filter/{filterId}");
 

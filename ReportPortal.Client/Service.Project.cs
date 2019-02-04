@@ -18,7 +18,7 @@ namespace ReportPortal.Client
         /// <param name="model"></param>
         /// <param name="userName"></param>
         /// <returns></returns>
-        public async Task<UpdatePreferencesResponse> UpdatePreferencesAsync(UpdatePreferenceRequest model, string userName)
+        public virtual async Task<UpdatePreferencesResponse> UpdatePreferencesAsync(UpdatePreferenceRequest model, string userName)
         {
             var uri = BaseUri.Append($"project/{Project}/preference/{userName}");
             var body = ModelSerializer.Serialize<UpdatePreferenceRequest>(model);
@@ -40,7 +40,7 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
-        public async Task<Preference> GetAllPreferences(string userName)
+        public virtual async Task<Preference> GetAllPreferences(string userName)
         {
             var uri = BaseUri.Append($"project/{Project}/preference/{userName}");
             

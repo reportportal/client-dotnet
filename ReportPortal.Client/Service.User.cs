@@ -7,7 +7,7 @@ namespace ReportPortal.Client
 {
     public partial class Service
     {
-        public async Task<User> GetUserAsync()
+        public virtual async Task<User> GetUserAsync()
         {
             var uri = BaseUri.Append($"user");
             var response = await _httpClient.GetAsync(uri).ConfigureAwait(false);
