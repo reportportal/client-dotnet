@@ -109,6 +109,10 @@ namespace ReportPortal.Shared.Reporter
                         await _service.FinishLaunchAsync(LaunchInfo.Id, request);
                     }
                 }
+                catch(Exception)
+                {
+                    throw;
+                }
                 finally
                 {
                     // clean childs
