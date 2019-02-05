@@ -30,7 +30,7 @@ namespace ReportPortal.Shared.Tests.Faked
 
         public int RequestsDelay { get; set; } = 50;
 
-        private object _startTestItemCounterLockObj = new object();
+        protected object _startTestItemCounterLockObj = new object();
         public int StartTestItemCounter { get; private set; }
 
         public override async Task<Launch> StartLaunchAsync(StartLaunchRequest model)
@@ -65,7 +65,7 @@ namespace ReportPortal.Shared.Tests.Faked
             return await Task.FromResult(new TestItem { Id = Guid.NewGuid().ToString() });
         }
 
-        private object _finishTestItemCounterLockObj = new object();
+        protected object _finishTestItemCounterLockObj = new object();
         public int FinishTestItemCounter { get; private set; }
         public override async Task<Message> FinishTestItemAsync(string id, FinishTestItemRequest model)
         {
@@ -77,7 +77,7 @@ namespace ReportPortal.Shared.Tests.Faked
             return await Task.FromResult(new Message());
         }
 
-        private object _addLogtemCounterLockObj = new object();
+        protected object _addLogtemCounterLockObj = new object();
         public int AddLogItemCounter { get; private set; }
         public override async Task<LogItem> AddLogItemAsync(AddLogItemRequest model)
         {
