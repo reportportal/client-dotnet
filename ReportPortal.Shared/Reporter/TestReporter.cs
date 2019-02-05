@@ -195,11 +195,11 @@ namespace ReportPortal.Shared.Reporter
             {
                 var dependentTasks = new List<Task>();
                 dependentTasks.Add(StartTask);
-                if (_additionalTasks == null)
+                if (_additionalTasks != null)
                 {
+                    dependentTasks.AddRange(_additionalTasks);
                     _additionalTasks = new ConcurrentBag<Task>();
                 }
-                dependentTasks.AddRange(_additionalTasks);
 
                 var task = Task.Factory.ContinueWhenAll(dependentTasks.ToArray(), async (t) =>
                 {
@@ -218,6 +218,10 @@ namespace ReportPortal.Shared.Reporter
                     await _service.AddLogItemAsync(request);
                 }).Unwrap();
 
+                if (_additionalTasks == null)
+                {
+                    _additionalTasks = new ConcurrentBag<Task>();
+                }
                 _additionalTasks.Add(task);
             }
         }
