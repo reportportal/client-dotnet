@@ -20,7 +20,7 @@ test_script:
 after_test:
   - dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg
   - codecov -f .\ReportPortal.Shared.Tests\Coverage.xml
-  - dotnet run -c Release ReportPortal.Shared.Benchmark
+  - dotnet run -c Release --project ReportPortal.Shared.Benchmark
 
 artifacts:
   - path: '**\*.nupkg'
