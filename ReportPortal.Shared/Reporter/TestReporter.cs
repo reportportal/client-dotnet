@@ -45,21 +45,12 @@ namespace ReportPortal.Shared.Reporter
                 dependentTasks.Add(ParentTestReporter.StartTask);
             }
 
-            StartTask = Task.Factory.ContinueWhenAll(dependentTasks.ToArray(), async (a) =>
+            StartTask = Task.Factory.ContinueWhenAll(dependentTasks.ToArray(), async (dts) =>
             {
-                try
-                {
-                    Task.WaitAll(dependentTasks.ToArray());
-                }
-                catch (Exception exp)
-                {
-                    var aggregatedExp = exp as AggregateException;
-                    if (aggregatedExp != null)
-                    {
-                        exp = aggregatedExp.Flatten();
-                    }
 
-                    throw new Exception("Cannot start a test item due parent failed to start.", exp);
+                if (dts.Any(dt => dt.IsFaulted))
+                {
+                    throw new AggregateException("Cannot start a test item due parent failed to start.", dts.Where(dt => dt.IsFaulted).Select(dt => dt.Exception).ToArray());
                 }
 
                 request.LaunchId = LaunchReporter.LaunchInfo.Id;
@@ -93,7 +84,6 @@ namespace ReportPortal.Shared.Reporter
                 }
 
                 TestInfo.StartTime = request.StartTime;
-
             }).Unwrap();
         }
 
@@ -128,35 +118,26 @@ namespace ReportPortal.Shared.Reporter
 
                 try
                 {
-                    StartTask.Wait();
-                }
-                catch (Exception exp)
-                {
-                    var aggregatedExp = exp as AggregateException;
-                    if (aggregatedExp != null)
+                    if (StartTask.IsFaulted)
                     {
-                        exp = aggregatedExp.Flatten();
+                        throw new Exception("Cannot finish test item due starting item failed.", StartTask.Exception);
                     }
 
-                    throw new Exception("Cannot finish test item due starting item failed.", exp);
-                }
-
-                try
-                {
-                    if (ChildTestReporters != null)
+                    if (ChildTestReporters?.Any(ctr => ctr.FinishTask.IsFaulted) == true)
                     {
-                        Task.WaitAll(ChildTestReporters.Select(tn => tn.FinishTask).ToArray());
-                    }
-                }
-                catch (Exception exp)
-                {
-                    var aggregatedExp = exp as AggregateException;
-                    if (aggregatedExp != null)
-                    {
-                        exp = aggregatedExp.Flatten();
+                        throw new AggregateException("Cannot finish test item due finishing of child items failed.", ChildTestReporters.Where(ctr => ctr.FinishTask.IsFaulted).Select(ctr => ctr.FinishTask.Exception).ToArray());
                     }
 
-                    throw new Exception("Cannot finish test item due finishing of child items failed.", exp);
+                    if (request.EndTime < TestInfo.StartTime)
+                    {
+                        request.EndTime = TestInfo.StartTime;
+                    }
+
+                    await _service.FinishTestItemAsync(TestInfo.Id, request);
+                }
+                catch (Exception)
+                {
+                    throw;
                 }
                 finally
                 {
@@ -166,13 +147,6 @@ namespace ReportPortal.Shared.Reporter
                     // clean up addition tasks
                     _additionalTasks = null;
                 }
-
-                if (request.EndTime < TestInfo.StartTime)
-                {
-                    request.EndTime = TestInfo.StartTime;
-                }
-
-                await _service.FinishTestItemAsync(TestInfo.Id, request);
             }).Unwrap();
         }
 
@@ -229,7 +203,10 @@ namespace ReportPortal.Shared.Reporter
 
                 var task = Task.Factory.ContinueWhenAll(dependentTasks.ToArray(), async (t) =>
                 {
-                    StartTask.Wait();
+                    if (StartTask.IsFaulted)
+                    {
+                        throw new Exception("Cannot add a log item due starting test item was failed.", StartTask.Exception);
+                    }
 
                     if (request.Time < TestInfo.StartTime)
                     {

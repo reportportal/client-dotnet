@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ReportPortal.Client;
@@ -77,52 +78,55 @@ namespace ReportPortal.Shared.Reporter
                 throw new InsufficientExecutionStackException("The launch is already scheduled for finishing.");
             }
 
-            var dependentTasks = ChildTestReporters.Select(tn => tn.FinishTask).ToList();
+            var dependentTasks = new List<Task>();
+            if (ChildTestReporters != null)
+            {
+                dependentTasks.AddRange(ChildTestReporters.Select(tn => tn.FinishTask));
+            }
             dependentTasks.Add(StartTask);
 
-            FinishTask = Task.Factory.ContinueWhenAll(dependentTasks.ToArray(), async (a) =>
+            FinishTask = Task.Factory.ContinueWhenAll(dependentTasks.ToArray(), async (dts) =>
             {
                 try
                 {
-                    Task.WaitAll(ChildTestReporters.Select(tn => tn.FinishTask).ToArray());
-                }
-                catch (Exception exp)
-                {
-                    var aggregatedExp = exp as AggregateException;
-                    if (aggregatedExp != null)
+                    if (StartTask.IsFaulted)
                     {
-                        exp = aggregatedExp.Flatten();
+                        throw new Exception("Cannot finish launch due starting launch failed.", StartTask.Exception);
                     }
 
-                    throw new Exception("Cannot finish launch due inner items failed to finish.", exp);
+                    if (ChildTestReporters?.Any(ctr => ctr.FinishTask.IsFaulted) == true)
+                    {
+                        throw new AggregateException("Cannot finish launch due inner items failed to finish.", ChildTestReporters.Where(ctr => ctr.FinishTask.IsFaulted).Select(ctr => ctr.FinishTask.Exception).ToArray());
+                    }
+
+                    if (request.EndTime < LaunchInfo.StartTime)
+                    {
+                        request.EndTime = LaunchInfo.StartTime;
+                    }
+
+                    if (!_isExternalLaunchId)
+                    {
+                        await _service.FinishLaunchAsync(LaunchInfo.Id, request);
+                    }
                 }
                 finally
                 {
                     // clean childs
-                    while (!ChildTestReporters.IsEmpty)
-                    {
-                        ChildTestReporters.TryTake(out ITestReporter child);
-                    }
-                }
-
-                if (request.EndTime < LaunchInfo.StartTime)
-                {
-                    request.EndTime = LaunchInfo.StartTime;
-                }
-
-                if (!_isExternalLaunchId)
-                {
-                    await _service.FinishLaunchAsync(LaunchInfo.Id, request);
+                    ChildTestReporters = null;
                 }
             }).Unwrap();
         }
 
-        public ConcurrentBag<ITestReporter> ChildTestReporters { get; set; } = new ConcurrentBag<ITestReporter>();
+        public ConcurrentBag<ITestReporter> ChildTestReporters { get; private set; }
 
         public ITestReporter StartChildTestReporter(StartTestItemRequest request)
         {
             var newTestNode = new TestReporter(_service, this, null);
             newTestNode.Start(request);
+            if (ChildTestReporters == null)
+            {
+                ChildTestReporters = new ConcurrentBag<ITestReporter>();
+            }
             ChildTestReporters.Add(newTestNode);
 
             LastTestNode = newTestNode;
