@@ -65,8 +65,14 @@ namespace ReportPortal.Shared.Tests.Faked
             return await Task.FromResult(new TestItem { Id = Guid.NewGuid().ToString() });
         }
 
+        private object _finishTestItemCounterLockObj = new object();
+        public int FinishTestItemCounter { get; private set; }
         public override async Task<Message> FinishTestItemAsync(string id, FinishTestItemRequest model)
         {
+            lock (_finishTestItemCounterLockObj)
+            {
+                FinishTestItemCounter++;
+            }
             await Task.Delay(RequestsDelay);
             return await Task.FromResult(new Message());
         }
