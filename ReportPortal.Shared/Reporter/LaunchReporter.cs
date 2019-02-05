@@ -20,10 +20,14 @@ namespace ReportPortal.Shared.Reporter
         public LaunchReporter(Service service, string launchId) : this(service)
         {
             _isExternalLaunchId = true;
-            LaunchInfo.Id = launchId;
+
+            LaunchInfo = new Launch
+            {
+                Id = launchId
+            };
         }
 
-        public Launch LaunchInfo { get; } = new Launch();
+        public Launch LaunchInfo { get; private set; }
 
         private bool _isExternalLaunchId = false;
 
@@ -41,8 +45,13 @@ namespace ReportPortal.Shared.Reporter
                 // start new launch item
                 StartTask = Task.Factory.StartNew(async () =>
                 {
-                    LaunchInfo.Id = (await _service.StartLaunchAsync(request)).Id;
-                    LaunchInfo.StartTime = request.StartTime;
+                    var id = (await _service.StartLaunchAsync(request)).Id;
+
+                    LaunchInfo = new Launch
+                    {
+                        Id = id,
+                        StartTime = request.StartTime
+                    };
                 }).Unwrap();
             }
             else
@@ -50,8 +59,7 @@ namespace ReportPortal.Shared.Reporter
                 // get launch info
                 StartTask = Task.Factory.StartNew(async () =>
                 {
-                    var launch = await _service.GetLaunchAsync(LaunchInfo.Id);
-                    LaunchInfo.StartTime = launch.StartTime;
+                    LaunchInfo = await _service.GetLaunchAsync(LaunchInfo.Id);
                 }).Unwrap();
             }
         }

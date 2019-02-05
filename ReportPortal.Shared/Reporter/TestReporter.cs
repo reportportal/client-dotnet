@@ -23,7 +23,7 @@ namespace ReportPortal.Shared.Reporter
             ThreadId = Thread.CurrentThread.ManagedThreadId;
         }
 
-        public TestItem TestInfo { get; } = new TestItem();
+        public TestItem TestInfo { get; private set; }
 
         public ILaunchReporter LaunchReporter { get; }
 
@@ -37,8 +37,6 @@ namespace ReportPortal.Shared.Reporter
             {
                 throw new InsufficientExecutionStackException("The test item is already scheduled for starting.");
             }
-
-            TestInfo.Name = request.Name;
 
             var dependentTasks = new List<Task>();
             dependentTasks.Add(LaunchReporter.StartTask);
@@ -72,7 +70,12 @@ namespace ReportPortal.Shared.Reporter
                         request.StartTime = LaunchReporter.LaunchInfo.StartTime;
                     }
 
-                    TestInfo.Id = (await _service.StartTestItemAsync(request)).Id;
+                    var id = (await _service.StartTestItemAsync(request)).Id;
+
+                    TestInfo = new TestItem
+                    {
+                        Id = id
+                    };
                 }
                 else
                 {
@@ -81,7 +84,12 @@ namespace ReportPortal.Shared.Reporter
                         request.StartTime = ParentTestReporter.TestInfo.StartTime;
                     }
 
-                    TestInfo.Id = (await _service.StartTestItemAsync(ParentTestReporter.TestInfo.Id, request)).Id;
+                    var id = (await _service.StartTestItemAsync(ParentTestReporter.TestInfo.Id, request)).Id;
+
+                    TestInfo = new TestItem
+                    {
+                        Id = id
+                    };
                 }
 
                 TestInfo.StartTime = request.StartTime;
@@ -102,16 +110,22 @@ namespace ReportPortal.Shared.Reporter
                 throw new InsufficientExecutionStackException("The test item is already scheduled for finishing.");
             }
 
-            TestInfo.EndTime = request.EndTime;
-            TestInfo.Status = request.Status;
-
             var dependentTasks = new List<Task>();
             dependentTasks.Add(StartTask);
-            dependentTasks.AddRange(AdditionalTasks);
-            dependentTasks.AddRange(ChildTestReporters.Select(tn => tn.FinishTask));
+            if (_additionalTasks != null)
+            {
+                dependentTasks.AddRange(_additionalTasks);
+            }
+            if (ChildTestReporters != null)
+            {
+                dependentTasks.AddRange(ChildTestReporters.Select(tn => tn.FinishTask));
+            }
 
             FinishTask = Task.Factory.ContinueWhenAll(dependentTasks.ToArray(), async (a) =>
             {
+                TestInfo.EndTime = request.EndTime;
+                TestInfo.Status = request.Status;
+
                 try
                 {
                     StartTask.Wait();
@@ -129,7 +143,10 @@ namespace ReportPortal.Shared.Reporter
 
                 try
                 {
-                    Task.WaitAll(ChildTestReporters.Select(tn => tn.FinishTask).ToArray());
+                    if (ChildTestReporters != null)
+                    {
+                        Task.WaitAll(ChildTestReporters.Select(tn => tn.FinishTask).ToArray());
+                    }
                 }
                 catch (Exception exp)
                 {
@@ -144,16 +161,10 @@ namespace ReportPortal.Shared.Reporter
                 finally
                 {
                     // clean up childs
-                    while (!ChildTestReporters.IsEmpty)
-                    {
-                        ChildTestReporters.TryTake(out ITestReporter child);
-                    }
+                    ChildTestReporters = null;
 
                     // clean up addition tasks
-                    while (!AdditionalTasks.IsEmpty)
-                    {
-                        AdditionalTasks.TryTake(out Task child);
-                    }
+                    _additionalTasks = null;
                 }
 
                 if (request.EndTime < TestInfo.StartTime)
@@ -165,13 +176,18 @@ namespace ReportPortal.Shared.Reporter
             }).Unwrap();
         }
 
-        public ConcurrentBag<Task> AdditionalTasks = new ConcurrentBag<Task>();
-        public ConcurrentBag<ITestReporter> ChildTestReporters { get; } = new ConcurrentBag<ITestReporter>();
+        private ConcurrentBag<Task> _additionalTasks;
+
+        public ConcurrentBag<ITestReporter> ChildTestReporters { get; private set; }
 
         public ITestReporter StartChildTestReporter(StartTestItemRequest request)
         {
             var newTestNode = new TestReporter(_service, LaunchReporter, this);
             newTestNode.Start(request);
+            if (ChildTestReporters == null)
+            {
+                ChildTestReporters = new ConcurrentBag<ITestReporter>();
+            }
             ChildTestReporters.Add(newTestNode);
 
             (LaunchReporter as LaunchReporter).LastTestNode = newTestNode;
@@ -183,7 +199,11 @@ namespace ReportPortal.Shared.Reporter
         {
             if (FinishTask == null || !FinishTask.IsCompleted)
             {
-                AdditionalTasks.Add(StartTask.ContinueWith(async (a) =>
+                if (_additionalTasks == null)
+                {
+                    _additionalTasks = new ConcurrentBag<Task>();
+                }
+                _additionalTasks.Add(StartTask.ContinueWith(async (a) =>
                 {
                     await _service.UpdateTestItemAsync(TestInfo.Id, request);
                 }).Unwrap());
@@ -201,7 +221,11 @@ namespace ReportPortal.Shared.Reporter
             {
                 var dependentTasks = new List<Task>();
                 dependentTasks.Add(StartTask);
-                dependentTasks.AddRange(AdditionalTasks);
+                if (_additionalTasks == null)
+                {
+                    _additionalTasks = new ConcurrentBag<Task>();
+                }
+                dependentTasks.AddRange(_additionalTasks);
 
                 var task = Task.Factory.ContinueWhenAll(dependentTasks.ToArray(), async (t) =>
                 {
@@ -217,7 +241,7 @@ namespace ReportPortal.Shared.Reporter
                     await _service.AddLogItemAsync(request);
                 }).Unwrap();
 
-                AdditionalTasks.Add(task);
+                _additionalTasks.Add(task);
             }
         }
 
