@@ -38,19 +38,13 @@ namespace ReportPortal.Shared.Reporter
                 throw new InsufficientExecutionStackException("The test item is already scheduled for starting.");
             }
 
-            var dependentTasks = new List<Task>();
-            dependentTasks.Add(LaunchReporter.StartTask);
-            if (ParentTestReporter != null)
-            {
-                dependentTasks.Add(ParentTestReporter.StartTask);
-            }
+            var parentStartTask = ParentTestReporter?.StartTask ?? LaunchReporter.StartTask;
 
-            StartTask = Task.Factory.ContinueWhenAll(dependentTasks.ToArray(), async (dts) =>
+            StartTask = parentStartTask.ContinueWith(async (pt) =>
             {
-
-                if (dts.Any(dt => dt.IsFaulted))
+                if (pt.IsFaulted)
                 {
-                    throw new AggregateException("Cannot start a test item due parent failed to start.", dts.Where(dt => dt.IsFaulted).Select(dt => dt.Exception).ToArray());
+                    throw pt.Exception;
                 }
 
                 request.LaunchId = LaunchReporter.LaunchInfo.Id;
@@ -193,35 +187,28 @@ namespace ReportPortal.Shared.Reporter
 
             if (FinishTask == null || !FinishTask.IsCompleted)
             {
-                var dependentTasks = new List<Task>();
-                dependentTasks.Add(StartTask);
-                if (_additionalTasks != null)
+                var parentTask = _additionalTasks?.Last() ?? StartTask;
+
+                var task = parentTask.ContinueWith(async (pt) =>
                 {
-                    dependentTasks.AddRange(_additionalTasks);
-                    _additionalTasks = new ConcurrentBag<Task>();
-                }
-
-                var task = Task.Factory.ContinueWhenAll(dependentTasks.ToArray(), async (t) =>
-                {
-                    if (StartTask.IsFaulted)
+                    if (!StartTask.IsFaulted)
                     {
-                        throw new Exception("Cannot add a log item due starting test item was failed.", StartTask.Exception);
+                        if (request.Time < TestInfo.StartTime)
+                        {
+                            request.Time = TestInfo.StartTime;
+                        }
+
+                        request.TestItemId = TestInfo.Id;
+
+                        await _service.AddLogItemAsync(request);
                     }
-
-                    if (request.Time < TestInfo.StartTime)
-                    {
-                        request.Time = TestInfo.StartTime;
-                    }
-
-                    request.TestItemId = TestInfo.Id;
-
-                    await _service.AddLogItemAsync(request);
                 }).Unwrap();
 
                 if (_additionalTasks == null)
                 {
                     _additionalTasks = new ConcurrentBag<Task>();
                 }
+
                 _additionalTasks.Add(task);
             }
         }
