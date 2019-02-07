@@ -21,7 +21,18 @@ namespace ReportPortal.Client.Converters
             var bytes = Encoding.UTF8.GetBytes(json);
             stream.Write(bytes, 0, bytes.Length);
             stream.Position = 0;
-            return (T)serializer.ReadObject(stream);
+
+            T result;
+            try
+            {
+                result = (T)serializer.ReadObject(stream);
+            }
+            catch (Exception exp)
+            {
+                throw new Exception($"Cannot deserialize json to {typeof(T).Name}.{Environment.NewLine}{json}", exp);
+            }
+
+            return result;
         }
 
         public static string Serialize<T>(object obj)
@@ -30,7 +41,7 @@ namespace ReportPortal.Client.Converters
             MemoryStream stream = new MemoryStream();
             serializer.WriteObject(stream, obj);
             var bytes = stream.ToArray();
-            return Encoding.UTF8.GetString(bytes, 0 , bytes.Length);
+            return Encoding.UTF8.GetString(bytes, 0, bytes.Length);
         }
     }
 }
