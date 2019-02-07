@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
 
@@ -27,9 +28,9 @@ namespace ReportPortal.Client.Converters
             {
                 result = (T)serializer.ReadObject(stream);
             }
-            catch (Exception exp)
+            catch (SerializationException exp)
             {
-                throw new Exception($"Cannot deserialize json to {typeof(T).Name}.{Environment.NewLine}{json}", exp);
+                throw new SerializationException($"Cannot deserialize json to '{typeof(T).Name}' type.{Environment.NewLine}{json}", exp);
             }
 
             return result;
