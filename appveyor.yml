@@ -2,14 +2,14 @@
 
 install:
   - gitversion /l console /output buildserver
-  - choco install codecov
+  - dotnet tool install -g codecov.tool
 
 configuration:
   - Release
 
 dotnet_csproj:
   patch: true
-  version: '$(GitVersion_NuGetVersion)'
+  version: '$(GitVersion_SemVersion)'
 
 build_script:
   - cmd: dotnet build
