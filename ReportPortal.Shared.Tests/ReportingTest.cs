@@ -2,6 +2,7 @@ using ReportPortal.Client;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 using ReportPortal.Shared.Reporter;
+using ReportPortal.Shared.Tests.Helpers;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -17,64 +18,8 @@ namespace ReportPortal.Shared.Tests
         [Fact]
         public async Task BigAsyncRealTree()
         {
-            var launchReporter = new LaunchReporter(_service);
-
-            var launchDateTime = DateTime.UtcNow;
-
-            launchReporter.Start(new Client.Requests.StartLaunchRequest
-            {
-                Name = "ReportPortal Shared",
-                StartTime = launchDateTime,
-                Mode = Client.Models.LaunchMode.Debug,
-                Tags = new System.Collections.Generic.List<string>()
-            });
-
-            for (int i = 0; i < 10; i++)
-            {
-                var suiteNode = launchReporter.StartChildTestReporter(new Client.Requests.StartTestItemRequest
-                {
-                    Name = $"Suite {i}",
-                    StartTime = launchDateTime.AddMilliseconds(-1),
-                    Type = Client.Models.TestItemType.Suite
-                });
-
-                for (int j = 0; j < 3; j++)
-                {
-                    var testNode = suiteNode.StartChildTestReporter(new Client.Requests.StartTestItemRequest
-                    {
-                        Name = $"Test {j}",
-                        StartTime = launchDateTime,
-                        Type = Client.Models.TestItemType.Step
-                    });
-
-                    for (int l = 0; l < 0; l++)
-                    {
-                        testNode.Log(new Client.Requests.AddLogItemRequest
-                        {
-                            Level = Client.Models.LogLevel.Info,
-                            Text = $"Log message #{l}",
-                            Time = launchDateTime
-                        });
-                    }
-
-                    testNode.Finish(new Client.Requests.FinishTestItemRequest
-                    {
-                        EndTime = launchDateTime,
-                        Status = Client.Models.Status.Passed
-                    });
-                }
-
-                suiteNode.Finish(new Client.Requests.FinishTestItemRequest
-                {
-                    EndTime = launchDateTime,
-                    Status = Client.Models.Status.Passed
-                });
-            }
-
-            launchReporter.Finish(new Client.Requests.FinishLaunchRequest
-            {
-                EndTime = launchDateTime
-            });
+            var launchScheduler = new LaunchScheduler(_service);
+            var launchReporter = launchScheduler.Build(10, 3, 1);
 
             launchReporter.FinishTask.Wait();
 
