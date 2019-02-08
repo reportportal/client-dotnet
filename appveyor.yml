@@ -18,9 +18,8 @@ test_script:
   - dotnet test --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=OpenCover /p:CoverletOutput=./Coverage.xml
 
 after_test:
-  - dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg
+  - dotnet pack
   - codecov -f .\ReportPortal.Client.Tests\Coverage.xml
 
 artifacts:
   - path: '**\*.nupkg'
-  - path: '**\*.snupkg'

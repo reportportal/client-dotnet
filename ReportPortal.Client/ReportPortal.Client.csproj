@@ -11,6 +11,8 @@
     <RepositoryType>GitHub</RepositoryType>
     <RepositoryUrl>https://github.com/reportportal/client-net</RepositoryUrl>
     <PackageTags>report reportportal api client testing</PackageTags>
+
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.1'">
@@ -26,5 +28,4 @@
   <ItemGroup>
     <None Include="Build\**" Pack="true" PackagePath="build\" />
   </ItemGroup>
-
 </Project>
