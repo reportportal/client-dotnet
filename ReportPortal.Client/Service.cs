@@ -26,6 +26,11 @@ namespace ReportPortal.Client
         public Service(Uri uri, string project, string password, HttpMessageHandler messageHandler)
         {
             _httpClient = new HttpClient(messageHandler);
+            
+            if (!uri.LocalPath.ToLowerInvariant().Contains("api/v1"))
+            {
+                uri = uri.Append("api/v1");
+            }
             _httpClient.BaseAddress = uri;
 
             _httpClient.DefaultRequestHeaders.Clear();
