@@ -5,7 +5,7 @@
     <Version>1.0.0</Version>
     <Description>Async client for http://reportportal.io Web API</Description>
     <Authors>Nikolay Borisenko, Report Portal Community</Authors>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/reportportal/client-net/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>http://reportportal.io</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/reportportal/client-net/master/Logo.png</PackageIconUrl>
     <RepositoryType>GitHub</RepositoryType>
