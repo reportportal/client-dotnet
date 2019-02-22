@@ -5,7 +5,7 @@
     <Version>1.0.0</Version>
     <Description>Multithreaded reporter of test results to Report Portal</Description>
     <Authors>Nikolay Borisenko, Report Portal Community</Authors>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/reportportal/commons-net/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>http://reportportal.io</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/reportportal/commons-net/master/Logo.png</PackageIconUrl>
     <RepositoryType>GitHub</RepositoryType>
