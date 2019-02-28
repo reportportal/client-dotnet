@@ -54,18 +54,6 @@ namespace ReportPortal.Client
         }
 
         /// <summary>
-        /// Constructor to initialize a new object of service.
-        /// </summary>
-        /// <param name="uri">Base URI for REST service.</param>
-        /// <param name="project">A project to manage.</param>
-        /// <param name="password">A password for user. Can be UID given from user's profile page.</param>
-        /// <param name="proxy">Proxy for all HTTP requests.</param>
-        public Service(Uri uri, string project, string password, IWebProxy proxy)
-            : this(uri, project, password, new RetryWithExponentialBackoffHttpClientHandler(3, proxy))
-        {
-        }
-
-        /// <summary>
         /// Get or set project name to interact with.
         /// </summary>
         public string Project { get; set; }
