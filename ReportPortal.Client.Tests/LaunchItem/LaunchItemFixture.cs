@@ -312,7 +312,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
 
             var getLaunch = await Service.GetLaunchAsync(launch.Id);
 
-            Assert.NotNull(getLaunch.StartTime);
+            Assert.NotEqual(default(DateTime), getLaunch.StartTime);
             Assert.Null(getLaunch.EndTime);
 
             await Service.FinishLaunchAsync(launch.Id, new FinishLaunchRequest

@@ -2,8 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using System.Threading;
+using ReportPortal.Client.Extentions;
 
 namespace ReportPortal.Client
 {
@@ -24,6 +23,11 @@ namespace ReportPortal.Client
         public Service(Uri uri, string project, string password, HttpMessageHandler messageHandler)
         {
             _httpClient = new HttpClient(messageHandler);
+            
+            if (!uri.LocalPath.ToLowerInvariant().Contains("api/v1"))
+            {
+                uri = uri.Append("api/v1");
+            }
             _httpClient.BaseAddress = uri;
 
             _httpClient.DefaultRequestHeaders.Clear();
@@ -45,7 +49,7 @@ namespace ReportPortal.Client
         /// <param name="project">A project to manage.</param>
         /// <param name="password">A password for user. Can be UID given from user's profile page.</param>
         public Service(Uri uri, string project, string password)
-            : this(uri, project, password, new RetryWithExponentialBackoffHttpClientHandler())
+            : this(uri, project, password, new RetryWithExponentialBackoffHttpClientHandler(3))
         {
         }
 
@@ -57,7 +61,7 @@ namespace ReportPortal.Client
         /// <param name="password">A password for user. Can be UID given from user's profile page.</param>
         /// <param name="proxy">Proxy for all HTTP requests.</param>
         public Service(Uri uri, string project, string password, IWebProxy proxy)
-            : this(uri, project, password, new RetryWithExponentialBackoffHttpClientHandler(proxy))
+            : this(uri, project, password, new RetryWithExponentialBackoffHttpClientHandler(3, proxy))
         {
         }
 
@@ -67,38 +71,5 @@ namespace ReportPortal.Client
         public string Project { get; set; }
 
         public Uri BaseUri { get; set; }
-    }
-
-    public class RetryWithExponentialBackoffHttpClientHandler : DelegatingHandler
-    {
-        public RetryWithExponentialBackoffHttpClientHandler()
-            : this(new HttpClientHandler())
-        {
-        }
-
-        public RetryWithExponentialBackoffHttpClientHandler(IWebProxy proxy)
-            : this(new HttpClientHandler { Proxy = proxy })
-        {
-        }
-
-        public RetryWithExponentialBackoffHttpClientHandler(HttpMessageHandler innerHandler)
-            : base(innerHandler)
-        {
-        }
-
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            HttpResponseMessage response = null;
-
-            for (int i = 0; i < 3; i++)
-            {
-                response = await base.SendAsync(request, cancellationToken);
-                if (response.IsSuccessStatusCode)
-                {
-                    return response;
-                }
-            }
-            return response;
-        }
     }
 }

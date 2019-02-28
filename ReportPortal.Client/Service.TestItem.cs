@@ -18,7 +18,7 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="filterOption">Specified criterias for retrieving test items.</param>
         /// <returns>A list of test items.</returns>
-        public async Task<TestItemsContainer> GetTestItemsAsync(FilterOption filterOption = null)
+        public virtual async Task<TestItemsContainer> GetTestItemsAsync(FilterOption filterOption = null)
         {
             var uri = BaseUri.Append($"{Project}/item");
             if (filterOption != null)
@@ -35,7 +35,7 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="id">ID of the test item to retrieve.</param>
         /// <returns>A representation of test item.</returns>
-        public async Task<TestItem> GetTestItemAsync(string id)
+        public virtual async Task<TestItem> GetTestItemAsync(string id)
         {
             var uri = BaseUri.Append($"{Project}/item/{id}");
             var response = await _httpClient.GetAsync(uri).ConfigureAwait(false);
@@ -49,7 +49,7 @@ namespace ReportPortal.Client
         /// <param name="launchId">ID of launch.</param>
         /// <param name="tagContains">Tags should contain specified text.</param>
         /// <returns></returns>
-        public async Task<List<string>> GetUniqueTagsAsync(string launchId, string tagContains)
+        public virtual async Task<List<string>> GetUniqueTagsAsync(string launchId, string tagContains)
         {
             var uri = BaseUri.Append($"{Project}/item/tags?launch={launchId}&filter.cnt.tags={tagContains}");
 
@@ -63,7 +63,7 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="model">Information about representation of test item.</param>
         /// <returns>Representation of created test item.</returns>
-        public async Task<TestItem> StartTestItemAsync(StartTestItemRequest model)
+        public virtual async Task<TestItem> StartTestItemAsync(StartTestItemRequest model)
         {
             var uri = BaseUri.Append($"{Project}/item");
             var body = ModelSerializer.Serialize<StartTestItemRequest>(model);
@@ -78,7 +78,7 @@ namespace ReportPortal.Client
         /// <param name="id">ID of parent item.</param>
         /// <param name="model">Information about representation of test item.</param>
         /// <returns>Representation of created test item.</returns>
-        public async Task<TestItem> StartTestItemAsync(string id, StartTestItemRequest model)
+        public virtual async Task<TestItem> StartTestItemAsync(string id, StartTestItemRequest model)
         {
             var uri = BaseUri.Append($"{Project}/item/{id}");
             var body = ModelSerializer.Serialize<StartTestItemRequest>(model);
@@ -93,7 +93,7 @@ namespace ReportPortal.Client
         /// <param name="id">ID of specified test item.</param>
         /// <param name="model">Information about representation of test item to finish.</param>
         /// <returns>A message from service.</returns>
-        public async Task<Message> FinishTestItemAsync(string id, FinishTestItemRequest model)
+        public virtual async Task<Message> FinishTestItemAsync(string id, FinishTestItemRequest model)
         {
             var uri = BaseUri.Append($"{Project}/item/{id}");
             var body = ModelSerializer.Serialize<FinishTestItemRequest>(model);
@@ -108,7 +108,7 @@ namespace ReportPortal.Client
         /// <param name="id">ID of test item to update.</param>
         /// <param name="model">Information about test item.</param>
         /// <returns>A message from service.</returns>
-        public async Task<Message> UpdateTestItemAsync(string id, UpdateTestItemRequest model)
+        public virtual async Task<Message> UpdateTestItemAsync(string id, UpdateTestItemRequest model)
         {
             var uri = BaseUri.Append($"{Project}/item/{id}/update");
             var body = ModelSerializer.Serialize<UpdateTestItemRequest>(model);
@@ -122,7 +122,7 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="id">ID of the test item to delete.</param>
         /// <returns>A message from service.</returns>
-        public async Task<Message> DeleteTestItemAsync(string id)
+        public virtual async Task<Message> DeleteTestItemAsync(string id)
         {
             var uri = BaseUri.Append($"{Project}/item/{id}");
             var response = await _httpClient.DeleteAsync(uri).ConfigureAwait(false);
@@ -135,7 +135,7 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="model">Information about test items and their issues.</param>
         /// <returns>A list of assigned issues.</returns>
-        public async Task<List<Issue>> AssignTestItemIssuesAsync(AssignTestItemIssuesRequest model)
+        public virtual async Task<List<Issue>> AssignTestItemIssuesAsync(AssignTestItemIssuesRequest model)
         {
             var uri = BaseUri.Append($"{Project}/item");
             var body = ModelSerializer.Serialize<AssignTestItemIssuesRequest>(model);
@@ -143,7 +143,7 @@ namespace ReportPortal.Client
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<List<Issue>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
-        
+
         /// <summary>
         /// Get the history of test item executions.
         /// </summary>
@@ -151,7 +151,7 @@ namespace ReportPortal.Client
         /// <param name="depth">How many executions to return.</param>
         /// <param name="full"></param>
         /// <returns>The list of execution history.</returns>
-        public async Task<List<TestItemHistory>> GetTestItemHistoryAsync(string testItemId, int depth, bool full)
+        public virtual async Task<List<TestItemHistory>> GetTestItemHistoryAsync(string testItemId, int depth, bool full)
         {
             var uri = BaseUri.Append($"{Project}/item/history?ids={testItemId}&history_depth={depth}&is_full={full}");
 
