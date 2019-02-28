@@ -4,8 +4,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Threading;
-using System.Collections.Generic;
-using ReportPortal.Client.Extentions;
 
 namespace ReportPortal.Client
 {
@@ -47,7 +45,7 @@ namespace ReportPortal.Client
         /// <param name="project">A project to manage.</param>
         /// <param name="password">A password for user. Can be UID given from user's profile page.</param>
         public Service(Uri uri, string project, string password)
-            : this(uri, project, password, new RetryWithExponentialBackoffHttpClientHandler(3))
+            : this(uri, project, password, new RetryWithExponentialBackoffHttpClientHandler())
         {
         }
 
@@ -59,7 +57,7 @@ namespace ReportPortal.Client
         /// <param name="password">A password for user. Can be UID given from user's profile page.</param>
         /// <param name="proxy">Proxy for all HTTP requests.</param>
         public Service(Uri uri, string project, string password, IWebProxy proxy)
-            : this(uri, project, password, new RetryWithExponentialBackoffHttpClientHandler(3, proxy))
+            : this(uri, project, password, new RetryWithExponentialBackoffHttpClientHandler(proxy))
         {
         }
 
@@ -73,60 +71,33 @@ namespace ReportPortal.Client
 
     public class RetryWithExponentialBackoffHttpClientHandler : DelegatingHandler
     {
-        public int MaxRetries { get; private set; }
-
-        public RetryWithExponentialBackoffHttpClientHandler(int maxRetries)
-            : this(maxRetries, new HttpClientHandler())
+        public RetryWithExponentialBackoffHttpClientHandler()
+            : this(new HttpClientHandler())
         {
         }
 
-        public RetryWithExponentialBackoffHttpClientHandler(int maxRetries, IWebProxy proxy)
-            : this(maxRetries, new HttpClientHandler { Proxy = proxy })
+        public RetryWithExponentialBackoffHttpClientHandler(IWebProxy proxy)
+            : this(new HttpClientHandler { Proxy = proxy })
         {
         }
 
-        public RetryWithExponentialBackoffHttpClientHandler(int maxRetries, HttpMessageHandler innerHandler)
+        public RetryWithExponentialBackoffHttpClientHandler(HttpMessageHandler innerHandler)
             : base(innerHandler)
         {
-            MaxRetries = maxRetries;
         }
-
-        private List<HttpStatusCode> ResponseStatusCodesForRetrying => new List<HttpStatusCode> { HttpStatusCode.InternalServerError, HttpStatusCode.NotImplemented, HttpStatusCode.BadGateway, HttpStatusCode.ServiceUnavailable, HttpStatusCode.GatewayTimeout, HttpStatusCode.HttpVersionNotSupported };
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             HttpResponseMessage response = null;
 
-            for (int i = 0; i < MaxRetries; i++)
+            for (int i = 0; i < 3; i++)
             {
-                try
+                response = await base.SendAsync(request, cancellationToken);
+                if (response.IsSuccessStatusCode)
                 {
-                    response = await base.SendAsync(request, cancellationToken);
-
-                    if (!ResponseStatusCodesForRetrying.Contains(response.StatusCode))
-                    {
-                        return response;
-                    }
-                    else
-                    {
-                        response.VerifySuccessStatusCode();
-                    }
-                }
-
-                catch (Exception exp) when (exp is TaskCanceledException || exp is HttpRequestException)
-                {
-                    if (i < MaxRetries - 1)
-                    {
-                        await Task.Delay((int)Math.Pow(2, i + MaxRetries) * 1000);
-                    }
-
-                    else
-                    {
-                        throw;
-                    }
+                    return response;
                 }
             }
-
             return response;
         }
     }
