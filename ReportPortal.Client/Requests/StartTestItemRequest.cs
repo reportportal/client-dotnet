@@ -56,7 +56,7 @@ namespace ReportPortal.Client.Requests
         [DataMember(Name = "type")]
         public string TypeString { get { return EnumConverter.ConvertFrom(Type); } set { Type = EnumConverter.ConvertTo<TestItemType>(value); } }
 
-        public TestItemType Type = TestItemType.Test;
+        public TestItemType Type { get; set; } = TestItemType.Test;
 
         /// <summary>
         /// A list of tags.

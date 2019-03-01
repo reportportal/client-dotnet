@@ -8,6 +8,7 @@ using ReportPortal.Client.Converters;
 using System;
 using System.Net.Http;
 using ReportPortal.Client.Extentions;
+using System.Linq;
 
 namespace ReportPortal.Client
 {
@@ -82,7 +83,7 @@ namespace ReportPortal.Client
                 var jsonContent = new StringContent(body, Encoding.UTF8, "application/json");
                 multipartContent.Add(jsonContent, "json_request_part");
 
-                var byteArrayContent = new ByteArrayContent(model.Attach.Data, 0, model.Attach.Data.Length);
+                var byteArrayContent = new ByteArrayContent(model.Attach.Data.ToArray(), 0, model.Attach.Data.Count);
                 byteArrayContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(model.Attach.MimeType);
                 multipartContent.Add(byteArrayContent, "file", model.Attach.Name);
 
@@ -91,13 +92,6 @@ namespace ReportPortal.Client
                 var c = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 return ModelSerializer.Deserialize<Responses>(c).LogItems[0];
             }
-        }
-
-        [System.Runtime.Serialization.DataContract]
-        public class Responses
-        {
-            [System.Runtime.Serialization.DataMember(Name = "responses")]
-            public List<LogItem> LogItems { get; set; }
         }
 
         /// <summary>

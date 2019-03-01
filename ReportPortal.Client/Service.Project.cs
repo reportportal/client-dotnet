@@ -28,13 +28,6 @@ namespace ReportPortal.Client
             return ModelSerializer.Deserialize<UpdatePreferencesResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
-        [System.Runtime.Serialization.DataContract]
-        public class UpdatePreferencesResponse
-        {
-            [System.Runtime.Serialization.DataMember(Name = "projectRef")]
-            public string ProjectRef { get; set; }
-        }
-
         /// <summary>
         /// gets all user preferences
         /// </summary>

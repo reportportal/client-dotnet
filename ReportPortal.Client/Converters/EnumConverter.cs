@@ -3,7 +3,7 @@ using ReportPortal.Client.Extentions;
 
 namespace ReportPortal.Client.Converters
 {
-    public class EnumConverter
+    public static class EnumConverter
     {
         public static T ConvertTo<T>(string value)
         {

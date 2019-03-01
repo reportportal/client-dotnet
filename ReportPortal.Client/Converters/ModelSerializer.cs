@@ -9,7 +9,7 @@ using System.Text;
 
 namespace ReportPortal.Client.Converters
 {
-    public class ModelSerializer
+    public static class ModelSerializer
     {
         public static T Deserialize<T>(string json)
         {
@@ -36,11 +36,11 @@ namespace ReportPortal.Client.Converters
             return result;
         }
 
-        public static string Serialize<T>(object obj)
+        public static string Serialize<T>(object o)
         {
             DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(T));
             MemoryStream stream = new MemoryStream();
-            serializer.WriteObject(stream, obj);
+            serializer.WriteObject(stream, o);
             var bytes = stream.ToArray();
             return Encoding.UTF8.GetString(bytes, 0, bytes.Length);
         }

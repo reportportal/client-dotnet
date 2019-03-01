@@ -19,7 +19,7 @@ namespace ReportPortal.Client.Filtering
             Direction = direction;
         }
 
-        public List<string> Fields { get; set; }
+        public List<string> Fields { get; }
         public SortDirection Direction { get; set; }
     }
 }

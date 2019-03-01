@@ -12,7 +12,7 @@ namespace ReportPortal.Client.Filtering
 
         public Sorting Sorting { get; set; }
 
-        public List<Filter> Filters { get; set; }
+        public IReadOnlyList<Filter> Filters { get; set; }
 
         public override string ToString()
         {
