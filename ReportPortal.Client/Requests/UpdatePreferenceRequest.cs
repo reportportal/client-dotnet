@@ -20,4 +20,11 @@ namespace ReportPortal.Client.Requests
         [DataMember(Name = "active")]
         public string Active { get; set; }
     }
+
+    [DataContract]
+    public class UpdatePreferencesResponse
+    {
+        [DataMember(Name = "projectRef")]
+        public string ProjectRef { get; set; }
+    }
 }

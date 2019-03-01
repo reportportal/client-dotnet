@@ -82,7 +82,7 @@ namespace ReportPortal.Client.Models
     public class Issue
     {
         [DataMember(Name = "issue_type")]
-        public string Type;
+        public string Type { get; set; }
 
         [DataMember(Name = "comment")]
         public string Comment { get; set; }
@@ -119,6 +119,6 @@ namespace ReportPortal.Client.Models
         public string TicketId { get; set; }
 
         [DataMember(Name = "url")]
-        public string Url { get; set; }
+        public Uri Url { get; set; }
     }
 }

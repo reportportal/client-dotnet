@@ -1,6 +1,8 @@
 ﻿using System;
 using ReportPortal.Client.Converters;
 using System.Runtime.Serialization;
+using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace ReportPortal.Client.Models
 {
@@ -62,16 +64,23 @@ namespace ReportPortal.Client.Models
         {
             Name = name;
             MimeType = mimeType;
-            Data = data;
+            Data = new ReadOnlyCollection<byte>(data);
         }
 
         [DataMember(Name = "name")]
         public string Name { get; set; }
 
         [IgnoreDataMember]
-        public byte[] Data { get; set; }
+        public ReadOnlyCollection<byte> Data { get; }
 
         [IgnoreDataMember]
         public string MimeType { get; set; }
+    }
+
+    [DataContract]
+    public class Responses
+    {
+        [DataMember(Name = "responses")]
+        public List<LogItem> LogItems { get; set; }
     }
 }

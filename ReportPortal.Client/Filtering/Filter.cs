@@ -45,10 +45,10 @@ namespace ReportPortal.Client.Filtering
             Values.AddRange(values);
         }
 
-        public FilterOperation Operation { get; set; }
+        public FilterOperation Operation { get; }
 
-        public string Field { get; set; }
+        public string Field { get; }
 
-        public List<object> Values { get; set; } 
+        public List<object> Values { get; } 
     }
 }
