@@ -8,7 +8,6 @@ using ReportPortal.Client.Models;
 namespace ReportPortal.Client.Clients
 {
     public class UserClient: BaseClient
-
     {
     public virtual async Task<User> GetUserAsync()
     {
