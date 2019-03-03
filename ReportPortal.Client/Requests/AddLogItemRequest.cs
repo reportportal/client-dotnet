@@ -41,7 +41,7 @@ namespace ReportPortal.Client.Requests
         [DataMember(Name = "level")]
         public string LevelString { get { return EnumConverter.ConvertFrom(Level); } set { Level = EnumConverter.ConvertTo<LogLevel>(value); } }
 
-        public LogLevel Level = LogLevel.Info;
+        public LogLevel Level { get; set; } = LogLevel.Info;
 
         /// <summary>
         /// Message of log item.

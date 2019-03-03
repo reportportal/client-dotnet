@@ -1,5 +1,4 @@
-﻿using System;
-using ReportPortal.Client.Converters;
+﻿using ReportPortal.Client.Converters;
 using System.Runtime.Serialization;
 using ReportPortal.Client.Models;
 using System.Collections.Generic;
@@ -24,6 +23,6 @@ namespace ReportPortal.Client.Requests
         [DataMember(Name = "analyze_items_mode")]
         public List<string> AnalyzerItemsModeString { get; set; }
 
-        public List<AnalyzerItemsMode> AnalyzerItemsMode { get { return AnalyzerItemsModeString.Select(i => EnumConverter.ConvertTo<AnalyzerItemsMode>(i)).ToList(); } set { AnalyzerItemsModeString = value.Select(i => EnumConverter.ConvertFrom(i)).ToList(); } }
+        public IReadOnlyList<AnalyzerItemsMode> AnalyzerItemsMode { get { return AnalyzerItemsModeString.Select(i => EnumConverter.ConvertTo<AnalyzerItemsMode>(i)).ToList(); } set { AnalyzerItemsModeString = value.Select(i => EnumConverter.ConvertFrom(i)).ToList(); } }
     }
 }

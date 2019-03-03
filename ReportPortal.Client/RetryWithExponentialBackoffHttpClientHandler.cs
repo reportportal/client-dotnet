@@ -38,7 +38,7 @@ namespace ReportPortal.Client
             {
                 try
                 {
-                    response = await base.SendAsync(request, cancellationToken);
+                    response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
                     if (!ResponseStatusCodesForRetrying.Contains(response.StatusCode))
                     {
@@ -54,7 +54,7 @@ namespace ReportPortal.Client
                 {
                     if (i < MaxRetries - 1)
                     {
-                        await Task.Delay((int)Math.Pow(2, i + MaxRetries) * 1000);
+                        await Task.Delay((int)Math.Pow(2, i + MaxRetries) * 1000).ConfigureAwait(false);
                     }
 
                     else

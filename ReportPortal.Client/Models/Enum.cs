@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Models
 {
@@ -72,7 +71,7 @@ namespace ReportPortal.Client.Models
         Debug
     }
 
-    public struct WellKnownIssueType
+    public static class WellKnownIssueType
     {
         public const string ProductBug = "PB001";
         public const string AutomationBug = "AB001";

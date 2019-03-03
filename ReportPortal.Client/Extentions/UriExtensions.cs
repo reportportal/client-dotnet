@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using System.Text;
 
 namespace ReportPortal.Client.Extentions
 {
@@ -9,7 +8,7 @@ namespace ReportPortal.Client.Extentions
     {
         public static Uri Append(this Uri uri, params string[] paths)
         {
-            return new Uri(paths.Aggregate(uri.AbsoluteUri, (current, path) => string.Format("{0}/{1}", current.TrimEnd('/'), path.TrimStart('/'))));
+            return new Uri(paths.Aggregate(uri.AbsoluteUri, (current, path) => string.Format(CultureInfo.InvariantCulture, "{0}/{1}", current.TrimEnd('/'), path.TrimStart('/'))));
         }
     }
 }

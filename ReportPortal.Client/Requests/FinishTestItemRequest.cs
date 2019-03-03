@@ -42,7 +42,7 @@ namespace ReportPortal.Client.Requests
         [DataMember(Name = "status")]
         public string StatusString { get { return EnumConverter.ConvertFrom(Status); } set { Status = EnumConverter.ConvertTo<Status>(value); } }
 
-        public Status Status = Models.Status.Passed;
+        public Status Status { get; set; } = Status.Passed;
         
         /// <summary>
         /// A issue of test item if execution was proceeded with error.

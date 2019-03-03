@@ -484,7 +484,7 @@ namespace ReportPortal.Client.Tests.TestItem
                 Type = "SI001",
                 ExternalSystemIssues = new List<ExternalSystemIssue>
                 {
-                    new ExternalSystemIssue { TicketId = "XXXXX-15", Url = "https://jira.epam.com/jira/browse/XXXXX-15" }
+                    new ExternalSystemIssue { TicketId = "XXXXX-15", Url = new Uri("https://jira.epam.com/jira/browse/XXXXX-15") }
                 }
             };
 
