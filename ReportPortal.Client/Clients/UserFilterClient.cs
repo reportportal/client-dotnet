@@ -9,12 +9,16 @@ using ReportPortal.Client.Filtering;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 
-namespace ReportPortal.Client
+namespace ReportPortal.Client.Clients
 {
-    public partial class Service
+    public class UserFilterClient: BaseClient
     {
+        public UserFilterClient(HttpClient httpCLient, Uri baseUri, string project) : base(httpCLient, baseUri, project)
+        {
+        }
+
         /// <summary>
-        /// adds the specified user ilter
+        /// adds the specified user filter
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -23,7 +27,7 @@ namespace ReportPortal.Client
             var uri = BaseUri.Append($"{Project}/filter");
 
             var body = ModelSerializer.Serialize<AddUserFilterRequest>(model);
-            var response = await _httpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
+            var response = await HttpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<List<EntryCreated>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
@@ -40,7 +44,7 @@ namespace ReportPortal.Client
             {
                 uri = uri.Append($"?{filterOption}");
             }
-            var response = await _httpClient.GetAsync(uri).ConfigureAwait(false);
+            var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<UserFilterContainer>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
@@ -54,7 +58,7 @@ namespace ReportPortal.Client
         {
             var uri = BaseUri.Append($"{Project}/filter/{filterId}");
 
-            var response = await _httpClient.DeleteAsync(uri).ConfigureAwait(false);
+            var response = await HttpClient.DeleteAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }

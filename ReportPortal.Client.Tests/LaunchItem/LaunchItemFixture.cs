@@ -15,13 +15,13 @@ namespace ReportPortal.Client.Tests.LaunchItem
         [Fact]
         public async Task GetInvalidLaunch()
         {
-            await Assert.ThrowsAsync<HttpRequestException>(async () => await Service.GetLaunchAsync("invalid_id"));
+            await Assert.ThrowsAsync<HttpRequestException>(async () => await Service.LaunchClient.GetLaunchAsync("invalid_id"));
         }
 
         [Fact]
         public async Task GetLaunches()
         {
-            var container = await Service.GetLaunchesAsync();
+            var container = await Service.LaunchClient.GetLaunchesAsync();
             var launches = container.Launches.ToList();
             Assert.True(launches.Count() > 0);
         }
@@ -29,14 +29,14 @@ namespace ReportPortal.Client.Tests.LaunchItem
         [Fact]
         public async Task GetDebugLaunches()
         {
-            var launches = await Service.GetLaunchesAsync(debug: true);
+            var launches = await Service.LaunchClient.GetLaunchesAsync(debug: true);
             launches.Launches.ForEach((l) => Assert.Equal(LaunchMode.Debug, l.Mode));
         }
 
         [Fact]
         public async Task GetTheFirst10Launches()
         {
-            var launches = await Service.GetLaunchesAsync(new FilterOption
+            var launches = await Service.LaunchClient.GetLaunchesAsync(new FilterOption
             {
                 Paging = new Paging(1, 10)
             });
@@ -46,7 +46,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
         [Fact]
         public async Task GetLaunchesFilteredByName()
         {
-            var launches = await Service.GetLaunchesAsync(new FilterOption
+            var launches = await Service.LaunchClient.GetLaunchesAsync(new FilterOption
             {
                 Paging = new Paging(1, 10),
                 Filters = new List<Filter> { new Filter(FilterOperation.Contains, "name", "test") }
@@ -61,7 +61,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
         [Fact]
         public async Task GetLaunchesSortedByAscendingDate()
         {
-            var launches = await Service.GetLaunchesAsync(new FilterOption
+            var launches = await Service.LaunchClient.GetLaunchesAsync(new FilterOption
             {
                 Paging = new Paging(1, 10),
                 Sorting = new Sorting(new List<string> { "start_time" }, SortDirection.Ascending)
@@ -75,7 +75,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
         [Fact]
         public async Task GetLaunchesSortedByDescendingDate()
         {
-            var launches = await Service.GetLaunchesAsync(new FilterOption
+            var launches = await Service.LaunchClient.GetLaunchesAsync(new FilterOption
             {
                 Paging = new Paging(1, 10),
                 Sorting = new Sorting(new List<string> { "start_time" }, SortDirection.Descending)
@@ -95,7 +95,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
                 StartTime = DateTime.UtcNow
             };
 
-            var launch = await Service.StartLaunchAsync(startLaunchRequest);
+            var launch = await Service.LaunchClient.StartLaunchAsync(startLaunchRequest);
             Assert.NotNull(launch.Id);
 
             var finishLaunchRequest = new FinishLaunchRequest
@@ -103,28 +103,28 @@ namespace ReportPortal.Client.Tests.LaunchItem
                 EndTime = DateTime.UtcNow.AddHours(1)
             };
 
-            var message = await Service.FinishLaunchAsync(launch.Id, finishLaunchRequest);
+            var message = await Service.LaunchClient.FinishLaunchAsync(launch.Id, finishLaunchRequest);
             Assert.Contains("successfully", message.Info);
 
-            var gotLaunch = await Service.GetLaunchAsync(launch.Id);
+            var gotLaunch = await Service.LaunchClient.GetLaunchAsync(launch.Id);
             Assert.Equal("StartFinishDeleteLaunch", gotLaunch.Name);
             Assert.Equal(startLaunchRequest.StartTime, gotLaunch.StartTime);
             Assert.Equal(finishLaunchRequest.EndTime, gotLaunch.EndTime);
 
-            var delMessage = await Service.DeleteLaunchAsync(launch.Id);
+            var delMessage = await Service.LaunchClient.DeleteLaunchAsync(launch.Id);
             Assert.Contains("successfully", delMessage.Info);
         }
 
         [Fact]
         public async Task StartUpdateFinishDeleteLaunch()
         {
-            var launch = await Service.StartLaunchAsync(new StartLaunchRequest
+            var launch = await Service.LaunchClient.StartLaunchAsync(new StartLaunchRequest
             {
                 Name = "StartFinishDeleteLaunch",
                 StartTime = DateTime.UtcNow
             });
 
-            var updateMessage = await Service.UpdateLaunchAsync(launch.Id, new UpdateLaunchRequest()
+            var updateMessage = await Service.LaunchClient.UpdateLaunchAsync(launch.Id, new UpdateLaunchRequest()
             {
                 Description = launch.Description,
                 Mode = launch.Mode,
@@ -133,16 +133,16 @@ namespace ReportPortal.Client.Tests.LaunchItem
 
             Assert.NotNull(launch.Id);
             Assert.Contains("successfully updated", updateMessage.Info);
-            var message = await Service.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
+            var message = await Service.LaunchClient.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });
             Assert.Contains("successfully", message.Info);
 
-            var gotLaunch = await Service.GetLaunchAsync(launch.Id);
+            var gotLaunch = await Service.LaunchClient.GetLaunchAsync(launch.Id);
             Assert.Equal("StartFinishDeleteLaunch", gotLaunch.Name);
 
-            var delMessage = await Service.DeleteLaunchAsync(launch.Id);
+            var delMessage = await Service.LaunchClient.DeleteLaunchAsync(launch.Id);
             Assert.Contains("successfully", delMessage.Info);
         }
 
@@ -150,7 +150,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
         public async Task StartFinishDeleteFullLaunch()
         {
             var now = DateTime.UtcNow;
-            var launch = await Service.StartLaunchAsync(new StartLaunchRequest
+            var launch = await Service.LaunchClient.StartLaunchAsync(new StartLaunchRequest
             {
                 Name = "StartFinishDeleteFullLaunch",
                 Description = "Desc",
@@ -158,42 +158,42 @@ namespace ReportPortal.Client.Tests.LaunchItem
                 Tags = new List<string> { "tag1", "tag2", "tag3" },
             });
             Assert.NotNull(launch.Id);
-            var getLaunch = await Service.GetLaunchAsync(launch.Id);
+            var getLaunch = await Service.LaunchClient.GetLaunchAsync(launch.Id);
             Assert.Equal("StartFinishDeleteFullLaunch", getLaunch.Name);
             Assert.Equal("Desc", getLaunch.Description);
             Assert.Equal(now.ToString(), getLaunch.StartTime.ToString());
             Assert.Equal(new List<string> { "tag1", "tag2", "tag3" }, getLaunch.Tags);
-            var message = await Service.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
+            var message = await Service.LaunchClient.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });
             Assert.Contains("successfully", message.Info);
-            var delMessage = await Service.DeleteLaunchAsync(launch.Id);
+            var delMessage = await Service.LaunchClient.DeleteLaunchAsync(launch.Id);
             Assert.Contains("successfully", delMessage.Info);
         }
 
         [Fact]
         public async Task StartFinishDeleteMergedLaunch()
         {
-            var launch1 = await Service.StartLaunchAsync(new StartLaunchRequest
+            var launch1 = await Service.LaunchClient.StartLaunchAsync(new StartLaunchRequest
             {
                 Name = "StartFinishDeleteLaunch",
                 StartTime = DateTime.UtcNow
             });
             Assert.NotNull(launch1.Id);
-            var message = await Service.FinishLaunchAsync(launch1.Id, new FinishLaunchRequest
+            var message = await Service.LaunchClient.FinishLaunchAsync(launch1.Id, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });
             Assert.Contains("successfully", message.Info);
 
-            var launch2 = await Service.StartLaunchAsync(new StartLaunchRequest
+            var launch2 = await Service.LaunchClient.StartLaunchAsync(new StartLaunchRequest
             {
                 Name = "StartFinishDeleteLaunch2",
                 StartTime = DateTime.UtcNow
             });
             Assert.NotNull(launch2.Id);
-            message = await Service.FinishLaunchAsync(launch2.Id, new FinishLaunchRequest
+            message = await Service.LaunchClient.FinishLaunchAsync(launch2.Id, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });
@@ -208,34 +208,34 @@ namespace ReportPortal.Client.Tests.LaunchItem
                 EndTime = DateTime.UtcNow
             };
 
-            var mergedLaunch = await Service.MergeLaunchesAsync(mergeRequest);
+            var mergedLaunch = await Service.LaunchClient.MergeLaunchesAsync(mergeRequest);
             Assert.Equal(mergeRequest.StartTime, mergedLaunch.StartTime);
             Assert.Equal(mergeRequest.EndTime, mergedLaunch.EndTime);
 
-            var delMessage = await Service.DeleteLaunchAsync(mergedLaunch.Id);
+            var delMessage = await Service.LaunchClient.DeleteLaunchAsync(mergedLaunch.Id);
             Assert.Contains("successfully", delMessage.Info);
         }
 
         [Fact]
         public async Task StartFinishAnalyzeDeleteLaunch()
         {
-            var launch = await Service.StartLaunchAsync(new StartLaunchRequest
+            var launch = await Service.LaunchClient.StartLaunchAsync(new StartLaunchRequest
             {
                 Name = "StartFinishDeleteLaunch",
                 StartTime = DateTime.UtcNow,
                 Mode = LaunchMode.Default
             });
             Assert.NotNull(launch.Id);
-            var message = await Service.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
+            var message = await Service.LaunchClient.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });
             Assert.Contains("successfully", message.Info);
 
-            var gotLaunch = await Service.GetLaunchAsync(launch.Id);
+            var gotLaunch = await Service.LaunchClient.GetLaunchAsync(launch.Id);
             Assert.Equal("StartFinishDeleteLaunch", gotLaunch.Name);
 
-            var analyzeMessage = await Service.AnalyzeLaunchAsync(new AnalyzeLaunchRequest
+            var analyzeMessage = await Service.LaunchClient.AnalyzeLaunchAsync(new AnalyzeLaunchRequest
             {
                 LaunchId = launch.Id,
                 AnalyzerMode = AnalyzerMode.LaunchName,
@@ -243,7 +243,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
             });
             Assert.Contains("started", analyzeMessage.Info);
 
-            var delMessage = await Service.DeleteLaunchAsync(launch.Id);
+            var delMessage = await Service.LaunchClient.DeleteLaunchAsync(launch.Id);
             Assert.Contains("successfully", delMessage.Info);
         }
 
@@ -253,36 +253,36 @@ namespace ReportPortal.Client.Tests.LaunchItem
             var namePrefix = "TrimLaunch";
             var launchName = namePrefix + new string('_', 256 - namePrefix.Length + 1);
 
-            var launch = await Service.StartLaunchAsync(new StartLaunchRequest
+            var launch = await Service.LaunchClient.StartLaunchAsync(new StartLaunchRequest
             {
                 Name = launchName,
                 StartTime = DateTime.UtcNow
             });
             Assert.NotNull(launch.Id);
-            var message = await Service.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
+            var message = await Service.LaunchClient.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });
             Assert.Contains("successfully", message.Info);
 
-            var gotLaunch = await Service.GetLaunchAsync(launch.Id);
+            var gotLaunch = await Service.LaunchClient.GetLaunchAsync(launch.Id);
             Assert.Equal(launchName.Substring(0, 256), gotLaunch.Name);
 
-            var delMessage = await Service.DeleteLaunchAsync(launch.Id);
+            var delMessage = await Service.LaunchClient.DeleteLaunchAsync(launch.Id);
             Assert.Contains("successfully", delMessage.Info);
         }
 
         [Fact]
         public async Task StartForceFinishIncompleteLaunch()
         {
-            var launch = await Service.StartLaunchAsync(new StartLaunchRequest
+            var launch = await Service.LaunchClient.StartLaunchAsync(new StartLaunchRequest
             {
                 Name = "StartForceFinishIncompleteLaunch",
                 StartTime = DateTime.UtcNow,
                 Mode = LaunchMode.Default
             });
 
-            var test = await Service.StartTestItemAsync(new StartTestItemRequest
+            var test = await Service.TestItemClient.StartTestItemAsync(new StartTestItemRequest
             {
                 LaunchId = launch.Id,
                 Name = "Test1",
@@ -291,36 +291,36 @@ namespace ReportPortal.Client.Tests.LaunchItem
             });
             Assert.NotNull(test.Id);
 
-            await Service.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
+            await Service.LaunchClient.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             }, true);
 
-            var delMessage = await Service.DeleteLaunchAsync(launch.Id);
+            var delMessage = await Service.LaunchClient.DeleteLaunchAsync(launch.Id);
             Assert.Contains("successfully", delMessage.Info);
         }
 
         [Fact]
         public async Task GetInProgressLaunch()
         {
-            var launch = await Service.StartLaunchAsync(new StartLaunchRequest
+            var launch = await Service.LaunchClient.StartLaunchAsync(new StartLaunchRequest
             {
                 Name = "StartForceFinishIncompleteLaunch",
                 StartTime = DateTime.UtcNow,
                 Mode = LaunchMode.Default
             });
 
-            var getLaunch = await Service.GetLaunchAsync(launch.Id);
+            var getLaunch = await Service.LaunchClient.GetLaunchAsync(launch.Id);
 
             Assert.NotEqual(default(DateTime), getLaunch.StartTime);
             Assert.Null(getLaunch.EndTime);
 
-            await Service.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
+            await Service.LaunchClient.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             }, true);
 
-            var delMessage = await Service.DeleteLaunchAsync(launch.Id);
+            var delMessage = await Service.LaunchClient.DeleteLaunchAsync(launch.Id);
             Assert.Contains("successfully", delMessage.Info);
         }
     }

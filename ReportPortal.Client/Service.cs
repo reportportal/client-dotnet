@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using ReportPortal.Client.Clients;
 using ReportPortal.Client.Extentions;
 
 namespace ReportPortal.Client
@@ -9,9 +10,17 @@ namespace ReportPortal.Client
     /// <summary>
     /// Class to interact with common Report Portal services. Provides possibility to manage almost of service's entities.
     /// </summary>
-    public partial class Service
+    public class Service
     {
         private readonly HttpClient _httpClient;
+        private readonly Uri _uri;
+
+        public LaunchClient LaunchClient => new LaunchClient(_httpClient, _uri, Project);
+        public LogItemClient LogItemClient => new LogItemClient(_httpClient, _uri, Project);
+        public ProjectClient ProjectClient => new ProjectClient(_httpClient, _uri, Project);
+        public TestItemClient TestItemClient => new TestItemClient(_httpClient, _uri, Project);
+        public UserClient UserClient => new UserClient(_httpClient, _uri, Project);
+        public UserFilterClient UserFilterClient => new UserFilterClient(_httpClient, _uri, Project);
 
         /// <summary>
         /// Constructor to initialize a new object of service.
@@ -23,7 +32,8 @@ namespace ReportPortal.Client
         public Service(Uri uri, string project, string password, HttpMessageHandler messageHandler)
         {
             _httpClient = new HttpClient(messageHandler);
-            
+            _uri = uri;
+
             if (!uri.LocalPath.ToLowerInvariant().Contains("api/v1"))
             {
                 uri = uri.Append("api/v1");

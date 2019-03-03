@@ -11,13 +11,13 @@ namespace ReportPortal.Client.Tests.TestItem
         [Fact]
         public async Task StartFinishDeleteTest()
         {
-            var launch = await Service.StartLaunchAsync(new StartLaunchRequest
+            var launch = await Service.LaunchClient.StartLaunchAsync(new StartLaunchRequest
             {
                 Name = "StartFinishDeleteTest",
                 StartTime = DateTime.UtcNow
             });
 
-            var test = await Service.StartTestItemAsync(new StartTestItemRequest
+            var test = await Service.TestItemClient.StartTestItemAsync(new StartTestItemRequest
             {
                 LaunchId = launch.Id,
                 Name = "Test1",
@@ -25,18 +25,18 @@ namespace ReportPortal.Client.Tests.TestItem
                 Type = TestItemType.Test
             });
 
-            await Service.FinishTestItemAsync(test.Id, new FinishTestItemRequest
+            await Service.TestItemClient.FinishTestItemAsync(test.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
             });
 
-            await Service.FinishLaunchAsync(launch.Id, new FinishLaunchRequest {EndTime = DateTime.UtcNow});
+            await Service.LaunchClient.FinishLaunchAsync(launch.Id, new FinishLaunchRequest {EndTime = DateTime.UtcNow});
 
-            var deleteMessage = await Service.DeleteTestItemAsync(test.Id);
+            var deleteMessage = await Service.TestItemClient.DeleteTestItemAsync(test.Id);
             Assert.Contains("successfully deleted", deleteMessage.Info);
 
-            await Service.DeleteLaunchAsync(launch.Id);
+            await Service.LaunchClient.DeleteLaunchAsync(launch.Id);
         }
     }
 }

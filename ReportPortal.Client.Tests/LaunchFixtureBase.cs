@@ -10,7 +10,7 @@ namespace ReportPortal.Client.Tests
 
         public LaunchFixtureBase()
         {
-            LaunchId = Task.Run(async () => await Service.StartLaunchAsync(new StartLaunchRequest
+            LaunchId = Task.Run(async () => await Service.LaunchClient.StartLaunchAsync(new StartLaunchRequest
             {
                 Name = "StartFinishDeleteLaunch",
                 StartTime = DateTime.UtcNow
@@ -21,8 +21,8 @@ namespace ReportPortal.Client.Tests
         {
             Task.Run(async () =>
             {
-                await Service.FinishLaunchAsync(LaunchId, new FinishLaunchRequest { EndTime = DateTime.UtcNow }, true);
-                await Service.DeleteLaunchAsync(LaunchId);
+                await Service.LaunchClient.FinishLaunchAsync(LaunchId, new FinishLaunchRequest { EndTime = DateTime.UtcNow }, true);
+                await Service.LaunchClient.DeleteLaunchAsync(LaunchId);
             }).Wait();
         }
     }

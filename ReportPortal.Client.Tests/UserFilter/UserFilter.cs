@@ -44,9 +44,9 @@ namespace ReportPortal.Client.Tests.UserFilter
                 SelectionParameters = selectionParameters
             };
 
-            var userFilters = await Service.AddUserFilterAsync(new AddUserFilterRequest { FilterElements = new List<FilterElement> { filterElement } });
+            var userFilters = await Service.UserFilterClient.AddUserFilterAsync(new AddUserFilterRequest { FilterElements = new List<FilterElement> { filterElement } });
 
-            var userFilterContainer = await Service.GetUserFiltersAsync();
+            var userFilterContainer = await Service.UserFilterClient.GetUserFiltersAsync();
             Assert.True(userFilterContainer.FilterElements.Any());
         }
 
@@ -85,16 +85,16 @@ namespace ReportPortal.Client.Tests.UserFilter
                 SelectionParameters = selectionParameters
             };
 
-            var userFilters = await Service.AddUserFilterAsync(new AddUserFilterRequest { FilterElements = new List<FilterElement> { filterElement } });
+            var userFilters = await Service.UserFilterClient.AddUserFilterAsync(new AddUserFilterRequest { FilterElements = new List<FilterElement> { filterElement } });
 
-            var userFilterContainer = await Service.GetUserFiltersAsync(new FilterOption
+            var userFilterContainer = await Service.UserFilterClient.GetUserFiltersAsync(new FilterOption
             {
                 Filters = new List<Filter> { new Filter(FilterOperation.Equals, "name", filterName)},
                 Paging = new Paging(1, 200)
             });
             Assert.Contains(userFilterContainer.FilterElements, f => f.Id.Equals(userFilters.First().Id));
 
-            var deleteMessage = await Service.DeleteUserFilterAsync(userFilters.First().Id);
+            var deleteMessage = await Service.UserFilterClient.DeleteUserFilterAsync(userFilters.First().Id);
             Assert.Contains("success", deleteMessage.Info);
         }
     }

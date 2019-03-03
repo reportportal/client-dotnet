@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,10 +7,14 @@ using ReportPortal.Client.Extentions;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 
-namespace ReportPortal.Client
+namespace ReportPortal.Client.Clients
 {
-    public partial class Service
+    public class ProjectClient: BaseClient
     {
+        public ProjectClient(HttpClient httpCLient, Uri baseUri, string project) : base(httpCLient, baseUri, project)
+        {
+        }
+
         /// <summary>
         /// updates the project preference for user
         /// </summary>
@@ -23,7 +26,7 @@ namespace ReportPortal.Client
             var uri = BaseUri.Append($"project/{Project}/preference/{userName}");
             var body = ModelSerializer.Serialize<UpdatePreferenceRequest>(model);
             
-            var response = await _httpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
+            var response = await HttpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<UpdatePreferencesResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
@@ -44,7 +47,7 @@ namespace ReportPortal.Client
         {
             var uri = BaseUri.Append($"project/{Project}/preference/{userName}");
             
-            var response = await _httpClient.GetAsync(uri).ConfigureAwait(false);
+            var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<Preference>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }

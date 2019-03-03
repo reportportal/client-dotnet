@@ -43,15 +43,15 @@ namespace ReportPortal.Client.Tests.Project
                 SelectionParameters = selectionParameters
             };
 
-            var userFilters = await Service.AddUserFilterAsync(new AddUserFilterRequest { FilterElements = new List<FilterElement> { filterElement } });
+            var userFilters = await Service.UserFilterClient.AddUserFilterAsync(new AddUserFilterRequest { FilterElements = new List<FilterElement> { filterElement } });
 
-            var message = await Service.UpdatePreferencesAsync(new UpdatePreferenceRequest { FilderIds = userFilters.Select(x => x.Id) }, Username);
+            var message = await Service.ProjectClient.UpdatePreferencesAsync(new UpdatePreferenceRequest { FilderIds = userFilters.Select(x => x.Id) }, Username);
             Assert.Equal(base.Service.Project, message.ProjectRef);
 
-            var allPreferences = await Service.GetAllPreferences(Username);
+            var allPreferences = await Service.ProjectClient.GetAllPreferences(Username);
             Assert.True(allPreferences.FilterIds.Intersect(userFilters.Select(x => x.Id)).Any());
 
-            userFilters.ForEach(async x => await Service.DeleteUserFilterAsync(x.Id));
+            userFilters.ForEach(async x => await Service.UserFilterClient.DeleteUserFilterAsync(x.Id));
         }
     }
 }

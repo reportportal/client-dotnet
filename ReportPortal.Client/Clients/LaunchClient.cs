@@ -8,10 +8,14 @@ using System.Net.Http;
 using System.Text;
 using ReportPortal.Client.Extentions;
 
-namespace ReportPortal.Client
+namespace ReportPortal.Client.Clients
 {
-    public partial class Service
+    public class LaunchClient: BaseClient
     {
+        public LaunchClient(HttpClient httpCLient, Uri baseUri,  string project): base(httpCLient, baseUri, project)
+        {
+        }
+
         /// <summary>
         /// Returns a list of launches for current project.
         /// </summary>
@@ -28,7 +32,7 @@ namespace ReportPortal.Client
                 uri = uri.Append($"?{filterOption}");
             }
 
-            var response = await _httpClient.GetAsync(uri).ConfigureAwait(false);
+            var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<LaunchesContainer>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
@@ -41,7 +45,7 @@ namespace ReportPortal.Client
         public virtual async Task<Launch> GetLaunchAsync(string id)
         {
             var uri = BaseUri.Append($"{Project}/launch/{id}");
-            var response = await _httpClient.GetAsync(uri).ConfigureAwait(false);
+            var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<Launch>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
@@ -55,7 +59,7 @@ namespace ReportPortal.Client
         {
             var uri = BaseUri.Append($"{Project}/launch");
             var body = ModelSerializer.Serialize<StartLaunchRequest>(model);
-            var response = await _httpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
+            var response = await HttpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<Launch>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
@@ -72,7 +76,7 @@ namespace ReportPortal.Client
             var uri = BaseUri.Append($"{Project}/launch/{id}");
             uri = force == true ? uri.Append("/stop") : uri.Append("/finish");
             var body = ModelSerializer.Serialize<FinishLaunchRequest>(model);
-            var response = await _httpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
+            var response = await HttpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
@@ -85,7 +89,7 @@ namespace ReportPortal.Client
         public virtual async Task<Message> DeleteLaunchAsync(string id)
         {
             var uri = BaseUri.Append($"{Project}/launch/{id}");
-            var response = await _httpClient.DeleteAsync(uri).ConfigureAwait(false);
+            var response = await HttpClient.DeleteAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
@@ -99,7 +103,7 @@ namespace ReportPortal.Client
         {
             var uri = BaseUri.Append($"{Project}/launch/merge");
             var body = ModelSerializer.Serialize<MergeLaunchesRequest>(model);
-            var response = await _httpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
+            var response = await HttpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<Launch>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
@@ -114,7 +118,7 @@ namespace ReportPortal.Client
         {
             var uri = BaseUri.Append($"{Project}/launch/{id}/update");
             var body = ModelSerializer.Serialize<UpdateLaunchRequest>(model);
-            var response = await _httpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
+            var response = await HttpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
@@ -127,7 +131,7 @@ namespace ReportPortal.Client
         {
             var uri = BaseUri.Append($"{Project}/launch/analyze");
             var body = ModelSerializer.Serialize<AnalyzeLaunchRequest>(model);
-            var response = await _httpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
+            var response = await HttpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }

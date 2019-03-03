@@ -15,13 +15,13 @@ namespace ReportPortal.Client.Tests.LogItem
         {
             Task.Run(async () =>
             {
-                LaunchId = (await Service.StartLaunchAsync(new StartLaunchRequest
+                LaunchId = (await Service.LaunchClient.StartLaunchAsync(new StartLaunchRequest
                 {
                     Name = "StartFinishDeleteLaunch",
                     StartTime = DateTime.UtcNow
                 })).Id;
 
-                TestId = (await Service.StartTestItemAsync(new StartTestItemRequest
+                TestId = (await Service.TestItemClient.StartTestItemAsync(new StartTestItemRequest
                 {
                     LaunchId = LaunchId,
                     Name = "Test1",
@@ -35,8 +35,8 @@ namespace ReportPortal.Client.Tests.LogItem
         {
             Task.Run(async () =>
             {
-                await Service.FinishLaunchAsync(LaunchId, new FinishLaunchRequest { EndTime = DateTime.UtcNow }, true);
-                await Service.DeleteLaunchAsync(LaunchId);
+                await Service.LaunchClient.FinishLaunchAsync(LaunchId, new FinishLaunchRequest { EndTime = DateTime.UtcNow }, true);
+                await Service.LaunchClient.DeleteLaunchAsync(LaunchId);
             }).Wait();
         }
     }
