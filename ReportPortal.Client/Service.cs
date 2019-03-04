@@ -13,14 +13,13 @@ namespace ReportPortal.Client
     public class Service
     {
         private readonly HttpClient _httpClient;
-        private readonly Uri _uri;
 
-        public LaunchClient LaunchClient => new LaunchClient(_httpClient, _uri, Project);
-        public LogItemClient LogItemClient => new LogItemClient(_httpClient, _uri, Project);
-        public ProjectClient ProjectClient => new ProjectClient(_httpClient, _uri, Project);
-        public TestItemClient TestItemClient => new TestItemClient(_httpClient, _uri, Project);
-        public UserClient UserClient => new UserClient(_httpClient, _uri, Project);
-        public UserFilterClient UserFilterClient => new UserFilterClient(_httpClient, _uri, Project);
+        public LaunchClient LaunchClient => new LaunchClient(_httpClient, BaseUri, Project);
+        public LogItemClient LogItemClient => new LogItemClient(_httpClient, BaseUri, Project);
+        public ProjectClient ProjectClient => new ProjectClient(_httpClient, BaseUri, Project);
+        public TestItemClient TestItemClient => new TestItemClient(_httpClient, BaseUri, Project);
+        public UserClient UserClient => new UserClient(_httpClient, BaseUri, Project);
+        public UserFilterClient UserFilterClient => new UserFilterClient(_httpClient, BaseUri, Project);
 
         /// <summary>
         /// Constructor to initialize a new object of service.
