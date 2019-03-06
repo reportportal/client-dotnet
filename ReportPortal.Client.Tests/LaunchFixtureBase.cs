@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using ReportPortal.Client.Requests;
+using ReportPortal.Client.Api.Launch.Requests;
 
 namespace ReportPortal.Client.Tests
 {
@@ -10,7 +10,7 @@ namespace ReportPortal.Client.Tests
 
         public LaunchFixtureBase()
         {
-            LaunchId = Task.Run(async () => await Service.StartLaunchAsync(new StartLaunchRequest
+            LaunchId = Task.Run(async () => await Service.Launch.StartLaunchAsync(new StartLaunchRequest
             {
                 Name = "StartFinishDeleteLaunch",
                 StartTime = DateTime.UtcNow
@@ -21,8 +21,8 @@ namespace ReportPortal.Client.Tests
         {
             Task.Run(async () =>
             {
-                await Service.FinishLaunchAsync(LaunchId, new FinishLaunchRequest { EndTime = DateTime.UtcNow }, true);
-                await Service.DeleteLaunchAsync(LaunchId);
+                await Service.Launch.FinishLaunchAsync(LaunchId, new FinishLaunchRequest { EndTime = DateTime.UtcNow }, true);
+                await Service.Launch.DeleteLaunchAsync(LaunchId);
             }).Wait();
         }
     }

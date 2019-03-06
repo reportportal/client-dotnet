@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ReportPortal.Client.Filtering;
-using ReportPortal.Client.Models;
-using ReportPortal.Client.Requests;
+using ReportPortal.Client.Api.Filter.Model;
+using ReportPortal.Client.Api.Filter.Request;
+using ReportPortal.Client.Common.Model.Filtering;
+using ReportPortal.Client.Common.Model.Paging;
 using Xunit;
 
 namespace ReportPortal.Client.Tests.UserFilter
@@ -39,15 +40,15 @@ namespace ReportPortal.Client.Tests.UserFilter
                 Description = "testDscr_1",
                 IsLink = false,
                 Share = true,
-                UserFilterType = UserFilterType.Launch,
+                UserFilterType = FilterType.Launch,
                 Entities = new List<FilterEntity> { filterEntity },
                 SelectionParameters = selectionParameters
             };
 
-            var userFilters = await Service.AddUserFilterAsync(new AddUserFilterRequest { FilterElements = new List<FilterElement> { filterElement } });
+            var userFilters = await Service.Filter.AddUserFilterAsync(new AddUserFilterRequest { FilterElements = new List<FilterElement> { filterElement } });
 
-            var userFilterContainer = await Service.GetUserFiltersAsync();
-            Assert.True(userFilterContainer.FilterElements.Any());
+            var userFilterContainer = await Service.Filter.GetUserFiltersAsync();
+            Assert.True(userFilterContainer.Collection.Any());
         }
 
         [Fact]
@@ -80,21 +81,21 @@ namespace ReportPortal.Client.Tests.UserFilter
                 Description = "testDscr_1",
                 IsLink = false,
                 Share = true,
-                UserFilterType = UserFilterType.Launch,
+                UserFilterType = FilterType.Launch,
                 Entities = new List<FilterEntity> { filterEntity },
                 SelectionParameters = selectionParameters
             };
 
-            var userFilters = await Service.AddUserFilterAsync(new AddUserFilterRequest { FilterElements = new List<FilterElement> { filterElement } });
+            var userFilters = await Service.Filter.AddUserFilterAsync(new AddUserFilterRequest { FilterElements = new List<FilterElement> { filterElement } });
 
-            var userFilterContainer = await Service.GetUserFiltersAsync(new FilterOption
+            var userFilterContainer = await Service.Filter.GetUserFiltersAsync(new FilterOption
             {
-                Filters = new List<Filter> { new Filter(FilterOperation.Equals, "name", filterName)},
-                Paging = new Paging(1, 200)
+                FilterConditions = new List<FilterCondition> { new FilterCondition(FilterOperation.Equals, "name", filterName)},
+                Paging = new Page(1, 200)
             });
-            Assert.Contains(userFilterContainer.FilterElements, f => f.Id.Equals(userFilters.First().Id));
+            Assert.Contains(userFilterContainer.Collection, f => f.Id.Equals(userFilters.First().Id));
 
-            var deleteMessage = await Service.DeleteUserFilterAsync(userFilters.First().Id);
+            var deleteMessage = await Service.Filter.DeleteUserFilterAsync(userFilters.First().Id);
             Assert.Contains("success", deleteMessage.Info);
         }
     }
