@@ -1,7 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using ReportPortal.Client.Models;
-using ReportPortal.Client.Requests;
+using ReportPortal.Client.Api.Launch.Requests;
+using ReportPortal.Client.Api.TestItem.Model;
+using ReportPortal.Client.Api.TestItem.Request;
 
 namespace ReportPortal.Client.Tests.LogItem
 {
@@ -15,13 +16,13 @@ namespace ReportPortal.Client.Tests.LogItem
         {
             Task.Run(async () =>
             {
-                LaunchId = (await Service.LaunchClient.StartLaunchAsync(new StartLaunchRequest
+                LaunchId = (await Service.Launch.StartLaunchAsync(new StartLaunchRequest
                 {
                     Name = "StartFinishDeleteLaunch",
                     StartTime = DateTime.UtcNow
                 })).Id;
 
-                TestId = (await Service.TestItemClient.StartTestItemAsync(new StartTestItemRequest
+                TestId = (await Service.TestItem.StartTestItemAsync(new StartTestItemRequest
                 {
                     LaunchId = LaunchId,
                     Name = "Test1",
@@ -35,8 +36,8 @@ namespace ReportPortal.Client.Tests.LogItem
         {
             Task.Run(async () =>
             {
-                await Service.LaunchClient.FinishLaunchAsync(LaunchId, new FinishLaunchRequest { EndTime = DateTime.UtcNow }, true);
-                await Service.LaunchClient.DeleteLaunchAsync(LaunchId);
+                await Service.Launch.FinishLaunchAsync(LaunchId, new FinishLaunchRequest { EndTime = DateTime.UtcNow }, true);
+                await Service.Launch.DeleteLaunchAsync(LaunchId);
             }).Wait();
         }
     }

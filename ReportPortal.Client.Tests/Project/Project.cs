@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ReportPortal.Client.Models;
-using ReportPortal.Client.Requests;
+using ReportPortal.Client.Api.Filter.Model;
+using ReportPortal.Client.Api.Filter.Request;
+using ReportPortal.Client.Api.Project.Request;
+using ReportPortal.Client.Common.Model.Filtering;
 using Xunit;
 
 namespace ReportPortal.Client.Tests.Project
@@ -15,7 +17,7 @@ namespace ReportPortal.Client.Tests.Project
         {
             var filterEntity = new FilterEntity
             {
-                UserFilterCondition = Filtering.FilterOperation.Contains,
+                UserFilterCondition = FilterOperation.Contains,
                 FilteringField = "name",
                 Value = "test value"
             };
@@ -38,20 +40,20 @@ namespace ReportPortal.Client.Tests.Project
                 Description = "testDscr_1",
                 IsLink = false,
                 Share = true,
-                UserFilterType = UserFilterType.Launch,
+                UserFilterType = FilterType.Launch,
                 Entities = new List<FilterEntity> { filterEntity },
                 SelectionParameters = selectionParameters
             };
 
-            var userFilters = await Service.UserFilterClient.AddUserFilterAsync(new AddUserFilterRequest { FilterElements = new List<FilterElement> { filterElement } });
+            var userFilters = await Service.Filter.AddUserFilterAsync(new AddUserFilterRequest { FilterElements = new List<FilterElement> { filterElement } });
 
-            var message = await Service.ProjectClient.UpdatePreferencesAsync(new UpdatePreferenceRequest { FilderIds = userFilters.Select(x => x.Id) }, Username);
-            Assert.Equal(base.Service.Project, message.ProjectRef);
+            var message = await Service.Project.UpdatePreferencesAsync(new UpdatePreferenceRequest { FilderIds = userFilters.Select(x => x.Id) }, Username);
+            Assert.Equal(Service.ProjectName, message.ProjectRef);
 
-            var allPreferences = await Service.ProjectClient.GetAllPreferences(Username);
+            var allPreferences = await Service.Project.GetAllPreferences(Username);
             Assert.True(allPreferences.FilterIds.Intersect(userFilters.Select(x => x.Id)).Any());
 
-            userFilters.ForEach(async x => await Service.UserFilterClient.DeleteUserFilterAsync(x.Id));
+            userFilters.ForEach(async x => await Service.Filter.DeleteUserFilterAsync(x.Id));
         }
     }
 }

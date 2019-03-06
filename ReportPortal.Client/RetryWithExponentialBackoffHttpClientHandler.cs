@@ -1,4 +1,4 @@
-﻿using ReportPortal.Client.Extentions;
+﻿using ReportPortal.Client.Extention;
 using System;
 using System.Collections.Generic;
 using System.Net;

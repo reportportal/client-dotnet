@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ReportPortal.Client.Filtering;
-using ReportPortal.Client.Models;
-using ReportPortal.Client.Requests;
 using System.Threading.Tasks;
 using Xunit;
+using ReportPortal.Client.Api.TestItem.Model;
+using ReportPortal.Client.Common.Model;
+using ReportPortal.Client.Api.TestItem.Request;
+using ReportPortal.Client.Common.Model.Filtering;
 
 namespace ReportPortal.Client.Tests.TestItem
 {
@@ -21,7 +22,7 @@ namespace ReportPortal.Client.Tests.TestItem
         [Fact]
         public async Task StartFinishTest()
         {
-            var test = await Service.TestItemClient.StartTestItemAsync(new StartTestItemRequest
+            var test = await Service.TestItem.StartTestItemAsync(new StartTestItemRequest
             {
                 LaunchId = _fixture.LaunchId,
                 Name = "Test1",
@@ -29,7 +30,7 @@ namespace ReportPortal.Client.Tests.TestItem
                 Type = TestItemType.Test
             });
             Assert.NotNull(test.Id);
-            var message = await Service.TestItemClient.FinishTestItemAsync(test.Id, new FinishTestItemRequest
+            var message = await Service.TestItem.FinishTestItemAsync(test.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
@@ -40,7 +41,7 @@ namespace ReportPortal.Client.Tests.TestItem
         [Fact]
         public async Task StartFinishTestWithTag()
         {
-            var test = await Service.TestItemClient.StartTestItemAsync(new StartTestItemRequest
+            var test = await Service.TestItem.StartTestItemAsync(new StartTestItemRequest
             {
                 LaunchId = _fixture.LaunchId,
                 Name = "Test1",
@@ -49,11 +50,11 @@ namespace ReportPortal.Client.Tests.TestItem
                 Tags = new List<string> { "MyTag1" }
             });
 
-            var uniqueTags = await Service.TestItemClient.GetUniqueTagsAsync(_fixture.LaunchId, "myta");
+            var uniqueTags = await Service.TestItem.GetUniqueTagsAsync(_fixture.LaunchId, "myta");
             Assert.Contains("MyTag1", uniqueTags);
 
             Assert.NotNull(test.Id);
-            var message = await Service.TestItemClient.FinishTestItemAsync(test.Id, new FinishTestItemRequest
+            var message = await Service.TestItem.FinishTestItemAsync(test.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
@@ -66,7 +67,7 @@ namespace ReportPortal.Client.Tests.TestItem
         {
             var testItemName = Guid.NewGuid().ToString();
 
-            var test = await Service.TestItemClient.StartTestItemAsync(new StartTestItemRequest
+            var test = await Service.TestItem.StartTestItemAsync(new StartTestItemRequest
             {
                 LaunchId = _fixture.LaunchId,
                 Name = testItemName,
@@ -75,7 +76,7 @@ namespace ReportPortal.Client.Tests.TestItem
             });
             Assert.NotNull(test.Id);
 
-            var test2 = await Service.TestItemClient.StartTestItemAsync(new StartTestItemRequest
+            var test2 = await Service.TestItem.StartTestItemAsync(new StartTestItemRequest
             {
                 LaunchId = _fixture.LaunchId,
                 Name = testItemName,
@@ -84,24 +85,24 @@ namespace ReportPortal.Client.Tests.TestItem
             });
             Assert.NotNull(test2.Id);
 
-            var tests = await Service.TestItemClient.GetTestItemsAsync(new FilterOption
+            var tests = await Service.TestItem.GetTestItemsAsync(new FilterOption
             {
-                Filters = new List<Filter>
+                FilterConditions = new List<FilterCondition>
                         {
-                            new Filter(FilterOperation.Equals, "launch", _fixture.LaunchId),
-                            new Filter(FilterOperation.Equals, "name", testItemName)
+                            new FilterCondition(FilterOperation.Equals, "launch", _fixture.LaunchId),
+                            new FilterCondition(FilterOperation.Equals, "name", testItemName)
                         }
             });
-            Assert.Equal(2, tests.TestItems.Count());
+            Assert.Equal(2, tests.Collection.Count());
 
-            var message = await Service.TestItemClient.FinishTestItemAsync(test.Id, new FinishTestItemRequest
+            var message = await Service.TestItem.FinishTestItemAsync(test.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
             });
             Assert.Contains("successfully", message.Info);
 
-            var message2 = await Service.TestItemClient.FinishTestItemAsync(test2.Id, new FinishTestItemRequest
+            var message2 = await Service.TestItem.FinishTestItemAsync(test2.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
@@ -121,10 +122,10 @@ namespace ReportPortal.Client.Tests.TestItem
                 Description = "Desc for test"
             };
 
-            var test = await Service.TestItemClient.StartTestItemAsync(startTestItemRequest);
+            var test = await Service.TestItem.StartTestItemAsync(startTestItemRequest);
             Assert.NotNull(test.Id);
 
-            var getTest = await Service.TestItemClient.GetTestItemAsync(test.Id);
+            var getTest = await Service.TestItem.GetTestItemAsync(test.Id);
             Assert.Null(getTest.ParentId);
             Assert.Equal(startTestItemRequest.Name, getTest.Name);
             Assert.Equal(startTestItemRequest.StartTime, getTest.StartTime);
@@ -137,10 +138,10 @@ namespace ReportPortal.Client.Tests.TestItem
                 Status = Status.Passed
             };
 
-            var message = await Service.TestItemClient.FinishTestItemAsync(test.Id, finishTestItemRequest);
+            var message = await Service.TestItem.FinishTestItemAsync(test.Id, finishTestItemRequest);
             Assert.Contains("successfully", message.Info);
 
-            getTest = await Service.TestItemClient.GetTestItemAsync(test.Id);
+            getTest = await Service.TestItem.GetTestItemAsync(test.Id);
             Assert.Equal(finishTestItemRequest.Status, getTest.Status);
             Assert.Equal(finishTestItemRequest.EndTime, getTest.EndTime);
         }
@@ -155,7 +156,7 @@ namespace ReportPortal.Client.Tests.TestItem
         [InlineData(TestItemType.AfterClass)]
         public async Task VerifyTypeOfTests(TestItemType type)
         {
-            var test = await Service.TestItemClient.StartTestItemAsync(new StartTestItemRequest
+            var test = await Service.TestItem.StartTestItemAsync(new StartTestItemRequest
             {
                 LaunchId = _fixture.LaunchId,
                 Name = "Test1",
@@ -163,7 +164,7 @@ namespace ReportPortal.Client.Tests.TestItem
                 Type = type
             });
             Assert.NotNull(test.Id);
-            var message = await Service.TestItemClient.FinishTestItemAsync(test.Id, new FinishTestItemRequest
+            var message = await Service.TestItem.FinishTestItemAsync(test.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
@@ -177,7 +178,7 @@ namespace ReportPortal.Client.Tests.TestItem
         [InlineData(Status.Skipped)]
         public async Task VerifyStatusesOfTests(Status status)
         {
-            var test = await Service.TestItemClient.StartTestItemAsync(new StartTestItemRequest
+            var test = await Service.TestItem.StartTestItemAsync(new StartTestItemRequest
             {
                 LaunchId = _fixture.LaunchId,
                 Name = "Test1",
@@ -185,7 +186,7 @@ namespace ReportPortal.Client.Tests.TestItem
                 Type = TestItemType.Test
             });
             Assert.NotNull(test.Id);
-            var message = await Service.TestItemClient.FinishTestItemAsync(test.Id, new FinishTestItemRequest
+            var message = await Service.TestItem.FinishTestItemAsync(test.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = status
@@ -196,7 +197,7 @@ namespace ReportPortal.Client.Tests.TestItem
         [Fact]
         public async Task FinishTestWithIssue()
         {
-            var test = await Service.TestItemClient.StartTestItemAsync(new StartTestItemRequest
+            var test = await Service.TestItem.StartTestItemAsync(new StartTestItemRequest
             {
                 LaunchId = _fixture.LaunchId,
                 Name = "Test1",
@@ -204,7 +205,7 @@ namespace ReportPortal.Client.Tests.TestItem
                 Type = TestItemType.Step
             });
             Assert.NotNull(test.Id);
-            var message = await Service.TestItemClient.FinishTestItemAsync(test.Id, new FinishTestItemRequest
+            var message = await Service.TestItem.FinishTestItemAsync(test.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Failed,
@@ -229,7 +230,7 @@ namespace ReportPortal.Client.Tests.TestItem
         [MemberData(nameof(WellKnownIssueTypesTestData), MemberType = typeof(TestItemFixture))]
         public async Task VerifyTestIssueTypes(string type)
         {
-            var test = await Service.TestItemClient.StartTestItemAsync(new StartTestItemRequest
+            var test = await Service.TestItem.StartTestItemAsync(new StartTestItemRequest
             {
                 LaunchId = _fixture.LaunchId,
                 Name = "Test1",
@@ -237,7 +238,7 @@ namespace ReportPortal.Client.Tests.TestItem
                 Type = TestItemType.Step
             });
             Assert.NotNull(test.Id);
-            var message = await Service.TestItemClient.FinishTestItemAsync(test.Id, new FinishTestItemRequest
+            var message = await Service.TestItem.FinishTestItemAsync(test.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Skipped,
@@ -253,7 +254,7 @@ namespace ReportPortal.Client.Tests.TestItem
         [Fact]
         public async Task CreateTestForSuites()
         {
-            var suite = await Service.TestItemClient.StartTestItemAsync(new StartTestItemRequest
+            var suite = await Service.TestItem.StartTestItemAsync(new StartTestItemRequest
             {
                 LaunchId = _fixture.LaunchId,
                 Name = "Suite1",
@@ -262,7 +263,7 @@ namespace ReportPortal.Client.Tests.TestItem
                 Tags = new List<string> { "abc", "qwe" }
             });
 
-            var test = await Service.TestItemClient.StartTestItemAsync(suite.Id, new StartTestItemRequest
+            var test = await Service.TestItem.StartTestItemAsync(suite.Id, new StartTestItemRequest
             {
                 LaunchId = _fixture.LaunchId,
                 Name = "Test1",
@@ -272,14 +273,14 @@ namespace ReportPortal.Client.Tests.TestItem
 
             Assert.NotNull(test.Id);
 
-            var message = await Service.TestItemClient.FinishTestItemAsync(test.Id, new FinishTestItemRequest
+            var message = await Service.TestItem.FinishTestItemAsync(test.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
             });
             Assert.Contains("successfully", message.Info);
 
-            var messageSuite = await Service.TestItemClient.FinishTestItemAsync(suite.Id, new FinishTestItemRequest
+            var messageSuite = await Service.TestItem.FinishTestItemAsync(suite.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
@@ -290,7 +291,7 @@ namespace ReportPortal.Client.Tests.TestItem
         [Fact]
         public async Task CreateStepForTestInSuite()
         {
-            var suite = await Service.TestItemClient.StartTestItemAsync(new StartTestItemRequest
+            var suite = await Service.TestItem.StartTestItemAsync(new StartTestItemRequest
             {
                 LaunchId = _fixture.LaunchId,
                 Name = "Suite1",
@@ -298,7 +299,7 @@ namespace ReportPortal.Client.Tests.TestItem
                 Type = TestItemType.Suite
             });
 
-            var test = await Service.TestItemClient.StartTestItemAsync(suite.Id, new StartTestItemRequest
+            var test = await Service.TestItem.StartTestItemAsync(suite.Id, new StartTestItemRequest
             {
                 LaunchId = _fixture.LaunchId,
                 Name = "Test1",
@@ -308,9 +309,9 @@ namespace ReportPortal.Client.Tests.TestItem
 
             Assert.NotNull(test.Id);
 
-            Assert.True((await Service.TestItemClient.GetTestItemAsync(suite.Id)).HasChilds);
+            Assert.True((await Service.TestItem.GetTestItemAsync(suite.Id)).HasChilds);
 
-            var step = await Service.TestItemClient.StartTestItemAsync(test.Id, new StartTestItemRequest
+            var step = await Service.TestItem.StartTestItemAsync(test.Id, new StartTestItemRequest
             {
                 LaunchId = _fixture.LaunchId,
                 Name = "Step1",
@@ -320,7 +321,7 @@ namespace ReportPortal.Client.Tests.TestItem
 
             Assert.NotNull(step.Id);
 
-            var messageStep = await Service.TestItemClient.FinishTestItemAsync(step.Id, new FinishTestItemRequest
+            var messageStep = await Service.TestItem.FinishTestItemAsync(step.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
@@ -328,14 +329,14 @@ namespace ReportPortal.Client.Tests.TestItem
 
             Assert.Contains("successfully", messageStep.Info);
 
-            var message = await Service.TestItemClient.FinishTestItemAsync(test.Id, new FinishTestItemRequest
+            var message = await Service.TestItem.FinishTestItemAsync(test.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
             });
             Assert.Contains("successfully", message.Info);
 
-            var messageSuite = await Service.TestItemClient.FinishTestItemAsync(suite.Id, new FinishTestItemRequest
+            var messageSuite = await Service.TestItem.FinishTestItemAsync(suite.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
@@ -346,7 +347,7 @@ namespace ReportPortal.Client.Tests.TestItem
         [Fact]
         public async Task StartUpdateFinishTest()
         {
-            var test = await Service.TestItemClient.StartTestItemAsync(new StartTestItemRequest
+            var test = await Service.TestItem.StartTestItemAsync(new StartTestItemRequest
             {
                 LaunchId = _fixture.LaunchId,
                 Name = "Test1",
@@ -355,18 +356,18 @@ namespace ReportPortal.Client.Tests.TestItem
             });
             Assert.NotNull(test.Id);
 
-            var updateMessage = await Service.TestItemClient.UpdateTestItemAsync(test.Id, new UpdateTestItemRequest()
+            var updateMessage = await Service.TestItem.UpdateTestItemAsync(test.Id, new UpdateTestItemRequest()
             {
                 Description = "newDesc",
                 Tags = new List<string> { "tag1", "tag2" }
             });
             Assert.Contains("successfully", updateMessage.Info);
 
-            var updatedTest = await Service.TestItemClient.GetTestItemAsync(test.Id);
+            var updatedTest = await Service.TestItem.GetTestItemAsync(test.Id);
             Assert.Equal("newDesc", updatedTest.Description);
             Assert.Equal(new List<string> { "tag1", "tag2" }, updatedTest.Tags);
 
-            var message = await Service.TestItemClient.FinishTestItemAsync(test.Id, new FinishTestItemRequest
+            var message = await Service.TestItem.FinishTestItemAsync(test.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
@@ -377,7 +378,7 @@ namespace ReportPortal.Client.Tests.TestItem
         [Fact]
         public async Task AssignTestItemIssuesTest()
         {
-            var suite = await Service.TestItemClient.StartTestItemAsync(new StartTestItemRequest
+            var suite = await Service.TestItem.StartTestItemAsync(new StartTestItemRequest
             {
                 LaunchId = _fixture.LaunchId,
                 Name = "Suite1",
@@ -385,7 +386,7 @@ namespace ReportPortal.Client.Tests.TestItem
                 Type = TestItemType.Suite
             });
 
-            var test1 = await Service.TestItemClient.StartTestItemAsync(suite.Id, new StartTestItemRequest
+            var test1 = await Service.TestItem.StartTestItemAsync(suite.Id, new StartTestItemRequest
             {
                 LaunchId = _fixture.LaunchId,
                 Name = "Test1",
@@ -395,7 +396,7 @@ namespace ReportPortal.Client.Tests.TestItem
 
             Assert.NotNull(test1.Id);
 
-            var step1 = await Service.TestItemClient.StartTestItemAsync(test1.Id, new StartTestItemRequest
+            var step1 = await Service.TestItem.StartTestItemAsync(test1.Id, new StartTestItemRequest
             {
                 LaunchId = _fixture.LaunchId,
                 Name = "Step1",
@@ -405,7 +406,7 @@ namespace ReportPortal.Client.Tests.TestItem
 
             Assert.NotNull(step1.Id);
 
-            var messageStep1 = await Service.TestItemClient.FinishTestItemAsync(step1.Id, new FinishTestItemRequest
+            var messageStep1 = await Service.TestItem.FinishTestItemAsync(step1.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Failed,
@@ -418,14 +419,14 @@ namespace ReportPortal.Client.Tests.TestItem
 
             Assert.Contains("successfully", messageStep1.Info);
 
-            var messageTest1 = await Service.TestItemClient.FinishTestItemAsync(test1.Id, new FinishTestItemRequest
+            var messageTest1 = await Service.TestItem.FinishTestItemAsync(test1.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
             });
             Assert.Contains("successfully", messageTest1.Info);
 
-            var test2 = await Service.TestItemClient.StartTestItemAsync(suite.Id, new StartTestItemRequest
+            var test2 = await Service.TestItem.StartTestItemAsync(suite.Id, new StartTestItemRequest
             {
                 LaunchId = _fixture.LaunchId,
                 Name = "Test1",
@@ -435,7 +436,7 @@ namespace ReportPortal.Client.Tests.TestItem
 
             Assert.NotNull(test2.Id);
 
-            var step2 = await Service.TestItemClient.StartTestItemAsync(test2.Id, new StartTestItemRequest
+            var step2 = await Service.TestItem.StartTestItemAsync(test2.Id, new StartTestItemRequest
             {
                 LaunchId = _fixture.LaunchId,
                 Name = "Step1",
@@ -445,7 +446,7 @@ namespace ReportPortal.Client.Tests.TestItem
 
             Assert.NotNull(step2.Id);
 
-            var messageStep2 = await Service.TestItemClient.FinishTestItemAsync(step2.Id, new FinishTestItemRequest
+            var messageStep2 = await Service.TestItem.FinishTestItemAsync(step2.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Failed,
@@ -458,14 +459,14 @@ namespace ReportPortal.Client.Tests.TestItem
 
             Assert.Contains("successfully", messageStep2.Info);
 
-            var messageTest2 = await Service.TestItemClient.FinishTestItemAsync(test2.Id, new FinishTestItemRequest
+            var messageTest2 = await Service.TestItem.FinishTestItemAsync(test2.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
             });
             Assert.Contains("successfully", messageTest2.Info);
 
-            var messageSuite = await Service.TestItemClient.FinishTestItemAsync(suite.Id, new FinishTestItemRequest
+            var messageSuite = await Service.TestItem.FinishTestItemAsync(suite.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
@@ -488,7 +489,7 @@ namespace ReportPortal.Client.Tests.TestItem
                 }
             };
 
-            var assignedIssues = await Service.TestItemClient.AssignTestItemIssuesAsync(new AssignTestItemIssuesRequest
+            var assignedIssues = await Service.TestItem.AssignTestItemIssuesAsync(new AssignTestItemIssuesRequest
             {
                 Issues = new List<TestItemIssueUpdate>
                 {
@@ -521,10 +522,10 @@ namespace ReportPortal.Client.Tests.TestItem
             Assert.Equal(issue2.ExternalSystemIssues.First().TicketId, assignedIssues.ElementAt(1).ExternalSystemIssues.First().TicketId);
             Assert.Equal(issue2.ExternalSystemIssues.First().Url, assignedIssues.ElementAt(1).ExternalSystemIssues.First().Url);
 
-            step1 = await Service.TestItemClient.GetTestItemAsync(step1.Id);
+            step1 = await Service.TestItem.GetTestItemAsync(step1.Id);
             Assert.NotNull(step1.Issue);
 
-            step2 = await Service.TestItemClient.GetTestItemAsync(step2.Id);
+            step2 = await Service.TestItem.GetTestItemAsync(step2.Id);
             Assert.NotNull(step2.Issue);
 
             Assert.Equal(issue1.Comment, step1.Issue.Comment);
@@ -545,7 +546,7 @@ namespace ReportPortal.Client.Tests.TestItem
         [Fact]
         public async Task GetTestItemHistory()
         {
-            var histories = await Service.TestItemClient.GetTestItemHistoryAsync("5bfe5b213cdea200012a9fb7", 5, true);
+            var histories = await Service.TestItem.GetTestItemHistoryAsync("5bfe5b213cdea200012a9fb7", 5, true);
             Assert.Equal(5, histories.Count);
         }
 
@@ -555,7 +556,7 @@ namespace ReportPortal.Client.Tests.TestItem
             var namePrefix = "TrimLaunch";
             var testItemName = namePrefix + new string('_', 256 - namePrefix.Length + 1);
 
-            var test = await Service.TestItemClient.StartTestItemAsync(new StartTestItemRequest
+            var test = await Service.TestItem.StartTestItemAsync(new StartTestItemRequest
             {
                 LaunchId = _fixture.LaunchId,
                 Name = testItemName,
@@ -564,10 +565,10 @@ namespace ReportPortal.Client.Tests.TestItem
             });
             Assert.NotNull(test.Id);
 
-            var gotTestItem = await Service.TestItemClient.GetTestItemAsync(test.Id);
+            var gotTestItem = await Service.TestItem.GetTestItemAsync(test.Id);
             Assert.Equal(testItemName.Substring(0, 256), gotTestItem.Name);
 
-            var message = await Service.TestItemClient.FinishTestItemAsync(test.Id, new FinishTestItemRequest
+            var message = await Service.TestItem.FinishTestItemAsync(test.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
@@ -578,7 +579,7 @@ namespace ReportPortal.Client.Tests.TestItem
         [Fact]
         public async Task RetryTest()
         {
-            var suite = await Service.TestItemClient.StartTestItemAsync(new StartTestItemRequest
+            var suite = await Service.TestItem.StartTestItemAsync(new StartTestItemRequest
             {
                 LaunchId = _fixture.LaunchId,
                 Name = "RetrySuite",
@@ -586,7 +587,7 @@ namespace ReportPortal.Client.Tests.TestItem
                 Type = TestItemType.Suite
             });
 
-            var firstAttempt = await Service.TestItemClient.StartTestItemAsync(suite.Id, new StartTestItemRequest
+            var firstAttempt = await Service.TestItem.StartTestItemAsync(suite.Id, new StartTestItemRequest
             {
                 LaunchId = _fixture.LaunchId,
                 Name = "RetryTest",
@@ -595,13 +596,13 @@ namespace ReportPortal.Client.Tests.TestItem
                 IsRetry = true // this is required to show test as retried
             });
 
-            await Service.TestItemClient.FinishTestItemAsync(firstAttempt.Id, new FinishTestItemRequest
+            await Service.TestItem.FinishTestItemAsync(firstAttempt.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 //IsRetry = true
             });
 
-            var secondAttempt = await Service.TestItemClient.StartTestItemAsync(suite.Id, new StartTestItemRequest
+            var secondAttempt = await Service.TestItem.StartTestItemAsync(suite.Id, new StartTestItemRequest
             {
                 LaunchId = _fixture.LaunchId,
                 Name = "RetryTest",
@@ -610,18 +611,18 @@ namespace ReportPortal.Client.Tests.TestItem
                 IsRetry = true
             });
 
-            await Service.TestItemClient.FinishTestItemAsync(secondAttempt.Id, new FinishTestItemRequest
+            await Service.TestItem.FinishTestItemAsync(secondAttempt.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 //IsRetry = true
             });
 
-            await Service.TestItemClient.FinishTestItemAsync(suite.Id, new FinishTestItemRequest
+            await Service.TestItem.FinishTestItemAsync(suite.Id, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow
             });
 
-            var launch = await Service.LaunchClient.GetLaunchAsync(_fixture.LaunchId);
+            var launch = await Service.Launch.GetLaunchAsync(_fixture.LaunchId);
 
             Assert.True(launch.HasRetries);
         }

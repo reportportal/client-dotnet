@@ -13,7 +13,7 @@ namespace ReportPortal.Client.Tests.ServiceFixture
         [InlineData("http://rp.epam.com/API/v1", "http://rp.epam.com/API/v1")]
         public void ShouldAutomaticallyAppendApiPostfix(string url, string expectedUrl)
         {
-            var service = new Service(new Uri(url), "", "");
+            var service = new ReportPortalClient(new Uri(url), "", "");
             Assert.Equal(expectedUrl, service.BaseUri.ToString());
         }
     }
