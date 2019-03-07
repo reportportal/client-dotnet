@@ -1,12 +1,10 @@
-﻿using ReportPortal.Client.Api.TestItem.Model;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using ReportPortal.Client.Api.TestItem.Model;
 using ReportPortal.Client.Api.TestItem.Request;
 using ReportPortal.Client.Common.Model;
 using ReportPortal.Client.Common.Model.Filtering;
 using ReportPortal.Client.Common.Model.Paging;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReportPortal.Client.Api.TestItem
 {

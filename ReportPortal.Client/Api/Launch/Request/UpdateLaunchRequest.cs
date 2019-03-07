@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using ReportPortal.Client.Converter;
 using System.Runtime.Serialization;
 using ReportPortal.Client.Api.Launch.Model;
+using ReportPortal.Client.Converter;
 
-namespace ReportPortal.Client.Api.Launch.Requests
+namespace ReportPortal.Client.Api.Launch.Request
 {
     /// <summary>
     /// Defines a request to finish specified launch.
@@ -27,7 +27,11 @@ namespace ReportPortal.Client.Api.Launch.Requests
         /// Specify whether the launch is executed under debugging.
         /// </summary>
         [DataMember(Name = "mode", EmitDefaultValue = true)]
-        public string ModeString { get { return EnumConverter.ConvertFrom(Mode); } set { Mode = EnumConverter.ConvertTo<LaunchMode>(value); } }
+        public string ModeString
+        {
+            get => EnumConverter.ConvertFrom(Mode);
+            set => Mode = EnumConverter.ConvertTo<LaunchMode>(value);
+        }
 
         public LaunchMode Mode { get; set; }
     }

@@ -1,8 +1,8 @@
 ﻿using System;
-using ReportPortal.Client.Converter;
 using System.Runtime.Serialization;
+using ReportPortal.Client.Converter;
 
-namespace ReportPortal.Client.Api.Launch.Requests
+namespace ReportPortal.Client.Api.Launch.Request
 {
     /// <summary>
     /// Defines a request to finish execution of specified launch.
@@ -18,14 +18,8 @@ namespace ReportPortal.Client.Api.Launch.Requests
 
         public DateTime EndTime
         {
-            get
-            {
-                return DateTimeConverter.ConvertTo(EndTimeString);
-            }
-            set
-            {
-                EndTimeString = DateTimeConverter.ConvertFrom(value);
-            }
+            get => DateTimeConverter.ConvertTo(EndTimeString);
+            set => EndTimeString = DateTimeConverter.ConvertFrom(value);
         }
     }
 }

@@ -1,9 +1,6 @@
-﻿using ReportPortal.Client.Api.Project.Model;
+﻿using System.Threading.Tasks;
+using ReportPortal.Client.Api.Project.Model;
 using ReportPortal.Client.Api.Project.Request;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReportPortal.Client.Api.Project
 {

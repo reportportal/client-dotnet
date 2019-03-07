@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ReportPortal.Client.Api.TestItem.Model
+﻿namespace ReportPortal.Client.Api.TestItem.Model
 {
     public static class WellKnownIssueType
     {

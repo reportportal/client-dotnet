@@ -1,9 +1,7 @@
-﻿using ReportPortal.Client.Common.Model.Filtering;
-using ReportPortal.Client.Converter;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Text;
+using ReportPortal.Client.Common.Model.Filtering;
+using ReportPortal.Client.Converter;
 
 namespace ReportPortal.Client.Api.Filter.Model
 {
@@ -61,7 +59,7 @@ namespace ReportPortal.Client.Api.Filter.Model
         public FilterType UserFilterType
         {
             get => EnumConverter.ConvertTo<FilterType>(TypeStr);
-            set => TypeStr = EnumConverter.ConvertFrom(UserFilterType);
+            set => TypeStr = EnumConverter.ConvertFrom(value);
 
         }
 

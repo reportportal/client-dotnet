@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using ReportPortal.Client.Converter;
 using System.Runtime.Serialization;
-using ReportPortal.Client.Api.TestItem.Model;
+using ReportPortal.Client.Converter;
 
 namespace ReportPortal.Client.Api.TestItem.Model
 {
@@ -20,20 +19,18 @@ namespace ReportPortal.Client.Api.TestItem.Model
 
         public DateTime StartTime
         {
-            get
-            {
-                return DateTimeConverter.ConvertTo(StartTimeString);
-            }
-            set
-            {
-                StartTimeString = DateTimeConverter.ConvertFrom(value);
-            }
+            get => DateTimeConverter.ConvertTo(StartTimeString);
+            set => StartTimeString = DateTimeConverter.ConvertFrom(value);
         }
 
         [DataMember(Name = "launchStatus")]
         public string LaunchStatusString { get; set; }
 
-        public Status LaunchStatus { get { return EnumConverter.ConvertTo<Status>(LaunchStatusString); } set { LaunchStatusString = EnumConverter.ConvertFrom(value); } }
+        public Status LaunchStatus
+        {
+            get => EnumConverter.ConvertTo<Status>(LaunchStatusString);
+            set => LaunchStatusString = EnumConverter.ConvertFrom(value);
+        }
 
         [DataMember(Name = "resources")]
         public List<TestItemModel> Resources { get; set; }

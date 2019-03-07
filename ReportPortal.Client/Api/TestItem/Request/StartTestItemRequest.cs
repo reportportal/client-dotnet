@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using ReportPortal.Client.Converter;
 using System.Runtime.Serialization;
 using ReportPortal.Client.Api.TestItem.Model;
+using ReportPortal.Client.Converter;
 
 namespace ReportPortal.Client.Api.TestItem.Request
 {
@@ -24,7 +24,11 @@ namespace ReportPortal.Client.Api.TestItem.Request
         /// A short name of test item.
         /// </summary>
         [DataMember(Name = "name")]
-        public string Name { get { return _name; } set { _name = StringTrimmer.Trim(value, 256); } }
+        public string Name
+        {
+            get => _name;
+            set => _name = StringTrimmer.Trim(value, 256);
+        }
 
         /// <summary>
         /// A long description of test item.
@@ -40,21 +44,19 @@ namespace ReportPortal.Client.Api.TestItem.Request
 
         public DateTime StartTime
         {
-            get
-            {
-                return DateTimeConverter.ConvertTo(StartTimeString);
-            }
-            set
-            {
-                StartTimeString = DateTimeConverter.ConvertFrom(value);
-            }
+            get => DateTimeConverter.ConvertTo(StartTimeString);
+            set => StartTimeString = DateTimeConverter.ConvertFrom(value);
         }
 
         /// <summary>
         /// A type of test item.
         /// </summary>
         [DataMember(Name = "type")]
-        public string TypeString { get { return EnumConverter.ConvertFrom(Type); } set { Type = EnumConverter.ConvertTo<TestItemType>(value); } }
+        public string TypeString
+        {
+            get => EnumConverter.ConvertFrom(Type);
+            set => Type = EnumConverter.ConvertTo<TestItemType>(value);
+        }
 
         public TestItemType Type { get; set; } = TestItemType.Test;
 

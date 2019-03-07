@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using ReportPortal.Client.Converter;
-using ReportPortal.Client.Extention;
-using System.Linq;
-using ReportPortal.Client.Common.Model;
 using ReportPortal.Client.Api.Log.Model;
 using ReportPortal.Client.Api.Log.Request;
-using ReportPortal.Client.Common.Model.Paging;
+using ReportPortal.Client.Common.Model;
 using ReportPortal.Client.Common.Model.Filtering;
+using ReportPortal.Client.Common.Model.Paging;
+using ReportPortal.Client.Converter;
+using ReportPortal.Client.Extention;
 
 namespace ReportPortal.Client.Api.Log
 {
@@ -90,7 +91,7 @@ namespace ReportPortal.Client.Api.Log
                 multipartContent.Add(jsonContent, "json_request_part");
 
                 var byteArrayContent = new ByteArrayContent(model.Attach.Data.ToArray(), 0, model.Attach.Data.Count);
-                byteArrayContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(model.Attach.MimeType);
+                byteArrayContent.Headers.ContentType = new MediaTypeHeaderValue(model.Attach.MimeType);
                 multipartContent.Add(byteArrayContent, "file", model.Attach.Name);
 
                 var response = await HttpClient.PostAsync(uri, multipartContent).ConfigureAwait(false);

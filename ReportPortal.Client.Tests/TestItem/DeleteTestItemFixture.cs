@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Xunit;
-using ReportPortal.Client.Api.Launch.Requests;
+using ReportPortal.Client.Api.Launch.Request;
 using ReportPortal.Client.Api.TestItem.Model;
 using ReportPortal.Client.Api.TestItem.Request;
+using Xunit;
 
 namespace ReportPortal.Client.Tests.TestItem
 {

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using ReportPortal.Client.Extention;
 using System.Text;
 using ReportPortal.Client.Common.Model.Paging;
+using ReportPortal.Client.Extention;
 
 namespace ReportPortal.Client.Common.Model.Filtering
 {
@@ -24,10 +24,12 @@ namespace ReportPortal.Client.Common.Model.Filtering
                 builder.Append($"page.page={Paging.Number.ToString(CultureInfo.InvariantCulture)}");
                 builder.Append($"&page.size={Paging.Size.ToString(CultureInfo.InvariantCulture)}");
             }
+
             if (Sorting != null)
             {
                 builder.Append($"&page.sort={string.Join(",", Sorting.Fields.ToArray()) + "," + Sorting.Direction.GetDescriptionAttribute()}");
             }
+
             if (FilterConditions != null)
             {
                 foreach (var filter in FilterConditions)

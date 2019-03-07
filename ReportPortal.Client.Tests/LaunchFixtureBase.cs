@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using ReportPortal.Client.Api.Launch.Requests;
+using ReportPortal.Client.Api.Launch.Request;
 
 namespace ReportPortal.Client.Tests
 {

@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
 using System.Text;
-using ReportPortal.Client.Api.TestItem.Model;
-using ReportPortal.Client.Api.TestItem.Request;
+using System.Threading.Tasks;
 using ReportPortal.Client.Api.Log.Model;
 using ReportPortal.Client.Api.Log.Request;
+using ReportPortal.Client.Api.TestItem.Model;
+using ReportPortal.Client.Api.TestItem.Request;
 using ReportPortal.Client.Common.Model.Filtering;
+using Xunit;
 
 namespace ReportPortal.Client.Tests.LogItem
 {
     public class LogItemFixture : BaseFixture, IClassFixture<LogItemFixtureBase>
     {
-        private LogItemFixtureBase _fixture;
+        private readonly LogItemFixtureBase _fixture;
+
         public LogItemFixture(LogItemFixtureBase fixture)
         {
             _fixture = fixture;
@@ -171,7 +172,7 @@ namespace ReportPortal.Client.Tests.LogItem
                             new FilterCondition(FilterOperation.Equals, "item", newTestId)
                         }
             })).Collection;
-            Assert.True(logs.Count() > 0);
+            Assert.True(logs.Any());
 
             var message = (await Service.Log.DeleteLogItemAsync(log.Id)).Info;
             Assert.Contains("successfully", message);

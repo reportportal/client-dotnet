@@ -1,9 +1,9 @@
-﻿using ReportPortal.Client.Api.Launch.Model;
-using ReportPortal.Client.Api.Launch.Requests;
+﻿using System.Threading.Tasks;
+using ReportPortal.Client.Api.Launch.Model;
+using ReportPortal.Client.Api.Launch.Request;
 using ReportPortal.Client.Common.Model;
 using ReportPortal.Client.Common.Model.Filtering;
 using ReportPortal.Client.Common.Model.Paging;
-using System.Threading.Tasks;
 
 namespace ReportPortal.Client.Api.Launch
 {
@@ -27,7 +27,7 @@ namespace ReportPortal.Client.Api.Launch
         /// <summary>
         /// Creates a new launch.
         /// </summary>
-        /// <param name="model">Information about representation of launch.</param>
+        /// <param name="startLaunchRequest">Information about representation of launch.</param>
         /// <returns>Representation of just created launch.</returns>
         Task<LaunchModel> StartLaunchAsync(StartLaunchRequest startLaunchRequest);
 
@@ -35,7 +35,7 @@ namespace ReportPortal.Client.Api.Launch
         /// Finishes specified launch.
         /// </summary>
         /// <param name="id">ID of specified launch.</param>
-        /// <param name="model">Information about representation of launch to finish.</param>
+        /// <param name="finishLaunchRequest">Information about representation of launch to finish.</param>
         /// <param name="force">Force finish launch even if test items are in progress.</param>
         /// <returns>A message from service.</returns>
         Task<Message> FinishLaunchAsync(string id, FinishLaunchRequest finishLaunchRequest, bool force = false);
@@ -50,7 +50,7 @@ namespace ReportPortal.Client.Api.Launch
         /// <summary>
         /// Merge several launches.
         /// </summary>
-        /// <param name="model">Request for merging.</param>
+        /// <param name="mergeLaunchesRequest">Request for merging.</param>
         /// <returns>Returns the model of merged launches.</returns>
         Task<LaunchModel> MergeLaunchesAsync(MergeLaunchesRequest mergeLaunchesRequest);
 
@@ -58,14 +58,15 @@ namespace ReportPortal.Client.Api.Launch
         /// Update specified launch.
         /// </summary>
         /// <param name="id">ID of launch to update.</param>
-        /// <param name="model">Information about launch.</param>
+        /// <param name="updateLaunchRequest">Information about launch.</param>
         /// <returns>A message from service.</returns>
         Task<Message> UpdateLaunchAsync(string id, UpdateLaunchRequest updateLaunchRequest);
 
         /// <summary>
-        /// Merge several launches.
+        /// Analyze specified launch.
         /// </summary>
+        /// <param name="analyzeLaunchRequest">Request for analysis.</param>
         /// <returns>A message from service.</returns>
-       Task<Message> AnalyzeLaunchAsync(AnalyzeLaunchRequest analyzeLaunchRequest);
+        Task<Message> AnalyzeLaunchAsync(AnalyzeLaunchRequest analyzeLaunchRequest);
     }
 }

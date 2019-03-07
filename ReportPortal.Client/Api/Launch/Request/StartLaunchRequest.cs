@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using ReportPortal.Client.Converter;
 using System.Runtime.Serialization;
 using ReportPortal.Client.Api.Launch.Model;
+using ReportPortal.Client.Converter;
 
-namespace ReportPortal.Client.Api.Launch.Requests
+namespace ReportPortal.Client.Api.Launch.Request
 {
     /// <summary>
     /// Defines a content of request for service to create new launch.
@@ -18,7 +18,11 @@ namespace ReportPortal.Client.Api.Launch.Requests
         /// A short name of launch.
         /// </summary>
         [DataMember(Name = "name")]
-        public string Name { get { return _name; } set { _name = StringTrimmer.Trim(value, 256); } }
+        public string Name
+        {
+            get => _name;
+            set => _name = StringTrimmer.Trim(value, 256);
+        }
 
         /// <summary>
         /// Description of launch.
@@ -30,7 +34,11 @@ namespace ReportPortal.Client.Api.Launch.Requests
         /// Specify whether the launch is executed under debugging.
         /// </summary>
         [DataMember(Name = "mode")]
-        public string ModeString { get { return EnumConverter.ConvertFrom(Mode); } set { Mode = EnumConverter.ConvertTo<LaunchMode>(value); } }
+        public string ModeString
+        {
+            get => EnumConverter.ConvertFrom(Mode);
+            set => Mode = EnumConverter.ConvertTo<LaunchMode>(value);
+        }
 
         public LaunchMode Mode { get; set; } = LaunchMode.Default;
 
@@ -42,14 +50,8 @@ namespace ReportPortal.Client.Api.Launch.Requests
 
         public DateTime StartTime
         {
-            get
-            {
-                return DateTimeConverter.ConvertTo(StartTimeString);
-            }
-            set
-            {
-                StartTimeString = DateTimeConverter.ConvertFrom(value);
-            }
+            get => DateTimeConverter.ConvertTo(StartTimeString);
+            set => StartTimeString = DateTimeConverter.ConvertFrom(value);
         }
 
         /// <summary>

@@ -1,16 +1,16 @@
-﻿using ReportPortal.Client.Extention;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using ReportPortal.Client.Extention;
 
 namespace ReportPortal.Client
 {
     public class RetryWithExponentialBackoffHttpClientHandler : DelegatingHandler
     {
-        public int MaxRetries { get; private set; }
+        public int MaxRetries { get; }
 
         public RetryWithExponentialBackoffHttpClientHandler(int maxRetries)
             : this(maxRetries, new HttpClientHandler())
@@ -34,7 +34,7 @@ namespace ReportPortal.Client
         {
             HttpResponseMessage response = null;
 
-            for (int i = 0; i < MaxRetries; i++)
+            for (var i = 0; i < MaxRetries; i++)
             {
                 try
                 {
@@ -44,19 +44,16 @@ namespace ReportPortal.Client
                     {
                         return response;
                     }
-                    else
-                    {
-                        response.VerifySuccessStatusCode();
-                    }
+
+                    response.VerifySuccessStatusCode();
                 }
 
                 catch (Exception exp) when (exp is TaskCanceledException || exp is HttpRequestException)
                 {
                     if (i < MaxRetries - 1)
                     {
-                        await Task.Delay((int)Math.Pow(2, i + MaxRetries) * 1000).ConfigureAwait(false);
+                        await Task.Delay((int)Math.Pow(2, i + MaxRetries) * 1000, cancellationToken).ConfigureAwait(false);
                     }
-
                     else
                     {
                         throw;

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using ReportPortal.Client.Converter;
 using System.Runtime.Serialization;
 using ReportPortal.Client.Api.Launch.Model;
+using ReportPortal.Client.Converter;
 
-namespace ReportPortal.Client.Api.Launch.Requests
+namespace ReportPortal.Client.Api.Launch.Request
 {
     /// <summary>
     /// Defines a content of request for service to create new launch.
@@ -28,7 +28,11 @@ namespace ReportPortal.Client.Api.Launch.Requests
         /// Specify whether the launch is executed under debugging.
         /// </summary>
         [DataMember(Name = "mode", EmitDefaultValue = true)]
-        public string ModeString { get { return EnumConverter.ConvertFrom(Mode); } set { Mode = EnumConverter.ConvertTo<LaunchMode>(value); } }
+        public string ModeString
+        {
+            get => EnumConverter.ConvertFrom(Mode);
+            set => Mode = EnumConverter.ConvertTo<LaunchMode>(value);
+        }
 
         public LaunchMode Mode { get; set; }
 
@@ -40,14 +44,8 @@ namespace ReportPortal.Client.Api.Launch.Requests
 
         public DateTime StartTime
         {
-            get
-            {
-                return DateTimeConverter.ConvertTo(StartTimeString);
-            }
-            set
-            {
-                StartTimeString = DateTimeConverter.ConvertFrom(value);
-            }
+            get => DateTimeConverter.ConvertTo(StartTimeString);
+            set => StartTimeString = DateTimeConverter.ConvertFrom(value);
         }
 
         /// <summary>
@@ -58,14 +56,8 @@ namespace ReportPortal.Client.Api.Launch.Requests
 
         public DateTime EndTime
         {
-            get
-            {
-                return DateTimeConverter.ConvertTo(EndTimeString);
-            }
-            set
-            {
-                EndTimeString = DateTimeConverter.ConvertFrom(value);
-            }
+            get => DateTimeConverter.ConvertTo(EndTimeString);
+            set => EndTimeString = DateTimeConverter.ConvertFrom(value);
         }
 
         /// <summary>

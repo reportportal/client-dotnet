@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Common.Model.Filtering
@@ -11,6 +10,7 @@ namespace ReportPortal.Client.Common.Model.Filtering
         [DataMember(Name = "DESC")]
         Descending
     }
+
     public class Sorting
     {
         public Sorting(List<string> byFields, SortDirection direction = SortDirection.Ascending)

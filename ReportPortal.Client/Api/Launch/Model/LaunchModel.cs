@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using ReportPortal.Client.Converter;
 using System.Runtime.Serialization;
+using ReportPortal.Client.Converter;
 
 namespace ReportPortal.Client.Api.Launch.Model
 {

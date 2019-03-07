@@ -1,6 +1,6 @@
-﻿using ReportPortal.Client.Common.Model;
+﻿using System;
+using ReportPortal.Client.Common.Model;
 using ReportPortal.Client.Converter;
-using System;
 using Xunit;
 
 namespace ReportPortal.Client.Tests.Serialization
