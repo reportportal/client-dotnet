@@ -45,7 +45,7 @@ namespace ReportPortal.Client.Tests.UserFilter
                 SelectionParameters = selectionParameters
             };
 
-            var userFilters = await Service.Filter.AddUserFilterAsync(new AddUserFilterRequest { FilterElements = new List<FilterElement> { filterElement } });
+            await Service.Filter.AddUserFilterAsync(new AddUserFilterRequest { FilterElements = new List<FilterElement> { filterElement } });
 
             var userFilterContainer = await Service.Filter.GetUserFiltersAsync();
             Assert.True(userFilterContainer.Collection.Any());

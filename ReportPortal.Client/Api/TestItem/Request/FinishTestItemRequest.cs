@@ -1,8 +1,8 @@
 ﻿using System;
-using ReportPortal.Client.Converter;
-using System.Runtime.Serialization;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using ReportPortal.Client.Api.TestItem.Model;
+using ReportPortal.Client.Converter;
 
 namespace ReportPortal.Client.Api.TestItem.Request
 {
@@ -26,21 +26,19 @@ namespace ReportPortal.Client.Api.TestItem.Request
 
         public DateTime EndTime
         {
-            get
-            {
-                return DateTimeConverter.ConvertTo(EndTimeString);
-            }
-            set
-            {
-                EndTimeString = DateTimeConverter.ConvertFrom(value);
-            }
+            get => DateTimeConverter.ConvertTo(EndTimeString);
+            set => EndTimeString = DateTimeConverter.ConvertFrom(value);
         }
 
         /// <summary>
         /// A result of test item.
         /// </summary>
         [DataMember(Name = "status")]
-        public string StatusString { get { return EnumConverter.ConvertFrom(Status); } set { Status = EnumConverter.ConvertTo<Status>(value); } }
+        public string StatusString
+        {
+            get => EnumConverter.ConvertFrom(Status);
+            set => Status = EnumConverter.ConvertTo<Status>(value);
+        }
 
         public Status Status { get; set; } = Status.Passed;
         

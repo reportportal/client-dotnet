@@ -1,9 +1,9 @@
-﻿using ReportPortal.Client.Api.Log.Model;
+﻿using System.Threading.Tasks;
+using ReportPortal.Client.Api.Log.Model;
 using ReportPortal.Client.Api.Log.Request;
 using ReportPortal.Client.Common.Model;
 using ReportPortal.Client.Common.Model.Filtering;
 using ReportPortal.Client.Common.Model.Paging;
-using System.Threading.Tasks;
 
 namespace ReportPortal.Client.Api.Log
 {

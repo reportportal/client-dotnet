@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Net.Http;
-using Xunit;
+using System.Threading.Tasks;
 using ReportPortal.Client.Api.Launch.Model;
-using ReportPortal.Client.Api.Launch.Requests;
+using ReportPortal.Client.Api.Launch.Request;
 using ReportPortal.Client.Api.TestItem.Model;
-using ReportPortal.Client.Common.Model;
 using ReportPortal.Client.Api.TestItem.Request;
-using ReportPortal.Client.Common.Model.Paging;
 using ReportPortal.Client.Common.Model.Filtering;
+using ReportPortal.Client.Common.Model.Paging;
+using Xunit;
 
 namespace ReportPortal.Client.Tests.LaunchItem
 {
@@ -27,7 +26,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
         {
             var container = await Service.Launch.GetLaunchesAsync();
             var launches = container.Collection.ToList();
-            Assert.True(launches.Count() > 0);
+            Assert.True(launches.Any());
         }
 
         [Fact]
@@ -58,7 +57,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
                 Paging = new Page(1, 10),
                 FilterConditions = new List<FilterCondition> { new FilterCondition(FilterOperation.Contains, "name", "test") }
             });
-            Assert.True(launches.Collection.Count() > 0);
+            Assert.True(launches.Collection.Any());
             foreach (var launch in launches.Collection)
             {
                 Assert.Contains("test", launch.Name.ToLower());
@@ -74,7 +73,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
                 Sorting = new Sorting(new List<string> { "start_time" }, SortDirection.Ascending)
             });
 
-            Assert.True(launches.Collection.Count() > 0);
+            Assert.True(launches.Collection.Any());
 
             Assert.Equal(launches.Collection.Select(l => l.StartTime).OrderBy(st => st), launches.Collection.Select(l => l.StartTime));
         }
@@ -88,7 +87,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
                 Sorting = new Sorting(new List<string> { "start_time" }, SortDirection.Descending)
             });
 
-            Assert.True(launches.Collection.Count() > 0);
+            Assert.True(launches.Collection.Any());
 
             Assert.Equal(launches.Collection.Select(l => l.StartTime).OrderByDescending(st => st), launches.Collection.Select(l => l.StartTime));
         }

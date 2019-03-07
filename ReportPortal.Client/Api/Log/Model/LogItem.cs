@@ -1,8 +1,8 @@
 ﻿using System;
-using ReportPortal.Client.Converter;
-using System.Runtime.Serialization;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Runtime.Serialization;
+using ReportPortal.Client.Converter;
 
 namespace ReportPortal.Client.Api.Log.Model
 {
@@ -17,14 +17,8 @@ namespace ReportPortal.Client.Api.Log.Model
 
         public DateTime Time
         {
-            get
-            {
-                return DateTimeConverter.ConvertTo(TimeString);
-            }
-            set
-            {
-                TimeString = DateTimeConverter.ConvertFrom(value);
-            }
+            get => DateTimeConverter.ConvertTo(TimeString);
+            set => TimeString = DateTimeConverter.ConvertFrom(value);
         }
 
         [DataMember(Name = "message")]
@@ -33,7 +27,11 @@ namespace ReportPortal.Client.Api.Log.Model
         [DataMember(Name = "level")]
         public string LevelString { get; set; }
 
-        public LogLevel Level { get { return EnumConverter.ConvertTo<LogLevel>(LevelString); } set { LevelString = EnumConverter.ConvertFrom(value); } }
+        public LogLevel Level
+        {
+            get => EnumConverter.ConvertTo<LogLevel>(LevelString);
+            set => LevelString = EnumConverter.ConvertFrom(value);
+        }
 
         [DataMember(Name = "binary_content")]
         public BinaryContent Content { get; set; }
@@ -57,7 +55,6 @@ namespace ReportPortal.Client.Api.Log.Model
     {
         public Attach()
         {
-
         }
 
         public Attach(string name, string mimeType, byte[] data)

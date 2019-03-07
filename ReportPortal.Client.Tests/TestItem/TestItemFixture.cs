@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Xunit;
 using ReportPortal.Client.Api.TestItem.Model;
-using ReportPortal.Client.Common.Model;
 using ReportPortal.Client.Api.TestItem.Request;
 using ReportPortal.Client.Common.Model.Filtering;
+using Xunit;
 
 namespace ReportPortal.Client.Tests.TestItem
 {
     public class TestItemFixture : BaseFixture, IClassFixture<LaunchFixtureBase>
     {
-        private LaunchFixtureBase _fixture;
+        private readonly LaunchFixtureBase _fixture;
 
         public TestItemFixture(LaunchFixtureBase fixture)
         {

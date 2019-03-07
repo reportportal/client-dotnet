@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 
 namespace ReportPortal.Client.Api
 {
     public abstract class BaseApiClient : IApiClient
     {
-        protected virtual HttpClient HttpClient { get; private set; }
-        protected virtual Uri BaseUri { get; private set; }
-        protected virtual string Project { get; private set; }
+        protected virtual HttpClient HttpClient { get; }
+        protected virtual Uri BaseUri { get; }
+        protected virtual string Project { get; }
 
-        public BaseApiClient(HttpClient httpCLient, Uri baseUri, string project)
+        protected BaseApiClient(HttpClient httpCLient, Uri baseUri, string project)
         {
             HttpClient = httpCLient;
             BaseUri = baseUri;

@@ -1,8 +1,5 @@
-﻿using ReportPortal.Client.Api.User.Model;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using ReportPortal.Client.Api.User.Model;
 
 namespace ReportPortal.Client.Api.User
 {

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
@@ -12,12 +10,12 @@ namespace ReportPortal.Client.Converter
     {
         public static T Deserialize<T>(string json)
         {
-            DataContractJsonSerializerSettings settings = new DataContractJsonSerializerSettings
+            var settings = new DataContractJsonSerializerSettings
             {
                 UseSimpleDictionaryFormat = true
             };
-            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(T), settings);
-            MemoryStream stream = new MemoryStream();
+            var serializer = new DataContractJsonSerializer(typeof(T), settings);
+            var stream = new MemoryStream();
             var bytes = Encoding.UTF8.GetBytes(json);
             stream.Write(bytes, 0, bytes.Length);
             stream.Position = 0;
@@ -37,8 +35,8 @@ namespace ReportPortal.Client.Converter
 
         public static string Serialize<T>(object o)
         {
-            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(T));
-            MemoryStream stream = new MemoryStream();
+            var serializer = new DataContractJsonSerializer(typeof(T));
+            var stream = new MemoryStream();
             serializer.WriteObject(stream, o);
             var bytes = stream.ToArray();
             return Encoding.UTF8.GetString(bytes, 0, bytes.Length);

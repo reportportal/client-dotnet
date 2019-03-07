@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-using System.Text;
+﻿using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Common.Model.Paging
 {
@@ -10,7 +7,6 @@ namespace ReportPortal.Client.Common.Model.Paging
     {
         public Page()
         {
-
         }
 
         public Page(int number, int size)

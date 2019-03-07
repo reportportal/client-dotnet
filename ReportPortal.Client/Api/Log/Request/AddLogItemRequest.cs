@@ -1,7 +1,7 @@
 ﻿using System;
-using ReportPortal.Client.Converter;
 using System.Runtime.Serialization;
 using ReportPortal.Client.Api.Log.Model;
+using ReportPortal.Client.Converter;
 
 namespace ReportPortal.Client.Api.Log.Request
 {
@@ -25,21 +25,19 @@ namespace ReportPortal.Client.Api.Log.Request
 
         public DateTime Time
         {
-            get
-            {
-                return DateTimeConverter.ConvertTo(TimeString);
-            }
-            set
-            {
-                TimeString = DateTimeConverter.ConvertFrom(value);
-            }
+            get => DateTimeConverter.ConvertTo(TimeString);
+            set => TimeString = DateTimeConverter.ConvertFrom(value);
         }
 
         /// <summary>
         /// A level of log item.
         /// </summary>
         [DataMember(Name = "level")]
-        public string LevelString { get { return EnumConverter.ConvertFrom(Level); } set { Level = EnumConverter.ConvertTo<LogLevel>(value); } }
+        public string LevelString
+        {
+            get => EnumConverter.ConvertFrom(Level);
+            set => Level = EnumConverter.ConvertTo<LogLevel>(value);
+        }
 
         public LogLevel Level { get; set; } = LogLevel.Info;
 

@@ -1,10 +1,10 @@
-﻿using ReportPortal.Client.Converter;
-using System.Runtime.Serialization;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using ReportPortal.Client.Api.Launch.Model;
+using ReportPortal.Client.Converter;
 
-namespace ReportPortal.Client.Api.Launch.Requests
+namespace ReportPortal.Client.Api.Launch.Request
 {
     /// <summary>
     /// Defines a request to analyze launch.
@@ -18,11 +18,19 @@ namespace ReportPortal.Client.Api.Launch.Requests
         [DataMember(Name = "analyzer_mode")]
         public string AnalyzerModeString { get; set; }
 
-        public AnalyzerMode AnalyzerMode { get { return EnumConverter.ConvertTo<AnalyzerMode>(AnalyzerModeString); } set { AnalyzerModeString = EnumConverter.ConvertFrom(value); } }
+        public AnalyzerMode AnalyzerMode
+        {
+            get => EnumConverter.ConvertTo<AnalyzerMode>(AnalyzerModeString);
+            set => AnalyzerModeString = EnumConverter.ConvertFrom(value);
+        }
 
         [DataMember(Name = "analyze_items_mode")]
         public List<string> AnalyzerItemsModeString { get; set; }
 
-        public IReadOnlyList<AnalyzerItemsMode> AnalyzerItemsMode { get { return AnalyzerItemsModeString.Select(i => EnumConverter.ConvertTo<AnalyzerItemsMode>(i)).ToList(); } set { AnalyzerItemsModeString = value.Select(i => EnumConverter.ConvertFrom(i)).ToList(); } }
+        public IReadOnlyList<AnalyzerItemsMode> AnalyzerItemsMode
+        {
+            get => AnalyzerItemsModeString.Select(EnumConverter.ConvertTo<AnalyzerItemsMode>).ToList();
+            set => AnalyzerItemsModeString = value.Select(i => EnumConverter.ConvertFrom(i)).ToList();
+        }
     }
 }
