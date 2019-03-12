@@ -33,10 +33,9 @@ namespace ReportPortal.Client
         /// <param name="project">A project to manage.</param>
         /// <param name="password">A password for user. Can be UID given from user's profile page.</param>
         /// <param name="messageHandler">The HTTP handler to use for sending all requests.</param>
-        public ReportPortalClient(Uri uri, string project, string password, HttpMessageHandler messageHandler)
+        public ReportPortalClient(Uri uri, string project, string password, HttpMessageHandler messageHandler = null)
         {
-            _httpClient = new HttpClient(messageHandler);
-            
+            _httpClient = messageHandler ==  null ? new HttpClient() : new HttpClient(messageHandler);
             if (!uri.LocalPath.ToUpperInvariant().Contains("API/V1"))
             {
                 uri = uri.Append("api/v1");
@@ -53,17 +52,6 @@ namespace ReportPortal.Client
 #if NET45
             ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
 #endif
-        }
-
-        /// <summary>
-        /// Constructor to initialize a new object of service.
-        /// </summary>
-        /// <param name="uri">Base URI for REST service.</param>
-        /// <param name="project">A project to manage.</param>
-        /// <param name="password">A password for user. Can be UID given from user's profile page.</param>
-        public ReportPortalClient(Uri uri, string project, string password)
-            : this(uri, project, password, new RetryWithExponentialBackoffHttpClientHandler(3))
-        {
         }
 
         /// <summary>

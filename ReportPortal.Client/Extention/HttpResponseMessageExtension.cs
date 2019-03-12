@@ -3,7 +3,7 @@ using System.Net.Http;
 
 namespace ReportPortal.Client.Extention
 {
-    static class HttpResponseMessageExtension
+    public static class HttpResponseMessageExtension
     {
         public static void VerifySuccessStatusCode(this HttpResponseMessage httpResponseMessage)
         {
