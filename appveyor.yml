@@ -9,7 +9,7 @@ configuration:
 
 dotnet_csproj:
   patch: true
-  version: '$(GitVersion_SemVersion)'
+  version: '$(GitVersion_SemVer)'
 
 build_script:
   - cmd: dotnet build
@@ -18,11 +18,10 @@ test_script:
   - cmd: dotnet test --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=OpenCover /p:CoverletOutput=./Coverage.xml
 
 after_test:
-  - dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg
+  - dotnet pack
   - codecov -f .\ReportPortal.Shared.Tests\Coverage.xml
   - dotnet run -c Release --project ReportPortal.Shared.Benchmark
 
 artifacts:
   - path: '**\*.nupkg'
-  - path: '**\*.snupkg'
   - path: '**\*.html'
