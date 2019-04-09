@@ -107,9 +107,6 @@ namespace ReportPortal.Shared.Reporter
 
             FinishTask = Task.Factory.ContinueWhenAll(dependentTasks.ToArray(), async (a) =>
             {
-                TestInfo.EndTime = request.EndTime;
-                TestInfo.Status = request.Status;
-
                 try
                 {
                     if (StartTask.IsFaulted)
@@ -121,6 +118,9 @@ namespace ReportPortal.Shared.Reporter
                     {
                         throw new AggregateException("Cannot finish test item due finishing of child items failed.", ChildTestReporters.Where(ctr => ctr.FinishTask.IsFaulted).Select(ctr => ctr.FinishTask.Exception).ToArray());
                     }
+
+                    TestInfo.EndTime = request.EndTime;
+                    TestInfo.Status = request.Status;
 
                     if (request.EndTime < TestInfo.StartTime)
                     {
@@ -183,6 +183,11 @@ namespace ReportPortal.Shared.Reporter
             if (StartTask == null)
             {
                 throw new InsufficientExecutionStackException("The test item wasn't scheduled for starting to add log messages.");
+            }
+
+            if (StartTask.IsFaulted || StartTask.IsCanceled)
+            {
+                return;
             }
 
             if (FinishTask == null || !FinishTask.IsCompleted)

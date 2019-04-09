@@ -44,7 +44,7 @@ namespace ReportPortal.Shared.Tests.Faked
 
         [Theory]
         [InlineData(1, 1, 1)]
-        [InlineData(1, 100, 0)]
+        [InlineData(1, 1, 2)]
         public void FailedFirstFinishTestItemShouldRaiseExceptionAtFinishLaunch(int suitesPerLaunch, int testsPerSuite, int logsPerTest)
         {
             var fakeService = new FakeServiceWithFailedFirstFinishTestItemMethod(new Uri("https://rp.epam.com/api/v1/"), "ci-agents-checks", "7853c7a9-7f27-43ea-835a-cab01355fd17");
@@ -61,7 +61,7 @@ namespace ReportPortal.Shared.Tests.Faked
 
         [Theory]
         [InlineData(1, 1, 1)]
-        [InlineData(1, 100, 0)]
+        [InlineData(1, 100, 10000)]
         public void FailedFirstStartTestItemShouldRaiseExceptionAtFinishLaunch(int suitesPerLaunch, int testsPerSuite, int logsPerTest)
         {
             var fakeService = new FakeServiceWithFailedFirstStartTestItemMethod(new Uri("https://rp.epam.com/api/v1/"), "ci-agents-checks", "7853c7a9-7f27-43ea-835a-cab01355fd17");
