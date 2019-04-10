@@ -66,6 +66,21 @@ namespace ReportPortal.Client
         }
 
         /// <summary>
+        /// Timeout for http requests.
+        /// </summary>
+        public TimeSpan Timeout
+        {
+            get
+            {
+                return _httpClient.Timeout;
+            }
+            set
+            {
+                _httpClient.Timeout = value;
+            }
+        }
+
+        /// <summary>
         /// Get or set project name to interact with.
         /// </summary>
         public string Project { get; set; }
