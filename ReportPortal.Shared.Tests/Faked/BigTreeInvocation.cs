@@ -13,7 +13,7 @@ namespace ReportPortal.Shared.Tests.Faked
         [InlineData(5, 10000, 10)]
         public void SuccessReporting(int suitesPerLaunch, int testsPerSuite, int logsPerTest)
         {
-            var fakeService = new FakeService(new Uri("https://rp.epam.com/api/v1/"), "ci-agents-checks", "7853c7a9-7f27-43ea-835a-cab01355fd17");
+            var fakeService = new FakeService(new Uri("https://rp.epam.com/api/v1/"), "ci-agents-checks", "b79e81a5-8448-49b5-857d-945ff5fd5ed2");
 
             var launchScheduler = new LaunchScheduler(fakeService);
             var launchReporter = launchScheduler.Build(suitesPerLaunch, testsPerSuite, logsPerTest);
@@ -30,7 +30,7 @@ namespace ReportPortal.Shared.Tests.Faked
         [InlineData(10, 10, 10)]
         public void FailedLogsShouldNotAffectFinishingLaunch(int suitesPerLaunch, int testsPerSuite, int logsPerTest)
         {
-            var fakeService = new FakeServiceWithFailedAddLogItemMethod(new Uri("https://rp.epam.com/api/v1/"), "ci-agents-checks", "7853c7a9-7f27-43ea-835a-cab01355fd17");
+            var fakeService = new FakeServiceWithFailedAddLogItemMethod(new Uri("https://rp.epam.com/api/v1/"), "ci-agents-checks", "b79e81a5-8448-49b5-857d-945ff5fd5ed2");
 
             var launchScheduler = new LaunchScheduler(fakeService);
             var launchReporter = launchScheduler.Build(suitesPerLaunch, testsPerSuite, logsPerTest);
@@ -47,7 +47,7 @@ namespace ReportPortal.Shared.Tests.Faked
         [InlineData(1, 1, 2)]
         public void FailedFirstFinishTestItemShouldRaiseExceptionAtFinishLaunch(int suitesPerLaunch, int testsPerSuite, int logsPerTest)
         {
-            var fakeService = new FakeServiceWithFailedFirstFinishTestItemMethod(new Uri("https://rp.epam.com/api/v1/"), "ci-agents-checks", "7853c7a9-7f27-43ea-835a-cab01355fd17");
+            var fakeService = new FakeServiceWithFailedFirstFinishTestItemMethod(new Uri("https://rp.epam.com/api/v1/"), "ci-agents-checks", "b79e81a5-8448-49b5-857d-945ff5fd5ed2");
 
             var launchScheduler = new LaunchScheduler(fakeService);
             var launchReporter = launchScheduler.Build(suitesPerLaunch, testsPerSuite, logsPerTest);
@@ -65,7 +65,7 @@ namespace ReportPortal.Shared.Tests.Faked
         [InlineData(100, 100, 1)]
         public void FailedFirstStartSuiteItemShouldRaiseExceptionAtFinishLaunch(int suitesPerLaunch, int testsPerSuite, int logsPerTest)
         {
-            var fakeService = new FakeServiceWithFailedFirstStartTestItemMethod(new Uri("https://rp.epam.com/api/v1/"), "ci-agents-checks", "7853c7a9-7f27-43ea-835a-cab01355fd17");
+            var fakeService = new FakeServiceWithFailedFirstStartTestItemMethod(new Uri("https://rp.epam.com/api/v1/"), "ci-agents-checks", "b79e81a5-8448-49b5-857d-945ff5fd5ed2");
 
             var launchScheduler = new LaunchScheduler(fakeService);
             var launchReporter = launchScheduler.Build(suitesPerLaunch, testsPerSuite, logsPerTest);
