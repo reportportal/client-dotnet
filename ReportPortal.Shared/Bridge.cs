@@ -79,24 +79,31 @@ namespace ReportPortal.Shared
 
             if (!handled && (Context.LaunchReporter as LaunchReporter)?.LastTestNode != null)
             {
-                var testNode = Context.LaunchReporter.ChildTestReporters
+                var testNode = Context.LaunchReporter.ChildTestReporters?
                     .Select(t => FindNonFinishedTestReporter(t, Thread.CurrentThread.ManagedThreadId))
                     .FirstOrDefault(t => t != null) ?? (Context.LaunchReporter as LaunchReporter).LastTestNode;
 
-                testNode.Log(request);
+                testNode?.Log(request);
             }
         }
 
         private static ITestReporter FindNonFinishedTestReporter(ITestReporter testReporter, int threadId)
         {
-            if (testReporter.FinishTask == null && !testReporter.ChildTestReporters.Any() && (testReporter as TestReporter).ThreadId == threadId)
+            if (testReporter.FinishTask == null && testReporter.ChildTestReporters == null && (testReporter as TestReporter).ThreadId == threadId)
             {
                 return testReporter;
             }
 
-            return testReporter.ChildTestReporters
-                .Select(testNode => FindNonFinishedTestReporter(testNode, threadId))
-                .FirstOrDefault(t => t != null);
+            if (testReporter.ChildTestReporters != null)
+            {
+                return testReporter.ChildTestReporters
+                  .Select(testNode => FindNonFinishedTestReporter(testNode, threadId))
+                  .FirstOrDefault(t => t != null);
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

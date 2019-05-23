@@ -1,5 +1,6 @@
 ﻿using ReportPortal.Client.Requests;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace ReportPortal.Shared.LogFormatters
@@ -26,9 +27,12 @@ namespace ReportPortal.Shared.LogFormatters
 
                 var filePath = match.Groups[1].Value;
 
-                var mimeType = MimeTypes.MimeTypeMap.GetMimeType(Path.GetExtension(filePath));
+                if (!Path.GetInvalidPathChars().Any(i => filePath.Contains(i)))
+                {
+                    var mimeType = MimeTypes.MimeTypeMap.GetMimeType(Path.GetExtension(filePath));
 
-                logRequest.Attach = new Client.Models.Attach(Path.GetFileName(filePath), mimeType, File.ReadAllBytes(filePath));
+                    logRequest.Attach = new Client.Models.Attach(Path.GetFileName(filePath), mimeType, File.ReadAllBytes(filePath));
+                }
             }
         }
     }
