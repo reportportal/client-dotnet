@@ -13,6 +13,10 @@
     <PackageTags>reportportal report reporter api testing</PackageTags>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+  </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="ReportPortal.Client" Version="2.1.9">
       <PrivateAssets>contentfiles;analyzers;</PrivateAssets>
