@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ReportPortal.Shared\ReportPortal.Shared.csproj" />
+    <ProjectReference Include="..\..\src\ReportPortal.Shared\ReportPortal.Shared.csproj" />
   </ItemGroup>
 
 </Project>
