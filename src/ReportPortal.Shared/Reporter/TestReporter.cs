@@ -205,6 +205,11 @@ namespace ReportPortal.Shared.Reporter
 
                         request.TestItemId = TestInfo.Id;
 
+                        foreach (var formatter in Bridge.LogFormatterExtensions)
+                        {
+                            formatter.FormatLog(ref request);
+                        }
+
                         await _service.AddLogItemAsync(request);
                     }
                 }).Unwrap();

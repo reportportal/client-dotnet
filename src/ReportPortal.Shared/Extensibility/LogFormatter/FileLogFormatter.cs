@@ -3,21 +3,13 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace ReportPortal.Shared.LogFormatters
+namespace ReportPortal.Shared.Extensibility.LogFormatter
 {
-    public class FileLogFormatter : IBridgeExtension
+    public class FileLogFormatter : ILogFormatter
     {
-        public bool Handled { get; set; }
+        public int Order => 10;
 
-        public int Order
-        {
-            get
-            {
-                return int.MinValue;
-            }
-        }
-
-        public void FormatLog(ref AddLogItemRequest logRequest)
+        public bool FormatLog(ref AddLogItemRequest logRequest)
         {
             var regex = new Regex("{rp#file#(.*)}");
             var match = regex.Match(logRequest.Text);
@@ -32,8 +24,12 @@ namespace ReportPortal.Shared.LogFormatters
                     var mimeType = MimeTypes.MimeTypeMap.GetMimeType(Path.GetExtension(filePath));
 
                     logRequest.Attach = new Client.Models.Attach(Path.GetFileName(filePath), mimeType, File.ReadAllBytes(filePath));
+
+                    return true;
                 }
             }
+
+            return false;
         }
     }
 }

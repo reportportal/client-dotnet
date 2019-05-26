@@ -9,6 +9,7 @@ namespace ReportPortal.Shared.Tests.Faked
     {
         [Theory]
         [InlineData(1, 1, 0)]
+        [InlineData(1, 1, 1)]
         [InlineData(5, 10000, 0)]
         [InlineData(5, 10000, 10)]
         public void SuccessReporting(int suitesPerLaunch, int testsPerSuite, int logsPerTest)

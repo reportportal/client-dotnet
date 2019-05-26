@@ -2,21 +2,13 @@
 using ReportPortal.Client.Requests;
 using System.Text.RegularExpressions;
 
-namespace ReportPortal.Shared.LogFormatters
+namespace ReportPortal.Shared.Extensibility.LogFormatter
 {
-    public class Base64LogFormatter : IBridgeExtension
+    public class Base64LogFormatter : ILogFormatter
     {
-        public bool Handled { get; set; }
+        public int Order => 10;
 
-        public int Order
-        {
-            get
-            {
-                return int.MinValue;
-            }
-        }
-
-        public void FormatLog(ref AddLogItemRequest logRequest)
+        public bool FormatLog(ref AddLogItemRequest logRequest)
         {
             var regex = new Regex("{rp#base64#(.*)#(.*)}");
             var match = regex.Match(logRequest.Text);
@@ -28,7 +20,11 @@ namespace ReportPortal.Shared.LogFormatters
                 var bytes = Convert.FromBase64String(match.Groups[2].Value);
 
                 logRequest.Attach = new Client.Models.Attach("file", mimeType, bytes);
+
+                return true;
             }
+
+            return false;
         }
     }
 }

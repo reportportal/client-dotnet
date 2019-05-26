@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using ReportPortal.Client.Requests;
+using ReportPortal.Shared.Extensibility;
 using Xunit;
 
 namespace ReportPortal.Shared.Tests
@@ -9,22 +8,20 @@ namespace ReportPortal.Shared.Tests
 
     public class BridgeTest
     {
-        public class BridgeTestExtension : IBridgeExtension
+        public class BridgeTestExtension : ILogFormatter
         {
             public int Order => 0;
 
-            public bool Handled { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-            public void FormatLog(ref AddLogItemRequest logRequest)
+            public bool FormatLog(ref AddLogItemRequest logRequest)
             {
-                throw new NotImplementedException();
+                return true;
             }
         }
 
         [Fact]
         public void InitBridgeExtension()
         {
-            var extensions = Bridge.Extensions;
+            var extensions = Bridge.LogFormatterExtensions;
             Assert.Equal(3, extensions.Count);
         }
     }
