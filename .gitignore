@@ -3,6 +3,9 @@
 
 BenchmarkDotNet.Artifacts
 
+#Coverlet coverage report
+*coverage.xml
+
 # User-specific files
 *.suo
 *.user
@@ -23,9 +26,6 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
-
-tools
-!tools/packages.config
 
 # Visual Studio 2015 cache/options directory
 .vs/
