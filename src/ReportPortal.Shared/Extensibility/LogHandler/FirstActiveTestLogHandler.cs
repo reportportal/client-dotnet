@@ -10,16 +10,27 @@ namespace ReportPortal.Shared.Extensibility.LogHandler
 {
     public class FirstActiveTestLogHandler : ILogHandler
     {
-        public void Handle(AddLogItemRequest logRequest)
+        public int Order => int.MaxValue;
+
+        public bool Handle(AddLogItemRequest logRequest)
         {
+            var handled = false;
+
             if ((Bridge.Context.LaunchReporter as LaunchReporter)?.LastTestNode != null)
             {
                 var testNode = Bridge.Context.LaunchReporter.ChildTestReporters?
                     .Select(t => FindNonFinishedTestReporter(t, Thread.CurrentThread.ManagedThreadId))
                     .FirstOrDefault(t => t != null) ?? (Bridge.Context.LaunchReporter as LaunchReporter).LastTestNode;
 
-                testNode?.Log(logRequest);
+                if (testNode != null)
+                {
+                    testNode.Log(logRequest);
+
+                    handled = true;
+                }
             }
+
+            return handled;
         }
 
         private ITestReporter FindNonFinishedTestReporter(ITestReporter testReporter, int threadId)

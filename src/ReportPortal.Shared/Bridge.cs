@@ -53,6 +53,7 @@ namespace ReportPortal.Shared
             }
 
             LogFormatterExtensions = LogFormatterExtensions.OrderBy(ext => ext.Order).ToList();
+            LogHandlerExtensions = LogHandlerExtensions.OrderBy(ext => ext.Order).ToList();
         }
 
 
@@ -75,7 +76,9 @@ namespace ReportPortal.Shared
 
             foreach (var handler in LogHandlerExtensions)
             {
-                handler.Handle(request);
+                var handled = handler.Handle(request);
+
+                if (handled) break;
             }
         }
     }

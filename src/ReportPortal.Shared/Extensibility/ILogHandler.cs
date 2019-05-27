@@ -7,6 +7,8 @@ namespace ReportPortal.Shared.Extensibility
     /// </summary>
     public interface ILogHandler
     {
-        void Handle(AddLogItemRequest logRequest);
+        int Order { get; }
+
+        bool Handle(AddLogItemRequest logRequest);
     }
 }
