@@ -63,7 +63,23 @@ namespace ReportPortal.Shared
 
         public static Service Service { get; set; }
 
-        public static ContextInfo Context => new ContextInfo();
+        private static object _contextLockObj = new object();
+        private static ContextInfo _context;
+        public static ContextInfo Context
+        {
+            get
+            {
+                if (_context == null)
+                {
+                    lock (_contextLockObj)
+                    {
+                        _context = new ContextInfo();
+                    }
+                }
+
+                return _context;
+            }
+        }
 
         public static void LogMessage(LogLevel level, string text)
         {
