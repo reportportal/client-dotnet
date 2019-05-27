@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net45;</TargetFrameworks>
+    <PackageId>ReportPortal.Shared</PackageId>
     <Version>1.0.0</Version>
     <Description>Multithreaded reporter of test results to Report Portal</Description>
     <Authors>Nikolay Borisenko, Report Portal Community</Authors>
