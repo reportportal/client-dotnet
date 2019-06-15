@@ -44,24 +44,25 @@ namespace ReportPortal.Shared.Reporter
             if (!_isExternalLaunchId)
             {
                 // start new launch item
-                StartTask = Task.Factory.StartNew(async () =>
+                StartTask = Task.Run(async () =>
                 {
                     var id = (await _service.StartLaunchAsync(request)).Id;
 
                     LaunchInfo = new Launch
                     {
                         Id = id,
+                        Name = request.Name,
                         StartTime = request.StartTime
                     };
-                }).Unwrap();
+                });
             }
             else
             {
                 // get launch info
-                StartTask = Task.Factory.StartNew(async () =>
+                StartTask = Task.Run(async () =>
                 {
                     LaunchInfo = await _service.GetLaunchAsync(LaunchInfo.Id);
-                }).Unwrap();
+                });
             }
         }
 
@@ -109,7 +110,7 @@ namespace ReportPortal.Shared.Reporter
                         await _service.FinishLaunchAsync(LaunchInfo.Id, request);
                     }
                 }
-                catch(Exception)
+                catch (Exception)
                 {
                     throw;
                 }

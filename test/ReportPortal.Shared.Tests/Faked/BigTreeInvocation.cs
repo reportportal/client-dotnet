@@ -1,6 +1,9 @@
 ﻿using ReportPortal.Shared.Reporter;
 using ReportPortal.Shared.Tests.Helpers;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace ReportPortal.Shared.Tests.Faked
@@ -74,6 +77,36 @@ namespace ReportPortal.Shared.Tests.Faked
             var exp = Assert.ThrowsAny<Exception>(() => launchReporter.FinishTask.Wait());
 
             Assert.Equal((suitesPerLaunch - 1) * testsPerSuite + (suitesPerLaunch - 1), fakeService.StartTestItemCounter);
+        }
+
+        [Fact]
+        public void StartLaunchScheduling()
+        {
+            var totalNumber = 1000;
+
+            var fakeService = new FakeService(new Uri("https://rp.epam.com/api/v1/"), "ci-agents-checks", "b79e81a5-8448-49b5-857d-945ff5fd5ed2");
+
+            var launchReporters = new List<LaunchReporter>();
+
+            for (int i = 0; i < totalNumber; i++)
+            {
+                var launchReporter = new LaunchReporter(fakeService);
+
+                launchReporters.Add(launchReporter);
+
+                var launchDateTime = DateTime.UtcNow;
+
+                launchReporter.Start(new Client.Requests.StartLaunchRequest
+                {
+                    Name = $"ReportPortal Shared {i}",
+                    StartTime = launchDateTime
+                });
+            }
+
+            Task.WaitAll(launchReporters.Select(l => l.StartTask).ToArray());
+
+            Assert.Equal(totalNumber, launchReporters.Select(l => l.LaunchInfo.Name).Distinct().Count());
+            Assert.Equal(totalNumber, launchReporters.Select(l => l.LaunchInfo.Id).Distinct().Count());
         }
     }
 }
