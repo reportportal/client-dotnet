@@ -49,7 +49,7 @@ namespace ReportPortal.Client
         /// <param name="project">A project to manage.</param>
         /// <param name="password">A password for user. Can be UID given from user's profile page.</param>
         public Service(Uri uri, string project, string password)
-            : this(uri, project, password, new RetryWithExponentialBackoffHttpClientHandler(3))
+            : this(uri, project, password, new ReportPortalHttpClientHandler(3))
         {
         }
 
@@ -61,7 +61,7 @@ namespace ReportPortal.Client
         /// <param name="password">A password for user. Can be UID given from user's profile page.</param>
         /// <param name="proxy">Proxy for all HTTP requests.</param>
         public Service(Uri uri, string project, string password, IWebProxy proxy)
-            : this(uri, project, password, new RetryWithExponentialBackoffHttpClientHandler(3, proxy))
+            : this(uri, project, password, new ReportPortalHttpClientHandler(3, proxy))
         {
         }
 

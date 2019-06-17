@@ -8,24 +8,24 @@ using System.Threading.Tasks;
 
 namespace ReportPortal.Client
 {
-    public class RetryWithExponentialBackoffHttpClientHandler : DelegatingHandler
+    public class ReportPortalHttpClientHandler : HttpClientHandler
     {
         public int MaxRetries { get; private set; }
 
-        public RetryWithExponentialBackoffHttpClientHandler(int maxRetries)
-            : this(maxRetries, new HttpClientHandler())
-        {
-        }
-
-        public RetryWithExponentialBackoffHttpClientHandler(int maxRetries, IWebProxy proxy)
-            : this(maxRetries, new HttpClientHandler { Proxy = proxy })
-        {
-        }
-
-        public RetryWithExponentialBackoffHttpClientHandler(int maxRetries, HttpMessageHandler innerHandler)
-            : base(innerHandler)
+        public ReportPortalHttpClientHandler(int maxRetries)
         {
             MaxRetries = maxRetries;
+
+            if (SupportsAutomaticDecompression)
+            {
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            }
+        }
+
+        public ReportPortalHttpClientHandler(int maxRetries, IWebProxy proxy)
+            : this(maxRetries)
+        {
+            Proxy = proxy;
         }
 
         private List<HttpStatusCode> ResponseStatusCodesForRetrying => new List<HttpStatusCode> { HttpStatusCode.InternalServerError, HttpStatusCode.NotImplemented, HttpStatusCode.BadGateway, HttpStatusCode.ServiceUnavailable, HttpStatusCode.GatewayTimeout, HttpStatusCode.MethodNotAllowed };
