@@ -13,7 +13,7 @@ namespace ReportPortal.Shared.Tests
 {
     public class ReportingTest
     {
-        private Service _service = new Service(new Uri("https://rp.epam.com/api/v1/"), "ci-agents-checks", "b79e81a5-8448-49b5-857d-945ff5fd5ed2");
+        private Service _service = new Service(new Uri("https://rp.epam.com/api/v1/"), "ci-agents-checks", "ba7eb7c8-7b33-42f6-8cf0-e9cd26e717f4");
 
         [Fact]
         public async Task BigAsyncRealTree()
@@ -91,6 +91,66 @@ namespace ReportPortal.Shared.Tests
             launchReporter.Finish(new Client.Requests.FinishLaunchRequest());
 
             Assert.Throws<InsufficientExecutionStackException>(() => launchReporter.Finish(new Client.Requests.FinishLaunchRequest()));
+        }
+
+        [Fact]
+        public void BridgeLogMessage()
+        {
+            var launchReporter = new LaunchReporter(_service);
+
+            Bridge.Context.LaunchReporter = launchReporter;
+
+            launchReporter.Start(new StartLaunchRequest
+            {
+                Name = "ReportPortal Shared",
+                StartTime = DateTime.UtcNow,
+                Mode = LaunchMode.Debug,
+                Tags = new System.Collections.Generic.List<string>()
+            });
+
+
+            var suiteNode = launchReporter.StartChildTestReporter(new StartTestItemRequest
+            {
+                Name = $"Suite",
+                StartTime = DateTime.UtcNow,
+                Type = TestItemType.Suite
+            });
+
+            var testNode = suiteNode.StartChildTestReporter(new StartTestItemRequest
+            {
+                Name = $"Test",
+                StartTime = DateTime.UtcNow,
+                Type = TestItemType.Step
+            });
+
+            for (int i = 0; i < 20; i++)
+            {
+                Bridge.LogMessage(new AddLogItemRequest
+                {
+                    Level = LogLevel.Info,
+                    Time = DateTime.UtcNow.AddMilliseconds(i),
+                    Text = $"Log {i}"
+                });
+            }
+
+            testNode.Finish(new Client.Requests.FinishTestItemRequest
+            {
+                EndTime = DateTime.UtcNow,
+                Status = Client.Models.Status.Passed
+            });
+
+            suiteNode.Finish(new Client.Requests.FinishTestItemRequest
+            {
+                EndTime = DateTime.UtcNow,
+                Status = Client.Models.Status.Passed
+            });
+
+            launchReporter.Finish(new Client.Requests.FinishLaunchRequest
+            {
+                EndTime = DateTime.UtcNow
+            });
+
+            launchReporter.FinishTask.Wait();
         }
     }
 }

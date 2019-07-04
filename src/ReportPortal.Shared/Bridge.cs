@@ -83,18 +83,23 @@ namespace ReportPortal.Shared
 
         public static void LogMessage(LogLevel level, string text)
         {
-            var request = new AddLogItemRequest
+            var logRequest = new AddLogItemRequest
             {
                 Level = level,
                 Time = DateTime.UtcNow,
                 Text = text
             };
 
+            LogMessage(logRequest);
+        }
+
+        public static void LogMessage(AddLogItemRequest logRequest)
+        {
             foreach (var handler in LogHandlerExtensions)
             {
-                var handled = handler.Handle(request);
+                var isHandled = handler.Handle(logRequest);
 
-                if (handled) break;
+                if (isHandled) break;
             }
         }
     }
