@@ -125,7 +125,7 @@ namespace ReportPortal.Shared.Tests
 
             for (int i = 0; i < 20; i++)
             {
-                Bridge.LogMessage(new AddLogItemRequest
+                Log.Message(new AddLogItemRequest
                 {
                     Level = LogLevel.Info,
                     Time = DateTime.UtcNow.AddMilliseconds(i),

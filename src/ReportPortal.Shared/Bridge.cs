@@ -81,6 +81,10 @@ namespace ReportPortal.Shared
             }
         }
 
+        /// <summary>
+        /// Deprecated. Please use <see cref="Log"/> class to put your logs.
+        /// </summary>
+        [Obsolete("Please use static 'ReportPortal.Shared.Log' class to put your logs.")]
         public static void LogMessage(LogLevel level, string text)
         {
             var logRequest = new AddLogItemRequest
@@ -90,17 +94,7 @@ namespace ReportPortal.Shared
                 Text = text
             };
 
-            LogMessage(logRequest);
-        }
-
-        public static void LogMessage(AddLogItemRequest logRequest)
-        {
-            foreach (var handler in LogHandlerExtensions)
-            {
-                var isHandled = handler.Handle(logRequest);
-
-                if (isHandled) break;
-            }
+            Log.Message(logRequest);
         }
     }
 }
