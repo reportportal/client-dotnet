@@ -3,10 +3,10 @@
 
   <PropertyGroup>
 
-    <_ReportPortal_Client_Runtime Condition=" '$(TargetFrameworkIdentifier)' == '.NETCoreApp' or '$(TargetFrameworkIdentifier)' == '.NETStandard' ">netstandard1.1</_ReportPortal_Client_Runtime>
+    <_ReportPortal_Client_Runtime Condition=" '$(TargetFrameworkIdentifier)' == '.NETCoreApp' or '$(TargetFrameworkIdentifier)' == '.NETStandard' ">netstandard2.0</_ReportPortal_Client_Runtime>
     <_ReportPortal_Client_Runtime Condition=" '$(TargetFrameworkIdentifier)' == '.NETFramework' ">net45</_ReportPortal_Client_Runtime>
-    <_ReportPortal_Client_Runtime_Path>$(MSBuildThisFileDirectory)\..\lib\$(_ReportPortal_Client_Runtime)\ReportPortal.Client.dll</_ReportPortal_Client_Runtime_Path>
-    <_ReportPortal_Client_Symbols_Path>$(MSBuildThisFileDirectory)\..\lib\$(_ReportPortal_Client_Runtime)\ReportPortal.Client.pdb</_ReportPortal_Client_Symbols_Path>
+    <_ReportPortal_Client_Runtime_Path Condition=" '$(_ReportPortal_Client_Runtime)' != '' ">$(MSBuildThisFileDirectory)\..\lib\$(_ReportPortal_Client_Runtime)\ReportPortal.Client.dll</_ReportPortal_Client_Runtime_Path>
+    <_ReportPortal_Client_Symbols_Path Condition=" '$(_ReportPortal_Client_Runtime)' != '' ">$(MSBuildThisFileDirectory)\..\lib\$(_ReportPortal_Client_Runtime)\ReportPortal.Client.pdb</_ReportPortal_Client_Symbols_Path>
 
   </PropertyGroup>
 
