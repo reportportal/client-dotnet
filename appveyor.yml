@@ -12,13 +12,12 @@ dotnet_csproj:
   version: '$(GitVersion_SemVer)'
 
 build_script:
-  - dotnet build
+  - dotnet pack
 
 test_script:
   - dotnet test --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=OpenCover /p:CoverletOutput=./Coverage.xml
 
 after_test:
-  - dotnet pack
   - codecov -f .\ReportPortal.Client.Tests\Coverage.xml
 
 artifacts:
