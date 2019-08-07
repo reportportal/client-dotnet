@@ -15,7 +15,7 @@ build_script:
   - dotnet pack
 
 after_build:
-  - appveyor PushArtifact '.\ReportPortal.Client\bin\%configuration%\ReportPortal.Client.%GitVersion_SemVer%.nupkg'
+  - appveyor PushArtifact ReportPortal.Client\bin\%configuration%\ReportPortal.Client.%GitVersion_SemVer%.nupkg
 
 test_script:
   - dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=OpenCover /p:CoverletOutput=./Coverage.xml
