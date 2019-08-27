@@ -9,4 +9,12 @@
 
   </PropertyGroup>
 
+  <Target Name="ReportPortal_CopyConfigJsonFile" AfterTargets="BeforeBuild" Condition=" Exists('ReportPortal.config.json') ">
+  	<ItemGroup>
+  		<None Include="ReportPortal.config.json">
+  			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  		</None>
+  	</ItemGroup>
+  </Target>
+
 </Project>
