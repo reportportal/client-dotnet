@@ -29,9 +29,8 @@ namespace ReportPortal.Shared.Tests.Faked
 
         public override async Task<LogItem> AddLogItemAsync(AddLogItemRequest model)
         {
+            await Task.Delay(0);
             throw new Exception();
-
-            return await base.AddLogItemAsync(model);
         }
     }
 }
