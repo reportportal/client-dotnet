@@ -1,6 +1,7 @@
 ﻿using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 using System;
+using System.IO;
 
 namespace ReportPortal.Shared
 {
@@ -23,11 +24,11 @@ namespace ReportPortal.Shared
             Message(logRequest);
         }
 
-        public static void Info(string message, Attach attachment)
+        public static void Info(string message, FileInfo file)
         {
             var logRequest = GetDefaultLogRequest(message);
             logRequest.Level = Client.Models.LogLevel.Info;
-            logRequest.Attach = attachment;
+            logRequest.Attach = GetAttachFromFileInfo(file);
             Message(logRequest);
         }
 
@@ -38,11 +39,11 @@ namespace ReportPortal.Shared
             Message(logRequest);
         }
 
-        public static void Debug(string message, Attach attachment)
+        public static void Debug(string message, FileInfo file)
         {
             var logRequest = GetDefaultLogRequest(message);
             logRequest.Level = Client.Models.LogLevel.Debug;
-            logRequest.Attach = attachment;
+            logRequest.Attach = GetAttachFromFileInfo(file);
             Message(logRequest);
         }
 
@@ -53,11 +54,11 @@ namespace ReportPortal.Shared
             Message(logRequest);
         }
 
-        public static void Trace(string message, Attach attachment)
+        public static void Trace(string message, FileInfo file)
         {
             var logRequest = GetDefaultLogRequest(message);
             logRequest.Level = Client.Models.LogLevel.Trace;
-            logRequest.Attach = attachment;
+            logRequest.Attach = GetAttachFromFileInfo(file);
             Message(logRequest);
         }
 
@@ -68,11 +69,11 @@ namespace ReportPortal.Shared
             Message(logRequest);
         }
 
-        public static void Error(string message, Attach attachment)
+        public static void Error(string message, FileInfo file)
         {
             var logRequest = GetDefaultLogRequest(message);
             logRequest.Level = Client.Models.LogLevel.Error;
-            logRequest.Attach = attachment;
+            logRequest.Attach = GetAttachFromFileInfo(file);
             Message(logRequest);
         }
 
@@ -83,11 +84,11 @@ namespace ReportPortal.Shared
             Message(logRequest);
         }
 
-        public static void Fatal(string message, Attach attachment)
+        public static void Fatal(string message, FileInfo file)
         {
             var logRequest = GetDefaultLogRequest(message);
             logRequest.Level = Client.Models.LogLevel.Fatal;
-            logRequest.Attach = attachment;
+            logRequest.Attach = GetAttachFromFileInfo(file);
             Message(logRequest);
         }
 
@@ -100,6 +101,11 @@ namespace ReportPortal.Shared
             };
 
             return logRequest;
+        }
+
+        private static Attach GetAttachFromFileInfo(FileInfo file)
+        {
+            return new Attach(file.Name, Shared.MimeTypes.MimeTypeMap.GetMimeType(file.Extension), File.ReadAllBytes(file.FullName));
         }
     }
 }
