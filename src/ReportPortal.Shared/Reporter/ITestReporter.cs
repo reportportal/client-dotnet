@@ -13,8 +13,6 @@ namespace ReportPortal.Shared.Reporter
 
         ILaunchReporter LaunchReporter { get; }
 
-        void Start(StartTestItemRequest startTestItemRequest);
-
         Task StartTask { get; }
 
         void Finish(FinishTestItemRequest finishTestItemRequest);
