@@ -4,9 +4,12 @@ using System.Diagnostics;
 
 namespace ReportPortal.Shared.Internal.Logging
 {
+    /// <summary>
+    /// Class to manage all internal loggers.
+    /// </summary>
     public static class TraceLogManager
     {
-        static SourceLevels _traceLevel;
+        static readonly SourceLevels _traceLevel;
 
         static TraceLogManager()
         {
@@ -22,6 +25,11 @@ namespace ReportPortal.Shared.Internal.Logging
 
         static Dictionary<Type, ITraceLogger> _traceLoggers;
 
+        /// <summary>
+        /// Gets or creates new logger for requested type.
+        /// </summary>
+        /// <param name="type">Type where logger should be registered for</param>
+        /// <returns><see cref="ITraceLogger"/> instance for logging internal messages</returns>
         public static ITraceLogger GetLogger(Type type)
         {
             if (_traceLoggers == null)
@@ -60,6 +68,11 @@ namespace ReportPortal.Shared.Internal.Logging
             return _traceLoggers[type];
         }
 
+        /// <summary>
+        /// Gets or creates new logger for requested type.
+        /// </summary>
+        /// <typeparam name="T">Type where logger should be registered for</typeparam>
+        /// <returns><see cref="ITraceLogger"/> instance for logging internal messages</returns>
         public static ITraceLogger GetLogger<T>()
         {
             return GetLogger(typeof(T));

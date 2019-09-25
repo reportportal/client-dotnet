@@ -5,6 +5,7 @@ using System.Text;
 
 namespace ReportPortal.Shared.Internal.Logging
 {
+    /// <inheritdoc/>
     internal class TraceLogger : ITraceLogger
     {
         private TraceSource _traceSource;
