@@ -11,6 +11,8 @@ namespace ReportPortal.Shared.Reporter
 {
     public class LaunchReporter : ILaunchReporter
     {
+        private Internal.Logging.ITraceLogger TraceLogger { get; } = Internal.Logging.TraceLogManager.GetLogger<LaunchReporter>();
+
         private readonly Service _service;
 
         public LaunchReporter(Service service)
@@ -36,6 +38,8 @@ namespace ReportPortal.Shared.Reporter
 
         public void Start(StartLaunchRequest request)
         {
+            TraceLogger.Verbose($"Scheduling request to start new '{request.Name}' launch in {GetHashCode()} proxy instance");
+
             if (StartTask != null)
             {
                 throw new InsufficientExecutionStackException("The launch is already scheduled for starting.");
@@ -69,6 +73,8 @@ namespace ReportPortal.Shared.Reporter
         public Task FinishTask { get; private set; }
         public void Finish(FinishLaunchRequest request)
         {
+            TraceLogger.Verbose($"Scheduling request to finish launch in {GetHashCode()} proxy instance");
+
             if (StartTask == null)
             {
                 throw new InsufficientExecutionStackException("The launch wasn't scheduled for starting to finish it properly.");

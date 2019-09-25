@@ -12,12 +12,16 @@ namespace ReportPortal.Shared
 {
     public static class Bridge
     {
+        private static Internal.Logging.ITraceLogger TraceLogger { get; } = Internal.Logging.TraceLogManager.GetLogger(typeof(Bridge));
+
         static Bridge()
         {
             LogFormatterExtensions = new List<ILogFormatter>();
             LogHandlerExtensions = new List<ILogHandler>();
 
             var currentDirectory = new DirectoryInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+
+            TraceLogger.Info($"Current assembly directory is '{currentDirectory}'");
 
             foreach (var file in currentDirectory.GetFiles("ReportPortal.*.dll"))
             {
@@ -46,16 +50,15 @@ namespace ReportPortal.Shared
                         }
                     }
                 }
-                catch (ReflectionTypeLoadException)
+                catch (ReflectionTypeLoadException e)
                 {
-
+                    TraceLogger.Error(e.ToString());
                 }
             }
 
             LogFormatterExtensions = LogFormatterExtensions.OrderBy(ext => ext.Order).ToList();
             LogHandlerExtensions = LogHandlerExtensions.OrderBy(ext => ext.Order).ToList();
         }
-
 
         public static List<ILogFormatter> LogFormatterExtensions { get; }
 
