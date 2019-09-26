@@ -9,18 +9,6 @@ namespace ReportPortal.Shared.Internal.Logging
     /// </summary>
     public static class TraceLogManager
     {
-        static readonly SourceLevels _traceLevel;
-
-        static TraceLogManager()
-        {
-            var envTraceLevelValue = Environment.GetEnvironmentVariable("ReportPortal_TraceLevel");
-
-            if (!Enum.TryParse(envTraceLevelValue, out _traceLevel))
-            {
-                _traceLevel = SourceLevels.Error;
-            }
-        }
-
         readonly static object _lockObj = new object();
 
         static Dictionary<Type, ITraceLogger> _traceLoggers;
@@ -47,9 +35,18 @@ namespace ReportPortal.Shared.Internal.Logging
             {
                 if (!_traceLoggers.ContainsKey(type))
                 {
+                    var envTraceLevelValue = Environment.GetEnvironmentVariable("ReportPortal_TraceLevel");
+
+                    SourceLevels traceLevel;
+
+                    if (!Enum.TryParse(envTraceLevelValue, out traceLevel))
+                    {
+                        traceLevel = SourceLevels.Error;
+                    }
+
                     var traceSource = new TraceSource(type.Name);
 
-                    traceSource.Switch = new SourceSwitch("ReportPortal_TraceSwitch", _traceLevel.ToString());
+                    traceSource.Switch = new SourceSwitch("ReportPortal_TraceSwitch", traceLevel.ToString());
 
                     var logFileName = $"{type.Assembly.GetName().Name}.{Process.GetCurrentProcess().Id}.log";
 

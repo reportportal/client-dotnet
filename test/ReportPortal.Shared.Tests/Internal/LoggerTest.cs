@@ -11,7 +11,7 @@ namespace ReportPortal.Shared.Tests.Internal
 {
     public class LoggerTest : IDisposable
     {
-        private ITestOutputHelper _out;
+        private readonly ITestOutputHelper _out;
 
         private string _defaultLogFilePath = $"ReportPortal.Shared.Tests.{Process.GetCurrentProcess().Id}.log";
 
