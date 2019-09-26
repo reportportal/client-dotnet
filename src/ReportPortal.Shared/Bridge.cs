@@ -21,10 +21,11 @@ namespace ReportPortal.Shared
 
             var currentDirectory = new DirectoryInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
 
-            TraceLogger.Info($"Current assembly directory is '{currentDirectory}'");
+            TraceLogger.Info($"Exploring extensions in '{currentDirectory}' directory.");
 
             foreach (var file in currentDirectory.GetFiles("ReportPortal.*.dll"))
             {
+                TraceLogger.Verbose($"Found '{file.Name}' and loading it into current AppDomain.");
                 AppDomain.CurrentDomain.Load(Path.GetFileNameWithoutExtension(file.Name));
             }
 
@@ -33,6 +34,7 @@ namespace ReportPortal.Shared
 
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies().Where(a => a.GetName().Name.StartsWith("ReportPortal")))
             {
+                TraceLogger.Verbose($"Exploring '{assembly.FullName}' assembly for extensions.");
                 try
                 {
                     foreach (var type in assembly.GetTypes().Where(t => t.IsClass))
@@ -41,18 +43,20 @@ namespace ReportPortal.Shared
                         {
                             var extension = Activator.CreateInstance(type);
                             LogHandlerExtensions.Add((ILogHandler)extension);
+                            TraceLogger.Info($"Registered '{type.FullName}' type as {nameof(ILogHandler)} extension.");
                         }
 
                         if (iLogFormatterExtensionInterfaceType.IsAssignableFrom(type))
                         {
                             var extension = Activator.CreateInstance(type);
                             LogFormatterExtensions.Add((ILogFormatter)extension);
+                            TraceLogger.Info($"Registered '{type.FullName}' type as {nameof(ILogFormatter)} extension.");
                         }
                     }
                 }
-                catch (ReflectionTypeLoadException e)
+                catch (ReflectionTypeLoadException exp)
                 {
-                    TraceLogger.Error(e.ToString());
+                    TraceLogger.Error($"Couldn't load '{assembly.GetName().Name}' assembly into domain. \n {exp}");
                 }
             }
 
