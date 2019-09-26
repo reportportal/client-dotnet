@@ -38,7 +38,6 @@ namespace ReportPortal.Shared.Internal.Logging
         private void Message(TraceEventType eventType, string message)
         {
             _traceSource.TraceEvent(eventType, 0, $"{DateTime.Now.ToString("HH:mm:ss.fffffff")} : {AppDomain.CurrentDomain.Id}-{AppDomain.CurrentDomain.FriendlyName} : {message}");
-            _traceSource.Flush();
         }
     }
 }

@@ -33,6 +33,8 @@ namespace ReportPortal.Shared.Tests.Internal
                 {
                     _out.WriteLine(TraceLogManager.GetLogger<LoggerTest>().GetHashCode().ToString());
                     TraceLogManager.GetLogger<LoggerTest>().Info($"my message #{eventId}");
+                    TraceLogManager.GetLogger<LoggerTest>().Error($"my message #{eventId}");
+                    TraceLogManager.GetLogger<LoggerTest>().Warn($"my message #{eventId}");
                 }));
             }
 
