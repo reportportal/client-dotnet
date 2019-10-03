@@ -7,6 +7,8 @@ namespace ReportPortal.Shared
 {
     public static class Log
     {
+        private const string FileName = "attachment_name";
+
         public static void Message(AddLogItemRequest logRequest)
         {
             foreach (var handler in Bridge.LogHandlerExtensions)
@@ -24,11 +26,11 @@ namespace ReportPortal.Shared
             Message(logRequest);
         }
 
-        public static void Info(string message, FileInfo file)
+        public static void Info(string message, string mimeType, byte[] content)
         {
             var logRequest = GetDefaultLogRequest(message);
             logRequest.Level = Client.Models.LogLevel.Info;
-            logRequest.Attach = GetAttachFromFileInfo(file);
+            logRequest.Attach = GetAttachFromFileInfo(mimeType, content);
             Message(logRequest);
         }
 
@@ -39,11 +41,11 @@ namespace ReportPortal.Shared
             Message(logRequest);
         }
 
-        public static void Debug(string message, FileInfo file)
+        public static void Debug(string message, string mimeType, byte[] content)
         {
             var logRequest = GetDefaultLogRequest(message);
             logRequest.Level = Client.Models.LogLevel.Debug;
-            logRequest.Attach = GetAttachFromFileInfo(file);
+            logRequest.Attach = GetAttachFromFileInfo(mimeType, content);
             Message(logRequest);
         }
 
@@ -54,11 +56,11 @@ namespace ReportPortal.Shared
             Message(logRequest);
         }
 
-        public static void Trace(string message, FileInfo file)
+        public static void Trace(string message, string mimeType, byte[] content)
         {
             var logRequest = GetDefaultLogRequest(message);
             logRequest.Level = Client.Models.LogLevel.Trace;
-            logRequest.Attach = GetAttachFromFileInfo(file);
+            logRequest.Attach = GetAttachFromFileInfo(mimeType, content);
             Message(logRequest);
         }
 
@@ -69,11 +71,11 @@ namespace ReportPortal.Shared
             Message(logRequest);
         }
 
-        public static void Error(string message, FileInfo file)
+        public static void Error(string message, string mimeType, byte[] content)
         {
             var logRequest = GetDefaultLogRequest(message);
             logRequest.Level = Client.Models.LogLevel.Error;
-            logRequest.Attach = GetAttachFromFileInfo(file);
+            logRequest.Attach = GetAttachFromFileInfo(mimeType, content);
             Message(logRequest);
         }
 
@@ -84,11 +86,11 @@ namespace ReportPortal.Shared
             Message(logRequest);
         }
 
-        public static void Fatal(string message, FileInfo file)
+        public static void Fatal(string message, string mimeType, byte[] content)
         {
             var logRequest = GetDefaultLogRequest(message);
             logRequest.Level = Client.Models.LogLevel.Fatal;
-            logRequest.Attach = GetAttachFromFileInfo(file);
+            logRequest.Attach = GetAttachFromFileInfo(mimeType, content);
             Message(logRequest);
         }
 
@@ -103,9 +105,9 @@ namespace ReportPortal.Shared
             return logRequest;
         }
 
-        private static Attach GetAttachFromFileInfo(FileInfo file)
+        private static Attach GetAttachFromFileInfo(string mimeType, byte[] content)
         {
-            return new Attach(file.Name, Shared.MimeTypes.MimeTypeMap.GetMimeType(file.Extension), File.ReadAllBytes(file.FullName));
+            return new Attach(FileName, mimeType, content);
         }
     }
 }
