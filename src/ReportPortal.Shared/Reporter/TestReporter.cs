@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ReportPortal.Client;
-using ReportPortal.Client.Requests;
-using System.Collections.Generic;
 using ReportPortal.Client.Models;
+using ReportPortal.Client.Requests;
+using ReportPortal.Shared.Internal.Logging;
 
 namespace ReportPortal.Shared.Reporter
 {
@@ -14,7 +15,7 @@ namespace ReportPortal.Shared.Reporter
     {
         private readonly Service _service;
 
-        private static Internal.Logging.ITraceLogger TraceLogger { get; } = Internal.Logging.TraceLogManager.GetLogger<TestReporter>();
+        private static ITraceLogger TraceLogger { get; } = TraceLogManager.GetLogger<TestReporter>();
 
         public TestReporter(Service service, ILaunchReporter launchReporter, ITestReporter parentTestReporter, StartTestItemRequest startTestItemRequest)
         {
@@ -24,15 +25,18 @@ namespace ReportPortal.Shared.Reporter
 
             if (StartTask != null)
             {
-                throw new InsufficientExecutionStackException("The test item is already scheduled for starting.");
+                var exp = new InsufficientExecutionStackException("The test item is already scheduled for starting.");
+                TraceLogger.Error(exp.ToString());
+                throw exp;
             }
 
             var parentStartTask = ParentTestReporter?.StartTask ?? LaunchReporter.StartTask;
 
-            StartTask = parentStartTask.ContinueWith(async (pt) =>
+            StartTask = parentStartTask.ContinueWith(async pt =>
             {
                 if (pt.IsFaulted)
                 {
+                    TraceLogger.Error(pt.Exception.ToString());
                     throw pt.Exception;
                 }
 
@@ -88,12 +92,16 @@ namespace ReportPortal.Shared.Reporter
 
             if (StartTask == null)
             {
-                throw new InsufficientExecutionStackException("The test item wasn't scheduled for starting to finish it properly.");
+                var exp = new InsufficientExecutionStackException("The test item wasn't scheduled for starting to finish it properly.");
+                TraceLogger.Error(exp.ToString());
+                throw exp;
             }
 
             if (FinishTask != null)
             {
-                throw new InsufficientExecutionStackException("The test item is already scheduled for finishing.");
+                var exp = new InsufficientExecutionStackException("The test item is already scheduled for finishing.");
+                TraceLogger.Error(exp.ToString());
+                throw exp;
             }
 
             var dependentTasks = new List<Task>();
@@ -107,18 +115,22 @@ namespace ReportPortal.Shared.Reporter
                 dependentTasks.AddRange(ChildTestReporters.Select(tn => tn.FinishTask));
             }
 
-            FinishTask = Task.Factory.ContinueWhenAll(dependentTasks.ToArray(), async (a) =>
+            FinishTask = Task.Factory.ContinueWhenAll(dependentTasks.ToArray(), async a =>
             {
                 try
                 {
                     if (StartTask.IsFaulted)
                     {
-                        throw new Exception("Cannot finish test item due starting item failed.", StartTask.Exception);
+                        var exp = new Exception("Cannot finish test item due starting item failed.", StartTask.Exception);
+                        TraceLogger.Error(exp.ToString());
+                        throw exp;
                     }
 
                     if (ChildTestReporters?.Any(ctr => ctr.FinishTask.IsFaulted) == true)
                     {
-                        throw new AggregateException("Cannot finish test item due finishing of child items failed.", ChildTestReporters.Where(ctr => ctr.FinishTask.IsFaulted).Select(ctr => ctr.FinishTask.Exception).ToArray());
+                        var exp = new AggregateException("Cannot finish test item due finishing of child items failed.", ChildTestReporters.Where(ctr => ctr.FinishTask.IsFaulted).Select(ctr => ctr.FinishTask.Exception).ToArray());
+                        TraceLogger.Error(exp.ToString());
+                        throw exp;
                     }
 
                     TestInfo.EndTime = request.EndTime;
@@ -130,10 +142,6 @@ namespace ReportPortal.Shared.Reporter
                     }
 
                     await _service.FinishTestItemAsync(TestInfo.Id, request);
-                }
-                catch (Exception)
-                {
-                    throw;
                 }
                 finally
                 {
@@ -175,7 +183,7 @@ namespace ReportPortal.Shared.Reporter
                 {
                     _additionalTasks = new ConcurrentBag<Task>();
                 }
-                _additionalTasks.Add(StartTask.ContinueWith(async (a) =>
+                _additionalTasks.Add(StartTask.ContinueWith(async a =>
                 {
                     await _service.UpdateTestItemAsync(TestInfo.Id, request);
                 }).Unwrap());
@@ -186,7 +194,9 @@ namespace ReportPortal.Shared.Reporter
         {
             if (StartTask == null)
             {
-                throw new InsufficientExecutionStackException("The test item wasn't scheduled for starting to add log messages.");
+                var exp = new InsufficientExecutionStackException("The test item wasn't scheduled for starting to add log messages.");
+                TraceLogger.Error(exp.ToString());
+                throw (exp);
             }
 
             if (StartTask.IsFaulted || StartTask.IsCanceled)
@@ -198,7 +208,7 @@ namespace ReportPortal.Shared.Reporter
             {
                 var parentTask = _additionalTasks?.Last() ?? StartTask;
 
-                var task = parentTask.ContinueWith(async (pt) =>
+                var task = parentTask.ContinueWith(async pt =>
                 {
                     if (!StartTask.IsFaulted)
                     {

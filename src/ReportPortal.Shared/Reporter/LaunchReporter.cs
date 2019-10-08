@@ -42,7 +42,9 @@ namespace ReportPortal.Shared.Reporter
 
             if (StartTask != null)
             {
-                throw new InsufficientExecutionStackException("The launch is already scheduled for starting.");
+                var exp = new InsufficientExecutionStackException("`The launch is already scheduled for starting.");
+                TraceLogger.Error(exp.ToString());
+                throw exp;
             }
 
             if (!_isExternalLaunchId)
@@ -77,12 +79,16 @@ namespace ReportPortal.Shared.Reporter
 
             if (StartTask == null)
             {
-                throw new InsufficientExecutionStackException("The launch wasn't scheduled for starting to finish it properly.");
+                var exp = new InsufficientExecutionStackException("The launch wasn't scheduled for starting to finish it properly.");
+                TraceLogger.Error(exp.ToString());
+                throw exp;
             }
 
             if (FinishTask != null)
             {
-                throw new InsufficientExecutionStackException("The launch is already scheduled for finishing.");
+                var exp = new InsufficientExecutionStackException("The launch is already scheduled for finishing.");
+                TraceLogger.Error(exp.ToString());
+                throw exp;
             }
 
             var dependentTasks = new List<Task>();
@@ -98,12 +104,16 @@ namespace ReportPortal.Shared.Reporter
                 {
                     if (StartTask.IsFaulted)
                     {
-                        throw new Exception("Cannot finish launch due starting launch failed.", StartTask.Exception);
+                        var exp = new Exception("Cannot finish launch due starting launch failed.", StartTask.Exception);
+                        TraceLogger.Error(exp.ToString());
+                        throw exp;
                     }
 
                     if (ChildTestReporters?.Any(ctr => ctr.FinishTask.IsFaulted) == true)
                     {
-                        throw new AggregateException("Cannot finish launch due inner items failed to finish.", ChildTestReporters.Where(ctr => ctr.FinishTask.IsFaulted).Select(ctr => ctr.FinishTask.Exception).ToArray());
+                        var exp = new AggregateException("Cannot finish launch due inner items failed to finish.", ChildTestReporters.Where(ctr => ctr.FinishTask.IsFaulted).Select(ctr => ctr.FinishTask.Exception).ToArray());
+                        TraceLogger.Error(exp.ToString());
+                        throw exp;
                     }
 
                     if (request.EndTime < LaunchInfo.StartTime)
@@ -115,10 +125,6 @@ namespace ReportPortal.Shared.Reporter
                     {
                         await _service.FinishLaunchAsync(LaunchInfo.Id, request);
                     }
-                }
-                catch (Exception)
-                {
-                    throw;
                 }
                 finally
                 {
