@@ -88,7 +88,7 @@ namespace ReportPortal.Shared.Reporter
 
         public void Finish(FinishTestItemRequest request)
         {
-            TraceLogger.Verbose("Scheduling request to finish new test item");
+            TraceLogger.Verbose($"Scheduling request to finish test item in {GetHashCode()} proxy instance");
 
             if (StartTask == null)
             {
@@ -160,7 +160,7 @@ namespace ReportPortal.Shared.Reporter
 
         public ITestReporter StartChildTestReporter(StartTestItemRequest request)
         {
-            TraceLogger.Verbose("Scheduling request to start new test item");
+            TraceLogger.Verbose($"Scheduling request to start new '{request.Name}' test item in {GetHashCode()} proxy instance");
 
             var newTestNode = new TestReporter(_service, LaunchReporter, this, request);
 

@@ -42,7 +42,7 @@ namespace ReportPortal.Shared.Reporter
 
             if (StartTask != null)
             {
-                var exp = new InsufficientExecutionStackException("`The launch is already scheduled for starting.");
+                var exp = new InsufficientExecutionStackException("The launch is already scheduled for starting.");
                 TraceLogger.Error(exp.ToString());
                 throw exp;
             }
