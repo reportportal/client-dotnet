@@ -22,6 +22,8 @@ namespace ReportPortal.Shared.Tests.Extensibility.LogHandler
 
             launchReporter.Sync();
 
+            Log.Info("message from test domain");
+
             Assert.True(Invoked);
         }
 

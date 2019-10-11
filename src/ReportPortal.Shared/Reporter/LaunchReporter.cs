@@ -102,16 +102,16 @@ namespace ReportPortal.Shared.Reporter
             {
                 try
                 {
-                    if (StartTask.IsFaulted)
+                    if (StartTask.IsFaulted || StartTask.IsCanceled)
                     {
                         var exp = new Exception("Cannot finish launch due starting launch failed.", StartTask.Exception);
                         TraceLogger.Error(exp.ToString());
                         throw exp;
                     }
 
-                    if (ChildTestReporters?.Any(ctr => ctr.FinishTask.IsFaulted) == true)
+                    if (ChildTestReporters?.Any(ctr => ctr.FinishTask.IsFaulted || ctr.FinishTask.IsCanceled) == true)
                     {
-                        var exp = new AggregateException("Cannot finish launch due inner items failed to finish.", ChildTestReporters.Where(ctr => ctr.FinishTask.IsFaulted).Select(ctr => ctr.FinishTask.Exception).ToArray());
+                        var exp = new AggregateException("Cannot finish launch due inner items failed to finish.", ChildTestReporters.Where(ctr => ctr.FinishTask.IsFaulted || ctr.FinishTask.IsCanceled).Select(ctr => ctr.FinishTask.Exception).ToArray());
                         TraceLogger.Error(exp.ToString());
                         throw exp;
                     }

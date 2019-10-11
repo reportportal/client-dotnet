@@ -34,7 +34,7 @@ namespace ReportPortal.Shared.Reporter
 
             StartTask = parentStartTask.ContinueWith(async pt =>
             {
-                if (pt.IsFaulted)
+                if (pt.IsFaulted || pt.IsCanceled)
                 {
                     TraceLogger.Error(pt.Exception.ToString());
                     throw pt.Exception;
@@ -119,16 +119,16 @@ namespace ReportPortal.Shared.Reporter
             {
                 try
                 {
-                    if (StartTask.IsFaulted)
+                    if (StartTask.IsFaulted || StartTask.IsCanceled)
                     {
                         var exp = new Exception("Cannot finish test item due starting item failed.", StartTask.Exception);
                         TraceLogger.Error(exp.ToString());
                         throw exp;
                     }
 
-                    if (ChildTestReporters?.Any(ctr => ctr.FinishTask.IsFaulted) == true)
+                    if (ChildTestReporters?.Any(ctr => ctr.FinishTask.IsFaulted || ctr.FinishTask.IsCanceled) == true)
                     {
-                        var exp = new AggregateException("Cannot finish test item due finishing of child items failed.", ChildTestReporters.Where(ctr => ctr.FinishTask.IsFaulted).Select(ctr => ctr.FinishTask.Exception).ToArray());
+                        var exp = new AggregateException("Cannot finish test item due finishing of child items failed.", ChildTestReporters.Where(ctr => ctr.FinishTask.IsFaulted || ctr.FinishTask.IsCanceled).Select(ctr => ctr.FinishTask.Exception).ToArray());
                         TraceLogger.Error(exp.ToString());
                         throw exp;
                     }
@@ -210,7 +210,7 @@ namespace ReportPortal.Shared.Reporter
 
                 var task = parentTask.ContinueWith(async pt =>
                 {
-                    if (!StartTask.IsFaulted)
+                    if (!StartTask.IsFaulted || !StartTask.IsCanceled)
                     {
                         if (request.Time < TestInfo.StartTime)
                         {
