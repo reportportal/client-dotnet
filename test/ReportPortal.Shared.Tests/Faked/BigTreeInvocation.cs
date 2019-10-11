@@ -27,7 +27,11 @@ namespace ReportPortal.Shared.Tests.Faked
 
             service.Verify(s => s.StartTestItemAsync(It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(suitesPerLaunch));
             service.Verify(s => s.StartTestItemAsync(null, It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(testsPerSuite * suitesPerLaunch));
+            service.Verify(s => s.FinishTestItemAsync(null, It.IsAny<Client.Requests.FinishTestItemRequest>()), Times.Exactly(testsPerSuite * suitesPerLaunch + suitesPerLaunch));
             service.Verify(s => s.AddLogItemAsync(It.IsAny<Client.Requests.AddLogItemRequest>()), Times.Exactly(suitesPerLaunch * testsPerSuite * logsPerTest));
+
+            Assert.Equal(nameof(Client.Service.StartLaunchAsync), service.Invocations.First().Method.Name);
+            Assert.Equal(nameof(Client.Service.FinishLaunchAsync), service.Invocations.Last().Method.Name);
         }
 
         [Theory]
