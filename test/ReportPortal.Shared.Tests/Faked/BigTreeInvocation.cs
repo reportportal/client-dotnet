@@ -95,6 +95,27 @@ namespace ReportPortal.Shared.Tests.Faked
         }
 
         [Theory]
+        [InlineData(1, 1, 1)]
+        [InlineData(10, 10, 2)]
+        [InlineData(50, 50, 0)]
+        public void CanceledFinishTestItemShouldRaiseExceptionAtFinishLaunch(int suitesPerLaunch, int testsPerSuite, int logsPerTest)
+        {
+            var service = new MockServiceBuilder().Build();
+            service.Setup(s => s.FinishTestItemAsync(null, It.IsAny<Client.Requests.FinishTestItemRequest>())).Throws<TaskCanceledException>();
+
+            var launchScheduler = new LaunchScheduler(service.Object);
+            var launchReporter = launchScheduler.Build(suitesPerLaunch, testsPerSuite, logsPerTest);
+
+            var exp = Assert.ThrowsAny<Exception>(() => launchReporter.Sync());
+            Assert.Contains("Cannot finish launch", exp.Message);
+
+            service.Verify(s => s.StartTestItemAsync(It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(suitesPerLaunch));
+            service.Verify(s => s.StartTestItemAsync(null, It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(suitesPerLaunch * testsPerSuite));
+            service.Verify(s => s.FinishTestItemAsync(null, It.IsAny<Client.Requests.FinishTestItemRequest>()), Times.Exactly(suitesPerLaunch * testsPerSuite));
+            service.Verify(s => s.FinishLaunchAsync(null, It.IsAny<Client.Requests.FinishLaunchRequest>(), false), Times.Never);
+        }
+
+        [Theory]
         [InlineData(100, 1, 1)]
         [InlineData(1, 100, 10000)]
         [InlineData(100, 100, 1)]
@@ -112,6 +133,27 @@ namespace ReportPortal.Shared.Tests.Faked
             service.Verify(s => s.StartTestItemAsync(It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(suitesPerLaunch));
             service.Verify(s => s.StartTestItemAsync(null, It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Never);
             service.Verify(s => s.FinishTestItemAsync(null, It.IsAny<Client.Requests.FinishTestItemRequest>()), Times.Never);
+        }
+
+        [Theory]
+        [InlineData(100, 1, 1)]
+        [InlineData(1, 10, 1000)]
+        [InlineData(10, 10, 1)]
+        public void CanceledStartSuiteItemShouldRaiseExceptionAtFinishLaunch(int suitesPerLaunch, int testsPerSuite, int logsPerTest)
+        {
+            var service = new MockServiceBuilder().Build();
+            service.Setup(s => s.StartTestItemAsync(It.IsAny<Client.Requests.StartTestItemRequest>())).Throws<TaskCanceledException>();
+
+            var launchScheduler = new LaunchScheduler(service.Object);
+            var launchReporter = launchScheduler.Build(suitesPerLaunch, testsPerSuite, logsPerTest);
+
+            var exp = Assert.ThrowsAny<Exception>(() => launchReporter.Sync());
+            Assert.Contains("Cannot finish launch", exp.Message);
+
+            service.Verify(s => s.StartTestItemAsync(It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(suitesPerLaunch));
+            service.Verify(s => s.StartTestItemAsync(null, It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Never);
+            service.Verify(s => s.FinishTestItemAsync(null, It.IsAny<Client.Requests.FinishTestItemRequest>()), Times.Never);
+            service.Verify(s => s.FinishLaunchAsync(null, It.IsAny<Client.Requests.FinishLaunchRequest>(), false), Times.Never);
         }
 
         [Fact]
@@ -158,19 +200,6 @@ namespace ReportPortal.Shared.Tests.Faked
             var launchReporter = launchScheduler.Build(1, 1, 1);
 
             var exp = Assert.ThrowsAny<Exception>(() => launchReporter.Sync());
-        }
-
-        [Fact]
-        public void StartSuiteTimeout()
-        {
-            var service = new MockServiceBuilder().Build();
-            service.Setup(s => s.StartTestItemAsync(It.IsAny<Client.Requests.StartTestItemRequest>())).Throws<TaskCanceledException>();
-
-            var launchScheduler = new LaunchScheduler(service.Object);
-            var launchReporter = launchScheduler.Build(1, 1, 1);
-
-            var exp = Assert.ThrowsAny<Exception>(() => launchReporter.Sync());
-            Assert.Contains("Cannot finish launch", exp.Message);
         }
 
         [Fact]
