@@ -24,5 +24,7 @@ namespace ReportPortal.Shared.Reporter
         ConcurrentBag<ITestReporter> ChildTestReporters { get; }
 
         void Log(AddLogItemRequest addLogItemRequest);
+
+        void Sync();
     }
 }

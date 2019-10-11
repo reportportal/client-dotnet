@@ -173,7 +173,7 @@ namespace ReportPortal.Shared.Tests.Faked
             var launchScheduler = new LaunchScheduler(service.Object);
             var launchReporter = launchScheduler.Build(1, 1, 1);
 
-            var exp = Assert.ThrowsAny<Exception>(() => launchReporter.FinishTask.Wait());
+            var exp = Assert.ThrowsAny<Exception>(() => launchReporter.Sync());
             Assert.Contains("Cannot finish launch", exp.Message);
 
             service.Verify(s => s.FinishLaunchAsync(null, It.IsAny<Client.Requests.FinishLaunchRequest>(), false), Times.Never);

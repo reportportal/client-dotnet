@@ -237,6 +237,13 @@ namespace ReportPortal.Shared.Reporter
             }
         }
 
+        public void Sync()
+        {
+            StartTask?.GetAwaiter().GetResult();
+
+            FinishTask?.GetAwaiter().GetResult();
+        }
+
         // TODO: need remove (used by specflow only)
         public int ThreadId { get; set; }
     }

@@ -20,5 +20,7 @@ namespace ReportPortal.Shared.Reporter
         ITestReporter StartChildTestReporter(StartTestItemRequest startTestItemRequest);
 
         ConcurrentBag<ITestReporter> ChildTestReporters { get; }
+
+        void Sync();
     }
 }
