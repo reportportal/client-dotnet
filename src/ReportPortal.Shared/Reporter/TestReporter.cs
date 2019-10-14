@@ -36,19 +36,15 @@ namespace ReportPortal.Shared.Reporter
             {
                 if (pt.IsFaulted || pt.IsCanceled)
                 {
-                    Exception exp = null;
+                    var exp = new Exception("Cannot start test item due parent failed to start.", pt.Exception);
 
-                    if (pt.IsFaulted)
+                    if (pt.IsCanceled)
                     {
-                        exp = new Exception("Cannot start test item due parent failed to start.", pt.Exception);
-                    }
-                    else if (pt.IsCanceled)
-                    {
-                        exp = new Exception("Cannot start test item due parent canceled to start.");
+                        exp = new Exception($"Cannot start test item due {_service.Timeout} timeout while starting parent.");
                     }
 
-                    TraceLogger.Error(exp?.ToString());
-                    throw pt.Exception;
+                    TraceLogger.Error(exp.ToString());
+                    throw exp;
                 }
 
                 startTestItemRequest.LaunchId = LaunchReporter.LaunchInfo.Id;
@@ -133,6 +129,12 @@ namespace ReportPortal.Shared.Reporter
                     if (StartTask.IsFaulted || StartTask.IsCanceled)
                     {
                         var exp = new Exception("Cannot finish test item due starting item failed.", StartTask.Exception);
+
+                        if (StartTask.IsCanceled)
+                        {
+                            exp = new Exception($"Cannot finish test item due {_service.Timeout} timeout while starting it.");
+                        }
+
                         TraceLogger.Error(exp.ToString());
                         throw exp;
                     }
@@ -151,7 +153,7 @@ namespace ReportPortal.Shared.Reporter
                                 }
                                 else if (failedChildTestReporter.FinishTask.IsCanceled)
                                 {
-                                    errors.Add(new Exception("Task canceled while finishing test item."));
+                                    errors.Add(new Exception($"{_service.Timeout} timeout while finishing child test item."));
                                 }
                             }
 

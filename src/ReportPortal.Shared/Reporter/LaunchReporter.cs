@@ -105,6 +105,12 @@ namespace ReportPortal.Shared.Reporter
                     if (StartTask.IsFaulted || StartTask.IsCanceled)
                     {
                         var exp = new Exception("Cannot finish launch due starting launch failed.", StartTask.Exception);
+
+                        if (StartTask.IsCanceled)
+                        {
+                            exp = new Exception($"Cannot finish launch due {_service.Timeout} timeout while starting it.");
+                        }
+
                         TraceLogger.Error(exp.ToString());
                         throw exp;
                     }
@@ -123,7 +129,7 @@ namespace ReportPortal.Shared.Reporter
                                 }
                                 else if (failedChildTestReporter.FinishTask.IsCanceled)
                                 {
-                                    errors.Add(new Exception("Task canceled while finishing test item."));
+                                    errors.Add(new Exception($"Cannot finish launch due {_service.Timeout} timeout while finishing test item."));
                                 }
                             }
 
