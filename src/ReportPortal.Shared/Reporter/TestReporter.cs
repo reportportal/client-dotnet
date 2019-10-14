@@ -36,7 +36,18 @@ namespace ReportPortal.Shared.Reporter
             {
                 if (pt.IsFaulted || pt.IsCanceled)
                 {
-                    TraceLogger.Error(pt.Exception.ToString());
+                    Exception exp = null;
+
+                    if (pt.IsFaulted)
+                    {
+                        exp = new Exception("Cannot start test item due parent failed to start.", pt.Exception);
+                    }
+                    else if (pt.IsCanceled)
+                    {
+                        exp = new Exception("Cannot start test item due parent canceled to start.");
+                    }
+
+                    TraceLogger.Error(exp?.ToString());
                     throw pt.Exception;
                 }
 
@@ -126,11 +137,28 @@ namespace ReportPortal.Shared.Reporter
                         throw exp;
                     }
 
-                    if (ChildTestReporters?.Any(ctr => ctr.FinishTask.IsFaulted || ctr.FinishTask.IsCanceled) == true)
+                    if (ChildTestReporters != null)
                     {
-                        var exp = new AggregateException("Cannot finish test item due finishing of child items failed.", ChildTestReporters.Where(ctr => ctr.FinishTask.IsFaulted || ctr.FinishTask.IsCanceled).Select(ctr => ctr.FinishTask.Exception).ToArray());
-                        TraceLogger.Error(exp.ToString());
-                        throw exp;
+                        var failedChildTestReporters = ChildTestReporters.Where(ctr => ctr.FinishTask.IsFaulted || ctr.FinishTask.IsCanceled);
+                        if (failedChildTestReporters.Any())
+                        {
+                            var errors = new List<Exception>();
+                            foreach (var failedChildTestReporter in failedChildTestReporters)
+                            {
+                                if (failedChildTestReporter.FinishTask.IsFaulted)
+                                {
+                                    errors.Add(failedChildTestReporter.FinishTask.Exception);
+                                }
+                                else if (failedChildTestReporter.FinishTask.IsCanceled)
+                                {
+                                    errors.Add(new Exception("Task canceled while finishing test item."));
+                                }
+                            }
+
+                            var exp = new AggregateException("Cannot finish test item due finishing of child items failed.", errors);
+                            TraceLogger.Error(exp.ToString());
+                            throw exp;
+                        }
                     }
 
                     TestInfo.EndTime = request.EndTime;

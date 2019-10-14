@@ -109,11 +109,28 @@ namespace ReportPortal.Shared.Reporter
                         throw exp;
                     }
 
-                    if (ChildTestReporters?.Any(ctr => ctr.FinishTask.IsFaulted || ctr.FinishTask.IsCanceled) == true)
+                    if (ChildTestReporters != null)
                     {
-                        var exp = new AggregateException("Cannot finish launch due inner items failed to finish.", ChildTestReporters.Where(ctr => ctr.FinishTask.IsFaulted || ctr.FinishTask.IsCanceled).Select(ctr => ctr.FinishTask.Exception).ToArray());
-                        TraceLogger.Error(exp.ToString());
-                        throw exp;
+                        var failedChildTestReporters = ChildTestReporters.Where(ctr => ctr.FinishTask.IsFaulted || ctr.FinishTask.IsCanceled);
+                        if (failedChildTestReporters.Any())
+                        {
+                            var errors = new List<Exception>();
+                            foreach (var failedChildTestReporter in failedChildTestReporters)
+                            {
+                                if (failedChildTestReporter.FinishTask.IsFaulted)
+                                {
+                                    errors.Add(failedChildTestReporter.FinishTask.Exception);
+                                }
+                                else if (failedChildTestReporter.FinishTask.IsCanceled)
+                                {
+                                    errors.Add(new Exception("Task canceled while finishing test item."));
+                                }
+                            }
+
+                            var exp = new AggregateException("Cannot finish launch due finishing of child items failed.", errors);
+                            TraceLogger.Error(exp.ToString());
+                            throw exp;
+                        }
                     }
 
                     if (request.EndTime < LaunchInfo.StartTime)
