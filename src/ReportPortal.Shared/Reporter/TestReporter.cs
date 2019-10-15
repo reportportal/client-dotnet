@@ -176,7 +176,7 @@ namespace ReportPortal.Shared.Reporter
                 finally
                 {
                     // clean up childs
-                    ChildTestReporters = null;
+                    //ChildTestReporters = null;
 
                     // clean up addition tasks
                     _additionalTasks = null;

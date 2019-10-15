@@ -152,7 +152,7 @@ namespace ReportPortal.Shared.Reporter
                 finally
                 {
                     // clean childs
-                    ChildTestReporters = null;
+                    // ChildTestReporters = null;
                 }
             }).Unwrap();
         }

@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using FluentAssertions;
+using Moq;
 using ReportPortal.Shared.Reporter;
 using ReportPortal.Shared.Tests.Helpers;
 using System;
@@ -9,13 +10,13 @@ using Xunit;
 
 namespace ReportPortal.Shared.Tests.Faked
 {
-    public class BigTreeInvocation
+    public class ReporterTest
     {
         [Theory]
         [InlineData(1, 1, 0)]
         [InlineData(1, 1, 1)]
-        [InlineData(5, 10000, 0)]
-        [InlineData(5, 10000, 10)]
+        [InlineData(5, 100, 0)]
+        [InlineData(5, 100, 10)]
         public void SuccessReporting(int suitesPerLaunch, int testsPerSuite, int logsPerTest)
         {
             var service = new MockServiceBuilder().Build();
@@ -26,12 +27,15 @@ namespace ReportPortal.Shared.Tests.Faked
             launchReporter.Sync();
 
             service.Verify(s => s.StartTestItemAsync(It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(suitesPerLaunch));
-            service.Verify(s => s.StartTestItemAsync(null, It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(testsPerSuite * suitesPerLaunch));
-            service.Verify(s => s.FinishTestItemAsync(null, It.IsAny<Client.Requests.FinishTestItemRequest>()), Times.Exactly(testsPerSuite * suitesPerLaunch + suitesPerLaunch));
+            service.Verify(s => s.StartTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(testsPerSuite * suitesPerLaunch));
+            service.Verify(s => s.FinishTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.FinishTestItemRequest>()), Times.Exactly(testsPerSuite * suitesPerLaunch + suitesPerLaunch));
             service.Verify(s => s.AddLogItemAsync(It.IsAny<Client.Requests.AddLogItemRequest>()), Times.Exactly(suitesPerLaunch * testsPerSuite * logsPerTest));
 
             Assert.Equal(nameof(Client.Service.StartLaunchAsync), service.Invocations.First().Method.Name);
             Assert.Equal(nameof(Client.Service.FinishLaunchAsync), service.Invocations.Last().Method.Name);
+
+            launchReporter.ChildTestReporters.Select(s => s.TestInfo.Id).Should().OnlyHaveUniqueItems();
+            launchReporter.ChildTestReporters.SelectMany(s => s.ChildTestReporters).Select(t => t.TestInfo.Id).Should().OnlyHaveUniqueItems();
         }
 
         [Theory]
@@ -48,10 +52,10 @@ namespace ReportPortal.Shared.Tests.Faked
             launchReporter.Sync();
 
             service.Verify(s => s.StartTestItemAsync(It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(suitesPerLaunch));
-            service.Verify(s => s.StartTestItemAsync(null, It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(testsPerSuite * suitesPerLaunch));
+            service.Verify(s => s.StartTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(testsPerSuite * suitesPerLaunch));
             service.Verify(s => s.AddLogItemAsync(It.IsAny<Client.Requests.AddLogItemRequest>()), Times.Exactly(suitesPerLaunch * testsPerSuite * logsPerTest));
-            service.Verify(s => s.FinishTestItemAsync(null, It.IsAny<Client.Requests.FinishTestItemRequest>()), Times.Exactly(testsPerSuite * suitesPerLaunch + suitesPerLaunch));
-            service.Verify(s => s.FinishLaunchAsync(null, It.IsAny<Client.Requests.FinishLaunchRequest>(), It.IsAny<bool>()), Times.Once);
+            service.Verify(s => s.FinishTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.FinishTestItemRequest>()), Times.Exactly(testsPerSuite * suitesPerLaunch + suitesPerLaunch));
+            service.Verify(s => s.FinishLaunchAsync(It.IsAny<string>(), It.IsAny<Client.Requests.FinishLaunchRequest>(), It.IsAny<bool>()), Times.Once);
         }
 
         [Theory]
@@ -68,10 +72,10 @@ namespace ReportPortal.Shared.Tests.Faked
             launchReporter.Sync();
 
             service.Verify(s => s.StartTestItemAsync(It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(suitesPerLaunch));
-            service.Verify(s => s.StartTestItemAsync(null, It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(testsPerSuite * suitesPerLaunch));
+            service.Verify(s => s.StartTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(testsPerSuite * suitesPerLaunch));
             service.Verify(s => s.AddLogItemAsync(It.IsAny<Client.Requests.AddLogItemRequest>()), Times.Exactly(suitesPerLaunch * testsPerSuite * logsPerTest));
-            service.Verify(s => s.FinishTestItemAsync(null, It.IsAny<Client.Requests.FinishTestItemRequest>()), Times.Exactly(testsPerSuite * suitesPerLaunch + suitesPerLaunch));
-            service.Verify(s => s.FinishLaunchAsync(null, It.IsAny<Client.Requests.FinishLaunchRequest>(), It.IsAny<bool>()), Times.Once);
+            service.Verify(s => s.FinishTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.FinishTestItemRequest>()), Times.Exactly(testsPerSuite * suitesPerLaunch + suitesPerLaunch));
+            service.Verify(s => s.FinishLaunchAsync(It.IsAny<string>(), It.IsAny<Client.Requests.FinishLaunchRequest>(), It.IsAny<bool>()), Times.Once);
         }
 
         [Theory]
@@ -81,7 +85,7 @@ namespace ReportPortal.Shared.Tests.Faked
         public void FailedFinishTestItemShouldRaiseExceptionAtFinishLaunch(int suitesPerLaunch, int testsPerSuite, int logsPerTest)
         {
             var service = new MockServiceBuilder().Build();
-            service.Setup(s => s.FinishTestItemAsync(null, It.IsAny<Client.Requests.FinishTestItemRequest>())).Throws(new Exception());
+            service.Setup(s => s.FinishTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.FinishTestItemRequest>())).Throws(new Exception());
 
             var launchScheduler = new LaunchScheduler(service.Object);
             var launchReporter = launchScheduler.Build(suitesPerLaunch, testsPerSuite, logsPerTest);
@@ -90,8 +94,8 @@ namespace ReportPortal.Shared.Tests.Faked
             Assert.Contains("Cannot finish launch", exp.Message);
 
             service.Verify(s => s.StartTestItemAsync(It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(suitesPerLaunch));
-            service.Verify(s => s.StartTestItemAsync(null, It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(suitesPerLaunch * testsPerSuite));
-            service.Verify(s => s.FinishTestItemAsync(null, It.IsAny<Client.Requests.FinishTestItemRequest>()), Times.Exactly(suitesPerLaunch * testsPerSuite));
+            service.Verify(s => s.StartTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(suitesPerLaunch * testsPerSuite));
+            service.Verify(s => s.FinishTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.FinishTestItemRequest>()), Times.Exactly(suitesPerLaunch * testsPerSuite));
         }
 
         [Theory]
@@ -101,7 +105,7 @@ namespace ReportPortal.Shared.Tests.Faked
         public void CanceledFinishTestItemShouldRaiseExceptionAtFinishLaunch(int suitesPerLaunch, int testsPerSuite, int logsPerTest)
         {
             var service = new MockServiceBuilder().Build();
-            service.Setup(s => s.FinishTestItemAsync(null, It.IsAny<Client.Requests.FinishTestItemRequest>())).Throws<TaskCanceledException>();
+            service.Setup(s => s.FinishTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.FinishTestItemRequest>())).Throws<TaskCanceledException>();
 
             var launchScheduler = new LaunchScheduler(service.Object);
             var launchReporter = launchScheduler.Build(suitesPerLaunch, testsPerSuite, logsPerTest);
@@ -110,15 +114,15 @@ namespace ReportPortal.Shared.Tests.Faked
             Assert.Contains("Cannot finish launch", exp.Message);
 
             service.Verify(s => s.StartTestItemAsync(It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(suitesPerLaunch));
-            service.Verify(s => s.StartTestItemAsync(null, It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(suitesPerLaunch * testsPerSuite));
-            service.Verify(s => s.FinishTestItemAsync(null, It.IsAny<Client.Requests.FinishTestItemRequest>()), Times.Exactly(suitesPerLaunch * testsPerSuite));
-            service.Verify(s => s.FinishLaunchAsync(null, It.IsAny<Client.Requests.FinishLaunchRequest>(), false), Times.Never);
+            service.Verify(s => s.StartTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(suitesPerLaunch * testsPerSuite));
+            service.Verify(s => s.FinishTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.FinishTestItemRequest>()), Times.Exactly(suitesPerLaunch * testsPerSuite));
+            service.Verify(s => s.FinishLaunchAsync(It.IsAny<string>(), It.IsAny<Client.Requests.FinishLaunchRequest>(), false), Times.Never);
         }
 
         [Theory]
         [InlineData(100, 1, 1)]
-        [InlineData(1, 100, 10000)]
-        [InlineData(100, 100, 1)]
+        [InlineData(1, 100, 100)]
+        [InlineData(100, 10, 1)]
         public void FailedStartSuiteItemShouldRaiseExceptionAtFinishLaunch(int suitesPerLaunch, int testsPerSuite, int logsPerTest)
         {
             var service = new MockServiceBuilder().Build();
@@ -137,7 +141,7 @@ namespace ReportPortal.Shared.Tests.Faked
 
         [Theory]
         [InlineData(100, 1, 1)]
-        [InlineData(1, 10, 1000)]
+        [InlineData(1, 10, 100)]
         [InlineData(10, 10, 1)]
         public void CanceledStartSuiteItemShouldRaiseExceptionAtFinishLaunch(int suitesPerLaunch, int testsPerSuite, int logsPerTest)
         {
@@ -206,7 +210,7 @@ namespace ReportPortal.Shared.Tests.Faked
         public void StartTestItemTimeout()
         {
             var service = new MockServiceBuilder().Build();
-            service.Setup(s => s.StartTestItemAsync(null, It.IsAny<Client.Requests.StartTestItemRequest>())).Throws<TaskCanceledException>();
+            service.Setup(s => s.StartTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.StartTestItemRequest>())).Throws<TaskCanceledException>();
 
             var launchScheduler = new LaunchScheduler(service.Object);
             var launchReporter = launchScheduler.Build(1, 1, 1);
@@ -219,7 +223,7 @@ namespace ReportPortal.Shared.Tests.Faked
         public void FinishTestItemTimeout()
         {
             var service = new MockServiceBuilder().Build();
-            service.Setup(s => s.FinishTestItemAsync(null, It.IsAny<Client.Requests.FinishTestItemRequest>())).Throws<TaskCanceledException>();
+            service.Setup(s => s.FinishTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.FinishTestItemRequest>())).Throws<TaskCanceledException>();
 
             var launchScheduler = new LaunchScheduler(service.Object);
             var launchReporter = launchScheduler.Build(1, 1, 1);
@@ -227,7 +231,7 @@ namespace ReportPortal.Shared.Tests.Faked
             var exp = Assert.ThrowsAny<Exception>(() => launchReporter.Sync());
             Assert.Contains("Cannot finish launch", exp.Message);
 
-            service.Verify(s => s.FinishLaunchAsync(null, It.IsAny<Client.Requests.FinishLaunchRequest>(), false), Times.Never);
+            service.Verify(s => s.FinishLaunchAsync(It.IsAny<string>(), It.IsAny<Client.Requests.FinishLaunchRequest>(), false), Times.Never);
         }
     }
 }

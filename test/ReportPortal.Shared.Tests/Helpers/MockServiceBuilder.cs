@@ -13,10 +13,10 @@ namespace ReportPortal.Shared.Tests.Helpers
         {
             var service = new Mock<Service>(new Uri("http://abc.com"), It.IsAny<string>(), It.IsAny<string>());
 
-            service.Setup(s => s.StartLaunchAsync(It.IsAny<Client.Requests.StartLaunchRequest>())).Returns(Task.FromResult(new Client.Models.Launch()));
+            service.Setup(s => s.StartLaunchAsync(It.IsAny<Client.Requests.StartLaunchRequest>())).Returns(() => Task.FromResult(new Client.Models.Launch { Id = Guid.NewGuid().ToString() }));
 
-            service.Setup(s => s.StartTestItemAsync(It.IsAny<Client.Requests.StartTestItemRequest>())).Returns(Task.FromResult(new Client.Models.TestItem()));
-            service.Setup(s => s.StartTestItemAsync(null, It.IsAny<Client.Requests.StartTestItemRequest>())).Returns(Task.FromResult(new Client.Models.TestItem()));
+            service.Setup(s => s.StartTestItemAsync(It.IsAny<Client.Requests.StartTestItemRequest>())).Returns(() => Task.FromResult(new Client.Models.TestItem { Id = Guid.NewGuid().ToString() }));
+            service.Setup(s => s.StartTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.StartTestItemRequest>())).Returns(() => Task.FromResult(new Client.Models.TestItem { Id = Guid.NewGuid().ToString() }));
 
             return service;
         }
