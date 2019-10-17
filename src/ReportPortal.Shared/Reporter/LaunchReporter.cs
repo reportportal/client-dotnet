@@ -26,7 +26,7 @@ namespace ReportPortal.Shared.Reporter
             // TODO: Apply IoC with registered IConfiguration object
             var jsonPath = System.IO.Path.GetDirectoryName(new Uri(typeof(LaunchReporter).Assembly.CodeBase).LocalPath) + "/ReportPortal.config.json";
             var config = new Configuration.ConfigurationBuilder().AddJsonFile(jsonPath).AddEnvironmentVariables().Build();
-            var maxServiceConnections = config.GetValue("Server:ConnectionsLimit", int.MaxValue);
+            var maxServiceConnections = config.GetValue("Server:MaximumConnectionsNumber", int.MaxValue);
             // End TODO
 
             _serviceConnectionsWaiter = new SemaphoreSlim(maxServiceConnections);
