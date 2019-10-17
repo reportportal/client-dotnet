@@ -14,12 +14,14 @@ namespace ReportPortal.Shared.Reporter
     public class TestReporter : ITestReporter
     {
         private readonly Service _service;
+        private readonly SemaphoreSlim _serviceConnectionsWaiter;
 
         private static ITraceLogger TraceLogger { get; } = TraceLogManager.GetLogger<TestReporter>();
 
-        public TestReporter(Service service, ILaunchReporter launchReporter, ITestReporter parentTestReporter, StartTestItemRequest startTestItemRequest)
+        public TestReporter(Service service, ILaunchReporter launchReporter, ITestReporter parentTestReporter, StartTestItemRequest startTestItemRequest, SemaphoreSlim serviceConnectionsWaiter)
         {
             _service = service;
+            _serviceConnectionsWaiter = serviceConnectionsWaiter;
             LaunchReporter = launchReporter;
             ParentTestReporter = parentTestReporter;
 
@@ -55,11 +57,25 @@ namespace ReportPortal.Shared.Reporter
                         startTestItemRequest.StartTime = LaunchReporter.LaunchInfo.StartTime;
                     }
 
-                    var id = (await _service.StartTestItemAsync(startTestItemRequest)).Id;
+                    string testId;
 
+                    try
+                    {
+                        _serviceConnectionsWaiter.Wait();
+
+                        testId = (await _service.StartTestItemAsync(startTestItemRequest)).Id;
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+                    finally
+                    {
+                        _serviceConnectionsWaiter.Release();
+                    }
                     TestInfo = new TestItem
                     {
-                        Id = id
+                        Id = testId
                     };
                 }
                 else
@@ -69,11 +85,24 @@ namespace ReportPortal.Shared.Reporter
                         startTestItemRequest.StartTime = ParentTestReporter.TestInfo.StartTime;
                     }
 
-                    var id = (await _service.StartTestItemAsync(ParentTestReporter.TestInfo.Id, startTestItemRequest)).Id;
+                    string testId;
 
+                    try
+                    {
+                        _serviceConnectionsWaiter.Wait();
+                        testId = (await _service.StartTestItemAsync(ParentTestReporter.TestInfo.Id, startTestItemRequest)).Id;
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+                    finally
+                    {
+                        _serviceConnectionsWaiter.Release();
+                    }
                     TestInfo = new TestItem
                     {
-                        Id = id
+                        Id = testId
                     };
                 }
 
@@ -171,7 +200,19 @@ namespace ReportPortal.Shared.Reporter
                         request.EndTime = TestInfo.StartTime;
                     }
 
-                    await _service.FinishTestItemAsync(TestInfo.Id, request);
+                    try
+                    {
+                        _serviceConnectionsWaiter.Wait();
+                        await _service.FinishTestItemAsync(TestInfo.Id, request);
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+                    finally
+                    {
+                        _serviceConnectionsWaiter.Release();
+                    }
                 }
                 finally
                 {
@@ -192,7 +233,7 @@ namespace ReportPortal.Shared.Reporter
         {
             TraceLogger.Verbose($"Scheduling request to start new '{request.Name}' test item in {GetHashCode()} proxy instance");
 
-            var newTestNode = new TestReporter(_service, LaunchReporter, this, request);
+            var newTestNode = new TestReporter(_service, LaunchReporter, this, request, _serviceConnectionsWaiter);
 
             if (ChildTestReporters == null)
             {
@@ -215,7 +256,19 @@ namespace ReportPortal.Shared.Reporter
                 }
                 _additionalTasks.Add(StartTask.ContinueWith(async a =>
                 {
-                    await _service.UpdateTestItemAsync(TestInfo.Id, request);
+                    try
+                    {
+                        _serviceConnectionsWaiter.Wait();
+                        await _service.UpdateTestItemAsync(TestInfo.Id, request);
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+                    finally
+                    {
+                        _serviceConnectionsWaiter.Release();
+                    }
                 }).Unwrap());
             }
         }
@@ -254,7 +307,19 @@ namespace ReportPortal.Shared.Reporter
                             formatter.FormatLog(ref request);
                         }
 
-                        await _service.AddLogItemAsync(request);
+                        try
+                        {
+                            _serviceConnectionsWaiter.Wait();
+                            await _service.AddLogItemAsync(request);
+                        }
+                        catch (Exception)
+                        {
+                            throw;
+                        }
+                        finally
+                        {
+                            _serviceConnectionsWaiter.Release();
+                        }
                     }
                 }).Unwrap();
 
