@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using ReportPortal.Client;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
+using ReportPortal.Shared.Configuration.Providers;
 
 namespace ReportPortal.Shared.Reporter
 {
@@ -21,7 +22,14 @@ namespace ReportPortal.Shared.Reporter
         public LaunchReporter(Service service)
         {
             _service = service;
-            _serviceConnectionsWaiter = new SemaphoreSlim(int.MaxValue);
+
+            // TODO: Apply IoC with registered IConfiguration object
+            var jsonPath = System.IO.Path.GetDirectoryName(new Uri(typeof(LaunchReporter).Assembly.CodeBase).LocalPath) + "/ReportPortal.config.json";
+            var config = new Configuration.ConfigurationBuilder().AddJsonFile(jsonPath).AddEnvironmentVariables().Build();
+            var maxServiceConnections = config.GetValue("Server:ConnectionsLimit", int.MaxValue);
+            // End TODO
+
+            _serviceConnectionsWaiter = new SemaphoreSlim(maxServiceConnections);
         }
 
         public LaunchReporter(Service service, string launchId) : this(service)
