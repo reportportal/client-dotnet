@@ -20,9 +20,9 @@ namespace ReportPortal.Client
         /// <param name="project">A project to manage.</param>
         /// <param name="password">A password for user. Can be UID given from user's profile page.</param>
         /// <param name="messageHandler">The HTTP handler to use for sending all requests.</param>
-        public Service(Uri uri, string project, string password, HttpMessageHandler messageHandler)
+        public Service(Uri uri, string project, string password)
         {
-            _httpClient = new HttpClient(messageHandler);
+            _httpClient = new HttpClient();
             
             if (!uri.LocalPath.ToLowerInvariant().Contains("api/v1"))
             {
@@ -48,21 +48,11 @@ namespace ReportPortal.Client
         /// <param name="uri">Base URI for REST service.</param>
         /// <param name="project">A project to manage.</param>
         /// <param name="password">A password for user. Can be UID given from user's profile page.</param>
-        public Service(Uri uri, string project, string password)
-            : this(uri, project, password, new ReportPortalHttpClientHandler(3))
-        {
-        }
-
-        /// <summary>
-        /// Constructor to initialize a new object of service.
-        /// </summary>
-        /// <param name="uri">Base URI for REST service.</param>
-        /// <param name="project">A project to manage.</param>
-        /// <param name="password">A password for user. Can be UID given from user's profile page.</param>
         /// <param name="proxy">Proxy for all HTTP requests.</param>
         public Service(Uri uri, string project, string password, IWebProxy proxy)
-            : this(uri, project, password, new ReportPortalHttpClientHandler(3, proxy))
+            : this(uri, project, password)
         {
+
         }
 
         /// <summary>
