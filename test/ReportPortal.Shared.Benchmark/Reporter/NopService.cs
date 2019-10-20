@@ -15,11 +15,7 @@ namespace ReportPortal.Shared.Benchmark.Reporter
         {
 
         }
-        public NopService(Uri uri, string project, string password, HttpMessageHandler messageHandler)
-            : base(uri, project, password, messageHandler)
-        {
 
-        }
         public NopService(Uri uri, string project, string password, IWebProxy proxy)
             : base(uri, project, password, proxy)
         {

@@ -8,20 +8,21 @@ using ReportPortal.Client;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 using ReportPortal.Shared.Internal.Logging;
+using ReportPortal.Shared.Internal.Retrying;
 
 namespace ReportPortal.Shared.Reporter
 {
     public class TestReporter : ITestReporter
     {
         private readonly Service _service;
-        private readonly SemaphoreSlim _serviceConnectionsWaiter;
+        private readonly Retrier _retrier;
 
         private static ITraceLogger TraceLogger { get; } = TraceLogManager.GetLogger<TestReporter>();
 
-        public TestReporter(Service service, ILaunchReporter launchReporter, ITestReporter parentTestReporter, StartTestItemRequest startTestItemRequest, SemaphoreSlim serviceConnectionsWaiter)
+        public TestReporter(Service service, ILaunchReporter launchReporter, ITestReporter parentTestReporter, StartTestItemRequest startTestItemRequest, Retrier retrier)
         {
             _service = service;
-            _serviceConnectionsWaiter = serviceConnectionsWaiter;
+            _retrier = retrier;
             LaunchReporter = launchReporter;
             ParentTestReporter = parentTestReporter;
 
@@ -57,25 +58,11 @@ namespace ReportPortal.Shared.Reporter
                         startTestItemRequest.StartTime = LaunchReporter.LaunchInfo.StartTime;
                     }
 
-                    string testId;
+                    var testModel = await _retrier.InvokeAsync(async () => await _service.StartTestItemAsync(startTestItemRequest));
 
-                    try
-                    {
-                        _serviceConnectionsWaiter.Wait();
-
-                        testId = (await _service.StartTestItemAsync(startTestItemRequest)).Id;
-                    }
-                    catch (Exception)
-                    {
-                        throw;
-                    }
-                    finally
-                    {
-                        _serviceConnectionsWaiter.Release();
-                    }
                     TestInfo = new TestItem
                     {
-                        Id = testId
+                        Id = testModel.Id
                     };
                 }
                 else
@@ -85,24 +72,11 @@ namespace ReportPortal.Shared.Reporter
                         startTestItemRequest.StartTime = ParentTestReporter.TestInfo.StartTime;
                     }
 
-                    string testId;
+                    var testModel = await _retrier.InvokeAsync(async () => await _service.StartTestItemAsync(ParentTestReporter.TestInfo.Id, startTestItemRequest));
 
-                    try
-                    {
-                        _serviceConnectionsWaiter.Wait();
-                        testId = (await _service.StartTestItemAsync(ParentTestReporter.TestInfo.Id, startTestItemRequest)).Id;
-                    }
-                    catch (Exception)
-                    {
-                        throw;
-                    }
-                    finally
-                    {
-                        _serviceConnectionsWaiter.Release();
-                    }
                     TestInfo = new TestItem
                     {
-                        Id = testId
+                        Id = testModel.Id
                     };
                 }
 
@@ -200,19 +174,7 @@ namespace ReportPortal.Shared.Reporter
                         request.EndTime = TestInfo.StartTime;
                     }
 
-                    try
-                    {
-                        _serviceConnectionsWaiter.Wait();
-                        await _service.FinishTestItemAsync(TestInfo.Id, request);
-                    }
-                    catch (Exception)
-                    {
-                        throw;
-                    }
-                    finally
-                    {
-                        _serviceConnectionsWaiter.Release();
-                    }
+                    await _retrier.InvokeAsync(async () => await _service.FinishTestItemAsync(TestInfo.Id, request));
                 }
                 finally
                 {
@@ -233,7 +195,7 @@ namespace ReportPortal.Shared.Reporter
         {
             TraceLogger.Verbose($"Scheduling request to start new '{request.Name}' test item in {GetHashCode()} proxy instance");
 
-            var newTestNode = new TestReporter(_service, LaunchReporter, this, request, _serviceConnectionsWaiter);
+            var newTestNode = new TestReporter(_service, LaunchReporter, this, request, _retrier);
 
             if (ChildTestReporters == null)
             {
@@ -256,19 +218,7 @@ namespace ReportPortal.Shared.Reporter
                 }
                 _additionalTasks.Add(StartTask.ContinueWith(async a =>
                 {
-                    try
-                    {
-                        _serviceConnectionsWaiter.Wait();
-                        await _service.UpdateTestItemAsync(TestInfo.Id, request);
-                    }
-                    catch (Exception)
-                    {
-                        throw;
-                    }
-                    finally
-                    {
-                        _serviceConnectionsWaiter.Release();
-                    }
+                    await _retrier.InvokeAsync(async () => await _service.UpdateTestItemAsync(TestInfo.Id, request));
                 }).Unwrap());
             }
         }
@@ -307,19 +257,7 @@ namespace ReportPortal.Shared.Reporter
                             formatter.FormatLog(ref request);
                         }
 
-                        try
-                        {
-                            _serviceConnectionsWaiter.Wait();
-                            await _service.AddLogItemAsync(request);
-                        }
-                        catch (Exception)
-                        {
-                            throw;
-                        }
-                        finally
-                        {
-                            _serviceConnectionsWaiter.Release();
-                        }
+                        await _retrier.InvokeAsync(async () => await _service.AddLogItemAsync(request));
                     }
                 }).Unwrap();
 

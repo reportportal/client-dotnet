@@ -73,7 +73,7 @@ namespace ReportPortal.Shared.Tests.Faked
 
             service.Verify(s => s.StartTestItemAsync(It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(suitesPerLaunch));
             service.Verify(s => s.StartTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(testsPerSuite * suitesPerLaunch));
-            service.Verify(s => s.AddLogItemAsync(It.IsAny<Client.Requests.AddLogItemRequest>()), Times.Exactly(suitesPerLaunch * testsPerSuite * logsPerTest));
+            service.Verify(s => s.AddLogItemAsync(It.IsAny<Client.Requests.AddLogItemRequest>()), Times.Exactly(suitesPerLaunch * testsPerSuite * logsPerTest * 3));
             service.Verify(s => s.FinishTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.FinishTestItemRequest>()), Times.Exactly(testsPerSuite * suitesPerLaunch + suitesPerLaunch));
             service.Verify(s => s.FinishLaunchAsync(It.IsAny<string>(), It.IsAny<Client.Requests.FinishLaunchRequest>(), It.IsAny<bool>()), Times.Once);
         }
@@ -115,7 +115,7 @@ namespace ReportPortal.Shared.Tests.Faked
 
             service.Verify(s => s.StartTestItemAsync(It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(suitesPerLaunch));
             service.Verify(s => s.StartTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(suitesPerLaunch * testsPerSuite));
-            service.Verify(s => s.FinishTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.FinishTestItemRequest>()), Times.Exactly(suitesPerLaunch * testsPerSuite));
+            service.Verify(s => s.FinishTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.FinishTestItemRequest>()), Times.Exactly(suitesPerLaunch * testsPerSuite * 3));
             service.Verify(s => s.FinishLaunchAsync(It.IsAny<string>(), It.IsAny<Client.Requests.FinishLaunchRequest>(), false), Times.Never);
         }
 
@@ -154,7 +154,7 @@ namespace ReportPortal.Shared.Tests.Faked
             var exp = Assert.ThrowsAny<Exception>(() => launchReporter.Sync());
             Assert.Contains("Cannot finish launch", exp.Message);
 
-            service.Verify(s => s.StartTestItemAsync(It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(suitesPerLaunch));
+            service.Verify(s => s.StartTestItemAsync(It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(suitesPerLaunch * 3));
             service.Verify(s => s.StartTestItemAsync(null, It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Never);
             service.Verify(s => s.FinishTestItemAsync(null, It.IsAny<Client.Requests.FinishTestItemRequest>()), Times.Never);
             service.Verify(s => s.FinishLaunchAsync(null, It.IsAny<Client.Requests.FinishLaunchRequest>(), false), Times.Never);

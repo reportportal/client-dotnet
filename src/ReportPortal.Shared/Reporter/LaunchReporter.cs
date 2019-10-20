@@ -8,6 +8,7 @@ using ReportPortal.Client;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 using ReportPortal.Shared.Configuration.Providers;
+using ReportPortal.Shared.Internal.Retrying;
 
 namespace ReportPortal.Shared.Reporter
 {
@@ -17,7 +18,7 @@ namespace ReportPortal.Shared.Reporter
 
         private readonly Service _service;
 
-        private readonly SemaphoreSlim _serviceConnectionsWaiter;
+        private readonly Retrier _retrier;
 
         public LaunchReporter(Service service)
         {
@@ -29,7 +30,7 @@ namespace ReportPortal.Shared.Reporter
             var maxServiceConnections = config.GetValue("Server:MaximumConnectionsNumber", int.MaxValue);
             // End TODO
 
-            _serviceConnectionsWaiter = new SemaphoreSlim(maxServiceConnections);
+            _retrier = new Retrier(maxServiceConnections);
         }
 
         public LaunchReporter(Service service, string launchId) : this(service)
@@ -66,19 +67,9 @@ namespace ReportPortal.Shared.Reporter
                 {
                     string launchId;
 
-                    try
-                    {
-                        _serviceConnectionsWaiter.Wait();
-                        launchId = (await _service.StartLaunchAsync(request)).Id;
-                    }
-                    catch (Exception)
-                    {
-                        throw;
-                    }
-                    finally
-                    {
-                        _serviceConnectionsWaiter.Release();
-                    }
+                    var launch = await _retrier.InvokeAsync(async () => await _service.StartLaunchAsync(request));
+                    launchId = launch.Id;
+
                     LaunchInfo = new Launch
                     {
                         Id = launchId,
@@ -92,19 +83,7 @@ namespace ReportPortal.Shared.Reporter
                 // get launch info
                 StartTask = Task.Run(async () =>
                 {
-                    try
-                    {
-                        _serviceConnectionsWaiter.Wait();
-                        LaunchInfo = await _service.GetLaunchAsync(LaunchInfo.Id);
-                    }
-                    catch (Exception)
-                    {
-                        throw;
-                    }
-                    finally
-                    {
-                        _serviceConnectionsWaiter.Release();
-                    }
+                    LaunchInfo = await _retrier.InvokeAsync(async () => await _service.GetLaunchAsync(LaunchInfo.Id));
                 });
             }
         }
@@ -183,19 +162,7 @@ namespace ReportPortal.Shared.Reporter
 
                     if (!_isExternalLaunchId)
                     {
-                        try
-                        {
-                            _serviceConnectionsWaiter.Wait();
-                            await _service.FinishLaunchAsync(LaunchInfo.Id, request);
-                        }
-                        catch (Exception)
-                        {
-                            throw;
-                        }
-                        finally
-                        {
-                            _serviceConnectionsWaiter.Release();
-                        }
+                        await _retrier.InvokeAsync(async () => await _service.FinishLaunchAsync(LaunchInfo.Id, request));
                     }
                 }
                 finally
@@ -210,7 +177,7 @@ namespace ReportPortal.Shared.Reporter
 
         public ITestReporter StartChildTestReporter(StartTestItemRequest request)
         {
-            var newTestNode = new TestReporter(_service, this, null, request, _serviceConnectionsWaiter);
+            var newTestNode = new TestReporter(_service, this, null, request, _retrier);
 
             if (ChildTestReporters == null)
             {
