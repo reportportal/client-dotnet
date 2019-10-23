@@ -7,6 +7,8 @@ namespace ReportPortal.Shared.Internal.Retrying
 {
     public class Retrier
     {
+        private Logging.ITraceLogger TraceLogger { get; } = Logging.TraceLogManager.GetLogger<Retrier>();
+
         private SemaphoreSlim _concurrentAwaiter;
 
         public Retrier(int maxConcurrentMethods)
@@ -24,19 +26,29 @@ namespace ReportPortal.Shared.Internal.Retrying
             {
                 try
                 {
-                    _concurrentAwaiter.Wait();
+                    TraceLogger.Verbose($"Awaiting free executor for {func.Method.Name} method. Available: {_concurrentAwaiter.CurrentCount}");
+                    await _concurrentAwaiter.WaitAsync();
+                    TraceLogger.Verbose($"Invoking {func.Method.Name} method... Current attempt: {i}");
                     return await func.Invoke();
                 }
                 catch (Exception exp) when (exp is TaskCanceledException || exp is HttpRequestException)
                 {
                     if (i < MaxRetries - 1)
                     {
-                        await Task.Delay((int)Math.Pow(2, i + MaxRetries) * 1000);
+                        var delay = (int)Math.Pow(2, i + MaxRetries);
+                        TraceLogger.Error($"Error while invoking '{func.Method.Name}' method. Current attempt: {i}. Waiting {delay} seconds and retrying it.\n{exp}");
+                        await Task.Delay(delay * 1000);
                     }
                     else
                     {
+                        TraceLogger.Error($"Error while invoking '{func.Method.Name}' method. Current attempt: {i}.\n{exp}");
                         throw;
                     }
+                }
+                catch (Exception exp)
+                {
+                    TraceLogger.Error($"Unexpected exception: {exp}");
+                    throw;
                 }
                 finally
                 {
