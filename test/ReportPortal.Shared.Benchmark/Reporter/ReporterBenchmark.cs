@@ -51,7 +51,7 @@ namespace ReportPortal.Shared.Benchmark.Reporter
                 EndTime = launchDateTime
             });
 
-            launchReporter.FinishTask.Wait();
+            launchReporter.Sync();
         }
     }
 }
