@@ -27,9 +27,9 @@ namespace ReportPortal.Shared.Internal.Retrying
                 try
                 {
                     TraceLogger.Verbose($"Awaiting free executor for {func.Method.Name} method. Available: {_concurrentAwaiter.CurrentCount}");
-                    await _concurrentAwaiter.WaitAsync();
+                    await _concurrentAwaiter.WaitAsync().ConfigureAwait(false);
                     TraceLogger.Verbose($"Invoking {func.Method.Name} method... Current attempt: {i}");
-                    return await func.Invoke();
+                    return await func().ConfigureAwait(false);
                 }
                 catch (Exception exp) when (exp is TaskCanceledException || exp is HttpRequestException)
                 {
@@ -37,7 +37,7 @@ namespace ReportPortal.Shared.Internal.Retrying
                     {
                         var delay = (int)Math.Pow(2, i + MaxRetries);
                         TraceLogger.Error($"Error while invoking '{func.Method.Name}' method. Current attempt: {i}. Waiting {delay} seconds and retrying it.\n{exp}");
-                        await Task.Delay(delay * 1000);
+                        await Task.Delay(delay * 1000).ConfigureAwait(false);
                     }
                     else
                     {
