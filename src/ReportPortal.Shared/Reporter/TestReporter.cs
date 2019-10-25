@@ -225,6 +225,7 @@ namespace ReportPortal.Shared.Reporter
 
         public void Log(AddLogItemRequest request)
         {
+
             if (StartTask == null)
             {
                 var exp = new InsufficientExecutionStackException("The test item wasn't scheduled for starting to add log messages.");
@@ -237,9 +238,14 @@ namespace ReportPortal.Shared.Reporter
                 return;
             }
 
-            if (FinishTask == null || !FinishTask.IsCompleted)
+            if (FinishTask == null)
             {
-                var parentTask = _additionalTasks?.Last() ?? StartTask;
+                if (_additionalTasks == null)
+                {
+                    _additionalTasks = new ConcurrentBag<Task>();
+                }
+
+                var parentTask = _additionalTasks.FirstOrDefault() ?? StartTask;
 
                 var task = parentTask.ContinueWith(async pt =>
                 {
@@ -260,11 +266,6 @@ namespace ReportPortal.Shared.Reporter
                         await _retrier.InvokeAsync(async () => await _service.AddLogItemAsync(request)).ConfigureAwait(false);
                     }
                 }).Unwrap();
-
-                if (_additionalTasks == null)
-                {
-                    _additionalTasks = new ConcurrentBag<Task>();
-                }
 
                 _additionalTasks.Add(task);
             }

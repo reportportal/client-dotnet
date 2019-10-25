@@ -233,5 +233,24 @@ namespace ReportPortal.Shared.Tests.Faked
 
             service.Verify(s => s.FinishLaunchAsync(It.IsAny<string>(), It.IsAny<Client.Requests.FinishLaunchRequest>(), false), Times.Never);
         }
+
+        [Fact]
+        public void LogsReportingShouldBeOneByOne()
+        {
+            var logDelay = TimeSpan.FromMilliseconds(100);
+
+            var service = new MockServiceBuilder().Build();
+            service.Setup(s => s.AddLogItemAsync(It.IsAny<Client.Requests.AddLogItemRequest>())).Returns(async () => { await Task.Delay(logDelay); return new Client.Models.LogItem(); });
+
+            var launchScheduler = new LaunchScheduler(service.Object);
+            var launchReporter = launchScheduler.Build(1, 30, 30);
+
+            launchReporter.ExecutionTimeOf(l => l.Sync()).Should().BeGreaterOrEqualTo(TimeSpan.FromTicks(logDelay.Ticks * 10));
+
+            launchReporter.Sync();
+
+            service.Verify(s => s.FinishLaunchAsync(It.IsAny<string>(), It.IsAny<Client.Requests.FinishLaunchRequest>(), false), Times.Once);
+            service.Verify(s => s.AddLogItemAsync(It.IsAny<Client.Requests.AddLogItemRequest>()), Times.Exactly(30 * 30));
+        }
     }
 }
