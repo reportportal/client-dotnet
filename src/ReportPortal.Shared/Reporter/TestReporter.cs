@@ -58,7 +58,7 @@ namespace ReportPortal.Shared.Reporter
                         startTestItemRequest.StartTime = LaunchReporter.LaunchInfo.StartTime;
                     }
 
-                    var testModel = await _retrier.InvokeAsync(async () => await _service.StartTestItemAsync(startTestItemRequest)).ConfigureAwait(false);
+                    var testModel = await _retrier.InvokeAsync(() => _service.StartTestItemAsync(startTestItemRequest)).ConfigureAwait(false);
 
                     TestInfo = new TestItem
                     {
@@ -72,7 +72,7 @@ namespace ReportPortal.Shared.Reporter
                         startTestItemRequest.StartTime = ParentTestReporter.TestInfo.StartTime;
                     }
 
-                    var testModel = await _retrier.InvokeAsync(async () => await _service.StartTestItemAsync(ParentTestReporter.TestInfo.Id, startTestItemRequest)).ConfigureAwait(false);
+                    var testModel = await _retrier.InvokeAsync(() => _service.StartTestItemAsync(ParentTestReporter.TestInfo.Id, startTestItemRequest)).ConfigureAwait(false);
 
                     TestInfo = new TestItem
                     {
@@ -174,7 +174,7 @@ namespace ReportPortal.Shared.Reporter
                         request.EndTime = TestInfo.StartTime;
                     }
 
-                    await _retrier.InvokeAsync(async () => await _service.FinishTestItemAsync(TestInfo.Id, request)).ConfigureAwait(false);
+                    await _retrier.InvokeAsync(() => _service.FinishTestItemAsync(TestInfo.Id, request)).ConfigureAwait(false);
                 }
                 finally
                 {
@@ -218,14 +218,13 @@ namespace ReportPortal.Shared.Reporter
                 }
                 _additionalTasks.Add(StartTask.ContinueWith(async a =>
                 {
-                    await _retrier.InvokeAsync(async () => await _service.UpdateTestItemAsync(TestInfo.Id, request));
+                    await _retrier.InvokeAsync(() => _service.UpdateTestItemAsync(TestInfo.Id, request));
                 }).Unwrap());
             }
         }
 
         public void Log(AddLogItemRequest request)
         {
-
             if (StartTask == null)
             {
                 var exp = new InsufficientExecutionStackException("The test item wasn't scheduled for starting to add log messages.");
@@ -263,7 +262,7 @@ namespace ReportPortal.Shared.Reporter
                             formatter.FormatLog(ref request);
                         }
 
-                        await _retrier.InvokeAsync(async () => await _service.AddLogItemAsync(request)).ConfigureAwait(false);
+                        await _retrier.InvokeAsync(() => _service.AddLogItemAsync(request)).ConfigureAwait(false);
                     }
                 }).Unwrap();
 

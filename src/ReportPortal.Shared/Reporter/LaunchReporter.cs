@@ -67,7 +67,7 @@ namespace ReportPortal.Shared.Reporter
                 {
                     string launchId;
 
-                    var launch = await _retrier.InvokeAsync(async () => await _service.StartLaunchAsync(request).ConfigureAwait(false)).ConfigureAwait(false);
+                    var launch = await _retrier.InvokeAsync(() => _service.StartLaunchAsync(request)).ConfigureAwait(false);
                     launchId = launch.Id;
 
                     LaunchInfo = new Launch
@@ -83,7 +83,7 @@ namespace ReportPortal.Shared.Reporter
                 // get launch info
                 StartTask = Task.Run(async () =>
                 {
-                    LaunchInfo = await _retrier.InvokeAsync(async () => await _service.GetLaunchAsync(LaunchInfo.Id).ConfigureAwait(false)).ConfigureAwait(false);
+                    LaunchInfo = await _retrier.InvokeAsync(() => _service.GetLaunchAsync(LaunchInfo.Id)).ConfigureAwait(false);
                 });
             }
         }
@@ -162,7 +162,7 @@ namespace ReportPortal.Shared.Reporter
 
                     if (!_isExternalLaunchId)
                     {
-                        await _retrier.InvokeAsync(async () => await _service.FinishLaunchAsync(LaunchInfo.Id, request).ConfigureAwait(false)).ConfigureAwait(false);
+                        await _retrier.InvokeAsync(() => _service.FinishLaunchAsync(LaunchInfo.Id, request)).ConfigureAwait(false);
                     }
                 }
                 finally
