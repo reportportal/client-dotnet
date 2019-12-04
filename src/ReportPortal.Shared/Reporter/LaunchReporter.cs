@@ -8,7 +8,7 @@ using ReportPortal.Client;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 using ReportPortal.Shared.Configuration.Providers;
-using ReportPortal.Shared.Internal.Retrying;
+using ReportPortal.Shared.Internal.Delegating;
 
 namespace ReportPortal.Shared.Reporter
 {
@@ -18,19 +18,18 @@ namespace ReportPortal.Shared.Reporter
 
         private readonly Service _service;
 
-        private readonly Retrier _retrier;
+        private readonly IRequestExecuter _requestExecuter;
 
         public LaunchReporter(Service service)
         {
             _service = service;
 
-            // TODO: Apply IoC with registered IConfiguration object
+            // TODO: Apply DI for IConfiguration object
             var jsonPath = System.IO.Path.GetDirectoryName(new Uri(typeof(LaunchReporter).Assembly.CodeBase).LocalPath) + "/ReportPortal.config.json";
             var config = new Configuration.ConfigurationBuilder().AddJsonFile(jsonPath).AddEnvironmentVariables().Build();
-            var maxServiceConnections = config.GetValue("Server:MaximumConnectionsNumber", int.MaxValue);
             // End TODO
 
-            _retrier = new Retrier(maxServiceConnections);
+            _requestExecuter = new RequestExecuterFactory().Create(config);
         }
 
         public LaunchReporter(Service service, string launchId) : this(service)
@@ -67,7 +66,7 @@ namespace ReportPortal.Shared.Reporter
                 {
                     string launchId;
 
-                    var launch = await _retrier.InvokeAsync(() => _service.StartLaunchAsync(request)).ConfigureAwait(false);
+                    var launch = await _requestExecuter.ExecuteAsync(() => _service.StartLaunchAsync(request)).ConfigureAwait(false);
                     launchId = launch.Id;
 
                     LaunchInfo = new Launch
@@ -83,7 +82,7 @@ namespace ReportPortal.Shared.Reporter
                 // get launch info
                 StartTask = Task.Run(async () =>
                 {
-                    LaunchInfo = await _retrier.InvokeAsync(() => _service.GetLaunchAsync(LaunchInfo.Id)).ConfigureAwait(false);
+                    LaunchInfo = await _requestExecuter.ExecuteAsync(() => _service.GetLaunchAsync(LaunchInfo.Id)).ConfigureAwait(false);
                 });
             }
         }
@@ -162,7 +161,7 @@ namespace ReportPortal.Shared.Reporter
 
                     if (!_isExternalLaunchId)
                     {
-                        await _retrier.InvokeAsync(() => _service.FinishLaunchAsync(LaunchInfo.Id, request)).ConfigureAwait(false);
+                        await _requestExecuter.ExecuteAsync(() => _service.FinishLaunchAsync(LaunchInfo.Id, request)).ConfigureAwait(false);
                     }
                 }
                 finally
@@ -177,7 +176,7 @@ namespace ReportPortal.Shared.Reporter
 
         public ITestReporter StartChildTestReporter(StartTestItemRequest request)
         {
-            var newTestNode = new TestReporter(_service, this, null, request, _retrier);
+            var newTestNode = new TestReporter(_service, this, null, request, _requestExecuter);
 
             if (ChildTestReporters == null)
             {

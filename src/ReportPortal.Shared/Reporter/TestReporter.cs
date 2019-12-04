@@ -7,22 +7,22 @@ using System.Threading.Tasks;
 using ReportPortal.Client;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
+using ReportPortal.Shared.Internal.Delegating;
 using ReportPortal.Shared.Internal.Logging;
-using ReportPortal.Shared.Internal.Retrying;
 
 namespace ReportPortal.Shared.Reporter
 {
     public class TestReporter : ITestReporter
     {
         private readonly Service _service;
-        private readonly Retrier _retrier;
+        private readonly IRequestExecuter _requestExecuter;
 
         private static ITraceLogger TraceLogger { get; } = TraceLogManager.GetLogger<TestReporter>();
 
-        public TestReporter(Service service, ILaunchReporter launchReporter, ITestReporter parentTestReporter, StartTestItemRequest startTestItemRequest, Retrier retrier)
+        public TestReporter(Service service, ILaunchReporter launchReporter, ITestReporter parentTestReporter, StartTestItemRequest startTestItemRequest, IRequestExecuter requestExecuter)
         {
             _service = service;
-            _retrier = retrier;
+            _requestExecuter = requestExecuter;
             LaunchReporter = launchReporter;
             ParentTestReporter = parentTestReporter;
 
@@ -58,7 +58,7 @@ namespace ReportPortal.Shared.Reporter
                         startTestItemRequest.StartTime = LaunchReporter.LaunchInfo.StartTime;
                     }
 
-                    var testModel = await _retrier.InvokeAsync(() => _service.StartTestItemAsync(startTestItemRequest)).ConfigureAwait(false);
+                    var testModel = await _requestExecuter.ExecuteAsync(() => _service.StartTestItemAsync(startTestItemRequest)).ConfigureAwait(false);
 
                     TestInfo = new TestItem
                     {
@@ -72,7 +72,7 @@ namespace ReportPortal.Shared.Reporter
                         startTestItemRequest.StartTime = ParentTestReporter.TestInfo.StartTime;
                     }
 
-                    var testModel = await _retrier.InvokeAsync(() => _service.StartTestItemAsync(ParentTestReporter.TestInfo.Id, startTestItemRequest)).ConfigureAwait(false);
+                    var testModel = await _requestExecuter.ExecuteAsync(() => _service.StartTestItemAsync(ParentTestReporter.TestInfo.Id, startTestItemRequest)).ConfigureAwait(false);
 
                     TestInfo = new TestItem
                     {
@@ -174,7 +174,7 @@ namespace ReportPortal.Shared.Reporter
                         request.EndTime = TestInfo.StartTime;
                     }
 
-                    await _retrier.InvokeAsync(() => _service.FinishTestItemAsync(TestInfo.Id, request)).ConfigureAwait(false);
+                    await _requestExecuter.ExecuteAsync(() => _service.FinishTestItemAsync(TestInfo.Id, request)).ConfigureAwait(false);
                 }
                 finally
                 {
@@ -195,7 +195,7 @@ namespace ReportPortal.Shared.Reporter
         {
             TraceLogger.Verbose($"Scheduling request to start new '{request.Name}' test item in {GetHashCode()} proxy instance");
 
-            var newTestNode = new TestReporter(_service, LaunchReporter, this, request, _retrier);
+            var newTestNode = new TestReporter(_service, LaunchReporter, this, request, _requestExecuter);
 
             if (ChildTestReporters == null)
             {
@@ -218,7 +218,7 @@ namespace ReportPortal.Shared.Reporter
                 }
                 _additionalTasks.Add(StartTask.ContinueWith(async a =>
                 {
-                    await _retrier.InvokeAsync(() => _service.UpdateTestItemAsync(TestInfo.Id, request));
+                    await _requestExecuter.ExecuteAsync(() => _service.UpdateTestItemAsync(TestInfo.Id, request));
                 }).Unwrap());
             }
         }
@@ -262,7 +262,7 @@ namespace ReportPortal.Shared.Reporter
                             formatter.FormatLog(ref request);
                         }
 
-                        await _retrier.InvokeAsync(() => _service.AddLogItemAsync(request)).ConfigureAwait(false);
+                        await _requestExecuter.ExecuteAsync(() => _service.AddLogItemAsync(request)).ConfigureAwait(false);
                     }
                 }).Unwrap();
 
