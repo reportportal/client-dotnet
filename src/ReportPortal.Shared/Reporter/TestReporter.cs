@@ -62,8 +62,7 @@ namespace ReportPortal.Shared.Reporter
 
                     TestInfo = new TestItem
                     {
-                        Id = testModel.Id,
-                        Type = startTestItemRequest.Type
+                        Id = testModel.Id
                     };
                 }
                 else
@@ -176,17 +175,6 @@ namespace ReportPortal.Shared.Reporter
                     }
 
                     await _requestExecuter.ExecuteAsync(() => _service.FinishTestItemAsync(TestInfo.Id, request)).ConfigureAwait(false);
-
-                    // remove empty suites (temporary solution for https://github.com/reportportal/reportportal/issues/735)
-                    // TODO: We need rework it because this reporter should truly report items tree without modifications.
-                    // might be replaced by some reporting extension when this functionality will be implemented
-                    if (TestInfo.Type == TestItemType.Suite)
-                    {
-                        if (ChildTestReporters == null || ChildTestReporters.Count == 0)
-                        {
-                            await _requestExecuter.ExecuteAsync(() => _service.DeleteTestItemAsync(TestInfo.Id)).ConfigureAwait(false);
-                        }
-                    }
                 }
                 finally
                 {
