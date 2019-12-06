@@ -27,6 +27,17 @@ namespace ReportPortal.Shared.Tests
         }
 
         [Fact]
+        public async Task BigAsyncRealTreeWithEmptySuites()
+        {
+            var launchScheduler = new LaunchScheduler(_service);
+            var launchReporter = launchScheduler.Build(10, 0, 0);
+
+            launchReporter.FinishTask.Wait();
+
+            await _service.DeleteLaunchAsync(launchReporter.LaunchInfo.Id);
+        }
+
+        [Fact]
         public async Task UseExistingLaunchId()
         {
             var launchDateTime = DateTime.UtcNow;
