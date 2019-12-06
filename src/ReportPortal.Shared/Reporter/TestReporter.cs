@@ -180,9 +180,12 @@ namespace ReportPortal.Shared.Reporter
                     // remove empty suites (temporary solution for https://github.com/reportportal/reportportal/issues/735)
                     // TODO: We need rework it because this reporter should truly report items tree without modifications.
                     // might be replaced by some reporting extension when this functionality will be implemented
-                    if (TestInfo.Type == TestItemType.Suite && ChildTestReporters?.Count == 0)
+                    if (TestInfo.Type == TestItemType.Suite)
                     {
-                        await _requestExecuter.ExecuteAsync(() => _service.DeleteTestItemAsync(TestInfo.Id)).ConfigureAwait(false);
+                        if (ChildTestReporters == null || ChildTestReporters.Count == 0)
+                        {
+                            await _requestExecuter.ExecuteAsync(() => _service.DeleteTestItemAsync(TestInfo.Id)).ConfigureAwait(false);
+                        }
                     }
                 }
                 finally
