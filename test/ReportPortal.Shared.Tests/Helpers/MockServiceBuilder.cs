@@ -1,8 +1,6 @@
 ﻿using Moq;
 using ReportPortal.Client;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ReportPortal.Shared.Tests.Helpers

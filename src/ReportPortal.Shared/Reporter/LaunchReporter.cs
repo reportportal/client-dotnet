@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using ReportPortal.Client;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
+using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Configuration.Providers;
 using ReportPortal.Shared.Internal.Delegating;
 
@@ -16,20 +17,15 @@ namespace ReportPortal.Shared.Reporter
     {
         private Internal.Logging.ITraceLogger TraceLogger { get; } = Internal.Logging.TraceLogManager.GetLogger<LaunchReporter>();
 
+        private readonly IConfiguration _configuration;
+
         private readonly Service _service;
 
         private readonly IRequestExecuter _requestExecuter;
 
-        public LaunchReporter(Service service)
+        public LaunchReporter(Service service) : this(service, null, null)
         {
             _service = service;
-
-            // TODO: Apply DI for IConfiguration object
-            var jsonPath = System.IO.Path.GetDirectoryName(new Uri(typeof(LaunchReporter).Assembly.CodeBase).LocalPath) + "/ReportPortal.config.json";
-            var config = new Configuration.ConfigurationBuilder().AddJsonFile(jsonPath).AddEnvironmentVariables().Build();
-            // End TODO
-
-            _requestExecuter = new RequestExecuterFactory().Create(config);
         }
 
         public LaunchReporter(Service service, string launchId) : this(service)
@@ -40,6 +36,30 @@ namespace ReportPortal.Shared.Reporter
             {
                 Id = launchId
             };
+        }
+
+        public LaunchReporter(Service service, IConfiguration configuration, IRequestExecuter requestExecuter)
+        {
+            _service = service;
+
+            if (configuration != null)
+            {
+                _configuration = configuration;
+            }
+            else
+            {
+                var jsonPath = System.IO.Path.GetDirectoryName(new Uri(typeof(LaunchReporter).Assembly.CodeBase).LocalPath) + "/ReportPortal.config.json";
+                _configuration = new ConfigurationBuilder().AddJsonFile(jsonPath).AddEnvironmentVariables().Build();
+            }
+
+            if (requestExecuter != null)
+            {
+                _requestExecuter = requestExecuter;
+            }
+            else
+            {
+                _requestExecuter = new RequestExecuterFactory().Create(_configuration);
+            }
         }
 
         public Launch LaunchInfo { get; private set; }

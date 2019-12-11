@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Moq;
+using ReportPortal.Shared.Internal.Delegating;
 using ReportPortal.Shared.Reporter;
 using ReportPortal.Shared.Tests.Helpers;
 using System;
@@ -21,7 +22,7 @@ namespace ReportPortal.Shared.Tests.Faked
         {
             var service = new MockServiceBuilder().Build();
 
-            var launchScheduler = new LaunchScheduler(service.Object);
+            var launchScheduler = new LaunchReporterBuilder(service.Object);
             var launchReporter = launchScheduler.Build(suitesPerLaunch, testsPerSuite, logsPerTest);
 
             launchReporter.Sync();
@@ -46,7 +47,9 @@ namespace ReportPortal.Shared.Tests.Faked
             var service = new MockServiceBuilder().Build();
             service.Setup(s => s.AddLogItemAsync(It.IsAny<Client.Requests.AddLogItemRequest>())).Throws<Exception>();
 
-            var launchScheduler = new LaunchScheduler(service.Object);
+            var requestExecuter = new MockRequestExecuterBuilder().Build();
+
+            var launchScheduler = new LaunchReporterBuilder(service.Object).With(requestExecuter.Object);
             var launchReporter = launchScheduler.Build(suitesPerLaunch, testsPerSuite, logsPerTest);
 
             launchReporter.Sync();
@@ -66,14 +69,16 @@ namespace ReportPortal.Shared.Tests.Faked
             var service = new MockServiceBuilder().Build();
             service.Setup(s => s.AddLogItemAsync(It.IsAny<Client.Requests.AddLogItemRequest>())).Throws<TaskCanceledException>();
 
-            var launchScheduler = new LaunchScheduler(service.Object);
+            var requestExecuter = new MockRequestExecuterBuilder().Build();
+
+            var launchScheduler = new LaunchReporterBuilder(service.Object).With(requestExecuter.Object);
             var launchReporter = launchScheduler.Build(suitesPerLaunch, testsPerSuite, logsPerTest);
 
             launchReporter.Sync();
 
             service.Verify(s => s.StartTestItemAsync(It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(suitesPerLaunch));
             service.Verify(s => s.StartTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(testsPerSuite * suitesPerLaunch));
-            service.Verify(s => s.AddLogItemAsync(It.IsAny<Client.Requests.AddLogItemRequest>()), Times.Exactly(suitesPerLaunch * testsPerSuite * logsPerTest * 3));
+            service.Verify(s => s.AddLogItemAsync(It.IsAny<Client.Requests.AddLogItemRequest>()), Times.Exactly(suitesPerLaunch * testsPerSuite * logsPerTest));
             service.Verify(s => s.FinishTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.FinishTestItemRequest>()), Times.Exactly(testsPerSuite * suitesPerLaunch + suitesPerLaunch));
             service.Verify(s => s.FinishLaunchAsync(It.IsAny<string>(), It.IsAny<Client.Requests.FinishLaunchRequest>(), It.IsAny<bool>()), Times.Once);
         }
@@ -87,7 +92,9 @@ namespace ReportPortal.Shared.Tests.Faked
             var service = new MockServiceBuilder().Build();
             service.Setup(s => s.FinishTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.FinishTestItemRequest>())).Throws(new Exception());
 
-            var launchScheduler = new LaunchScheduler(service.Object);
+            var requestExecuter = new MockRequestExecuterBuilder().Build();
+
+            var launchScheduler = new LaunchReporterBuilder(service.Object).With(requestExecuter.Object);
             var launchReporter = launchScheduler.Build(suitesPerLaunch, testsPerSuite, logsPerTest);
 
             var exp = Assert.ThrowsAny<Exception>(() => launchReporter.Sync());
@@ -107,7 +114,9 @@ namespace ReportPortal.Shared.Tests.Faked
             var service = new MockServiceBuilder().Build();
             service.Setup(s => s.FinishTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.FinishTestItemRequest>())).Throws<TaskCanceledException>();
 
-            var launchScheduler = new LaunchScheduler(service.Object);
+            var requestExecuter = new MockRequestExecuterBuilder().Build();
+
+            var launchScheduler = new LaunchReporterBuilder(service.Object).With(requestExecuter.Object);
             var launchReporter = launchScheduler.Build(suitesPerLaunch, testsPerSuite, logsPerTest);
 
             var exp = Assert.ThrowsAny<Exception>(() => launchReporter.Sync());
@@ -115,7 +124,7 @@ namespace ReportPortal.Shared.Tests.Faked
 
             service.Verify(s => s.StartTestItemAsync(It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(suitesPerLaunch));
             service.Verify(s => s.StartTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(suitesPerLaunch * testsPerSuite));
-            service.Verify(s => s.FinishTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.FinishTestItemRequest>()), Times.Exactly(suitesPerLaunch * testsPerSuite * 3));
+            service.Verify(s => s.FinishTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.FinishTestItemRequest>()), Times.Exactly(suitesPerLaunch * testsPerSuite));
             service.Verify(s => s.FinishLaunchAsync(It.IsAny<string>(), It.IsAny<Client.Requests.FinishLaunchRequest>(), false), Times.Never);
         }
 
@@ -128,7 +137,9 @@ namespace ReportPortal.Shared.Tests.Faked
             var service = new MockServiceBuilder().Build();
             service.Setup(s => s.StartTestItemAsync(It.IsAny<Client.Requests.StartTestItemRequest>())).Throws<Exception>();
 
-            var launchScheduler = new LaunchScheduler(service.Object);
+            var requestExecuter = new MockRequestExecuterBuilder().Build();
+
+            var launchScheduler = new LaunchReporterBuilder(service.Object).With(requestExecuter.Object);
             var launchReporter = launchScheduler.Build(suitesPerLaunch, testsPerSuite, logsPerTest);
 
             var exp = Assert.ThrowsAny<Exception>(() => launchReporter.Sync());
@@ -148,13 +159,15 @@ namespace ReportPortal.Shared.Tests.Faked
             var service = new MockServiceBuilder().Build();
             service.Setup(s => s.StartTestItemAsync(It.IsAny<Client.Requests.StartTestItemRequest>())).Throws<TaskCanceledException>();
 
-            var launchScheduler = new LaunchScheduler(service.Object);
+            var requestExecuter = new MockRequestExecuterBuilder().Build();
+
+            var launchScheduler = new LaunchReporterBuilder(service.Object).With(requestExecuter.Object);
             var launchReporter = launchScheduler.Build(suitesPerLaunch, testsPerSuite, logsPerTest);
 
             var exp = Assert.ThrowsAny<Exception>(() => launchReporter.Sync());
             Assert.Contains("Cannot finish launch", exp.Message);
 
-            service.Verify(s => s.StartTestItemAsync(It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(suitesPerLaunch * 3));
+            service.Verify(s => s.StartTestItemAsync(It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Exactly(suitesPerLaunch));
             service.Verify(s => s.StartTestItemAsync(null, It.IsAny<Client.Requests.StartTestItemRequest>()), Times.Never);
             service.Verify(s => s.FinishTestItemAsync(null, It.IsAny<Client.Requests.FinishTestItemRequest>()), Times.Never);
             service.Verify(s => s.FinishLaunchAsync(null, It.IsAny<Client.Requests.FinishLaunchRequest>(), false), Times.Never);
@@ -200,7 +213,9 @@ namespace ReportPortal.Shared.Tests.Faked
             var service = new MockServiceBuilder().Build();
             service.Setup(s => s.StartLaunchAsync(It.IsAny<Client.Requests.StartLaunchRequest>())).Throws<TaskCanceledException>();
 
-            var launchScheduler = new LaunchScheduler(service.Object);
+            var requestExecuter = new MockRequestExecuterBuilder().Build();
+
+            var launchScheduler = new LaunchReporterBuilder(service.Object).With(requestExecuter.Object);
             var launchReporter = launchScheduler.Build(1, 1, 1);
 
             var exp = Assert.ThrowsAny<Exception>(() => launchReporter.Sync());
@@ -212,7 +227,10 @@ namespace ReportPortal.Shared.Tests.Faked
             var service = new MockServiceBuilder().Build();
             service.Setup(s => s.StartTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.StartTestItemRequest>())).Throws<TaskCanceledException>();
 
-            var launchScheduler = new LaunchScheduler(service.Object);
+            var requestExecuter = new Mock<IRequestExecuter>();
+            requestExecuter.Setup(re => re.ExecuteAsync(It.IsAny<Func<Task<Client.Models.Launch>>>())).Returns(Task.FromResult(new Client.Models.Launch() { Id = "1"}));
+
+            var launchScheduler = new LaunchReporterBuilder(service.Object).With(requestExecuter.Object);
             var launchReporter = launchScheduler.Build(1, 1, 1);
 
             var exp = Assert.ThrowsAny<Exception>(() => launchReporter.Sync());
@@ -225,7 +243,9 @@ namespace ReportPortal.Shared.Tests.Faked
             var service = new MockServiceBuilder().Build();
             service.Setup(s => s.FinishTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.FinishTestItemRequest>())).Throws<TaskCanceledException>();
 
-            var launchScheduler = new LaunchScheduler(service.Object);
+            var requestExecuter = new MockRequestExecuterBuilder().Build();
+
+            var launchScheduler = new LaunchReporterBuilder(service.Object).With(requestExecuter.Object);
             var launchReporter = launchScheduler.Build(1, 1, 1);
 
             var exp = Assert.ThrowsAny<Exception>(() => launchReporter.Sync());
@@ -242,7 +262,7 @@ namespace ReportPortal.Shared.Tests.Faked
             var service = new MockServiceBuilder().Build();
             service.Setup(s => s.AddLogItemAsync(It.IsAny<Client.Requests.AddLogItemRequest>())).Returns(async () => { await Task.Delay(logDelay); return new Client.Models.LogItem(); });
 
-            var launchScheduler = new LaunchScheduler(service.Object);
+            var launchScheduler = new LaunchReporterBuilder(service.Object);
             var launchReporter = launchScheduler.Build(1, 30, 30);
 
             launchReporter.ExecutionTimeOf(l => l.Sync()).Should().BeGreaterOrEqualTo(TimeSpan.FromTicks(logDelay.Ticks * 10));

@@ -14,7 +14,7 @@ namespace ReportPortal.Shared.Tests.Extensibility.LogFormatter
         {
             var service = new MockServiceBuilder().Build();
 
-            var launchScheduler = new LaunchScheduler(service.Object);
+            var launchScheduler = new LaunchReporterBuilder(service.Object);
             var launchReporter = launchScheduler.Build(1, 1, 1);
 
             launchReporter.Sync();

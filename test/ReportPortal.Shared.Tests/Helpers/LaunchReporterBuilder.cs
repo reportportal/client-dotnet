@@ -1,21 +1,31 @@
 ﻿using ReportPortal.Client;
+using ReportPortal.Shared.Internal.Delegating;
 using ReportPortal.Shared.Reporter;
 using System;
 
 namespace ReportPortal.Shared.Tests.Helpers
 {
-    public class LaunchScheduler
+    public class LaunchReporterBuilder
     {
-        public LaunchScheduler(Service service)
+        public LaunchReporterBuilder(Service service)
         {
             Service = service;
         }
 
         public Service Service { get; }
 
+        public IRequestExecuter RequestExecuter { get; set; }
+
+        public LaunchReporterBuilder With(IRequestExecuter requestExecuter)
+        {
+            RequestExecuter = requestExecuter;
+
+            return this;
+        }
+
         public LaunchReporter Build(int suitesPerLaunch, int testsPerSuite, int logsPerTest)
         {
-            var launchReporter = new LaunchReporter(Service);
+            var launchReporter = new LaunchReporter(Service, null, RequestExecuter);
 
             var launchDateTime = DateTime.UtcNow;
 

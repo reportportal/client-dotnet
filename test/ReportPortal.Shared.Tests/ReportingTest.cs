@@ -18,7 +18,7 @@ namespace ReportPortal.Shared.Tests
         [Fact]
         public async Task BigAsyncRealTree()
         {
-            var launchScheduler = new LaunchScheduler(_service);
+            var launchScheduler = new LaunchReporterBuilder(_service);
             var launchReporter = launchScheduler.Build(10, 3, 1);
 
             launchReporter.FinishTask.Wait();
@@ -29,7 +29,7 @@ namespace ReportPortal.Shared.Tests
         [Fact]
         public async Task BigAsyncRealTreeWithEmptySuites()
         {
-            var launchScheduler = new LaunchScheduler(_service);
+            var launchScheduler = new LaunchReporterBuilder(_service);
             var launchReporter = launchScheduler.Build(10, 0, 0);
 
             launchReporter.FinishTask.Wait();
