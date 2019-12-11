@@ -23,11 +23,15 @@ namespace ReportPortal.Shared.Reporter
 
         private readonly IRequestExecuter _requestExecuter;
 
+        private readonly object _lockObj = new object();
+
+        [Obsolete("This ctor will be removed. Use (Service service, IConfiguration configuration, IRequestExecuter requestExecuter)")]
         public LaunchReporter(Service service) : this(service, null, null)
         {
             _service = service;
         }
 
+        [Obsolete("This ctor will be removed. Use (Service service, IConfiguration configuration, IRequestExecuter requestExecuter) where launchId argument can be spicified by IConfiguration [Launch:Id]")]
         public LaunchReporter(Service service, string launchId) : this(service)
         {
             _isExternalLaunchId = true;
@@ -59,6 +63,18 @@ namespace ReportPortal.Shared.Reporter
             else
             {
                 _requestExecuter = new RequestExecuterFactory().Create(_configuration);
+            }
+
+            // identify whether launch is already started by any external system
+            var externalLaunchId = _configuration.GetValue<string>("Launch:Id", null);
+            if (externalLaunchId != null)
+            {
+                _isExternalLaunchId = true;
+
+                LaunchInfo = new Launch
+                {
+                    Id = externalLaunchId
+                };
             }
         }
 
@@ -192,17 +208,23 @@ namespace ReportPortal.Shared.Reporter
             }).Unwrap();
         }
 
-        public ConcurrentBag<ITestReporter> ChildTestReporters { get; private set; }
+        public IList<ITestReporter> ChildTestReporters { get; private set; }
 
         public ITestReporter StartChildTestReporter(StartTestItemRequest request)
         {
             var newTestNode = new TestReporter(_service, this, null, request, _requestExecuter);
 
-            if (ChildTestReporters == null)
+            lock (_lockObj)
             {
-                ChildTestReporters = new ConcurrentBag<ITestReporter>();
+                if (ChildTestReporters == null)
+                {
+                    lock (_lockObj)
+                    {
+                        ChildTestReporters = new List<ITestReporter>();
+                    }
+                }
+                ChildTestReporters.Add(newTestNode);
             }
-            ChildTestReporters.Add(newTestNode);
 
             LastTestNode = newTestNode;
 

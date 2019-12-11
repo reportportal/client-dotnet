@@ -228,7 +228,7 @@ namespace ReportPortal.Shared.Tests.Faked
             service.Setup(s => s.StartTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.StartTestItemRequest>())).Throws<TaskCanceledException>();
 
             var requestExecuter = new Mock<IRequestExecuter>();
-            requestExecuter.Setup(re => re.ExecuteAsync(It.IsAny<Func<Task<Client.Models.Launch>>>())).Returns(Task.FromResult(new Client.Models.Launch() { Id = "1"}));
+            requestExecuter.Setup(re => re.ExecuteAsync(It.IsAny<Func<Task<Client.Models.Launch>>>())).Returns(Task.FromResult(new Client.Models.Launch() { Id = "1" }));
 
             var launchScheduler = new LaunchReporterBuilder(service.Object).With(requestExecuter.Object);
             var launchReporter = launchScheduler.Build(1, 1, 1);

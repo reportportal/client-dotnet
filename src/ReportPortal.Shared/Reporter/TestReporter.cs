@@ -19,6 +19,8 @@ namespace ReportPortal.Shared.Reporter
 
         private static ITraceLogger TraceLogger { get; } = TraceLogManager.GetLogger<TestReporter>();
 
+        private readonly object _lockObj = new object();
+
         public TestReporter(Service service, ILaunchReporter launchReporter, ITestReporter parentTestReporter, StartTestItemRequest startTestItemRequest, IRequestExecuter requestExecuter)
         {
             _service = service;
@@ -187,9 +189,9 @@ namespace ReportPortal.Shared.Reporter
             }).Unwrap();
         }
 
-        private ConcurrentBag<Task> _additionalTasks;
+        private IList<Task> _additionalTasks;
 
-        public ConcurrentBag<ITestReporter> ChildTestReporters { get; private set; }
+        public IList<ITestReporter> ChildTestReporters { get; private set; }
 
         public ITestReporter StartChildTestReporter(StartTestItemRequest request)
         {
@@ -197,12 +199,17 @@ namespace ReportPortal.Shared.Reporter
 
             var newTestNode = new TestReporter(_service, LaunchReporter, this, request, _requestExecuter);
 
-            if (ChildTestReporters == null)
+            lock (_lockObj)
             {
-                ChildTestReporters = new ConcurrentBag<ITestReporter>();
+                if (ChildTestReporters == null)
+                {
+                    lock (_lockObj)
+                    {
+                        ChildTestReporters = new List<ITestReporter>();
+                    }
+                }
+                ChildTestReporters.Add(newTestNode);
             }
-            ChildTestReporters.Add(newTestNode);
-
             (LaunchReporter as LaunchReporter).LastTestNode = newTestNode;
 
             return newTestNode;
@@ -212,14 +219,17 @@ namespace ReportPortal.Shared.Reporter
         {
             if (FinishTask == null || !FinishTask.IsCompleted)
             {
-                if (_additionalTasks == null)
+                lock (_lockObj)
                 {
-                    _additionalTasks = new ConcurrentBag<Task>();
+                    if (_additionalTasks == null)
+                    {
+                        _additionalTasks = new List<Task>();
+                    }
+                    _additionalTasks.Add(StartTask.ContinueWith(async a =>
+                    {
+                        await _requestExecuter.ExecuteAsync(() => _service.UpdateTestItemAsync(TestInfo.Id, request));
+                    }).Unwrap());
                 }
-                _additionalTasks.Add(StartTask.ContinueWith(async a =>
-                {
-                    await _requestExecuter.ExecuteAsync(() => _service.UpdateTestItemAsync(TestInfo.Id, request));
-                }).Unwrap());
             }
         }
 
@@ -239,34 +249,40 @@ namespace ReportPortal.Shared.Reporter
 
             if (FinishTask == null)
             {
-                if (_additionalTasks == null)
+                lock (_lockObj)
                 {
-                    _additionalTasks = new ConcurrentBag<Task>();
-                }
-
-                var parentTask = _additionalTasks.FirstOrDefault() ?? StartTask;
-
-                var task = parentTask.ContinueWith(async pt =>
-                {
-                    if (!StartTask.IsFaulted || !StartTask.IsCanceled)
+                    if (_additionalTasks == null)
                     {
-                        if (request.Time < TestInfo.StartTime)
+                        lock (_lockObj)
                         {
-                            request.Time = TestInfo.StartTime;
+                            _additionalTasks = new List<Task>();
                         }
-
-                        request.TestItemId = TestInfo.Id;
-
-                        foreach (var formatter in Bridge.LogFormatterExtensions)
-                        {
-                            formatter.FormatLog(ref request);
-                        }
-
-                        await _requestExecuter.ExecuteAsync(() => _service.AddLogItemAsync(request)).ConfigureAwait(false);
                     }
-                }).Unwrap();
 
-                _additionalTasks.Add(task);
+                    var parentTask = _additionalTasks.LastOrDefault() ?? StartTask;
+
+                    var task = parentTask.ContinueWith(async pt =>
+                    {
+                        if (!StartTask.IsFaulted || !StartTask.IsCanceled)
+                        {
+                            if (request.Time < TestInfo.StartTime)
+                            {
+                                request.Time = TestInfo.StartTime;
+                            }
+
+                            request.TestItemId = TestInfo.Id;
+
+                            foreach (var formatter in Bridge.LogFormatterExtensions)
+                            {
+                                formatter.FormatLog(ref request);
+                            }
+
+                            await _requestExecuter.ExecuteAsync(() => _service.AddLogItemAsync(request)).ConfigureAwait(false);
+                        }
+                    }).Unwrap();
+
+                    _additionalTasks.Add(task);
+                }
             }
         }
 

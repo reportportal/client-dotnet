@@ -1,6 +1,6 @@
 ﻿using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ReportPortal.Shared.Reporter
@@ -21,7 +21,7 @@ namespace ReportPortal.Shared.Reporter
 
         ITestReporter StartChildTestReporter(StartTestItemRequest startTestItemRequest);
 
-        ConcurrentBag<ITestReporter> ChildTestReporters { get; }
+        IList<ITestReporter> ChildTestReporters { get; }
 
         void Log(AddLogItemRequest addLogItemRequest);
 
