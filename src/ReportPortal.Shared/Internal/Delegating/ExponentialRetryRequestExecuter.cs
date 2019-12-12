@@ -5,12 +5,21 @@ using System.Threading.Tasks;
 
 namespace ReportPortal.Shared.Internal.Delegating
 {
+    /// <summary>
+    /// Invokes given func with retry strategy and exponential delay between attempts.
+    /// </summary>
     public class ExponentialRetryRequestExecuter : IRequestExecuter
     {
         private Logging.ITraceLogger TraceLogger { get; } = Logging.TraceLogManager.GetLogger<ExponentialRetryRequestExecuter>();
 
         private SemaphoreSlim _concurrentAwaiter;
 
+        /// <summary>
+        /// Initializes new instance of <see cref="ExponentialRetryRequestExecuter"/>.
+        /// </summary>
+        /// <param name="maxConcurrentRequests">Limitation of concurrent func invocation.</param>
+        /// <param name="maxRetryAttempts">Maximum number of attempts.</param>
+        /// <param name="baseIndex">Exponential base index for delay.</param>
         public ExponentialRetryRequestExecuter(int maxConcurrentRequests, int maxRetryAttempts, int baseIndex)
         {
             _concurrentAwaiter = new SemaphoreSlim(maxConcurrentRequests);
@@ -21,6 +30,7 @@ namespace ReportPortal.Shared.Internal.Delegating
         private int _maxRetryAttempts;
         private int _baseIndex;
 
+        /// <inheritdoc/>
         public async Task<T> ExecuteAsync<T>(Func<Task<T>> func)
         {
             T result = default;
