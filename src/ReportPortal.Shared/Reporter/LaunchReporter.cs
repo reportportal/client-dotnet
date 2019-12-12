@@ -21,6 +21,7 @@ namespace ReportPortal.Shared.Reporter
 
         private readonly Service _service;
 
+        private readonly IRequestExecuterFactory _requestExecuterFactory;
         private readonly IRequestExecuter _requestExecuter;
 
         private readonly object _lockObj = new object();
@@ -42,7 +43,7 @@ namespace ReportPortal.Shared.Reporter
             };
         }
 
-        public LaunchReporter(Service service, IConfiguration configuration, IRequestExecuter requestExecuter)
+        public LaunchReporter(Service service, IConfiguration configuration, IRequestExecuterFactory requestExecuterFactory)
         {
             _service = service;
 
@@ -56,14 +57,16 @@ namespace ReportPortal.Shared.Reporter
                 _configuration = new ConfigurationBuilder().AddJsonFile(jsonPath).AddEnvironmentVariables().Build();
             }
 
-            if (requestExecuter != null)
+            if (requestExecuterFactory != null)
             {
-                _requestExecuter = requestExecuter;
+                _requestExecuterFactory = requestExecuterFactory;
             }
             else
             {
-                _requestExecuter = new RequestExecuterFactory().Create(_configuration);
+                _requestExecuterFactory = new RequestExecuterFactory();
             }
+
+            _requestExecuter = _requestExecuterFactory.Create(_configuration);
 
             // identify whether launch is already started by any external system
             var externalLaunchId = _configuration.GetValue<string>("Launch:Id", null);

@@ -1,6 +1,6 @@
 ﻿using Moq;
-using ReportPortal.Client;
 using ReportPortal.Client.Models;
+using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Internal.Delegating;
 using System;
 using System.Collections.Generic;
@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace ReportPortal.Shared.Tests.Helpers
 {
-    class MockRequestExecuterBuilder
+    class MockRequestExecuterFactoryBuilder
     {
-        public Mock<IRequestExecuter> Build()
+        public Mock<IRequestExecuterFactory> Build()
         {
             var requestExecuter = new Mock<IRequestExecuter>();
 
@@ -20,7 +20,10 @@ namespace ReportPortal.Shared.Tests.Helpers
             requestExecuter.Setup(re => re.ExecuteAsync(It.IsAny<Func<Task<LogItem>>>())).Returns<Func<Task<LogItem>>>(v => v.Invoke());
             requestExecuter.Setup(re => re.ExecuteAsync(It.IsAny<Func<Task<Message>>>())).Returns<Func<Task<Message>>>(v => v.Invoke());
 
-            return requestExecuter;
+            var requestExecuterFactory = new Mock<IRequestExecuterFactory>();
+            requestExecuterFactory.Setup(f => f.Create(It.IsAny<IConfiguration>())).Returns(requestExecuter.Object);
+
+            return requestExecuterFactory;
         }
     }
 }

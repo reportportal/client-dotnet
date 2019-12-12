@@ -1,6 +1,3 @@
-using ReportPortal.Client;
-using System;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace ReportPortal.Shared.Tests

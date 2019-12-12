@@ -14,18 +14,18 @@ namespace ReportPortal.Shared.Tests.Helpers
 
         public Service Service { get; }
 
-        public IRequestExecuter RequestExecuter { get; set; }
+        public IRequestExecuterFactory RequestExecuterFactory { get; set; }
 
-        public LaunchReporterBuilder With(IRequestExecuter requestExecuter)
+        public LaunchReporterBuilder With(IRequestExecuterFactory requestExecuterFactory)
         {
-            RequestExecuter = requestExecuter;
+            RequestExecuterFactory = requestExecuterFactory;
 
             return this;
         }
 
         public LaunchReporter Build(int suitesPerLaunch, int testsPerSuite, int logsPerTest)
         {
-            var launchReporter = new LaunchReporter(Service, null, RequestExecuter);
+            var launchReporter = new LaunchReporter(Service, null, RequestExecuterFactory);
 
             var launchDateTime = DateTime.UtcNow;
 
