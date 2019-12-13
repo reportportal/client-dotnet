@@ -30,12 +30,27 @@ namespace ReportPortal.Shared.Tests
         {
             var tempFile = Path.GetTempFileName();
 
-            File.WriteAllText(tempFile, @"{""prop1"": ""value1""}");
+            File.WriteAllText(tempFile, @"{""prop1"": ""value1"", ""prop2"": ""value2""}");
+
+            var config = new ConfigurationBuilder().AddJsonFile(filePath: tempFile).Build();
+
+            var variable1 = config.GetValue<string>("prop1");
+            Assert.Equal("value1", variable1);
+            var variable2 = config.GetValue<string>("prop2");
+            Assert.Equal("value2", variable2);
+        }
+
+        [Fact]
+        public void ShouldGetVariableWithNewLineFromJsonFile()
+        {
+            var tempFile = Path.GetTempFileName();
+
+            File.WriteAllText(tempFile, @"{""prop1"": ""line1\nline2""}");
 
             var config = new ConfigurationBuilder().AddJsonFile(filePath: tempFile).Build();
 
             var variable = config.GetValue<string>("prop1");
-            Assert.Equal("value1", variable);
+            Assert.Equal("line1\nline2", variable);
         }
 
         [Fact]

@@ -77,7 +77,15 @@ namespace ReportPortal.Shared.Configuration.Providers
                     }
                     else
                     {
-                        propertyValue = jsonReader.Value;
+                        // \n character is considered as new Text element in JsonReader, so we are verifying whether it's continuing previous text and just append it
+                        if (propertyValue == null)
+                        {
+                            propertyValue = jsonReader.Value;
+                        }
+                        else
+                        {
+                            propertyValue += jsonReader.Value;
+                        }
                     }
                 }
             }
