@@ -54,6 +54,28 @@ namespace ReportPortal.Shared.Tests
         }
 
         [Fact]
+        public void ShouldNotAffectNextVariableWhenNewLineInPreviousFromJsonFile()
+        {
+            var tempFile = Path.GetTempFileName();
+
+            File.WriteAllText(tempFile, @"{""prop1"": ""line1\nline2"",""sibling_prop1"": {""prop1"": ""line11\nline22""}, ""prop2"": ""line3\nline4"", ""prop3"": ""line33\nline44""}");
+
+            var config = new ConfigurationBuilder().AddJsonFile(filePath: tempFile).Build();
+
+            var variable1 = config.GetValue<string>("prop1");
+            Assert.Equal("line1\nline2", variable1);
+
+            var sibling_variable11 = config.GetValue<string>("sibling_prop1:prop1");
+            Assert.Equal("line11\nline22", sibling_variable11);
+
+            var variable2 = config.GetValue<string>("prop2");
+            Assert.Equal("line3\nline4", variable2);
+
+            var variable3 = config.GetValue<string>("prop3");
+            Assert.Equal("line33\nline44", variable3);
+        }
+
+        [Fact]
         public void ShouldOverrideVariableWithTheSameProperty()
         {
             Environment.SetEnvironmentVariable("REPORTPORTAL_prop1", "value1");
