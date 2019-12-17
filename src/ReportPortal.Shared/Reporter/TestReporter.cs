@@ -28,13 +28,6 @@ namespace ReportPortal.Shared.Reporter
             LaunchReporter = launchReporter;
             ParentTestReporter = parentTestReporter;
 
-            if (StartTask != null)
-            {
-                var exp = new InsufficientExecutionStackException("The test item is already scheduled for starting.");
-                TraceLogger.Error(exp.ToString());
-                throw exp;
-            }
-
             var parentStartTask = ParentTestReporter?.StartTask ?? LaunchReporter.StartTask;
 
             StartTask = parentStartTask.ContinueWith(async pt =>
