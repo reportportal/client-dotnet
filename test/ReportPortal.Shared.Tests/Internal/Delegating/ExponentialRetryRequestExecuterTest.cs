@@ -13,14 +13,14 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
         [Fact]
         public void BaseIndexShouldBeGreaterOrEqualZero()
         {
-            Action ctor = () => new ExponentialRetryRequestExecuter(int.MaxValue, 1, baseIndex: -1);
+            Action ctor = () => new ExponentialRetryRequestExecuter(1, baseIndex: -1, null);
             ctor.Should().Throw<ArgumentException>();
         }
 
         [Fact]
         public void MaxAttemptsShouldBeGreaterOrEqualOne()
         {
-            Action ctor = () => new ExponentialRetryRequestExecuter(int.MaxValue, maxRetryAttempts: 0, 0);
+            Action ctor = () => new ExponentialRetryRequestExecuter(maxRetryAttempts: 0, 0, null);
             ctor.Should().Throw<ArgumentException>();
         }
 
@@ -29,7 +29,7 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
         {
             var action = new Mock<Func<Task<string>>>();
 
-            var executer = new ExponentialRetryRequestExecuter(int.MaxValue, 3, 2);
+            var executer = new ExponentialRetryRequestExecuter(3, 2);
             var res = await executer.ExecuteAsync(action.Object);
             res.Should().Be(null);
             action.Verify(a => a(), Times.Once);
@@ -41,7 +41,7 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
             var action = new Mock<Func<Task<string>>>();
             action.Setup(a => a()).Throws<TaskCanceledException>();
 
-            var executer = new ExponentialRetryRequestExecuter(int.MaxValue, 3, 0);
+            var executer = new ExponentialRetryRequestExecuter(3, 0);
             executer.Awaiting(e => e.ExecuteAsync(action.Object)).Should().Throw<TaskCanceledException>();
 
             action.Verify(a => a(), Times.Exactly(3));
@@ -53,7 +53,7 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
             var action = new Mock<Func<Task<string>>>();
             action.Setup(a => a()).Throws<HttpRequestException>();
 
-            var executer = new ExponentialRetryRequestExecuter(int.MaxValue, 3, 0);
+            var executer = new ExponentialRetryRequestExecuter(3, 0);
             executer.Awaiting(e => e.ExecuteAsync(action.Object)).Should().Throw<HttpRequestException>();
 
             action.Verify(a => a(), Times.Exactly(3));
@@ -65,7 +65,7 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
             var action = new Mock<Func<Task<string>>>();
             action.Setup(a => a()).Throws<Exception>();
 
-            var executer = new ExponentialRetryRequestExecuter(int.MaxValue, 3, 0);
+            var executer = new ExponentialRetryRequestExecuter(3, 0);
             executer.Awaiting(e => e.ExecuteAsync(action.Object)).Should().Throw<Exception>();
 
             action.Verify(a => a(), Times.Exactly(1));

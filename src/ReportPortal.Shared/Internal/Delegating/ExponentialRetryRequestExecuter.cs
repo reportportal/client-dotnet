@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace ReportPortal.Shared.Internal.Delegating
@@ -12,15 +11,25 @@ namespace ReportPortal.Shared.Internal.Delegating
     {
         private Logging.ITraceLogger TraceLogger { get; } = Logging.TraceLogManager.GetLogger<ExponentialRetryRequestExecuter>();
 
-        private SemaphoreSlim _concurrentAwaiter;
+        private IRequestExecutionThrottler _concurrentThrottler;
 
         /// <summary>
         /// Initializes new instance of <see cref="ExponentialRetryRequestExecuter"/>.
         /// </summary>
-        /// <param name="maxConcurrentRequests">Limitation of concurrent func invocation.</param>
         /// <param name="maxRetryAttempts">Maximum number of attempts.</param>
         /// <param name="baseIndex">Exponential base index for delay.</param>
-        public ExponentialRetryRequestExecuter(int maxConcurrentRequests, int maxRetryAttempts, int baseIndex)
+        public ExponentialRetryRequestExecuter(int maxRetryAttempts, int baseIndex) : this(maxRetryAttempts, baseIndex, null)
+        {
+
+        }
+
+        /// <summary>
+        /// Initializes new instance of <see cref="ExponentialRetryRequestExecuter"/>.
+        /// </summary>
+        /// <param name="maxRetryAttempts">Maximum number of attempts.</param>
+        /// <param name="baseIndex">Exponential base index for delay.</param>
+        /// <param name="throttler">Limits concurrent execution of requests.</param>
+        public ExponentialRetryRequestExecuter(int maxRetryAttempts, int baseIndex, IRequestExecutionThrottler throttler)
         {
             if (maxRetryAttempts < 1)
             {
@@ -32,7 +41,7 @@ namespace ReportPortal.Shared.Internal.Delegating
                 throw new ArgumentException("Base index for exponential delay cannot be less than 0.", nameof(baseIndex));
             }
 
-            _concurrentAwaiter = new SemaphoreSlim(maxConcurrentRequests);
+            _concurrentThrottler = throttler;
             MaxRetryAttemps = maxRetryAttempts;
             BaseIndex = baseIndex;
         }
@@ -56,8 +65,10 @@ namespace ReportPortal.Shared.Internal.Delegating
             {
                 try
                 {
-                    TraceLogger.Verbose($"Awaiting free executor for {func.Method.Name} method. Available: {_concurrentAwaiter.CurrentCount}");
-                    await _concurrentAwaiter.WaitAsync().ConfigureAwait(false);
+                    if (_concurrentThrottler != null)
+                    {
+                        await _concurrentThrottler.ReserveAsync().ConfigureAwait(false);
+                    }
                     TraceLogger.Verbose($"Invoking {func.Method.Name} method... Current attempt: {i}");
                     result = await func().ConfigureAwait(false);
                     break;
@@ -83,7 +94,10 @@ namespace ReportPortal.Shared.Internal.Delegating
                 }
                 finally
                 {
-                    _concurrentAwaiter.Release();
+                    if (_concurrentThrottler != null)
+                    {
+                        _concurrentThrottler.Release();
+                    }
                 };
             }
 

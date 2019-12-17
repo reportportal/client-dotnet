@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace ReportPortal.Shared.Internal.Delegating
@@ -12,15 +11,25 @@ namespace ReportPortal.Shared.Internal.Delegating
     {
         private Logging.ITraceLogger TraceLogger { get; } = Logging.TraceLogManager.GetLogger<LinearRetryRequestExecuter>();
 
-        private SemaphoreSlim _concurrentAwaiter;
+        private IRequestExecutionThrottler _concurrentThrottler;
 
         /// <summary>
         /// Initializes new instance of <see cref="LinearRetryRequestExecuter"/>.
         /// </summary>
-        /// <param name="maxConcurrentRequests">Limitation of concurrent func invocation.</param>
         /// <param name="maxRetryAttempts">Maximum number of attempts.</param>
         /// <param name="delay">Delay between ateempts (in milliseconds).</param>
-        public LinearRetryRequestExecuter(int maxConcurrentRequests, int maxRetryAttempts, int delay)
+        public LinearRetryRequestExecuter(int maxRetryAttempts, int delay) : this(maxRetryAttempts, delay, null)
+        {
+
+        }
+
+        /// <summary>
+        /// Initializes new instance of <see cref="LinearRetryRequestExecuter"/>.
+        /// </summary>
+        /// <param name="maxRetryAttempts">Maximum number of attempts.</param>
+        /// <param name="delay">Delay between ateempts (in milliseconds).</param>
+        /// <param name="throttler">Limits concurrent execution of requests.</param>
+        public LinearRetryRequestExecuter(int maxRetryAttempts, int delay, IRequestExecutionThrottler throttler)
         {
             if (maxRetryAttempts < 1)
             {
@@ -32,7 +41,7 @@ namespace ReportPortal.Shared.Internal.Delegating
                 throw new ArgumentException("Delay cannot be less than 0.", nameof(delay));
             }
 
-            _concurrentAwaiter = new SemaphoreSlim(maxConcurrentRequests);
+            _concurrentThrottler = throttler;
             MaxRetryAttemps = maxRetryAttempts;
             Delay = delay;
         }
@@ -56,8 +65,10 @@ namespace ReportPortal.Shared.Internal.Delegating
             {
                 try
                 {
-                    TraceLogger.Verbose($"Awaiting free executor for {func.Method.Name} method. Available: {_concurrentAwaiter.CurrentCount}");
-                    await _concurrentAwaiter.WaitAsync().ConfigureAwait(false);
+                    if (_concurrentThrottler != null)
+                    {
+                        await _concurrentThrottler.ReserveAsync().ConfigureAwait(false);
+                    }
                     TraceLogger.Verbose($"Invoking {func.Method.Name} method... Current attempt: {i}");
                     result = await func().ConfigureAwait(false);
                     break;
@@ -82,7 +93,10 @@ namespace ReportPortal.Shared.Internal.Delegating
                 }
                 finally
                 {
-                    _concurrentAwaiter.Release();
+                    if (_concurrentThrottler != null)
+                    {
+                        _concurrentThrottler.Release();
+                    }
                 };
             }
 
