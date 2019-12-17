@@ -215,7 +215,8 @@ namespace ReportPortal.Shared.Reporter
 
         public ITestReporter StartChildTestReporter(StartTestItemRequest request)
         {
-            var newTestNode = new TestReporter(_service, this, null, request, _requestExecuter);
+            var newTestNode = new TestReporter(_service, this, null, _requestExecuter);
+            newTestNode.Start(request);
 
             lock (_lockObj)
             {

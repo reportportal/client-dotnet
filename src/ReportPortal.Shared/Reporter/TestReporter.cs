@@ -21,12 +21,30 @@ namespace ReportPortal.Shared.Reporter
 
         private readonly object _lockObj = new object();
 
-        public TestReporter(Service service, ILaunchReporter launchReporter, ITestReporter parentTestReporter, StartTestItemRequest startTestItemRequest, IRequestExecuter requestExecuter)
+        public TestReporter(Service service, ILaunchReporter launchReporter, ITestReporter parentTestReporter, IRequestExecuter requestExecuter)
         {
             _service = service;
             _requestExecuter = requestExecuter;
             LaunchReporter = launchReporter;
             ParentTestReporter = parentTestReporter;
+        }
+
+        public TestItem TestInfo { get; private set; }
+
+        public ILaunchReporter LaunchReporter { get; }
+
+        public ITestReporter ParentTestReporter { get; }
+
+        public Task StartTask { get; private set; }
+
+        public void Start(StartTestItemRequest startTestItemRequest)
+        {
+            if (StartTask != null)
+            {
+                var exp = new InsufficientExecutionStackException("The test item is already scheduled for starting.");
+                TraceLogger.Error(exp.ToString());
+                throw exp;
+            }
 
             var parentStartTask = ParentTestReporter?.StartTask ?? LaunchReporter.StartTask;
 
@@ -80,14 +98,6 @@ namespace ReportPortal.Shared.Reporter
 
             ThreadId = Thread.CurrentThread.ManagedThreadId;
         }
-
-        public TestItem TestInfo { get; private set; }
-
-        public ILaunchReporter LaunchReporter { get; }
-
-        public ITestReporter ParentTestReporter { get; }
-
-        public Task StartTask { get; private set; }
 
         public Task FinishTask { get; private set; }
 
@@ -190,7 +200,8 @@ namespace ReportPortal.Shared.Reporter
         {
             TraceLogger.Verbose($"Scheduling request to start new '{request.Name}' test item in {GetHashCode()} proxy instance");
 
-            var newTestNode = new TestReporter(_service, LaunchReporter, this, request, _requestExecuter);
+            var newTestNode = new TestReporter(_service, LaunchReporter, this, _requestExecuter);
+            newTestNode.Start(request);
 
             lock (_lockObj)
             {
