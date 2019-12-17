@@ -11,6 +11,20 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
     public class ExponentialRetryRequestExecuterTest
     {
         [Fact]
+        public void BaseIndexShouldBeGreaterOrEqualZero()
+        {
+            Action ctor = () => new ExponentialRetryRequestExecuter(int.MaxValue, 1, baseIndex: -1);
+            ctor.Should().Throw<ArgumentException>();
+        }
+
+        [Fact]
+        public void MaxAttemptsShouldBeGreaterOrEqualOne()
+        {
+            Action ctor = () => new ExponentialRetryRequestExecuter(int.MaxValue, maxRetryAttempts: 0, 0);
+            ctor.Should().Throw<ArgumentException>();
+        }
+
+        [Fact]
         public async Task ExecuteValidActionOneTime()
         {
             var action = new Mock<Func<Task<string>>>();

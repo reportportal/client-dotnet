@@ -22,6 +22,16 @@ namespace ReportPortal.Shared.Internal.Delegating
         /// <param name="baseIndex">Exponential base index for delay.</param>
         public ExponentialRetryRequestExecuter(int maxConcurrentRequests, int maxRetryAttempts, int baseIndex)
         {
+            if (maxRetryAttempts < 1)
+            {
+                throw new ArgumentException("Maximum attempts cannot be less than 1.", nameof(maxRetryAttempts));
+            }
+
+            if (baseIndex < 0)
+            {
+                throw new ArgumentException("Base index for exponential delay cannot be less than 0.", nameof(baseIndex));
+            }
+
             _concurrentAwaiter = new SemaphoreSlim(maxConcurrentRequests);
             MaxRetryAttemps = maxRetryAttempts;
             BaseIndex = baseIndex;
@@ -49,7 +59,8 @@ namespace ReportPortal.Shared.Internal.Delegating
                     TraceLogger.Verbose($"Awaiting free executor for {func.Method.Name} method. Available: {_concurrentAwaiter.CurrentCount}");
                     await _concurrentAwaiter.WaitAsync().ConfigureAwait(false);
                     TraceLogger.Verbose($"Invoking {func.Method.Name} method... Current attempt: {i}");
-                    return await func().ConfigureAwait(false);
+                    result = await func().ConfigureAwait(false);
+                    break;
                 }
                 catch (Exception exp) when (exp is TaskCanceledException || exp is HttpRequestException)
                 {
