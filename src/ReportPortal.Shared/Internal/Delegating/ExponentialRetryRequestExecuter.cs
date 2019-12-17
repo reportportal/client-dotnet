@@ -23,19 +23,26 @@ namespace ReportPortal.Shared.Internal.Delegating
         public ExponentialRetryRequestExecuter(int maxConcurrentRequests, int maxRetryAttempts, int baseIndex)
         {
             _concurrentAwaiter = new SemaphoreSlim(maxConcurrentRequests);
-            _maxRetryAttempts = maxRetryAttempts;
-            _baseIndex = baseIndex;
+            MaxRetryAttemps = maxRetryAttempts;
+            BaseIndex = baseIndex;
         }
 
-        private int _maxRetryAttempts;
-        private int _baseIndex;
+        /// <summary>
+        /// Maximum number of attempts
+        /// </summary>
+        public int MaxRetryAttemps { get; private set; }
+
+        /// <summary>
+        /// Exponential base index for delay
+        /// </summary>
+        public int BaseIndex { get; private set; }
 
         /// <inheritdoc/>
         public async Task<T> ExecuteAsync<T>(Func<Task<T>> func)
         {
             T result = default;
 
-            for (int i = 0; i < _maxRetryAttempts; i++)
+            for (int i = 0; i < MaxRetryAttemps; i++)
             {
                 try
                 {
@@ -46,9 +53,9 @@ namespace ReportPortal.Shared.Internal.Delegating
                 }
                 catch (Exception exp) when (exp is TaskCanceledException || exp is HttpRequestException)
                 {
-                    if (i < _maxRetryAttempts - 1)
+                    if (i < MaxRetryAttemps - 1)
                     {
-                        var delay = (int)Math.Pow(_baseIndex, i + _maxRetryAttempts);
+                        var delay = (int)Math.Pow(BaseIndex, i + MaxRetryAttemps);
                         TraceLogger.Error($"Error while invoking '{func.Method.Name}' method. Current attempt: {i}. Waiting {delay} seconds and retrying it.\n{exp}");
                         await Task.Delay(delay * 1000).ConfigureAwait(false);
                     }
