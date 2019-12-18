@@ -8,6 +8,11 @@ namespace ReportPortal.Shared.Internal.Delegating
     public interface IRequestExecutionThrottler
     {
         /// <summary>
+        /// Maximum allowed concurrent executers.
+        /// </summary>
+        int MaxCapacity { get; }
+
+        /// <summary>
         /// Waits until request can be executed.
         /// </summary>
         /// <returns></returns>

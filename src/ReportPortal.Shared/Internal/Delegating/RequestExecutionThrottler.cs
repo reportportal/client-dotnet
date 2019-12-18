@@ -22,8 +22,13 @@ namespace ReportPortal.Shared.Internal.Delegating
                 throw new ArgumentException("Maximum concurrent requests should be at least 1.", nameof(maxConcurrentRequests));
             }
 
+            MaxCapacity = maxConcurrentRequests;
+
             _concurrentAwaiter = new SemaphoreSlim(maxConcurrentRequests);
         }
+
+        /// <inheritdoc/>
+        public int MaxCapacity { get; }
 
         /// <inheritdoc/>
         public async Task ReserveAsync()

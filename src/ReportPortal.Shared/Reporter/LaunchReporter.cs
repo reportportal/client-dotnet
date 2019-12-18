@@ -63,10 +63,10 @@ namespace ReportPortal.Shared.Reporter
             }
             else
             {
-                _requestExecuterFactory = new RequestExecuterFactory();
+                _requestExecuterFactory = new RequestExecuterFactory(_configuration);
             }
 
-            _requestExecuter = _requestExecuterFactory.Create(_configuration);
+            _requestExecuter = _requestExecuterFactory.Create();
 
             // identify whether launch is already started by any external system
             var externalLaunchId = _configuration.GetValue<string>("Launch:Id", null);

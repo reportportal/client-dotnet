@@ -6,25 +6,30 @@ namespace ReportPortal.Shared.Internal.Delegating
     /// <inheritdoc/>
     public class RequestExecuterFactory : IRequestExecuterFactory
     {
-        /// <inheritdoc/>
-        public IRequestExecuter Create(IConfiguration configuration)
+        private IConfiguration _configuration;
+
+        /// <summary>
+        /// Initializes new instance of <see cref="RequestExecuterFactory"/>
+        /// </summary>
+        /// <param name="configuration">Configuration object for considering when structs new <see cref="IRequestExecuter"/> instance.</param>
+        public RequestExecuterFactory(IConfiguration configuration)
         {
             if (configuration == null)
             {
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            IRequestExecutionThrottler throttler = null;
-            if (configuration.Values != null && configuration.Values.ContainsKey("Server:MaximumConnectionsNumber"))
-            {
-                var maxServiceConnections = configuration.GetValue<int>("Server:MaximumConnectionsNumber");
+            _configuration = configuration;
+        }
 
-                throttler = new RequestExecutionThrottler(maxServiceConnections);
-            }
+        /// <inheritdoc/>
+        public IRequestExecuter Create()
+        {
+            var throttler = new RequestExecutionThrottleFactory(_configuration).Create();
 
             var defaultStrategyValue = "exponential";
 
-            var retryStrategy = configuration.GetValue("Server:Retry:Strategy", defaultStrategyValue) ?? defaultStrategyValue;
+            var retryStrategy = _configuration.GetValue("Server:Retry:Strategy", defaultStrategyValue) ?? defaultStrategyValue;
 
             IRequestExecuter executer;
             switch (retryStrategy.ToLowerInvariant())
