@@ -18,6 +18,13 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
         }
 
         [Fact]
+        public void MaxAttemptsShouldBeGreaterZero()
+        {
+            Action ctor = () => new LinearRetryRequestExecuter(0, delay: 0, null);
+            ctor.Should().Throw<ArgumentException>();
+        }
+
+        [Fact]
         public async Task ExecuteValidActionOneTime()
         {
             var action = new Mock<Func<Task<string>>>();
@@ -62,6 +69,22 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
             executer.Awaiting(e => e.ExecuteAsync(action.Object)).Should().Throw<Exception>();
 
             action.Verify(a => a(), Times.Exactly(1));
+        }
+
+        [Fact]
+        public void ShouldUseThrottler()
+        {
+            var throttler = new Mock<IRequestExecutionThrottler>();
+
+            var executer = new LinearRetryRequestExecuter(5, 0, throttler.Object);
+            
+            var action = new Mock<Func<Task<string>>>();
+            action.Setup(a => a()).Throws<TaskCanceledException>();
+
+            executer.Awaiting(e => e.ExecuteAsync(action.Object)).Should().Throw<Exception>();
+
+            throttler.Verify(t => t.ReserveAsync(), Times.Exactly(5));
+            throttler.Verify(t => t.Release(), Times.Exactly(5));
         }
     }
 }

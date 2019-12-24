@@ -70,5 +70,21 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
 
             action.Verify(a => a(), Times.Exactly(1));
         }
+
+        [Fact]
+        public void ShouldUseThrottler()
+        {
+            var throttler = new Mock<IRequestExecutionThrottler>();
+
+            var executer = new ExponentialRetryRequestExecuter(5, 0, throttler.Object);
+
+            var action = new Mock<Func<Task<string>>>();
+            action.Setup(a => a()).Throws<TaskCanceledException>();
+
+            executer.Awaiting(e => e.ExecuteAsync(action.Object)).Should().Throw<Exception>();
+
+            throttler.Verify(t => t.ReserveAsync(), Times.Exactly(5));
+            throttler.Verify(t => t.Release(), Times.Exactly(5));
+        }
     }
 }
