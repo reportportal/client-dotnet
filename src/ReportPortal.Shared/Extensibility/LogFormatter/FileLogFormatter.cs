@@ -11,24 +11,26 @@ namespace ReportPortal.Shared.Extensibility.LogFormatter
 
         public bool FormatLog(ref AddLogItemRequest logRequest)
         {
-            var regex = new Regex("{rp#file#(.*)}");
-            var match = regex.Match(logRequest.Text);
-            if (match.Success)
+            if (logRequest.Text != null)
             {
-                logRequest.Text = logRequest.Text.Replace(match.Value, "");
-
-                var filePath = match.Groups[1].Value;
-
-                if (!Path.GetInvalidPathChars().Any(i => filePath.Contains(i)))
+                var regex = new Regex("{rp#file#(.*)}");
+                var match = regex.Match(logRequest.Text);
+                if (match.Success)
                 {
-                    var mimeType = MimeTypes.MimeTypeMap.GetMimeType(Path.GetExtension(filePath));
+                    logRequest.Text = logRequest.Text.Replace(match.Value, "");
 
-                    logRequest.Attach = new Client.Models.Attach(Path.GetFileName(filePath), mimeType, File.ReadAllBytes(filePath));
+                    var filePath = match.Groups[1].Value;
 
-                    return true;
+                    if (!Path.GetInvalidPathChars().Any(i => filePath.Contains(i)))
+                    {
+                        var mimeType = MimeTypes.MimeTypeMap.GetMimeType(Path.GetExtension(filePath));
+
+                        logRequest.Attach = new Client.Models.Attach(Path.GetFileName(filePath), mimeType, File.ReadAllBytes(filePath));
+
+                        return true;
+                    }
                 }
             }
-
             return false;
         }
     }
