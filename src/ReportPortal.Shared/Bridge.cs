@@ -23,7 +23,7 @@ namespace ReportPortal.Shared
 
             TraceLogger.Info($"Exploring extensions in '{currentDirectory}' directory.");
 
-            foreach (var file in currentDirectory.GetFiles("ReportPortal.*.dll"))
+            foreach (var file in currentDirectory.GetFiles("*ReportPortal*.dll"))
             {
                 TraceLogger.Verbose($"Found '{file.Name}' and loading it into current AppDomain.");
                 AppDomain.CurrentDomain.Load(Path.GetFileNameWithoutExtension(file.Name));
@@ -32,7 +32,7 @@ namespace ReportPortal.Shared
             var iLogFormatterExtensionInterfaceType = typeof(ILogFormatter);
             var iLogHandlerExtensionInterfaceType = typeof(ILogHandler);
 
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies().Where(a => a.GetName().Name.StartsWith("ReportPortal")))
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies().Where(a => a.GetName().Name.Contains("ReportPortal")))
             {
                 TraceLogger.Verbose($"Exploring '{assembly.FullName}' assembly for extensions.");
                 try
