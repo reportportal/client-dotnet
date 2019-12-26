@@ -6,6 +6,7 @@ using Xunit;
 
 namespace ReportPortal.Shared.Tests
 {
+    [CollectionDefinition(nameof(EntryLogTest), DisableParallelization = true)]
     public class EntryLogTest : ILogHandler
     {
         private string text = "text";
