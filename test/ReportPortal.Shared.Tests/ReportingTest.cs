@@ -48,7 +48,7 @@ namespace ReportPortal.Shared.Tests
             });
 
             var config = new Configuration.ConfigurationBuilder().Build();
-            config.Values["Server:Launch:Id"] = launch.Id;
+            config.Values["Launch:Id"] = launch.Id;
 
             var launchReporter = new LaunchReporter(_service, config, null);
             launchReporter.Start(new Client.Requests.StartLaunchRequest
