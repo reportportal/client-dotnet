@@ -1,9 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Engines;
 using ReportPortal.Shared.Reporter;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ReportPortal.Shared.Benchmark.Reporter
 {
@@ -18,7 +15,7 @@ namespace ReportPortal.Shared.Benchmark.Reporter
         public void LaunchReporter()
         {
             var nopService = new NopService(new Uri("https://rp.epam.com/api/v1/"), "", "");
-            var launchReporter = new LaunchReporter(nopService);
+            var launchReporter = new LaunchReporter(nopService, null, null);
 
             var launchDateTime = DateTime.UtcNow;
 
