@@ -4,8 +4,6 @@ using ReportPortal.Client.Requests;
 using ReportPortal.Shared.Reporter;
 using ReportPortal.Shared.Tests.Helpers;
 using System;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -49,7 +47,10 @@ namespace ReportPortal.Shared.Tests
                 Mode = Client.Models.LaunchMode.Debug
             });
 
-            var launchReporter = new LaunchReporter(_service, launch.Id);
+            var config = new Configuration.ConfigurationBuilder().Build();
+            config.Values["Server:Launch:Id"] = launch.Id;
+
+            var launchReporter = new LaunchReporter(_service, config, null);
             launchReporter.Start(new Client.Requests.StartLaunchRequest
             {
                 Name = "SomeOtherName",
@@ -80,7 +81,7 @@ namespace ReportPortal.Shared.Tests
         [Fact]
         public void FinishingNonStartedLaunch()
         {
-            var launchReporter = new LaunchReporter(_service);
+            var launchReporter = new LaunchReporter(_service, null, null);
 
             Assert.Throws<InsufficientExecutionStackException>(() => launchReporter.Finish(new Client.Requests.FinishLaunchRequest()));
         }
@@ -88,7 +89,7 @@ namespace ReportPortal.Shared.Tests
         [Fact]
         public void StartingAlreadyStartedLaunch()
         {
-            var launchReporter = new LaunchReporter(_service);
+            var launchReporter = new LaunchReporter(_service, null, null);
             launchReporter.Start(new Client.Requests.StartLaunchRequest());
 
             Assert.Throws<InsufficientExecutionStackException>(() => launchReporter.Start(new Client.Requests.StartLaunchRequest()));
@@ -97,7 +98,7 @@ namespace ReportPortal.Shared.Tests
         [Fact]
         public void FinishingAlreadyFinishedLaunch()
         {
-            var launchReporter = new LaunchReporter(_service);
+            var launchReporter = new LaunchReporter(_service, null, null);
             launchReporter.Start(new Client.Requests.StartLaunchRequest());
             launchReporter.Finish(new Client.Requests.FinishLaunchRequest());
 
@@ -107,7 +108,7 @@ namespace ReportPortal.Shared.Tests
         [Fact]
         public void BridgeLogMessage()
         {
-            var launchReporter = new LaunchReporter(_service);
+            var launchReporter = new LaunchReporter(_service, null, null);
 
             Bridge.Context.LaunchReporter = launchReporter;
 
