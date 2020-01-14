@@ -5,45 +5,45 @@ using System.Threading.Tasks;
 namespace ReportPortal.Shared.Internal.Delegating
 {
     /// <summary>
-    /// Invokes given func with retry strategy and exponential delay between attempts.
+    /// Invokes given func with retry strategy and linear delay between attempts.
     /// </summary>
-    public class ExponentialRetryRequestExecuter : IRequestExecuter
+    public class LinearRetryRequestExecuter : IRequestExecuter
     {
-        private Logging.ITraceLogger TraceLogger { get; } = Logging.TraceLogManager.GetLogger<ExponentialRetryRequestExecuter>();
+        private Logging.ITraceLogger TraceLogger { get; } = Logging.TraceLogManager.GetLogger<LinearRetryRequestExecuter>();
 
         private IRequestExecutionThrottler _concurrentThrottler;
 
         /// <summary>
-        /// Initializes new instance of <see cref="ExponentialRetryRequestExecuter"/>.
+        /// Initializes new instance of <see cref="LinearRetryRequestExecuter"/>.
         /// </summary>
         /// <param name="maxRetryAttempts">Maximum number of attempts.</param>
-        /// <param name="baseIndex">Exponential base index for delay.</param>
-        public ExponentialRetryRequestExecuter(int maxRetryAttempts, int baseIndex) : this(maxRetryAttempts, baseIndex, null)
+        /// <param name="delay">Delay between ateempts (in milliseconds).</param>
+        public LinearRetryRequestExecuter(int maxRetryAttempts, int delay) : this(maxRetryAttempts, delay, null)
         {
 
         }
 
         /// <summary>
-        /// Initializes new instance of <see cref="ExponentialRetryRequestExecuter"/>.
+        /// Initializes new instance of <see cref="LinearRetryRequestExecuter"/>.
         /// </summary>
         /// <param name="maxRetryAttempts">Maximum number of attempts.</param>
-        /// <param name="baseIndex">Exponential base index for delay.</param>
+        /// <param name="delay">Delay between ateempts (in milliseconds).</param>
         /// <param name="throttler">Limits concurrent execution of requests.</param>
-        public ExponentialRetryRequestExecuter(int maxRetryAttempts, int baseIndex, IRequestExecutionThrottler throttler)
+        public LinearRetryRequestExecuter(int maxRetryAttempts, int delay, IRequestExecutionThrottler throttler)
         {
             if (maxRetryAttempts < 1)
             {
                 throw new ArgumentException("Maximum attempts cannot be less than 1.", nameof(maxRetryAttempts));
             }
 
-            if (baseIndex < 0)
+            if (delay < 0)
             {
-                throw new ArgumentException("Base index for exponential delay cannot be less than 0.", nameof(baseIndex));
+                throw new ArgumentException("Delay cannot be less than 0.", nameof(delay));
             }
 
             _concurrentThrottler = throttler;
             MaxRetryAttemps = maxRetryAttempts;
-            BaseIndex = baseIndex;
+            Delay = delay;
         }
 
         /// <summary>
@@ -52,9 +52,9 @@ namespace ReportPortal.Shared.Internal.Delegating
         public int MaxRetryAttemps { get; private set; }
 
         /// <summary>
-        /// Exponential base index for delay
+        /// How many milliseconds to wait between attempts
         /// </summary>
-        public int BaseIndex { get; private set; }
+        public int Delay { get; private set; }
 
         /// <inheritdoc/>
         public async Task<T> ExecuteAsync<T>(Func<Task<T>> func)
@@ -77,9 +77,8 @@ namespace ReportPortal.Shared.Internal.Delegating
                 {
                     if (i < MaxRetryAttemps - 1)
                     {
-                        var delay = (int)Math.Pow(BaseIndex, i + MaxRetryAttemps);
-                        TraceLogger.Error($"Error while invoking '{func.Method.Name}' method. Current attempt: {i}. Waiting {delay} seconds and retrying it.\n{exp}");
-                        await Task.Delay(delay * 1000).ConfigureAwait(false);
+                        TraceLogger.Error($"Error while invoking '{func.Method.Name}' method. Current attempt: {i}. Waiting {Delay} milliseconds and retrying it.\n{exp}");
+                        await Task.Delay(Delay).ConfigureAwait(false);
                     }
                     else
                     {

@@ -10,20 +10,23 @@ namespace ReportPortal.Shared.Extensibility.LogFormatter
 
         public bool FormatLog(ref AddLogItemRequest logRequest)
         {
-            var regex = new Regex("{rp#base64#(.*)#(.*)}");
-            var match = regex.Match(logRequest.Text);
-            if (match.Success)
+            if (logRequest.Text != null)
             {
-                logRequest.Text = logRequest.Text.Replace(match.Value, "");
+                var regex = new Regex("{rp#base64#(.*)#(.*)}");
+                var match = regex.Match(logRequest.Text);
+                if (match.Success)
+                {
+                    logRequest.Text = logRequest.Text.Replace(match.Value, "");
 
-                var mimeType = match.Groups[1].Value;
-                var bytes = Convert.FromBase64String(match.Groups[2].Value);
+                    var mimeType = match.Groups[1].Value;
+                    var bytes = Convert.FromBase64String(match.Groups[2].Value);
 
-                logRequest.Attach = new Client.Models.Attach("file", mimeType, bytes);
+                    logRequest.Attach = new Client.Models.Attach("file", mimeType, bytes);
 
-                return true;
+                    return true;
+                }
+
             }
-
             return false;
         }
     }

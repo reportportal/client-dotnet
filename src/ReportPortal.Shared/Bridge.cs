@@ -72,6 +72,7 @@ namespace ReportPortal.Shared
 
         public static List<ILogHandler> LogHandlerExtensions { get; }
 
+        [Obsolete("We will avoid global static context.")]
         public static Service Service { get; set; }
 
         private static object _contextLockObj = new object();

@@ -21,7 +21,7 @@ namespace ReportPortal.Shared.Tests.Helpers
             requestExecuter.Setup(re => re.ExecuteAsync(It.IsAny<Func<Task<Message>>>())).Returns<Func<Task<Message>>>(v => v.Invoke());
 
             var requestExecuterFactory = new Mock<IRequestExecuterFactory>();
-            requestExecuterFactory.Setup(f => f.Create(It.IsAny<IConfiguration>())).Returns(requestExecuter.Object);
+            requestExecuterFactory.Setup(f => f.Create()).Returns(requestExecuter.Object);
 
             return requestExecuterFactory;
         }

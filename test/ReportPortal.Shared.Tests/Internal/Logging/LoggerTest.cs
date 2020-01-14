@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ReportPortal.Shared.Tests.Internal
+namespace ReportPortal.Shared.Tests.Internal.Logging
 {
     public class LoggerTest : IDisposable
     {

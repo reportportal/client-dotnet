@@ -25,7 +25,7 @@ namespace ReportPortal.Shared.Tests.Helpers
 
         public LaunchReporter Build(int suitesPerLaunch, int testsPerSuite, int logsPerTest)
         {
-            var launchReporter = new LaunchReporter(Service, null, RequestExecuterFactory);
+            var launchReporter = new LaunchReporter(Service, null, RequestExecuterFactory?.Create());
 
             var launchDateTime = DateTime.UtcNow;
 
