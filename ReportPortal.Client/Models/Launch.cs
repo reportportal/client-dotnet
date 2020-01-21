@@ -11,6 +11,9 @@ namespace ReportPortal.Client.Models
         [DataMember(Name = "id")]
         public string Id { get; set; }
 
+        [DataMember(Name = "uuid")]
+        public string Uuid { get; set; }
+
         [DataMember(Name = "name")]
         public string Name { get; set; }
 
