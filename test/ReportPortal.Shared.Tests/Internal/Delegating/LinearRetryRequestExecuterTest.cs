@@ -13,14 +13,14 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
         [Fact]
         public void DelayShouldBeGreaterOrEqualZero()
         {
-            Action ctor = () => new LinearRetryRequestExecuter(1, delay: -1, null);
+            Action ctor = () => new LinearRetryRequestExecuter(1, delay: -1, throttler: null);
             ctor.Should().Throw<ArgumentException>();
         }
 
         [Fact]
         public void MaxAttemptsShouldBeGreaterZero()
         {
-            Action ctor = () => new LinearRetryRequestExecuter(0, delay: 0, null);
+            Action ctor = () => new LinearRetryRequestExecuter(0, delay: 0, throttler: null);
             ctor.Should().Throw<ArgumentException>();
         }
 

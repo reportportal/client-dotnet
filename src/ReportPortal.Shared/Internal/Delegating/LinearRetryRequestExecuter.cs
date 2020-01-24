@@ -59,7 +59,7 @@ namespace ReportPortal.Shared.Internal.Delegating
         /// <inheritdoc/>
         public async Task<T> ExecuteAsync<T>(Func<Task<T>> func)
         {
-            T result = default;
+            T result = default(T);
 
             for (int i = 0; i < MaxRetryAttemps; i++)
             {

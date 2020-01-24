@@ -13,14 +13,14 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
         [Fact]
         public void BaseIndexShouldBeGreaterOrEqualZero()
         {
-            Action ctor = () => new ExponentialRetryRequestExecuter(1, baseIndex: -1, null);
+            Action ctor = () => new ExponentialRetryRequestExecuter(1, baseIndex: -1, throttler: null);
             ctor.Should().Throw<ArgumentException>();
         }
 
         [Fact]
         public void MaxAttemptsShouldBeGreaterOrEqualOne()
         {
-            Action ctor = () => new ExponentialRetryRequestExecuter(maxRetryAttempts: 0, 0, null);
+            Action ctor = () => new ExponentialRetryRequestExecuter(maxRetryAttempts: 0, baseIndex: 0, throttler: null);
             ctor.Should().Throw<ArgumentException>();
         }
 
