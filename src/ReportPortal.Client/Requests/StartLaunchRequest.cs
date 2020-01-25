@@ -37,7 +37,7 @@ namespace ReportPortal.Client.Requests
         /// <summary>
         /// Date time when the launch is executed.
         /// </summary>
-        [DataMember(Name = "start_time")]
+        [DataMember(Name = "startTime")]
         public string StartTimeString { get; set; }
 
         public DateTime StartTime

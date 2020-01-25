@@ -32,7 +32,7 @@ namespace ReportPortal.Client.Models
             set => ModeString = EnumConverter.ConvertFrom(value);
         }
 
-        [DataMember(Name = "start_time")]
+        [DataMember(Name = "startTime")]
         public string StartTimeString { get; set; }
 
         public DateTime StartTime
@@ -41,7 +41,7 @@ namespace ReportPortal.Client.Models
             set => StartTimeString = DateTimeConverter.ConvertFrom(value);
         }
 
-        [DataMember(Name = "end_time")]
+        [DataMember(Name = "endTime")]
         public string EndTimeString { get; set; }
 
         public DateTime? EndTime

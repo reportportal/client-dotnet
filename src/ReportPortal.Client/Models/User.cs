@@ -7,13 +7,13 @@ namespace ReportPortal.Client.Models
     [DataContract]
     public class User
     {
-        [DataMember(Name = "full_name")]
+        [DataMember(Name = "fullName")]
         public string Fullname { get; set; }
 
         [DataMember(Name = "email")]
         public string Email { get; set; }
 
-        [DataMember(Name = "assigned_projects")]
+        [DataMember(Name = "assignedProjects")]
         public IDictionary<string, ProjectAssigment> AssignedProjects { get; set; }
     }
 

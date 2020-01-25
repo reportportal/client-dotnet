@@ -7,6 +7,7 @@ using ReportPortal.Client.Converters;
 using System.Net.Http;
 using System.Text;
 using ReportPortal.Client.Extentions;
+using ReportPortal.Client.Responses;
 
 namespace ReportPortal.Client
 {
@@ -40,7 +41,7 @@ namespace ReportPortal.Client
         /// <returns>A representation of launch.</returns>
         public virtual async Task<Launch> GetLaunchAsync(string id)
         {
-            var uri = BaseUri.Append($"{Project}/launch/{id}");
+            var uri = BaseUri.Append($"{Project}/launch/uuid/{id}");
             var response = await _httpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<Launch>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
@@ -51,13 +52,13 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="model">Information about representation of launch.</param>
         /// <returns>Representation of just created launch.</returns>
-        public virtual async Task<Launch> StartLaunchAsync(StartLaunchRequest model)
+        public virtual async Task<LaunchCreatedResponse> StartLaunchAsync(StartLaunchRequest model)
         {
             var uri = BaseUri.Append($"{Project}/launch");
             var body = ModelSerializer.Serialize<StartLaunchRequest>(model);
             var response = await _httpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<Launch>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return ModelSerializer.Deserialize<LaunchCreatedResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         /// <summary>
@@ -67,14 +68,14 @@ namespace ReportPortal.Client
         /// <param name="model">Information about representation of launch to finish.</param>
         /// <param name="force">Force finish launch even if test items are in progress.</param>
         /// <returns>A message from service.</returns>
-        public virtual async Task<Message> FinishLaunchAsync(string id, FinishLaunchRequest model, bool force = false)
+        public virtual async Task<LaunchFinishedResponse> FinishLaunchAsync(string id, FinishLaunchRequest model, bool force = false)
         {
             var uri = BaseUri.Append($"{Project}/launch/{id}");
             uri = force == true ? uri.Append("/stop") : uri.Append("/finish");
             var body = ModelSerializer.Serialize<FinishLaunchRequest>(model);
             var response = await _httpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return ModelSerializer.Deserialize<LaunchFinishedResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         /// <summary>

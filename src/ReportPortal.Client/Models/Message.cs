@@ -5,7 +5,7 @@ namespace ReportPortal.Client.Models
     [DataContract]
     public class Message
     {
-        [DataMember(Name = "msg")]
+        [DataMember(Name = "message")]
         public string Info { get; set; }
     }
 }

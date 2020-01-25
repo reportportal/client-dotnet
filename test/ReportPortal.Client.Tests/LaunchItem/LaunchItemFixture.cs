@@ -64,7 +64,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
             var launches = await Service.GetLaunchesAsync(new FilterOption
             {
                 Paging = new Paging(1, 10),
-                Sorting = new Sorting(new List<string> { "start_time" }, SortDirection.Ascending)
+                Sorting = new Sorting(new List<string> { "startTime" }, SortDirection.Ascending)
             });
 
             Assert.True(launches.Launches.Count() > 0);
@@ -78,7 +78,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
             var launches = await Service.GetLaunchesAsync(new FilterOption
             {
                 Paging = new Paging(1, 10),
-                Sorting = new Sorting(new List<string> { "start_time" }, SortDirection.Descending)
+                Sorting = new Sorting(new List<string> { "startTime" }, SortDirection.Descending)
             });
 
             Assert.True(launches.Launches.Count() > 0);
@@ -104,14 +104,14 @@ namespace ReportPortal.Client.Tests.LaunchItem
             };
 
             var message = await Service.FinishLaunchAsync(launch.Id, finishLaunchRequest);
-            Assert.Contains("successfully", message.Info);
+            Assert.Equal(launch.Id, message.Id);
 
             var gotLaunch = await Service.GetLaunchAsync(launch.Id);
             Assert.Equal("StartFinishDeleteLaunch", gotLaunch.Name);
             Assert.Equal(startLaunchRequest.StartTime, gotLaunch.StartTime);
             Assert.Equal(finishLaunchRequest.EndTime, gotLaunch.EndTime);
 
-            var delMessage = await Service.DeleteLaunchAsync(launch.Id);
+            var delMessage = await Service.DeleteLaunchAsync(gotLaunch.Id);
             Assert.Contains("successfully", delMessage.Info);
         }
 
@@ -126,9 +126,9 @@ namespace ReportPortal.Client.Tests.LaunchItem
 
             var updateMessage = await Service.UpdateLaunchAsync(launch.Id, new UpdateLaunchRequest()
             {
-                Description = launch.Description,
-                Mode = launch.Mode,
-                Tags = launch.Tags
+                Description = "New description",
+                Mode = LaunchMode.Debug,
+                Tags = null
             });
 
             Assert.NotNull(launch.Id);
@@ -137,7 +137,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
             {
                 EndTime = DateTime.UtcNow
             });
-            Assert.Contains("successfully", message.Info);
+            Assert.Equal(launch.Id, message.Id);
 
             var gotLaunch = await Service.GetLaunchAsync(launch.Id);
             Assert.Equal("StartFinishDeleteLaunch", gotLaunch.Name);
@@ -167,7 +167,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
             {
                 EndTime = DateTime.UtcNow
             });
-            Assert.Contains("successfully", message.Info);
+            Assert.Equal(launch.Id, message.Id);
             var delMessage = await Service.DeleteLaunchAsync(launch.Id);
             Assert.Contains("successfully", delMessage.Info);
         }
@@ -185,7 +185,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
             {
                 EndTime = DateTime.UtcNow
             });
-            Assert.Contains("successfully", message.Info);
+            Assert.Equal(launch1.Id, message.Id);
 
             var launch2 = await Service.StartLaunchAsync(new StartLaunchRequest
             {
@@ -197,7 +197,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
             {
                 EndTime = DateTime.UtcNow
             });
-            Assert.Contains("successfully", message.Info);
+            Assert.Equal(launch2.Id, message.Id);
 
             var mergeRequest = new MergeLaunchesRequest
             {
@@ -230,7 +230,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
             {
                 EndTime = DateTime.UtcNow
             });
-            Assert.Contains("successfully", message.Info);
+            Assert.Equal(launch.Id, message.Id);
 
             var gotLaunch = await Service.GetLaunchAsync(launch.Id);
             Assert.Equal("StartFinishDeleteLaunch", gotLaunch.Name);
@@ -263,7 +263,7 @@ namespace ReportPortal.Client.Tests.LaunchItem
             {
                 EndTime = DateTime.UtcNow
             });
-            Assert.Contains("successfully", message.Info);
+            Assert.Contains(launch.Id, message.Id);
 
             var gotLaunch = await Service.GetLaunchAsync(launch.Id);
             Assert.Equal(launchName.Substring(0, 256), gotLaunch.Name);
@@ -318,9 +318,9 @@ namespace ReportPortal.Client.Tests.LaunchItem
             await Service.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
-            }, true);
+            });
 
-            var delMessage = await Service.DeleteLaunchAsync(launch.Id);
+            var delMessage = await Service.DeleteLaunchAsync(getLaunch.Id);
             Assert.Contains("successfully", delMessage.Info);
         }
     }

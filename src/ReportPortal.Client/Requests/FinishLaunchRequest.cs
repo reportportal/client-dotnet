@@ -13,7 +13,7 @@ namespace ReportPortal.Client.Requests
         /// <summary>
         /// Date time when launch execution is finished.
         /// </summary>
-        [DataMember(Name = "end_time")]
+        [DataMember(Name = "endTime")]
         public string EndTimeString { get; set; }
 
         public DateTime EndTime

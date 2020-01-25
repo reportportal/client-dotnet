@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
 
-namespace ReportPortal.Client.Models
+namespace ReportPortal.Client.Responses
 {
     [DataContract]
-    public class EntryCreated
+    public class LaunchCreatedResponse
     {
-        /// <summary>
-        /// ID of created entry
-        /// </summary>
-        [DataMember(Name= "id")]
+        [DataMember(Name = "id")]
         public string Id { get; set; }
     }
 }

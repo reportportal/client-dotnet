@@ -10,14 +10,17 @@ namespace ReportPortal.Client.Tests.User
         public async Task GetUserInfo()
         {
             var user = await Service.GetUserAsync();
-            Assert.Equal("Used for Net integration check via CI", user.Fullname);
+            // Assert.Equal("Used for Net integration check via CI", user.Fullname);
+            Assert.Equal("tester", user.Fullname);
             Assert.NotEmpty(user.Email);
 
             Assert.NotNull(user.AssignedProjects);
             Assert.NotEmpty(user.AssignedProjects.Keys);
 
-            Assert.Contains("ci-agents-checks", user.AssignedProjects.Keys);
-            Assert.Equal(ProjectRole.Member, user.AssignedProjects["ci-agents-checks"].ProjectRole);
+            // Assert.Contains("ci-agents-checks", user.AssignedProjects.Keys);
+            Assert.Contains("default_personal", user.AssignedProjects.Keys);
+            //Assert.Equal(ProjectRole.Member, user.AssignedProjects["ci-agents-checks"].ProjectRole);
+            Assert.Equal(ProjectRole.ProjectManager, user.AssignedProjects["default_personal"].ProjectRole);
         }
     }
 }
