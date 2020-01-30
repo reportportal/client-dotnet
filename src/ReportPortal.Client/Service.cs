@@ -101,5 +101,13 @@ namespace ReportPortal.Client
                 return new ServiceTestItemResource(_httpClient, BaseUri, Project, Token);
             }
         }
+
+        public ILogItemResource LogItem
+        {
+            get
+            {
+                return new ServiceLogItemResource(_httpClient, BaseUri, Project, Token);
+            }
+        }
     }
 }

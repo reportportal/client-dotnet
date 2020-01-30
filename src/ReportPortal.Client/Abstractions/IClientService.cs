@@ -13,14 +13,7 @@ namespace ReportPortal.Client.Abstractions
 
         ITestItemResource TestItem { get; }
 
-        #region Log
-        Task<LogItemCreatedResponse> AddLogItemAsync(AddLogItemRequest model);
-        Task<Message> DeleteLogItemAsync(long id);
-        Task<byte[]> GetBinaryDataAsync(string id);
-        Task<LogItem> GetLogItemAsync(long id);
-        Task<LogItem> GetLogItemAsync(string uuid);
-        Task<LogItemsContainer> GetLogItemsAsync(FilterOption filterOption = null);
-        #endregion
+        ILogItemResource LogItem { get; }
 
         Task<List<EntryCreated>> AddUserFilterAsync(AddUserFilterRequest model);
         Task<Message> DeleteUserFilterAsync(string filterId);
