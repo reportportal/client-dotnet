@@ -9,7 +9,7 @@ namespace ReportPortal.Client.Models
     public class Launch
     {
         [DataMember(Name = "id")]
-        public string Id { get; set; }
+        public long Id { get; set; }
 
         [DataMember(Name = "uuid")]
         public string Uuid { get; set; }

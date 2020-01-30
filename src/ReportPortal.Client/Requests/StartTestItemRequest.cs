@@ -15,8 +15,8 @@ namespace ReportPortal.Client.Requests
         /// <summary>
         /// ID of parent launch to create new test item.
         /// </summary>
-        [DataMember(Name = "launch_id")]
-        public string LaunchId { get; set; }
+        [DataMember(Name = "launchUuid")]
+        public string LaunchUuid { get; set; }
 
         private string _name;
 
@@ -35,7 +35,7 @@ namespace ReportPortal.Client.Requests
         /// <summary>
         /// Date time when new test item is created.
         /// </summary>
-        [DataMember(Name = "start_time")]
+        [DataMember(Name = "startTime")]
         public string StartTimeString { get; set; }
 
         public DateTime StartTime

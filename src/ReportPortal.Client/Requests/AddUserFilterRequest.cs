@@ -124,13 +124,13 @@ namespace ReportPortal.Client.Requests
         /// <summary>
         /// is asc
         /// </summary>
-        [DataMember(Name = "is_asc")]
+        [DataMember(Name = "isAsc")]
         public bool Asc { get; set; }
 
         /// <summary>
         /// a column to sort by
         /// </summary>
-        [DataMember(Name = "sorting_column")]
+        [DataMember(Name = "sortingColumn")]
         public string SortingColumn { get; set; }
     }
 }

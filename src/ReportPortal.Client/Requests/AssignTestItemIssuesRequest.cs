@@ -29,7 +29,7 @@ namespace ReportPortal.Client.Requests
         /// <summary>
         /// ID of test item to assign the issue.
         /// </summary>
-        [DataMember(Name = "test_item_id")]
-        public string TestItemId { get; set; }
+        [DataMember(Name = "testItemId")]
+        public long TestItemId { get; set; }
     }
 }

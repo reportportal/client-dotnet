@@ -19,24 +19,27 @@ namespace ReportPortal.Client.Tests.TestItem
 
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = launch.Id,
+                LaunchUuid = launch.Uuid,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
             });
 
-            await Service.FinishTestItemAsync(test.Id, new FinishTestItemRequest
+            await Service.FinishTestItemAsync(test.Uuid, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
             });
 
-            await Service.FinishLaunchAsync(launch.Id, new FinishLaunchRequest {EndTime = DateTime.UtcNow});
+            await Service.FinishLaunchAsync(launch.Uuid, new FinishLaunchRequest { EndTime = DateTime.UtcNow });
 
-            var deleteMessage = await Service.DeleteTestItemAsync(test.Id);
+            var tempTestItem = await Service.GetTestItemAsync(test.Uuid);
+
+            var deleteMessage = await Service.DeleteTestItemAsync(tempTestItem.Id);
             Assert.Contains("successfully deleted", deleteMessage.Info);
 
-            await Service.DeleteLaunchAsync(launch.Id);
+            var tempLaunch = await Service.GetLaunchAsync(launch.Uuid);
+            await Service.DeleteLaunchAsync(tempLaunch.Id);
         }
     }
 }

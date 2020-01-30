@@ -14,8 +14,8 @@ namespace ReportPortal.Client.Requests
         /// <summary>
         /// ID of test item to add new logs.
         /// </summary>
-        [DataMember(Name = "item_id")]
-        public string TestItemId { get; set; }
+        [DataMember(Name = "itemUuid")]
+        public string TestItemUuid { get; set; }
 
         /// <summary>
         /// Date time of log item.

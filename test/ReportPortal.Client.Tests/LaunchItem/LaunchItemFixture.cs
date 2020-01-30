@@ -96,17 +96,17 @@ namespace ReportPortal.Client.Tests.LaunchItem
             };
 
             var launch = await Service.StartLaunchAsync(startLaunchRequest);
-            Assert.NotNull(launch.Id);
+            Assert.NotNull(launch.Uuid);
 
             var finishLaunchRequest = new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow.AddHours(1)
             };
 
-            var message = await Service.FinishLaunchAsync(launch.Id, finishLaunchRequest);
-            Assert.Equal(launch.Id, message.Id);
+            var message = await Service.FinishLaunchAsync(launch.Uuid, finishLaunchRequest);
+            Assert.Equal(launch.Uuid, message.Id);
 
-            var gotLaunch = await Service.GetLaunchAsync(launch.Id);
+            var gotLaunch = await Service.GetLaunchAsync(launch.Uuid);
             Assert.Equal("StartFinishDeleteLaunch", gotLaunch.Name);
             Assert.Equal(startLaunchRequest.StartTime, gotLaunch.StartTime);
             Assert.Equal(finishLaunchRequest.EndTime, gotLaunch.EndTime);
@@ -124,25 +124,27 @@ namespace ReportPortal.Client.Tests.LaunchItem
                 StartTime = DateTime.UtcNow
             });
 
-            var updateMessage = await Service.UpdateLaunchAsync(launch.Id, new UpdateLaunchRequest()
+            var tempLaunch = await Service.GetLaunchAsync(launch.Uuid);
+
+            var updateMessage = await Service.UpdateLaunchAsync(tempLaunch.Id, new UpdateLaunchRequest()
             {
                 Description = "New description",
                 Mode = LaunchMode.Debug,
                 Tags = null
             });
 
-            Assert.NotNull(launch.Id);
+            Assert.NotNull(launch.Uuid);
             Assert.Contains("successfully updated", updateMessage.Info);
-            var message = await Service.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
+            var message = await Service.FinishLaunchAsync(launch.Uuid, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });
-            Assert.Equal(launch.Id, message.Id);
+            Assert.Equal(launch.Uuid, message.Id);
 
-            var gotLaunch = await Service.GetLaunchAsync(launch.Id);
+            var gotLaunch = await Service.GetLaunchAsync(launch.Uuid);
             Assert.Equal("StartFinishDeleteLaunch", gotLaunch.Name);
 
-            var delMessage = await Service.DeleteLaunchAsync(launch.Id);
+            var delMessage = await Service.DeleteLaunchAsync(gotLaunch.Id);
             Assert.Contains("successfully", delMessage.Info);
         }
 
@@ -155,20 +157,20 @@ namespace ReportPortal.Client.Tests.LaunchItem
                 Name = "StartFinishDeleteFullLaunch",
                 Description = "Desc",
                 StartTime = now,
-                Tags = new List<string> { "tag1", "tag2", "tag3" },
+                //Tags = new List<string> { "tag1", "tag2", "tag3" },
             });
-            Assert.NotNull(launch.Id);
-            var getLaunch = await Service.GetLaunchAsync(launch.Id);
+            Assert.NotNull(launch.Uuid);
+            var getLaunch = await Service.GetLaunchAsync(launch.Uuid);
             Assert.Equal("StartFinishDeleteFullLaunch", getLaunch.Name);
             Assert.Equal("Desc", getLaunch.Description);
             Assert.Equal(now.ToString(), getLaunch.StartTime.ToString());
-            Assert.Equal(new List<string> { "tag1", "tag2", "tag3" }, getLaunch.Tags);
-            var message = await Service.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
+            //Assert.Equal(new List<string> { "tag1", "tag2", "tag3" }, getLaunch.Tags);
+            var message = await Service.FinishLaunchAsync(launch.Uuid, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });
-            Assert.Equal(launch.Id, message.Id);
-            var delMessage = await Service.DeleteLaunchAsync(launch.Id);
+            Assert.Equal(launch.Uuid, message.Id);
+            var delMessage = await Service.DeleteLaunchAsync(getLaunch.Id);
             Assert.Contains("successfully", delMessage.Info);
         }
 
@@ -180,29 +182,31 @@ namespace ReportPortal.Client.Tests.LaunchItem
                 Name = "StartFinishDeleteLaunch",
                 StartTime = DateTime.UtcNow
             });
-            Assert.NotNull(launch1.Id);
-            var message = await Service.FinishLaunchAsync(launch1.Id, new FinishLaunchRequest
+            Assert.NotNull(launch1.Uuid);
+            var message = await Service.FinishLaunchAsync(launch1.Uuid, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });
-            Assert.Equal(launch1.Id, message.Id);
+            Assert.Equal(launch1.Uuid, message.Id);
 
             var launch2 = await Service.StartLaunchAsync(new StartLaunchRequest
             {
                 Name = "StartFinishDeleteLaunch2",
                 StartTime = DateTime.UtcNow
             });
-            Assert.NotNull(launch2.Id);
-            message = await Service.FinishLaunchAsync(launch2.Id, new FinishLaunchRequest
+            Assert.NotNull(launch2.Uuid);
+            message = await Service.FinishLaunchAsync(launch2.Uuid, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });
-            Assert.Equal(launch2.Id, message.Id);
+            Assert.Equal(launch2.Uuid, message.Id);
 
+            var getLaunch1 = await Service.GetLaunchAsync(launch1.Uuid);
+            var getLaunch2 = await Service.GetLaunchAsync(launch2.Uuid);
             var mergeRequest = new MergeLaunchesRequest
             {
                 Name = "MergedLaunch",
-                Launches = new List<string> { launch1.Id, launch2.Id },
+                Launches = new List<long> { getLaunch1.Id, getLaunch2.Id },
                 MergeType = "BASIC",
                 StartTime = DateTime.UtcNow,
                 EndTime = DateTime.UtcNow
@@ -225,25 +229,26 @@ namespace ReportPortal.Client.Tests.LaunchItem
                 StartTime = DateTime.UtcNow,
                 Mode = LaunchMode.Default
             });
-            Assert.NotNull(launch.Id);
-            var message = await Service.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
+            Assert.NotNull(launch.Uuid);
+            var message = await Service.FinishLaunchAsync(launch.Uuid, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });
-            Assert.Equal(launch.Id, message.Id);
+            Assert.Equal(launch.Uuid, message.Id);
 
-            var gotLaunch = await Service.GetLaunchAsync(launch.Id);
+            var gotLaunch = await Service.GetLaunchAsync(launch.Uuid);
             Assert.Equal("StartFinishDeleteLaunch", gotLaunch.Name);
 
             var analyzeMessage = await Service.AnalyzeLaunchAsync(new AnalyzeLaunchRequest
             {
-                LaunchId = launch.Id,
+                LaunchId = gotLaunch.Id,
                 AnalyzerMode = AnalyzerMode.LaunchName,
+                AnalyzerTypeName = "autoAnalyzer",
                 AnalyzerItemsMode = new List<AnalyzerItemsMode> { AnalyzerItemsMode.ToInvestigate }
             });
             Assert.Contains("started", analyzeMessage.Info);
-
-            var delMessage = await Service.DeleteLaunchAsync(launch.Id);
+            
+            var delMessage = await Service.DeleteLaunchAsync(gotLaunch.Id);
             Assert.Contains("successfully", delMessage.Info);
         }
 
@@ -258,17 +263,17 @@ namespace ReportPortal.Client.Tests.LaunchItem
                 Name = launchName,
                 StartTime = DateTime.UtcNow
             });
-            Assert.NotNull(launch.Id);
-            var message = await Service.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
+            Assert.NotNull(launch.Uuid);
+            var message = await Service.FinishLaunchAsync(launch.Uuid, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });
-            Assert.Contains(launch.Id, message.Id);
+            Assert.Contains(launch.Uuid, message.Id);
 
-            var gotLaunch = await Service.GetLaunchAsync(launch.Id);
+            var gotLaunch = await Service.GetLaunchAsync(launch.Uuid);
             Assert.Equal(launchName.Substring(0, 256), gotLaunch.Name);
 
-            var delMessage = await Service.DeleteLaunchAsync(launch.Id);
+            var delMessage = await Service.DeleteLaunchAsync(gotLaunch.Id);
             Assert.Contains("successfully", delMessage.Info);
         }
 
@@ -284,19 +289,23 @@ namespace ReportPortal.Client.Tests.LaunchItem
 
             var test = await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = launch.Id,
+                LaunchUuid = launch.Uuid,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
             });
-            Assert.NotNull(test.Id);
+            Assert.NotNull(test.Uuid);
 
-            await Service.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
+            var tempLaunch = await Service.GetLaunchAsync(launch.Uuid);
+
+            await Service.StopLaunchAsync(tempLaunch.Id, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
-            }, true);
+            });
 
-            var delMessage = await Service.DeleteLaunchAsync(launch.Id);
+            var getLaunch = await Service.GetLaunchAsync(launch.Uuid);
+
+            var delMessage = await Service.DeleteLaunchAsync(getLaunch.Id);
             Assert.Contains("successfully", delMessage.Info);
         }
 
@@ -310,12 +319,12 @@ namespace ReportPortal.Client.Tests.LaunchItem
                 Mode = LaunchMode.Default
             });
 
-            var getLaunch = await Service.GetLaunchAsync(launch.Id);
+            var getLaunch = await Service.GetLaunchAsync(launch.Uuid);
 
             Assert.NotEqual(default(DateTime), getLaunch.StartTime);
             Assert.Null(getLaunch.EndTime);
 
-            await Service.FinishLaunchAsync(launch.Id, new FinishLaunchRequest
+            await Service.FinishLaunchAsync(launch.Uuid, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });

@@ -35,13 +35,26 @@ namespace ReportPortal.Client
         }
 
         /// <summary>
+        /// Returns specified launch by UUID.
+        /// </summary>
+        /// <param name="uuid">UUID of the launch to retrieve.</param>
+        /// <returns>A representation of launch.</returns>
+        public virtual async Task<Launch> GetLaunchAsync(string uuid)
+        {
+            var uri = BaseUri.Append($"{Project}/launch/uuid/{uuid}");
+            var response = await _httpClient.GetAsync(uri).ConfigureAwait(false);
+            response.VerifySuccessStatusCode();
+            return ModelSerializer.Deserialize<Launch>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+        }
+
+        /// <summary>
         /// Returns specified launch by ID.
         /// </summary>
-        /// <param name="id">ID of the launch to retrieve.</param>
+        /// <param name="uuid">ID of the launch to retrieve.</param>
         /// <returns>A representation of launch.</returns>
-        public virtual async Task<Launch> GetLaunchAsync(string id)
+        public virtual async Task<Launch> GetLaunchAsync(long id)
         {
-            var uri = BaseUri.Append($"{Project}/launch/uuid/{id}");
+            var uri = BaseUri.Append($"{Project}/launch/{id}");
             var response = await _httpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<Launch>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
@@ -50,12 +63,12 @@ namespace ReportPortal.Client
         /// <summary>
         /// Creates a new launch.
         /// </summary>
-        /// <param name="model">Information about representation of launch.</param>
+        /// <param name="request">Information about representation of launch.</param>
         /// <returns>Representation of just created launch.</returns>
-        public virtual async Task<LaunchCreatedResponse> StartLaunchAsync(StartLaunchRequest model)
+        public virtual async Task<LaunchCreatedResponse> StartLaunchAsync(StartLaunchRequest request)
         {
             var uri = BaseUri.Append($"{Project}/launch");
-            var body = ModelSerializer.Serialize<StartLaunchRequest>(model);
+            var body = ModelSerializer.Serialize<StartLaunchRequest>(request);
             var response = await _httpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<LaunchCreatedResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
@@ -64,14 +77,28 @@ namespace ReportPortal.Client
         /// <summary>
         /// Finishes specified launch.
         /// </summary>
-        /// <param name="id">ID of specified launch.</param>
+        /// <param name="uuid">UUID of specified launch.</param>
         /// <param name="model">Information about representation of launch to finish.</param>
         /// <param name="force">Force finish launch even if test items are in progress.</param>
         /// <returns>A message from service.</returns>
-        public virtual async Task<LaunchFinishedResponse> FinishLaunchAsync(string id, FinishLaunchRequest model, bool force = false)
+        public virtual async Task<LaunchFinishedResponse> FinishLaunchAsync(string uuid, FinishLaunchRequest model)
         {
-            var uri = BaseUri.Append($"{Project}/launch/{id}");
-            uri = force == true ? uri.Append("/stop") : uri.Append("/finish");
+            var uri = BaseUri.Append($"{Project}/launch/{uuid}/finish");
+            var body = ModelSerializer.Serialize<FinishLaunchRequest>(model);
+            var response = await _httpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
+            response.VerifySuccessStatusCode();
+            return ModelSerializer.Deserialize<LaunchFinishedResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+        }
+
+        /// <summary>
+        /// Stopes specified launch.
+        /// </summary>
+        /// <param name="id">ID of specified launch.</param>
+        /// <param name="model">Information about representation of launch to finish.</param>
+        /// <returns>A message from service.</returns>
+        public virtual async Task<LaunchFinishedResponse> StopLaunchAsync(long id, FinishLaunchRequest model)
+        {
+            var uri = BaseUri.Append($"{Project}/launch/{id}/stop");
             var body = ModelSerializer.Serialize<FinishLaunchRequest>(model);
             var response = await _httpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
@@ -83,7 +110,7 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="id">ID of the launch to delete.</param>
         /// <returns>A message from service.</returns>
-        public virtual async Task<Message> DeleteLaunchAsync(string id)
+        public virtual async Task<Message> DeleteLaunchAsync(long id)
         {
             var uri = BaseUri.Append($"{Project}/launch/{id}");
             var response = await _httpClient.DeleteAsync(uri).ConfigureAwait(false);
@@ -111,7 +138,7 @@ namespace ReportPortal.Client
         /// <param name="id">ID of launch to update.</param>
         /// <param name="model">Information about launch.</param>
         /// <returns>A message from service.</returns>
-        public virtual async Task<Message> UpdateLaunchAsync(string id, UpdateLaunchRequest model)
+        public virtual async Task<Message> UpdateLaunchAsync(long id, UpdateLaunchRequest model)
         {
             var uri = BaseUri.Append($"{Project}/launch/{id}/update");
             var body = ModelSerializer.Serialize<UpdateLaunchRequest>(model);

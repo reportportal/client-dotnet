@@ -7,27 +7,30 @@ namespace ReportPortal.Client.Tests.LogItem
 {
     public class LogItemFixtureBase : BaseFixture, IDisposable
     {
-        public string LaunchId { get; set; }
+        public string LaunchUuid { get; set; }
+        public long LaunchId { get; set; }
 
-        public string TestId { get; set; }
+        public string TestUuid { get; set; }
 
         public LogItemFixtureBase()
         {
             Task.Run(async () =>
             {
-                LaunchId = (await Service.StartLaunchAsync(new StartLaunchRequest
+                LaunchUuid = (await Service.StartLaunchAsync(new StartLaunchRequest
                 {
                     Name = "StartFinishDeleteLaunch",
                     StartTime = DateTime.UtcNow
-                })).Id;
+                })).Uuid;
 
-                TestId = (await Service.StartTestItemAsync(new StartTestItemRequest
+                LaunchId = (await Service.GetLaunchAsync(LaunchUuid)).Id;
+
+                TestUuid = (await Service.StartTestItemAsync(new StartTestItemRequest
                 {
-                    LaunchId = LaunchId,
+                    LaunchUuid = LaunchUuid,
                     Name = "Test1",
                     StartTime = DateTime.UtcNow,
                     Type = TestItemType.Test
-                })).Id;
+                })).Uuid;
             }).Wait();
         }
 
@@ -35,7 +38,7 @@ namespace ReportPortal.Client.Tests.LogItem
         {
             Task.Run(async () =>
             {
-                await Service.FinishLaunchAsync(LaunchId, new FinishLaunchRequest { EndTime = DateTime.UtcNow }, true);
+                await Service.FinishLaunchAsync(LaunchUuid, new FinishLaunchRequest { EndTime = DateTime.UtcNow });
                 await Service.DeleteLaunchAsync(LaunchId);
             }).Wait();
         }

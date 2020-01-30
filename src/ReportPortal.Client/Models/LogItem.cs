@@ -8,7 +8,10 @@ namespace ReportPortal.Client.Models
     public class LogItem
     {
         [DataMember(Name = "id")]
-        public string Id { get; set; }
+        public long Id { get; set; }
+
+        [DataMember(Name = "uuid")]
+        public string Uuid { get; set; }
 
         [DataMember(Name = "time")]
         public string TimeString { get; set; }
@@ -33,20 +36,20 @@ namespace ReportPortal.Client.Models
 
         public LogLevel Level { get { return EnumConverter.ConvertTo<LogLevel>(LevelString); } set { LevelString = EnumConverter.ConvertFrom(value); } }
 
-        [DataMember(Name = "binary_content")]
+        [DataMember(Name = "binaryContent")]
         public BinaryContent Content { get; set; }
     }
 
     [DataContract]
     public class BinaryContent
     {
-        [DataMember(Name = "content_type")]
+        [DataMember(Name = "contentType")]
         public string ContentType { get; set; }
 
         [DataMember(Name = "id")]
         public string Id { get; set; }
 
-        [DataMember(Name = "thumbnail_id")]
+        [DataMember(Name = "thumbnailId")]
         public string ThumbnailId { get; set; }
     }
 

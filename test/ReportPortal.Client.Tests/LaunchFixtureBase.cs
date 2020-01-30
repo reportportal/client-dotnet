@@ -4,24 +4,29 @@ using ReportPortal.Client.Requests;
 
 namespace ReportPortal.Client.Tests
 {
-    public class LaunchFixtureBase: BaseFixture, IDisposable
+    public class LaunchFixtureBase : BaseFixture, IDisposable
     {
-        public string LaunchId { get; set; }
+        public long LaunchId { get; set; }
+        public string LaunchUuid { get; set; }
 
         public LaunchFixtureBase()
         {
-            LaunchId = Task.Run(async () => await Service.StartLaunchAsync(new StartLaunchRequest
+            Task.Run(async () =>
             {
-                Name = "StartFinishDeleteLaunch",
-                StartTime = DateTime.UtcNow
-            })).Result.Id;
-        }
+                LaunchUuid = (await Service.StartLaunchAsync(new StartLaunchRequest
+                {
+                    Name = "StartFinishDeleteLaunch",
+                    StartTime = DateTime.UtcNow
+                })).Uuid;
+                LaunchId = (await Service.GetLaunchAsync(LaunchUuid)).Id;
+            }).Wait();
+         }
 
         public void Dispose()
         {
             Task.Run(async () =>
             {
-                await Service.FinishLaunchAsync(LaunchId, new FinishLaunchRequest { EndTime = DateTime.UtcNow }, true);
+                await Service.StopLaunchAsync(LaunchId, new FinishLaunchRequest { EndTime = DateTime.UtcNow });
                 await Service.DeleteLaunchAsync(LaunchId);
             }).Wait();
         }

@@ -30,13 +30,13 @@ namespace ReportPortal.Client.Tests.LogItem
             var now = DateTime.UtcNow;
             var log = await Service.AddLogItemAsync(new AddLogItemRequest
             {
-                TestItemId = _fixture.TestId,
+                TestItemUuid = _fixture.TestUuid,
                 Text = "Log1",
                 Time = now,
                 Level = level
             });
-            Assert.NotNull(log.Id);
-            var getLog = await Service.GetLogItemAsync(log.Id);
+            Assert.NotNull(log.Uuid);
+            var getLog = await Service.GetLogItemAsync(log.Uuid);
             Assert.Equal("Log1", getLog.Text);
             Assert.Equal(now.ToString(), getLog.Time.ToString());
         }
@@ -47,17 +47,17 @@ namespace ReportPortal.Client.Tests.LogItem
             var data = new byte[] { 1, 2, 3 };
             var log = await Service.AddLogItemAsync(new AddLogItemRequest
             {
-                TestItemId = _fixture.TestId,
+                TestItemUuid = _fixture.TestUuid,
                 Text = "Log1",
                 Time = DateTime.UtcNow,
                 Level = LogLevel.Info,
                 Attach = new Attach("file1", "application/octet-stream", data)
             });
-            Assert.NotNull(log.Id);
-            var getLog = await Service.GetLogItemAsync(log.Id);
+            Assert.NotNull(log.Uuid);
+            var getLog = await Service.GetLogItemAsync(log.Uuid);
             Assert.Equal("Log1", getLog.Text);
 
-            var logMessage = await Service.GetLogItemAsync(log.Id);
+            var logMessage = await Service.GetLogItemAsync(log.Uuid);
             var binaryId = logMessage.Content.Id;
             var logData = await Service.GetBinaryDataAsync(binaryId);
             Assert.Equal(data, logData);
@@ -69,18 +69,19 @@ namespace ReportPortal.Client.Tests.LogItem
             var data = Encoding.Default.GetBytes("{\"a\" = true }");
             var log = await Service.AddLogItemAsync(new AddLogItemRequest
             {
-                TestItemId = _fixture.TestId,
+                TestItemUuid = _fixture.TestUuid,
                 Text = "Log1",
                 Time = DateTime.UtcNow,
                 Level = LogLevel.Info,
                 Attach = new Attach("file1", "application/json", data)
             });
-            Assert.NotNull(log.Id);
-            var getLog = await Service.GetLogItemAsync(log.Id);
+            Assert.NotNull(log.Uuid);
+            var getLog = await Service.GetLogItemAsync(log.Uuid);
             Assert.Equal("Log1", getLog.Text);
 
-            var logMessage = await Service.GetLogItemAsync(log.Id);
+            var logMessage = await Service.GetLogItemAsync(log.Uuid);
             var binaryId = logMessage.Content.Id;
+
             var logData = await Service.GetBinaryDataAsync(binaryId);
             Assert.Equal(data, logData);
         }
@@ -88,31 +89,33 @@ namespace ReportPortal.Client.Tests.LogItem
         [Fact]
         public async Task DeleteLogItem()
         {
-            var newTestId = (await Service.StartTestItemAsync(new StartTestItemRequest
+            var newTestUuid = (await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _fixture.LaunchId,
+                LaunchUuid = _fixture.LaunchUuid,
                 Name = "Test2",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
-            })).Id;
+            })).Uuid;
 
             var log = await Service.AddLogItemAsync(new AddLogItemRequest
             {
-                TestItemId = newTestId,
+                TestItemUuid = newTestUuid,
                 Text = "Log1",
                 Time = DateTime.UtcNow,
                 Level = LogLevel.Info
             });
-            Assert.NotNull(log.Id);
+            Assert.NotNull(log.Uuid);
 
-            await Service.FinishTestItemAsync(newTestId, new FinishTestItemRequest
+            await Service.FinishTestItemAsync(newTestUuid, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
 
             });
 
-            var message = (await Service.DeleteLogItemAsync(log.Id)).Info;
+            var tempLogItem = await Service.GetLogItemAsync(log.Uuid);
+
+            var message = (await Service.DeleteLogItemAsync(tempLogItem.Id)).Info;
             Assert.Contains("successfully", message);
         }
 
@@ -121,16 +124,16 @@ namespace ReportPortal.Client.Tests.LogItem
         {
             var addLogItemRequest = new AddLogItemRequest
             {
-                TestItemId = _fixture.TestId,
+                TestItemUuid = _fixture.TestUuid,
                 Text = "Log1",
                 Time = DateTime.UtcNow,
                 Level = LogLevel.Info
             };
 
             var log = await Service.AddLogItemAsync(addLogItemRequest);
-            Assert.NotNull(log.Id);
+            Assert.NotNull(log.Uuid);
 
-            var gotLogItem = await Service.GetLogItemAsync(log.Id);
+            var gotLogItem = await Service.GetLogItemAsync(log.Uuid);
             Assert.Equal(addLogItemRequest.Text, gotLogItem.Text);
             Assert.Equal(addLogItemRequest.Level, gotLogItem.Level);
             Assert.Equal(addLogItemRequest.Time, gotLogItem.Time);
@@ -139,39 +142,41 @@ namespace ReportPortal.Client.Tests.LogItem
         [Fact]
         public async Task GetLogItems()
         {
-            var newTestId = (await Service.StartTestItemAsync(new StartTestItemRequest
+            var newTestUuid = (await Service.StartTestItemAsync(new StartTestItemRequest
             {
-                LaunchId = _fixture.LaunchId,
+                LaunchUuid = _fixture.LaunchUuid,
                 Name = "Test3",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test
-            })).Id;
+            })).Uuid;
 
             var log = await Service.AddLogItemAsync(new AddLogItemRequest
             {
-                TestItemId = newTestId,
+                TestItemUuid = newTestUuid,
                 Text = "Log1",
                 Time = DateTime.UtcNow,
                 Level = LogLevel.Info
             });
-            Assert.NotNull(log.Id);
+            Assert.NotNull(log.Uuid);
 
-            await Service.FinishTestItemAsync(newTestId, new FinishTestItemRequest
+            await Service.FinishTestItemAsync(newTestUuid, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
             });
 
+            var tempTest = await Service.GetTestItemAsync(newTestUuid);
             var logs = (await Service.GetLogItemsAsync(new FilterOption
             {
                 Filters = new List<Filter>
                         {
-                            new Filter(FilterOperation.Equals, "item", newTestId)
+                            new Filter(FilterOperation.Equals, "item", tempTest.Id)
                         }
             })).LogItems;
             Assert.True(logs.Count() > 0);
 
-            var message = (await Service.DeleteLogItemAsync(log.Id)).Info;
+            var tempLogItem = await Service.GetLogItemAsync(log.Uuid);
+            var message = (await Service.DeleteLogItemAsync(tempLogItem.Id)).Info;
             Assert.Contains("successfully", message);
         }
     }

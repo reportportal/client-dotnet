@@ -35,7 +35,7 @@ namespace ReportPortal.Client.Requests
         /// <summary>
         /// Date time when the launch is executed.
         /// </summary>
-        [DataMember(Name = "start_time")]
+        [DataMember(Name = "startTime")]
         public string StartTimeString { get; set; }
 
         public DateTime StartTime
@@ -53,7 +53,7 @@ namespace ReportPortal.Client.Requests
         /// <summary>
         /// Date time when the launch is finished.
         /// </summary>
-        [DataMember(Name = "end_time")]
+        [DataMember(Name = "endTime")]
         public string EndTimeString { get; set; }
 
         public DateTime EndTime
@@ -78,12 +78,12 @@ namespace ReportPortal.Client.Requests
         /// Tags for merged launch.
         /// </summary>
         [DataMember(Name = "launches")]
-        public List<string> Launches { get; set; }
+        public List<long> Launches { get; set; }
 
         /// <summary>
         /// Type of launches merge.
         /// </summary>
-        [DataMember(Name = "merge_type")]
+        [DataMember(Name = "mergeType")]
         public string MergeType { get; set; }
     }
 }

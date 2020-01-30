@@ -3,7 +3,7 @@
 namespace ReportPortal.Client.Responses
 {
     [DataContract]
-    public class LaunchCreatedResponse
+    public class LogItemCreatedResponse
     {
         [DataMember(Name = "id")]
         public string Uuid { get; set; }

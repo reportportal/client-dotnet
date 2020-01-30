@@ -8,6 +8,7 @@ using System;
 using System.Net.Http;
 using System.Text;
 using ReportPortal.Client.Extentions;
+using ReportPortal.Client.Responses;
 
 namespace ReportPortal.Client
 {
@@ -35,7 +36,7 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="id">ID of the test item to retrieve.</param>
         /// <returns>A representation of test item.</returns>
-        public virtual async Task<TestItem> GetTestItemAsync(string id)
+        public virtual async Task<TestItem> GetTestItemAsync(long id)
         {
             var uri = BaseUri.Append($"{Project}/item/{id}");
             var response = await _httpClient.GetAsync(uri).ConfigureAwait(false);
@@ -44,18 +45,16 @@ namespace ReportPortal.Client
         }
 
         /// <summary>
-        /// Returns the list of tests tags for specified launch.
+        /// Returns specified test item by UUID.
         /// </summary>
-        /// <param name="launchId">ID of launch.</param>
-        /// <param name="tagContains">Tags should contain specified text.</param>
-        /// <returns></returns>
-        public virtual async Task<List<string>> GetUniqueTagsAsync(string launchId, string tagContains)
+        /// <param name="uuid">UUID of the test item to retrieve.</param>
+        /// <returns>A representation of test item.</returns>
+        public virtual async Task<TestItem> GetTestItemAsync(string uuid)
         {
-            var uri = BaseUri.Append($"{Project}/item/tags?launch={launchId}&filter.cnt.tags={tagContains}");
-
+            var uri = BaseUri.Append($"{Project}/item/uuid/{uuid}");
             var response = await _httpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<List<string>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return ModelSerializer.Deserialize<TestItem>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         /// <summary>
@@ -63,28 +62,28 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="model">Information about representation of test item.</param>
         /// <returns>Representation of created test item.</returns>
-        public virtual async Task<TestItem> StartTestItemAsync(StartTestItemRequest model)
+        public virtual async Task<TestItemCreatedResponse> StartTestItemAsync(StartTestItemRequest model)
         {
             var uri = BaseUri.Append($"{Project}/item");
             var body = ModelSerializer.Serialize<StartTestItemRequest>(model);
             var response = await _httpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<TestItem>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return ModelSerializer.Deserialize<TestItemCreatedResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         /// <summary>
         /// Creates a new test item.
         /// </summary>
-        /// <param name="id">ID of parent item.</param>
+        /// <param name="uuid">UUID of parent item.</param>
         /// <param name="model">Information about representation of test item.</param>
         /// <returns>Representation of created test item.</returns>
-        public virtual async Task<TestItem> StartTestItemAsync(string id, StartTestItemRequest model)
+        public virtual async Task<TestItemCreatedResponse> StartTestItemAsync(string uuid, StartTestItemRequest model)
         {
-            var uri = BaseUri.Append($"{Project}/item/{id}");
+            var uri = BaseUri.Append($"{Project}/item/{uuid}");
             var body = ModelSerializer.Serialize<StartTestItemRequest>(model);
             var response = await _httpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<TestItem>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return ModelSerializer.Deserialize<TestItemCreatedResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         /// <summary>
@@ -108,7 +107,7 @@ namespace ReportPortal.Client
         /// <param name="id">ID of test item to update.</param>
         /// <param name="model">Information about test item.</param>
         /// <returns>A message from service.</returns>
-        public virtual async Task<Message> UpdateTestItemAsync(string id, UpdateTestItemRequest model)
+        public virtual async Task<Message> UpdateTestItemAsync(long id, UpdateTestItemRequest model)
         {
             var uri = BaseUri.Append($"{Project}/item/{id}/update");
             var body = ModelSerializer.Serialize<UpdateTestItemRequest>(model);
@@ -122,7 +121,7 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="id">ID of the test item to delete.</param>
         /// <returns>A message from service.</returns>
-        public virtual async Task<Message> DeleteTestItemAsync(string id)
+        public virtual async Task<Message> DeleteTestItemAsync(long id)
         {
             var uri = BaseUri.Append($"{Project}/item/{id}");
             var response = await _httpClient.DeleteAsync(uri).ConfigureAwait(false);

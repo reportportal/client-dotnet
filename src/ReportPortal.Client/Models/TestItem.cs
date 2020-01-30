@@ -9,7 +9,10 @@ namespace ReportPortal.Client.Models
     public class TestItem
     {
         [DataMember(Name = "id")]
-        public string Id { get; set; }
+        public long Id { get; set; }
+
+        [DataMember(Name = "uuid")]
+        public string Uuid { get; set; }
 
         [DataMember(Name = "parent")]
         public string ParentId { get; set; }
@@ -20,7 +23,7 @@ namespace ReportPortal.Client.Models
         [DataMember(Name = "description")]
         public string Description { get; set; }
 
-        [DataMember(Name = "start_time")]
+        [DataMember(Name = "startTime")]
         public string StartTimeString { get; set; }
 
         public DateTime StartTime
@@ -29,7 +32,7 @@ namespace ReportPortal.Client.Models
             set => StartTimeString = DateTimeConverter.ConvertFrom(value);
         }
 
-        [DataMember(Name = "end_time")]
+        [DataMember(Name = "endTime")]
         public string EndTimeString { get; set; }
 
         public DateTime? EndTime
@@ -65,11 +68,11 @@ namespace ReportPortal.Client.Models
         [DataMember(Name = "issue")]
         public Issue Issue { get; set; }
 
-        [DataMember(Name = "path_names")]
-        public Dictionary<string, string> PathNames { get; set; }
+        [DataMember(Name = "pathNames")]
+        public PathNames PathNames { get; set; }
 
-        [DataMember(Name = "has_childs")]
-        public bool HasChilds { get; set; }
+        [DataMember(Name = "hasChildren")]
+        public bool HasChildren { get; set; }
 
         [DataMember(Name = "parameters")]
         public List<KeyValuePair<string, string>> Parameters { get; set; }
@@ -79,10 +82,25 @@ namespace ReportPortal.Client.Models
     }
 
     [DataContract]
+    public class PathNames
+    {
+        [DataMember(Name = "launchPathName")]
+        public LaunchPathNameModel LaunchPathName { get; set; }
+
+        [DataContract]
+        public class LaunchPathNameModel
+        {
+            public string Name { get; set; }
+
+            public long Number { get; set; }
+        }
+    }
+
+    [DataContract]
     public class Issue
     {
-        [DataMember(Name = "issue_type")]
-        public string Type;
+        [DataMember(Name = "issueType")]
+        public string Type { get; set; }
 
         [DataMember(Name = "comment")]
         public string Comment { get; set; }

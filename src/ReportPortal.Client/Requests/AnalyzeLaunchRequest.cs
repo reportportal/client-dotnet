@@ -13,16 +13,19 @@ namespace ReportPortal.Client.Requests
     [DataContract]
     public class AnalyzeLaunchRequest
     {
-        [DataMember(Name = "launch_id")]
-        public string LaunchId { get; set; }
+        [DataMember(Name = "launchId")]
+        public long LaunchId { get; set; }
 
-        [DataMember(Name = "analyzer_mode")]
+        [DataMember(Name = "analyzerMode")]
         public string AnalyzerModeString { get; set; }
 
         public AnalyzerMode AnalyzerMode { get { return EnumConverter.ConvertTo<AnalyzerMode>(AnalyzerModeString); } set { AnalyzerModeString = EnumConverter.ConvertFrom(value); } }
 
-        [DataMember(Name = "analyze_items_mode")]
+        [DataMember(Name = "analyzeItemsMode")]
         public List<string> AnalyzerItemsModeString { get; set; }
+
+        [DataMember(Name = "analyzerTypeName")]
+        public string AnalyzerTypeName { get; set; }
 
         public List<AnalyzerItemsMode> AnalyzerItemsMode { get { return AnalyzerItemsModeString.Select(i => EnumConverter.ConvertTo<AnalyzerItemsMode>(i)).ToList(); } set { AnalyzerItemsModeString = value.Select(i => EnumConverter.ConvertFrom(i)).ToList(); } }
     }
