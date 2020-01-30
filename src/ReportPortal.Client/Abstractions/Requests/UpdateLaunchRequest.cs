@@ -2,6 +2,7 @@
 using ReportPortal.Client.Converters;
 using ReportPortal.Client.Models;
 using System.Runtime.Serialization;
+using ReportPortal.Client.Abstractions.Responses;
 
 namespace ReportPortal.Client.Abstractions.Requests
 {

@@ -1,7 +1,6 @@
-﻿using System.ComponentModel;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
-namespace ReportPortal.Client.Models
+namespace ReportPortal.Client.Abstractions.Responses
 {
     /// <summary>
     /// Describes statuses of tests items.

@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using ReportPortal.Client.Filtering;
-using ReportPortal.Client.Models;
-using ReportPortal.Client.Requests;
 using System.Threading.Tasks;
 using Xunit;
 using System.Text;
 using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Client.Abstractions.Responses;
 
 namespace ReportPortal.Client.IntegrationTests.LogItem
 {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 using Xunit;

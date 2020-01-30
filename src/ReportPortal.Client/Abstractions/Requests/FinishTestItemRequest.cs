@@ -1,6 +1,5 @@
 ﻿using System;
 using ReportPortal.Client.Converters;
-using ReportPortal.Client.Models;
 using System.Runtime.Serialization;
 using System.Collections.Generic;
 using ReportPortal.Client.Abstractions.Responses;
@@ -43,7 +42,7 @@ namespace ReportPortal.Client.Abstractions.Requests
         [DataMember(Name = "status")]
         public string StatusString { get { return EnumConverter.ConvertFrom(Status); } set { Status = EnumConverter.ConvertTo<Status>(value); } }
 
-        public Status Status = Models.Status.Passed;
+        public Status Status = Status.Passed;
         
         /// <summary>
         /// A issue of test item if execution was proceeded with error.

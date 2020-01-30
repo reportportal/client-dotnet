@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using Xunit;
 using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Client.Abstractions.Responses;
 
 namespace ReportPortal.Client.IntegrationTests.LaunchItem
 {

@@ -4,6 +4,7 @@ using System.Runtime.Serialization;
 using ReportPortal.Client.Models;
 using System.Collections.Generic;
 using System.Linq;
+using ReportPortal.Client.Abstractions.Responses;
 
 namespace ReportPortal.Client.Abstractions.Requests
 {
