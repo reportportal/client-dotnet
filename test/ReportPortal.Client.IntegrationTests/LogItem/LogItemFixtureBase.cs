@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 
@@ -16,13 +17,13 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
         {
             Task.Run(async () =>
             {
-                LaunchUuid = (await Service.StartLaunchAsync(new StartLaunchRequest
+                LaunchUuid = (await Service.Launch.StartAsync(new StartLaunchRequest
                 {
                     Name = "StartFinishDeleteLaunch",
                     StartTime = DateTime.UtcNow
                 })).Uuid;
 
-                LaunchId = (await Service.GetLaunchAsync(LaunchUuid)).Id;
+                LaunchId = (await Service.Launch.GetAsync(LaunchUuid)).Id;
 
                 TestUuid = (await Service.StartTestItemAsync(new StartTestItemRequest
                 {
@@ -38,8 +39,8 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
         {
             Task.Run(async () =>
             {
-                await Service.FinishLaunchAsync(LaunchUuid, new FinishLaunchRequest { EndTime = DateTime.UtcNow });
-                await Service.DeleteLaunchAsync(LaunchId);
+                await Service.Launch.FinishAsync(LaunchUuid, new FinishLaunchRequest { EndTime = DateTime.UtcNow });
+                await Service.Launch.DeleteAsync(LaunchId);
             }).Wait();
         }
     }

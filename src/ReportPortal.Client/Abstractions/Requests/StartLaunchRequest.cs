@@ -4,19 +4,21 @@ using ReportPortal.Client.Converters;
 using ReportPortal.Client.Models;
 using System.Runtime.Serialization;
 
-namespace ReportPortal.Client.Requests
+namespace ReportPortal.Client.Abstractions.Requests
 {
     /// <summary>
     /// Defines a content of request for service to create new launch.
     /// </summary>
     [DataContract]
-    public class MergeLaunchesRequest
+    public class StartLaunchRequest
     {
+        private string _name;
+
         /// <summary>
         /// A short name of launch.
         /// </summary>
         [DataMember(Name = "name")]
-        public string Name { get; set; }
+        public string Name { get { return _name; } set { _name = StringTrimmer.Trim(value, 256); } }
 
         /// <summary>
         /// Description of launch.
@@ -27,10 +29,10 @@ namespace ReportPortal.Client.Requests
         /// <summary>
         /// Specify whether the launch is executed under debugging.
         /// </summary>
-        [DataMember(Name = "mode", EmitDefaultValue = true)]
+        [DataMember(Name = "mode")]
         public string ModeString { get { return EnumConverter.ConvertFrom(Mode); } set { Mode = EnumConverter.ConvertTo<LaunchMode>(value); } }
 
-        public LaunchMode Mode { get; set; }
+        public LaunchMode Mode = LaunchMode.Default;
 
         /// <summary>
         /// Date time when the launch is executed.
@@ -51,39 +53,9 @@ namespace ReportPortal.Client.Requests
         }
 
         /// <summary>
-        /// Date time when the launch is finished.
-        /// </summary>
-        [DataMember(Name = "endTime")]
-        public string EndTimeString { get; set; }
-
-        public DateTime EndTime
-        {
-            get
-            {
-                return DateTimeConverter.ConvertTo(EndTimeString);
-            }
-            set
-            {
-                EndTimeString = DateTimeConverter.ConvertFrom(value);
-            }
-        }
-
-        /// <summary>
-        /// Tags for merged launch.
+        /// Mark the launch with tags.
         /// </summary>
         [DataMember(Name = "tags", EmitDefaultValue = true)]
         public List<string> Tags { get; set; }
-
-        /// <summary>
-        /// Tags for merged launch.
-        /// </summary>
-        [DataMember(Name = "launches")]
-        public List<long> Launches { get; set; }
-
-        /// <summary>
-        /// Type of launches merge.
-        /// </summary>
-        [DataMember(Name = "mergeType")]
-        public string MergeType { get; set; }
     }
 }

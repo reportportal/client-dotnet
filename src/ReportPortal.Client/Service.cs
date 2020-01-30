@@ -10,7 +10,7 @@ namespace ReportPortal.Client
     /// <summary>
     /// Class to interact with common Report Portal services. Provides possibility to manage almost of service's entities.
     /// </summary>
-    public partial class Service : IApiService
+    public partial class Service : IClientService
     {
         private readonly HttpClient _httpClient;
 
@@ -36,6 +36,7 @@ namespace ReportPortal.Client
             _httpClient.DefaultRequestHeaders.Add("User-Agent", ".NET Reporter");
             BaseUri = uri;
             Project = project;
+            Token = password;
 
 #if NET45
             ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
@@ -79,5 +80,10 @@ namespace ReportPortal.Client
         /// Base api uri for http requests.
         /// </summary>
         public Uri BaseUri { get; set; }
+
+        /// <summary>
+        /// User token to interact with api.
+        /// </summary>
+        public string Token { get; set; }
     }
 }

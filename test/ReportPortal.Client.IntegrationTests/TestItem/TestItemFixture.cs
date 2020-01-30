@@ -6,6 +6,7 @@ using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 using System.Threading.Tasks;
 using Xunit;
+using ReportPortal.Client.Abstractions.Requests;
 
 namespace ReportPortal.Client.IntegrationTests.TestItem
 {
@@ -546,10 +547,10 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
         public async Task GetTestItemHistory()
         {
             var launchName = Guid.NewGuid().ToString();
-            var launch1 = await Service.StartLaunchAsync(new StartLaunchRequest { Name = launchName, StartTime = DateTime.UtcNow });
+            var launch1 = await Service.Launch.StartAsync(new StartLaunchRequest { Name = launchName, StartTime = DateTime.UtcNow });
             var test1 = await Service.StartTestItemAsync(new StartTestItemRequest { LaunchUuid = launch1.Uuid, Name = "ABC", StartTime = DateTime.UtcNow });
 
-            var launch2 = await Service.StartLaunchAsync(new StartLaunchRequest { Name = launchName, StartTime = DateTime.UtcNow });
+            var launch2 = await Service.Launch.StartAsync(new StartLaunchRequest { Name = launchName, StartTime = DateTime.UtcNow });
             var test2 = await Service.StartTestItemAsync(new StartTestItemRequest { LaunchUuid = launch2.Uuid, Name = "ABC", StartTime = DateTime.UtcNow });
 
             var gotTest2 = await Service.GetTestItemAsync(test2.Uuid);
@@ -557,14 +558,14 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
             var histories = await Service.GetTestItemHistoryAsync(new List<long> { gotTest2.Id }, 5, true);
             Assert.Equal(2, histories.Count);
 
-            var gotLaunch1 = await Service.GetLaunchAsync(launch1.Uuid);
-            var gotLaunch2 = await Service.GetLaunchAsync(launch2.Uuid);
+            var gotLaunch1 = await Service.Launch.GetAsync(launch1.Uuid);
+            var gotLaunch2 = await Service.Launch.GetAsync(launch2.Uuid);
 
-            await Service.StopLaunchAsync(gotLaunch1.Id, new FinishLaunchRequest { EndTime = DateTime.UtcNow });
-            await Service.StopLaunchAsync(gotLaunch2.Id, new FinishLaunchRequest { EndTime = DateTime.UtcNow });
+            await Service.Launch.StopAsync(gotLaunch1.Id, new FinishLaunchRequest { EndTime = DateTime.UtcNow });
+            await Service.Launch.StopAsync(gotLaunch2.Id, new FinishLaunchRequest { EndTime = DateTime.UtcNow });
 
-            await Service.DeleteLaunchAsync(gotLaunch1.Id);
-            await Service.DeleteLaunchAsync(gotLaunch2.Id);
+            await Service.Launch.DeleteAsync(gotLaunch1.Id);
+            await Service.Launch.DeleteAsync(gotLaunch2.Id);
         }
 
         [Fact]
@@ -639,7 +640,7 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
                 EndTime = DateTime.UtcNow
             });
 
-            var launch = await Service.GetLaunchAsync(_fixture.LaunchId);
+            var launch = await Service.Launch.GetAsync(_fixture.LaunchId);
 
             Assert.True(launch.HasRetries);
         }

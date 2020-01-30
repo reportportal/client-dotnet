@@ -7,20 +7,9 @@ using ReportPortal.Client.Responses;
 
 namespace ReportPortal.Client.Abstractions
 {
-    public interface IApiService
+    public interface IClientService
     {
-        #region Launch
-        Task<Message> AnalyzeLaunchAsync(AnalyzeLaunchRequest model);
-        Task<LaunchFinishedResponse> FinishLaunchAsync(string uuid, FinishLaunchRequest model);
-        Task<Message> DeleteLaunchAsync(long id);
-        Task<Launch> GetLaunchAsync(long id);
-        Task<Launch> GetLaunchAsync(string uuid);
-        Task<LaunchesContainer> GetLaunchesAsync(FilterOption filterOption = null, bool debug = false);
-        Task<Launch> MergeLaunchesAsync(MergeLaunchesRequest model);
-        Task<LaunchCreatedResponse> StartLaunchAsync(StartLaunchRequest request);
-        Task<LaunchFinishedResponse> StopLaunchAsync(long id, FinishLaunchRequest model);
-        Task<Message> UpdateLaunchAsync(long id, UpdateLaunchRequest model);
-        #endregion
+        ILaunchResource Launch { get; }
 
         #region Test
         Task<List<Issue>> AssignTestItemIssuesAsync(AssignTestItemIssuesRequest model);

@@ -5,7 +5,7 @@ using ReportPortal.Client.Models;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ReportPortal.Client.Requests
+namespace ReportPortal.Client.Abstractions.Requests
 {
     /// <summary>
     /// Defines a request to analyze launch.

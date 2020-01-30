@@ -2,7 +2,7 @@
 using ReportPortal.Client.Converters;
 using System.Runtime.Serialization;
 
-namespace ReportPortal.Client.Requests
+namespace ReportPortal.Client.Abstractions.Requests
 {
     /// <summary>
     /// Defines a request to finish execution of specified launch.
