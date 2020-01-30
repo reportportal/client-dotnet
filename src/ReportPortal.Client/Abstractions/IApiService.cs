@@ -5,7 +5,7 @@ using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 using ReportPortal.Client.Responses;
 
-namespace ReportPortal.Client
+namespace ReportPortal.Client.Abstractions
 {
     public interface IApiService
     {

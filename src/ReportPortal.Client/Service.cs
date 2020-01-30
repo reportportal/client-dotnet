@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using ReportPortal.Client.Abstractions;
 using ReportPortal.Client.Extentions;
 
 namespace ReportPortal.Client
@@ -19,7 +20,6 @@ namespace ReportPortal.Client
         /// <param name="uri">Base URI for REST service.</param>
         /// <param name="project">A project to manage.</param>
         /// <param name="password">A password for user. Can be UID given from user's profile page.</param>
-        /// <param name="messageHandler">The HTTP handler to use for sending all requests.</param>
         public Service(Uri uri, string project, string password)
         {
             _httpClient = new HttpClient();
@@ -75,6 +75,9 @@ namespace ReportPortal.Client
         /// </summary>
         public string Project { get; set; }
 
+        /// <summary>
+        /// Base api uri for http requests.
+        /// </summary>
         public Uri BaseUri { get; set; }
     }
 }

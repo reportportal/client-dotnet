@@ -79,7 +79,6 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="uuid">UUID of specified launch.</param>
         /// <param name="model">Information about representation of launch to finish.</param>
-        /// <param name="force">Force finish launch even if test items are in progress.</param>
         /// <returns>A message from service.</returns>
         public virtual async Task<LaunchFinishedResponse> FinishLaunchAsync(string uuid, FinishLaunchRequest model)
         {
