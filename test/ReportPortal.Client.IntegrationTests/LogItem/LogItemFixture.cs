@@ -90,7 +90,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
         [Fact]
         public async Task DeleteLogItem()
         {
-            var newTestUuid = (await Service.TestItem.StartTestItemAsync(new StartTestItemRequest
+            var newTestUuid = (await Service.TestItem.StartAsync(new StartTestItemRequest
             {
                 LaunchUuid = _fixture.LaunchUuid,
                 Name = "Test2",
@@ -107,7 +107,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
             });
             Assert.NotNull(log.Uuid);
 
-            await Service.TestItem.FinishTestItemAsync(newTestUuid, new FinishTestItemRequest
+            await Service.TestItem.FinishAsync(newTestUuid, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
@@ -143,7 +143,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
         [Fact]
         public async Task GetLogItems()
         {
-            var newTestUuid = (await Service.TestItem.StartTestItemAsync(new StartTestItemRequest
+            var newTestUuid = (await Service.TestItem.StartAsync(new StartTestItemRequest
             {
                 LaunchUuid = _fixture.LaunchUuid,
                 Name = "Test3",
@@ -160,13 +160,13 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
             });
             Assert.NotNull(log.Uuid);
 
-            await Service.TestItem.FinishTestItemAsync(newTestUuid, new FinishTestItemRequest
+            await Service.TestItem.FinishAsync(newTestUuid, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
             });
 
-            var tempTest = await Service.TestItem.GetTestItemAsync(newTestUuid);
+            var tempTest = await Service.TestItem.GetAsync(newTestUuid);
             var logs = (await Service.GetLogItemsAsync(new FilterOption
             {
                 Filters = new List<Filter>

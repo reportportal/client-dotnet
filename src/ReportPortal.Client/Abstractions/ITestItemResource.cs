@@ -9,15 +9,15 @@ namespace ReportPortal.Client.Abstractions
 {
     public interface ITestItemResource
     {
-        Task<List<Issue>> AssignTestItemIssuesAsync(AssignTestItemIssuesRequest model);
-        Task<Message> DeleteTestItemAsync(long id);
-        Task<Message> FinishTestItemAsync(string id, FinishTestItemRequest model);
-        Task<TestItem> GetTestItemAsync(long id);
-        Task<TestItem> GetTestItemAsync(string uuid);
-        Task<List<TestItemHistory>> GetTestItemHistoryAsync(IEnumerable<long> testItemIds, int depth, bool full);
-        Task<TestItemsContainer> GetTestItemsAsync(FilterOption filterOption = null);
-        Task<TestItemCreatedResponse> StartTestItemAsync(StartTestItemRequest model);
-        Task<TestItemCreatedResponse> StartTestItemAsync(string uuid, StartTestItemRequest model);
-        Task<Message> UpdateTestItemAsync(long id, UpdateTestItemRequest model);
+        Task<List<Issue>> AssignIssuesAsync(AssignTestItemIssuesRequest model);
+        Task<Message> DeleteAsync(long id);
+        Task<Message> FinishAsync(string id, FinishTestItemRequest model);
+        Task<TestItem> GetAsync(long id);
+        Task<TestItem> GetAsync(string uuid);
+        Task<List<TestItemHistory>> GetHistoryAsync(IEnumerable<long> testItemIds, int depth, bool full);
+        Task<TestItemsContainer> GetAsync(FilterOption filterOption = null);
+        Task<TestItemCreatedResponse> StartAsync(StartTestItemRequest model);
+        Task<TestItemCreatedResponse> StartAsync(string uuid, StartTestItemRequest model);
+        Task<Message> UpdateAsync(long id, UpdateTestItemRequest model);
     }
 }
