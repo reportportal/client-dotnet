@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using ReportPortal.Client.Filtering;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
-using ReportPortal.Client.Responses;
 
 namespace ReportPortal.Client.Abstractions
 {
