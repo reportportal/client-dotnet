@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ReportPortal.Client.Abstractions.Filtering;
 using ReportPortal.Client.Abstractions.Responses;
-using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 using Xunit;
 
@@ -16,7 +16,7 @@ namespace ReportPortal.Client.IntegrationTests.Project
         {
             var filterEntity = new FilterEntity
             {
-                UserFilterCondition = Filtering.FilterOperation.Contains,
+                UserFilterCondition = FilterOperation.Contains,
                 FilteringField = "name",
                 Value = "test value"
             };

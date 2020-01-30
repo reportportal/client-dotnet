@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 using System.Runtime.Serialization;
 
-namespace ReportPortal.Client.Filtering
+namespace ReportPortal.Client.Abstractions.Filtering
 {
     public enum SortDirection
     {

@@ -3,8 +3,9 @@ using System.Globalization;
 using System.Linq;
 using ReportPortal.Client.Extentions;
 using System.Text;
+using ReportPortal.Client.Abstractions.Filtering;
 
-namespace ReportPortal.Client.Filtering
+namespace ReportPortal.Client.Abstractions.Filtering
 {
     public class FilterOption
     {

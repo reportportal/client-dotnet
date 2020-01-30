@@ -1,4 +1,4 @@
-﻿namespace ReportPortal.Client.Filtering
+﻿namespace ReportPortal.Client.Abstractions.Filtering
 {
     public class Paging
     {

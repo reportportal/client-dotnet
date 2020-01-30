@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using ReportPortal.Client.Filtering;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Converters;
 using System.Net.Http;
@@ -9,6 +8,7 @@ using ReportPortal.Client.Extentions;
 using ReportPortal.Client.Abstractions;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Responses;
+using ReportPortal.Client.Abstractions.Filtering;
 
 namespace ReportPortal.Client
 {

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
+using ReportPortal.Client.Abstractions.Filtering;
 using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Client.Converters;
-using ReportPortal.Client.Filtering;
 using ReportPortal.Client.Models;
 
 namespace ReportPortal.Client.Requests

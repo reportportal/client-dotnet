@@ -1,6 +1,6 @@
-﻿using ReportPortal.Client.Abstractions.Requests;
+﻿using ReportPortal.Client.Abstractions.Filtering;
+using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Responses;
-using ReportPortal.Client.Filtering;
 using ReportPortal.Client.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
