@@ -28,7 +28,7 @@ namespace ReportPortal.Client
         Task<Message> FinishTestItemAsync(string id, FinishTestItemRequest model);
         Task<TestItem> GetTestItemAsync(long id);
         Task<TestItem> GetTestItemAsync(string uuid);
-        Task<List<TestItemHistory>> GetTestItemHistoryAsync(string testItemId, int depth, bool full);
+        Task<List<TestItemHistory>> GetTestItemHistoryAsync(IEnumerable<long> testItemIds, int depth, bool full);
         Task<TestItemsContainer> GetTestItemsAsync(FilterOption filterOption = null);
         Task<TestItemCreatedResponse> StartTestItemAsync(StartTestItemRequest model);
         Task<TestItemCreatedResponse> StartTestItemAsync(string uuid, StartTestItemRequest model);

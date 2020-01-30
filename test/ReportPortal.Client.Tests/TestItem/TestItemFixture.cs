@@ -542,11 +542,29 @@ namespace ReportPortal.Client.Tests.TestItem
             //Assert.Equal(issue2.ExternalSystemIssues.First().Url, stepInfo2.Issue.ExternalSystemIssues.First().Url);
         }
 
-        [Fact(Skip = "Need prepare data to get history")]
+        [Fact]
         public async Task GetTestItemHistory()
         {
-            var histories = await Service.GetTestItemHistoryAsync("5bfe5b213cdea200012a9fb7", 5, true);
-            Assert.Equal(5, histories.Count);
+            var launchName = Guid.NewGuid().ToString();
+            var launch1 = await Service.StartLaunchAsync(new StartLaunchRequest { Name = launchName, StartTime = DateTime.UtcNow });
+            var test1 = await Service.StartTestItemAsync(new StartTestItemRequest { LaunchUuid = launch1.Uuid, Name = "ABC", StartTime = DateTime.UtcNow });
+
+            var launch2 = await Service.StartLaunchAsync(new StartLaunchRequest { Name = launchName, StartTime = DateTime.UtcNow });
+            var test2 = await Service.StartTestItemAsync(new StartTestItemRequest { LaunchUuid = launch2.Uuid, Name = "ABC", StartTime = DateTime.UtcNow });
+
+            var gotTest2 = await Service.GetTestItemAsync(test2.Uuid);
+
+            var histories = await Service.GetTestItemHistoryAsync(new List<long> { gotTest2.Id }, 5, true);
+            Assert.Equal(2, histories.Count);
+
+            var gotLaunch1 = await Service.GetLaunchAsync(launch1.Uuid);
+            var gotLaunch2 = await Service.GetLaunchAsync(launch2.Uuid);
+
+            await Service.StopLaunchAsync(gotLaunch1.Id, new FinishLaunchRequest { EndTime = DateTime.UtcNow });
+            await Service.StopLaunchAsync(gotLaunch2.Id, new FinishLaunchRequest { EndTime = DateTime.UtcNow });
+
+            await Service.DeleteLaunchAsync(gotLaunch1.Id);
+            await Service.DeleteLaunchAsync(gotLaunch2.Id);
         }
 
         [Fact]

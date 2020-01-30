@@ -144,15 +144,15 @@ namespace ReportPortal.Client
         }
 
         /// <summary>
-        /// Get the history of test item executions.
+        /// Get the history of test items executions.
         /// </summary>
-        /// <param name="testItemId">ID of test item.</param>
+        /// <param name="testItemIds">IDs of test items.</param>
         /// <param name="depth">How many executions to return.</param>
         /// <param name="full"></param>
         /// <returns>The list of execution history.</returns>
-        public virtual async Task<List<TestItemHistory>> GetTestItemHistoryAsync(string testItemId, int depth, bool full)
+        public virtual async Task<List<TestItemHistory>> GetTestItemHistoryAsync(IEnumerable<long> testItemIds, int depth, bool full)
         {
-            var uri = BaseUri.Append($"{Project}/item/history?ids={testItemId}&history_depth={depth}&is_full={full}");
+            var uri = BaseUri.Append($"{Project}/item/history?ids={string.Join(",", testItemIds)}&history_depth={depth}&is_full={full}");
 
             var response = await _httpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
