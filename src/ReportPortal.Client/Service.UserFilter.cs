@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Client.Converters;
 using ReportPortal.Client.Extentions;
 using ReportPortal.Client.Filtering;
