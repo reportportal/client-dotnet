@@ -9,7 +9,7 @@ namespace ReportPortal.Client.IntegrationTests.User
         [Fact]
         public async Task GetUserInfo()
         {
-            var user = await Service.GetUserAsync();
+            var user = await Service.User.GetAsync();
             // Assert.Equal("Used for Net integration check via CI", user.Fullname);
             Assert.Equal("tester", user.Fullname);
             Assert.NotEmpty(user.Email);

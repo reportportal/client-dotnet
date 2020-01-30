@@ -109,5 +109,13 @@ namespace ReportPortal.Client
                 return new ServiceLogItemResource(_httpClient, BaseUri, Project, Token);
             }
         }
+
+        public IUserResource User
+        {
+            get
+            {
+                return new ServiceUserResource(_httpClient, BaseUri, Project, Token);
+            }
+        }
     }
 }

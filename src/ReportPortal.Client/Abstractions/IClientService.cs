@@ -15,10 +15,11 @@ namespace ReportPortal.Client.Abstractions
 
         ILogItemResource LogItem { get; }
 
+        IUserResource User { get; }
+
         Task<List<EntryCreated>> AddUserFilterAsync(AddUserFilterRequest model);
         Task<Message> DeleteUserFilterAsync(string filterId);
         Task<Preference> GetAllPreferences(string userName);
-        Task<User> GetUserAsync();
         Task<UserFilterContainer> GetUserFiltersAsync(FilterOption filterOption = null);
         Task<Service.UpdatePreferencesResponse> UpdatePreferencesAsync(UpdatePreferenceRequest model, string userName);
     }
