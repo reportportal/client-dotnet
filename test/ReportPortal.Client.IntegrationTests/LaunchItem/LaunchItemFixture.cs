@@ -97,6 +97,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
 
             var launch = await Service.StartLaunchAsync(startLaunchRequest);
             Assert.NotNull(launch.Uuid);
+            Assert.NotEqual(0, launch.Number);
 
             var finishLaunchRequest = new FinishLaunchRequest
             {
@@ -247,7 +248,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
                 AnalyzerItemsMode = new List<AnalyzerItemsMode> { AnalyzerItemsMode.ToInvestigate }
             });
             Assert.Contains("started", analyzeMessage.Info);
-            
+
             var delMessage = await Service.DeleteLaunchAsync(gotLaunch.Id);
             Assert.Contains("successfully", delMessage.Info);
         }

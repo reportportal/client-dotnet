@@ -91,7 +91,7 @@ namespace ReportPortal.Client
         }
 
         /// <summary>
-        /// Stopes specified launch.
+        /// Stopes specified launch even if inner tests are not finished yet.
         /// </summary>
         /// <param name="id">ID of specified launch.</param>
         /// <param name="model">Information about representation of launch to finish.</param>

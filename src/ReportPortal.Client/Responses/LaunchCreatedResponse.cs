@@ -7,5 +7,8 @@ namespace ReportPortal.Client.Responses
     {
         [DataMember(Name = "id")]
         public string Uuid { get; set; }
+
+        [DataMember(Name = "number")]
+        public long Number { get; set; }
     }
 }
