@@ -8,9 +8,7 @@ using System.Text;
 using ReportPortal.Client.Extentions;
 using ReportPortal.Client.Abstractions;
 using ReportPortal.Client.Abstractions.Requests;
-using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Client.Responses;
-using ReportPortal.Client.Requests;
 using System.Collections.Generic;
 
 namespace ReportPortal.Client

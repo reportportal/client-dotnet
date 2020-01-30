@@ -1,4 +1,5 @@
-﻿using ReportPortal.Client.Filtering;
+﻿using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Client.Filtering;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 using ReportPortal.Client.Responses;
