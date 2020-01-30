@@ -9,7 +9,7 @@ namespace ReportPortal.Client
     /// <summary>
     /// Class to interact with common Report Portal services. Provides possibility to manage almost of service's entities.
     /// </summary>
-    public partial class Service
+    public partial class Service : IApiService
     {
         private readonly HttpClient _httpClient;
 
@@ -23,7 +23,7 @@ namespace ReportPortal.Client
         public Service(Uri uri, string project, string password)
         {
             _httpClient = new HttpClient();
-            
+
             if (!uri.LocalPath.ToLowerInvariant().Contains("api/v1"))
             {
                 uri = uri.Append("api/v1");
