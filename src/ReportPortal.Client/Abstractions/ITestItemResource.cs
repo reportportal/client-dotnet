@@ -12,9 +12,9 @@ namespace ReportPortal.Client.Abstractions
         Task<List<Issue>> AssignIssuesAsync(AssignTestItemIssuesRequest model);
         Task<Message> DeleteAsync(long id);
         Task<Message> FinishAsync(string id, FinishTestItemRequest model);
-        Task<TestItem> GetAsync(long id);
-        Task<TestItem> GetAsync(string uuid);
-        Task<List<TestItemHistory>> GetHistoryAsync(IEnumerable<long> testItemIds, int depth, bool full);
+        Task<TestItemModel> GetAsync(long id);
+        Task<TestItemModel> GetAsync(string uuid);
+        Task<List<TestItemHistoryModel>> GetHistoryAsync(IEnumerable<long> testItemIds, int depth, bool full);
         Task<TestItemsContainer> GetAsync(FilterOption filterOption = null);
         Task<TestItemCreatedResponse> StartAsync(StartTestItemRequest model);
         Task<TestItemCreatedResponse> StartAsync(string uuid, StartTestItemRequest model);

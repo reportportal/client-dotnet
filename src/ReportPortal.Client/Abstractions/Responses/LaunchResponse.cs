@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using ReportPortal.Client.Converters;
 using System.Runtime.Serialization;
+using ReportPortal.Client.Models;
 
-namespace ReportPortal.Client.Models
+namespace ReportPortal.Client.Abstractions.Responses
 {
     [DataContract]
-    public class Launch
+    public class LaunchResponse
     {
         [DataMember(Name = "id")]
         public long Id { get; set; }

@@ -45,12 +45,12 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="uuid">UUID of the launch to retrieve.</param>
         /// <returns>A representation of launch.</returns>
-        public virtual async Task<Launch> GetAsync(string uuid)
+        public virtual async Task<LaunchResponse> GetAsync(string uuid)
         {
             var uri = BaseUri.Append($"{Project}/launch/uuid/{uuid}");
             var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<Launch>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return ModelSerializer.Deserialize<LaunchResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         /// <summary>
@@ -58,12 +58,12 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="uuid">ID of the launch to retrieve.</param>
         /// <returns>A representation of launch.</returns>
-        public virtual async Task<Launch> GetAsync(long id)
+        public virtual async Task<LaunchResponse> GetAsync(long id)
         {
             var uri = BaseUri.Append($"{Project}/launch/{id}");
             var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<Launch>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return ModelSerializer.Deserialize<LaunchResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         /// <summary>
@@ -128,13 +128,13 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="model">Request for merging.</param>
         /// <returns>Returns the model of merged launches.</returns>
-        public virtual async Task<Launch> MergeAsync(MergeLaunchesRequest model)
+        public virtual async Task<LaunchResponse> MergeAsync(MergeLaunchesRequest model)
         {
             var uri = BaseUri.Append($"{Project}/launch/merge");
             var body = ModelSerializer.Serialize<MergeLaunchesRequest>(model);
             var response = await HttpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<Launch>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return ModelSerializer.Deserialize<LaunchResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         /// <summary>

@@ -41,12 +41,12 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="id">ID of the test item to retrieve.</param>
         /// <returns>A representation of test item.</returns>
-        public virtual async Task<TestItem> GetAsync(long id)
+        public virtual async Task<TestItemModel> GetAsync(long id)
         {
             var uri = BaseUri.Append($"{Project}/item/{id}");
             var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<TestItem>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return ModelSerializer.Deserialize<TestItemModel>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         /// <summary>
@@ -54,12 +54,12 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="uuid">UUID of the test item to retrieve.</param>
         /// <returns>A representation of test item.</returns>
-        public virtual async Task<TestItem> GetAsync(string uuid)
+        public virtual async Task<Abstractions.Responses.TestItemModel> GetAsync(string uuid)
         {
             var uri = BaseUri.Append($"{Project}/item/uuid/{uuid}");
             var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<TestItem>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return ModelSerializer.Deserialize<TestItemModel>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         /// <summary>
@@ -155,13 +155,13 @@ namespace ReportPortal.Client
         /// <param name="depth">How many executions to return.</param>
         /// <param name="full"></param>
         /// <returns>The list of execution history.</returns>
-        public virtual async Task<List<TestItemHistory>> GetHistoryAsync(IEnumerable<long> testItemIds, int depth, bool full)
+        public virtual async Task<List<TestItemHistoryModel>> GetHistoryAsync(IEnumerable<long> testItemIds, int depth, bool full)
         {
             var uri = BaseUri.Append($"{Project}/item/history?ids={string.Join(",", testItemIds)}&history_depth={depth}&is_full={full}");
 
             var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<List<TestItemHistory>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return ModelSerializer.Deserialize<List<TestItemHistoryModel>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
     }
 }

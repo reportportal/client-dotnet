@@ -7,6 +7,7 @@ using ReportPortal.Client.Requests;
 using System.Threading.Tasks;
 using Xunit;
 using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Client.Abstractions.Responses;
 
 namespace ReportPortal.Client.IntegrationTests.TestItem
 {

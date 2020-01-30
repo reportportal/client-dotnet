@@ -11,10 +11,10 @@ namespace ReportPortal.Client.Abstractions
         Task<Message> AnalyzeAsync(AnalyzeLaunchRequest model);
         Task<LaunchFinishedResponse> FinishAsync(string uuid, FinishLaunchRequest model);
         Task<Message> DeleteAsync(long id);
-        Task<Launch> GetAsync(long id);
-        Task<Launch> GetAsync(string uuid);
+        Task<LaunchResponse> GetAsync(long id);
+        Task<LaunchResponse> GetAsync(string uuid);
         Task<LaunchesContainer> GetAsync(FilterOption filterOption = null, bool debug = false);
-        Task<Launch> MergeAsync(MergeLaunchesRequest model);
+        Task<LaunchResponse> MergeAsync(MergeLaunchesRequest model);
         Task<LaunchCreatedResponse> StartAsync(StartLaunchRequest request);
         Task<LaunchFinishedResponse> StopAsync(long id, FinishLaunchRequest model);
         Task<Message> UpdateAsync(long id, UpdateLaunchRequest model);

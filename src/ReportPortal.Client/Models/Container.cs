@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using ReportPortal.Client.Abstractions.Responses;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Models
@@ -7,7 +8,7 @@ namespace ReportPortal.Client.Models
     public class LaunchesContainer
     {
         [DataMember(Name = "content")]
-        public List<Launch> Launches { get; set; } 
+        public List<LaunchResponse> Launches { get; set; } 
 
         [DataMember(Name = "page")]
         public Page Page { get; set; }
@@ -17,7 +18,7 @@ namespace ReportPortal.Client.Models
     public class TestItemsContainer
     {
         [DataMember(Name = "content")]
-        public List<TestItem> TestItems { get; set; }
+        public List<TestItemModel> TestItems { get; set; }
 
         [DataMember(Name = "page")]
         public Page Page { get; set; }
