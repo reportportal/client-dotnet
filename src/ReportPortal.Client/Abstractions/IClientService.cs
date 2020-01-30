@@ -11,18 +11,7 @@ namespace ReportPortal.Client.Abstractions
     {
         ILaunchResource Launch { get; }
 
-        #region Test
-        Task<List<Issue>> AssignTestItemIssuesAsync(AssignTestItemIssuesRequest model);
-        Task<Message> DeleteTestItemAsync(long id);
-        Task<Message> FinishTestItemAsync(string id, FinishTestItemRequest model);
-        Task<TestItem> GetTestItemAsync(long id);
-        Task<TestItem> GetTestItemAsync(string uuid);
-        Task<List<TestItemHistory>> GetTestItemHistoryAsync(IEnumerable<long> testItemIds, int depth, bool full);
-        Task<TestItemsContainer> GetTestItemsAsync(FilterOption filterOption = null);
-        Task<TestItemCreatedResponse> StartTestItemAsync(StartTestItemRequest model);
-        Task<TestItemCreatedResponse> StartTestItemAsync(string uuid, StartTestItemRequest model);
-        Task<Message> UpdateTestItemAsync(long id, UpdateTestItemRequest model);
-        #endregion
+        ITestItemResource TestItem { get; }
 
         #region Log
         Task<LogItemCreatedResponse> AddLogItemAsync(AddLogItemRequest model);

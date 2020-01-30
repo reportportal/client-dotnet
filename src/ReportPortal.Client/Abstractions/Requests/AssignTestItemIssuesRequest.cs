@@ -2,7 +2,7 @@
 using ReportPortal.Client.Models;
 using System.Runtime.Serialization;
 
-namespace ReportPortal.Client.Requests
+namespace ReportPortal.Client.Abstractions.Requests
 {
     /// <summary>
     /// Defines a request for assigning issues to test items.

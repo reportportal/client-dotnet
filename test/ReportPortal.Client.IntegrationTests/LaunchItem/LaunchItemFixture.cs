@@ -289,7 +289,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
                 Mode = LaunchMode.Default
             });
 
-            var test = await Service.StartTestItemAsync(new StartTestItemRequest
+            var test = await Service.TestItem.StartTestItemAsync(new StartTestItemRequest
             {
                 LaunchUuid = launch.Uuid,
                 Name = "Test1",

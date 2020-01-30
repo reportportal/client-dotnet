@@ -2,31 +2,19 @@
 using System.Threading.Tasks;
 using ReportPortal.Client.Filtering;
 using ReportPortal.Client.Models;
-using ReportPortal.Client.Requests;
 using ReportPortal.Client.Converters;
 using System.Net.Http;
 using System.Text;
 using ReportPortal.Client.Extentions;
-using ReportPortal.Client.Responses;
 using ReportPortal.Client.Abstractions;
 using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Client.Abstractions.Responses;
 
 namespace ReportPortal.Client
 {
-    public partial class Service
+    public class ServiceLaunchResource : BaseResource, ILaunchResource
     {
-        public ILaunchResource Launch
-        {
-            get
-            {
-                return new LaunchResource(this._httpClient, BaseUri, Project, Token);
-            }
-        }
-    }
-
-    public class LaunchResource : BaseResource, ILaunchResource
-    {
-        public LaunchResource(HttpClient httpClient, Uri baseUri, string project, string token) : base(httpClient, baseUri, project, token)
+        public ServiceLaunchResource(HttpClient httpClient, Uri baseUri, string project, string token) : base(httpClient, baseUri, project, token)
         {
 
         }

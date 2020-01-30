@@ -4,7 +4,7 @@ using ReportPortal.Client.Models;
 using System.Runtime.Serialization;
 using System.Collections.Generic;
 
-namespace ReportPortal.Client.Requests
+namespace ReportPortal.Client.Abstractions.Requests
 {
     /// <summary>
     /// Defines a request to finish specified test item.

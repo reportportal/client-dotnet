@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-using System.Text;
+﻿using System.Runtime.Serialization;
 
-namespace ReportPortal.Client.Responses
-{
+namespace ReportPortal.Client.Abstractions.Responses
+{ 
     [DataContract]
     public class TestItemCreatedResponse
     {

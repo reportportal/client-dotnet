@@ -4,7 +4,7 @@ using ReportPortal.Client.Converters;
 using ReportPortal.Client.Models;
 using System.Runtime.Serialization;
 
-namespace ReportPortal.Client.Requests
+namespace ReportPortal.Client.Abstractions.Requests
 {
     /// <summary>
     /// Defines a content of request for service to create new test item in progress state.

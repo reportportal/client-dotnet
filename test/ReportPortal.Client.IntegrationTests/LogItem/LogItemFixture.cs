@@ -7,6 +7,7 @@ using ReportPortal.Client.Requests;
 using System.Threading.Tasks;
 using Xunit;
 using System.Text;
+using ReportPortal.Client.Abstractions.Requests;
 
 namespace ReportPortal.Client.IntegrationTests.LogItem
 {
@@ -89,7 +90,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
         [Fact]
         public async Task DeleteLogItem()
         {
-            var newTestUuid = (await Service.StartTestItemAsync(new StartTestItemRequest
+            var newTestUuid = (await Service.TestItem.StartTestItemAsync(new StartTestItemRequest
             {
                 LaunchUuid = _fixture.LaunchUuid,
                 Name = "Test2",
@@ -106,7 +107,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
             });
             Assert.NotNull(log.Uuid);
 
-            await Service.FinishTestItemAsync(newTestUuid, new FinishTestItemRequest
+            await Service.TestItem.FinishTestItemAsync(newTestUuid, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
@@ -142,7 +143,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
         [Fact]
         public async Task GetLogItems()
         {
-            var newTestUuid = (await Service.StartTestItemAsync(new StartTestItemRequest
+            var newTestUuid = (await Service.TestItem.StartTestItemAsync(new StartTestItemRequest
             {
                 LaunchUuid = _fixture.LaunchUuid,
                 Name = "Test3",
@@ -159,13 +160,13 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
             });
             Assert.NotNull(log.Uuid);
 
-            await Service.FinishTestItemAsync(newTestUuid, new FinishTestItemRequest
+            await Service.TestItem.FinishTestItemAsync(newTestUuid, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
             });
 
-            var tempTest = await Service.GetTestItemAsync(newTestUuid);
+            var tempTest = await Service.TestItem.GetTestItemAsync(newTestUuid);
             var logs = (await Service.GetLogItemsAsync(new FilterOption
             {
                 Filters = new List<Filter>

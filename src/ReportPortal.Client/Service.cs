@@ -85,5 +85,21 @@ namespace ReportPortal.Client
         /// User token to interact with api.
         /// </summary>
         public string Token { get; set; }
+
+        public ILaunchResource Launch
+        {
+            get
+            {
+                return new ServiceLaunchResource(_httpClient, BaseUri, Project, Token);
+            }
+        }
+
+        public ITestItemResource TestItem
+        {
+            get
+            {
+                return new ServiceTestItemResource(_httpClient, BaseUri, Project, Token);
+            }
+        }
     }
 }

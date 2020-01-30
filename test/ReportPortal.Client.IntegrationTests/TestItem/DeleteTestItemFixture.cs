@@ -18,7 +18,7 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
                 StartTime = DateTime.UtcNow
             });
 
-            var test = await Service.StartTestItemAsync(new StartTestItemRequest
+            var test = await Service.TestItem.StartTestItemAsync(new StartTestItemRequest
             {
                 LaunchUuid = launch.Uuid,
                 Name = "Test1",
@@ -26,7 +26,7 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
                 Type = TestItemType.Test
             });
 
-            await Service.FinishTestItemAsync(test.Uuid, new FinishTestItemRequest
+            await Service.TestItem.FinishTestItemAsync(test.Uuid, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
@@ -34,9 +34,9 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
 
             await Service.Launch.FinishAsync(launch.Uuid, new FinishLaunchRequest { EndTime = DateTime.UtcNow });
 
-            var tempTestItem = await Service.GetTestItemAsync(test.Uuid);
+            var tempTestItem = await Service.TestItem.GetTestItemAsync(test.Uuid);
 
-            var deleteMessage = await Service.DeleteTestItemAsync(tempTestItem.Id);
+            var deleteMessage = await Service.TestItem.DeleteTestItemAsync(tempTestItem.Id);
             Assert.Contains("successfully deleted", deleteMessage.Info);
 
             var tempLaunch = await Service.Launch.GetAsync(launch.Uuid);

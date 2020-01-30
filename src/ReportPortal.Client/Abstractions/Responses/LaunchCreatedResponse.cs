@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace ReportPortal.Client.Responses
+namespace ReportPortal.Client.Abstractions.Responses
 {
     [DataContract]
     public class LaunchCreatedResponse

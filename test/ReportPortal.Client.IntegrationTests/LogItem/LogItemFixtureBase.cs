@@ -25,7 +25,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
 
                 LaunchId = (await Service.Launch.GetAsync(LaunchUuid)).Id;
 
-                TestUuid = (await Service.StartTestItemAsync(new StartTestItemRequest
+                TestUuid = (await Service.TestItem.StartTestItemAsync(new StartTestItemRequest
                 {
                     LaunchUuid = LaunchUuid,
                     Name = "Test1",
