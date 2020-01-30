@@ -4,7 +4,7 @@ using ReportPortal.Client.Requests;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace ReportPortal.Client.Tests.TestItem
+namespace ReportPortal.Client.IntegrationTests.TestItem
 {
     public class DeleteTestItemFixture : BaseFixture
     {

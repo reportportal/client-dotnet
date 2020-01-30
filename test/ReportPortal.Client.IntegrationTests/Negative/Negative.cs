@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using ReportPortal.Client.Requests;
 using Xunit;
 
-namespace ReportPortal.Client.Tests.Negative
+namespace ReportPortal.Client.IntegrationTests.Negative
 {
     public class NegativeFixture : BaseFixture
     {

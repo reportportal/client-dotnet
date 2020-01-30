@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using Xunit;
 
-namespace ReportPortal.Client.Tests.LaunchItem
+namespace ReportPortal.Client.IntegrationTests.LaunchItem
 {
     public class LaunchItemFixture : BaseFixture
     {

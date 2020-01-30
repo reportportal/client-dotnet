@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 
-namespace ReportPortal.Client.Tests.LogItem
+namespace ReportPortal.Client.IntegrationTests.LogItem
 {
     public class LogItemFixtureBase : BaseFixture, IDisposable
     {

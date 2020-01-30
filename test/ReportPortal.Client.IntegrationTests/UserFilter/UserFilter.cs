@@ -7,7 +7,7 @@
 //using ReportPortal.Client.Requests;
 //using Xunit;
 
-//namespace ReportPortal.Client.Tests.UserFilter
+//namespace ReportPortal.Client.IntegrationTests.UserFilter
 //{
 //    public class UserFilterFixture : BaseFixture
 //    {

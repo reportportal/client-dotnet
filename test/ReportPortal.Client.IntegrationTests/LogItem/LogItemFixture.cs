@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Xunit;
 using System.Text;
 
-namespace ReportPortal.Client.Tests.LogItem
+namespace ReportPortal.Client.IntegrationTests.LogItem
 {
     public class LogItemFixture : BaseFixture, IClassFixture<LogItemFixtureBase>
     {

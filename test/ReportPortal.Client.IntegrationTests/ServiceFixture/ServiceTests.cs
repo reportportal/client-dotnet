@@ -1,7 +1,7 @@
 ﻿using System;
 using Xunit;
 
-namespace ReportPortal.Client.Tests.ServiceFixture
+namespace ReportPortal.Client.IntegrationTests.ServiceFixture
 {
     public class ServiceFixture
     {

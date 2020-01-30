@@ -6,7 +6,7 @@ using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 using Xunit;
 
-namespace ReportPortal.Client.Tests.Project
+namespace ReportPortal.Client.IntegrationTests.Project
 {
     public class ProjectFixture : BaseFixture
     {

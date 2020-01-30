@@ -21,4 +21,4 @@ test_script:
   - dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=OpenCover /p:CoverletOutput=./Coverage.xml
 
 after_test:
-  - codecov -f .\test\ReportPortal.Client.Tests\Coverage.xml
+  - codecov -f .\test\ReportPortal.Client.IntegrationTests\Coverage.xml

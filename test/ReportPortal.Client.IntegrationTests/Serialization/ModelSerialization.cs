@@ -4,7 +4,7 @@ using System;
 using System.Runtime.Serialization;
 using Xunit;
 
-namespace ReportPortal.Client.Tests.Serialization
+namespace ReportPortal.Client.IntegrationTests.Serialization
 {
     public class ModelSerialization
     {
