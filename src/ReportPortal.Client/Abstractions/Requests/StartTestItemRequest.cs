@@ -82,6 +82,9 @@ namespace ReportPortal.Client.Abstractions.Requests
         [DataMember(Name = "uniqueId", EmitDefaultValue = true)]
         public string UniqueId { get; set; }
 
+        [DataMember(Name = "hasStats")]
+        public bool HasStats { get; set; } = true;
+
         /// <summary>
         /// Test item attributes.
         /// </summary>

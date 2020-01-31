@@ -38,6 +38,35 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
         }
 
         [Fact]
+        public async Task StartFinishNestedStep()
+        {
+            var test = await Service.TestItem.StartAsync(new StartTestItemRequest
+            {
+                LaunchUuid = _fixture.LaunchUuid,
+                Name = "Test1",
+                StartTime = DateTime.UtcNow,
+                Type = TestItemType.Test
+            });
+
+            var nestedStep = await Service.TestItem.StartAsync(test.Uuid, new StartTestItemRequest
+            {
+                LaunchUuid = _fixture.LaunchUuid,
+                Name = "This is nestedt step 1",
+                HasStats = false,
+                StartTime = DateTime.UtcNow
+            });
+
+            var message = await Service.TestItem.FinishAsync(nestedStep.Uuid, new FinishTestItemRequest { EndTime = DateTime.UtcNow });
+
+            await Service.TestItem.FinishAsync(test.Uuid, new FinishTestItemRequest
+            {
+                EndTime = DateTime.UtcNow,
+                Status = Status.Passed
+            });
+            Assert.Contains("successfully", message.Info);
+        }
+
+        [Fact]
         public async Task StartFinishTestWithTag()
         {
             var test = await Service.TestItem.StartAsync(new StartTestItemRequest
