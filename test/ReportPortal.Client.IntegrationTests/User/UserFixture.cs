@@ -1,4 +1,4 @@
-﻿using ReportPortal.Client.Models;
+﻿using ReportPortal.Client.Abstractions.Responses;
 using System.Threading.Tasks;
 using Xunit;
 

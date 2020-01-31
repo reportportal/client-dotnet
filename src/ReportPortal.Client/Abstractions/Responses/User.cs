@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace ReportPortal.Client.Models
+namespace ReportPortal.Client.Abstractions.Responses
 {
     [DataContract]
     public class User
