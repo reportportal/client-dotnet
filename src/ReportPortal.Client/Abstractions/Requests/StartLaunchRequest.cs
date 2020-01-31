@@ -58,5 +58,24 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// </summary>
         [DataMember(Name = "tags", EmitDefaultValue = true)]
         public List<string> Tags { get; set; }
+
+        /// <summary>
+        /// Launch attributes.
+        /// </summary>
+        [DataMember(Name = "attributes")]
+        public IEnumerable<Attribute> Attributes { get; set; }
+
+        [DataContract]
+        public class Attribute
+        {
+            [DataMember(Name = "key")]
+            public string Key { get; set; }
+
+            [DataMember(Name = "value")]
+            public string Value { get; set; }
+
+            [DataMember(Name = "system")]
+            public bool IsSystem { get; set; }
+        }
     }
 }

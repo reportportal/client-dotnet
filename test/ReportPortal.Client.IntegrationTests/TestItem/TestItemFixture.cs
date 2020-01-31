@@ -109,13 +109,18 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
         [Fact]
         public async Task StartFinishFullTest()
         {
+            var attributes = new List<StartTestItemRequest.Attribute> { new StartTestItemRequest.Attribute { Key = "a1", Value = "v1" }, new StartTestItemRequest.Attribute { Key = "a2", Value = "v2" } };
+            var parameters = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("a1", "v1") };
             var startTestItemRequest = new StartTestItemRequest
             {
                 LaunchUuid = _fixture.LaunchUuid,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test,
-                Description = "Desc for test"
+                Description = "Desc for test",
+                Attributes = attributes,
+                Parameters = parameters,
+                Tags = new List<string> { "b", "c" }
             };
 
             var test = await Service.TestItem.StartAsync(startTestItemRequest);
@@ -127,6 +132,8 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
             Assert.Equal(startTestItemRequest.StartTime, getTest.StartTime);
             Assert.Equal(startTestItemRequest.Type, getTest.Type);
             Assert.Equal(startTestItemRequest.Description, getTest.Description);
+            Assert.Equal(parameters, getTest.Parameters);
+            Assert.Equal(attributes.Select(a => new { a.Key, a.Value }), getTest.Attributes.Select(a => new { a.Key, a.Value }));
 
             var finishTestItemRequest = new FinishTestItemRequest
             {

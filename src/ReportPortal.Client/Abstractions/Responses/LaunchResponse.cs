@@ -27,7 +27,7 @@ namespace ReportPortal.Client.Abstractions.Responses
         [DataMember(Name = "mode")]
         public string ModeString { get; set; }
 
-        public LaunchMode Mode 
+        public LaunchMode Mode
         {
             get => EnumConverter.ConvertTo<LaunchMode>(ModeString);
             set => ModeString = EnumConverter.ConvertFrom(value);
@@ -57,8 +57,19 @@ namespace ReportPortal.Client.Abstractions.Responses
         [DataMember(Name = "tags")]
         public List<string> Tags { get; set; }
 
+        [DataMember(Name = "attributes")]
+        public IEnumerable<Attribute> Attributes { get; set; }
+
         [DataMember(Name = "statistics")]
         public Statistic Statistics { get; set; }
+    }
+
+    [DataContract]
+    public class Attribute
+    {
+        public string Key { get; set; }
+
+        public string Value { get; set; }
     }
 
     [DataContract]

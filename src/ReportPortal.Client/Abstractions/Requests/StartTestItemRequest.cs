@@ -61,8 +61,8 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// <summary>
         /// A list of tags.
         /// </summary>
-        [DataMember(Name = "tags")]
-        public List<string> Tags { get; set; }
+        [DataMember(Name = "tags", EmitDefaultValue = true)]
+        public IEnumerable<string> Tags { get; set; }
 
         /// <summary>
         /// Retry status indicator.
@@ -74,12 +74,31 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// A list of parameters.
         /// </summary>
         [DataMember(Name = "parameters")]
-        public List<KeyValuePair<string, string>> Parameters { get; set; }
+        public IEnumerable<KeyValuePair<string, string>> Parameters { get; set; }
 
         /// <summary>
         /// A test item unique id.
         /// </summary>
         [DataMember(Name = "uniqueId", EmitDefaultValue = true)]
         public string UniqueId { get; set; }
+
+        /// <summary>
+        /// Test item attributes.
+        /// </summary>
+        [DataMember(Name = "attributes")]
+        public IEnumerable<Attribute> Attributes { get; set; }
+
+        [DataContract]
+        public class Attribute
+        {
+            [DataMember(Name = "key")]
+            public string Key { get; set; }
+
+            [DataMember(Name = "value")]
+            public string Value { get; set; }
+
+            [DataMember(Name = "system")]
+            public bool IsSystem { get; set; }
+        }
     }
 }

@@ -153,19 +153,22 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
         public async Task StartFinishDeleteFullLaunch()
         {
             var now = DateTime.UtcNow;
+            var attributes = new List<StartLaunchRequest.Attribute> { new StartLaunchRequest.Attribute { Key = "a1", Value = "v1" }, new StartLaunchRequest.Attribute { Key = "a2", Value = "v2" } };
             var launch = await Service.Launch.StartAsync(new StartLaunchRequest
             {
                 Name = "StartFinishDeleteFullLaunch",
                 Description = "Desc",
                 StartTime = now,
+                Attributes = attributes
                 //Tags = new List<string> { "tag1", "tag2", "tag3" },
-            });
+            }); ;
             Assert.NotNull(launch.Uuid);
             var getLaunch = await Service.Launch.GetAsync(launch.Uuid);
             Assert.Equal("StartFinishDeleteFullLaunch", getLaunch.Name);
             Assert.Equal("Desc", getLaunch.Description);
             Assert.Equal(now.ToString(), getLaunch.StartTime.ToString());
-            //Assert.Equal(new List<string> { "tag1", "tag2", "tag3" }, getLaunch.Tags);
+
+            Assert.Equal(attributes.Select(a => new { a.Key, a.Value}), getLaunch.Attributes.Select(a => new { a.Key, a.Value }));
             var message = await Service.Launch.FinishAsync(launch.Uuid, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
