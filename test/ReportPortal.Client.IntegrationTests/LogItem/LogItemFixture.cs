@@ -37,6 +37,8 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
             });
             Assert.NotNull(log.Uuid);
             var getLog = await Service.LogItem.GetAsync(log.Uuid);
+            Assert.Equal(0, getLog.LaunchId);
+            Assert.Equal(_fixture.TestId, getLog.TestItemId);
             Assert.Equal("Log1", getLog.Text);
             Assert.Equal(now.ToString(), getLog.Time.ToString());
         }
@@ -84,6 +86,23 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
 
             var logData = await Service.LogItem.GetBinaryDataAsync(binaryId);
             Assert.Equal(data, logData);
+        }
+
+        [Fact]
+        public async Task CreateLogForLaunch()
+        {
+            var log = await Service.LogItem.AddAsync(new AddLogItemRequest
+            {
+                LaunchUuid = _fixture.LaunchUuid,
+                Text = "LaunchLog1",
+                Time = DateTime.UtcNow,
+                Level = LogLevel.Info
+            });
+
+            var getLog = await Service.LogItem.GetAsync(log.Uuid);
+
+            Assert.Equal(_fixture.LaunchId, getLog.LaunchId);
+            Assert.Equal(0, getLog.TestItemId);
         }
 
         [Fact]

@@ -19,6 +19,12 @@ namespace ReportPortal.Client.Abstractions.Requests
         public string TestItemUuid { get; set; }
 
         /// <summary>
+        /// Log item belongs to launch instead of test item.
+        /// </summary>
+        [DataMember(Name = "launchUuid")]
+        public string LaunchUuid { get; set; }
+
+        /// <summary>
         /// Date time of log item.
         /// </summary>
         [DataMember(Name = "time")]

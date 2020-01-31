@@ -13,6 +13,12 @@ namespace ReportPortal.Client.Abstractions.Responses
         [DataMember(Name = "uuid")]
         public string Uuid { get; set; }
 
+        [DataMember(Name = "itemId")]
+        public long TestItemId { get; set; }
+
+        [DataMember(Name = "launchId")]
+        public long LaunchId { get; set; }
+
         [DataMember(Name = "time")]
         public string TimeString { get; set; }
 

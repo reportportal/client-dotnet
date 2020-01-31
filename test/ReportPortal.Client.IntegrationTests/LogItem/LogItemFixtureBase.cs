@@ -13,6 +13,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
         public long LaunchId { get; set; }
 
         public string TestUuid { get; set; }
+        public long TestId { get; set; }
 
         public LogItemFixtureBase()
         {
@@ -33,6 +34,8 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
                     StartTime = DateTime.UtcNow,
                     Type = TestItemType.Test
                 })).Uuid;
+
+                TestId = (await Service.TestItem.GetAsync(TestUuid)).Id;
             }).Wait();
         }
 
