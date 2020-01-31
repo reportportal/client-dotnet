@@ -60,6 +60,18 @@ namespace ReportPortal.Client.Abstractions.Requests
         public List<string> Tags { get; set; }
 
         /// <summary>
+        /// Don't start new launch and use some existing.
+        /// </summary>
+        [DataMember(Name = "rerun")]
+        public bool IsRerun { get; set; }
+
+        /// <summary>
+        /// Don't start new launch and use some existing with specific launch UUID.
+        /// </summary>
+        [DataMember(Name = "rerunOf")]
+        public string RerunOfLaunchUuid { get; set; }
+
+        /// <summary>
         /// Launch attributes.
         /// </summary>
         [DataMember(Name = "attributes")]
