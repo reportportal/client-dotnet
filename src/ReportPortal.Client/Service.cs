@@ -20,9 +20,34 @@ namespace ReportPortal.Client
         /// <param name="uri">Base URI for REST service.</param>
         /// <param name="project">A project to manage.</param>
         /// <param name="password">A password for user. Can be UID given from user's profile page.</param>
-        public Service(Uri uri, string project, string password)
+        public Service(Uri uri, string project, string password) : this(uri, project, password, null)
         {
-            _httpClient = new HttpClient();
+
+        }
+
+        /// <summary>
+        /// Constructor to initialize a new object of service.
+        /// </summary>
+        /// <param name="uri">Base URI for REST service.</param>
+        /// <param name="project">A project to manage.</param>
+        /// <param name="password">A password for user. Can be UID given from user's profile page.</param>
+        /// <param name="proxy">Proxy for all HTTP requests.</param>
+        public Service(Uri uri, string project, string password, IWebProxy proxy)
+        {
+            if (proxy != null)
+            {
+                var httpClientHandler = new HttpClientHandler
+                {
+                    Proxy = proxy,
+                    UseProxy = true
+                };
+
+                _httpClient = new HttpClient(httpClientHandler);
+            }
+            else
+            {
+                _httpClient = new HttpClient();
+            }
 
             if (!uri.LocalPath.ToLowerInvariant().Contains("api/v1"))
             {
@@ -34,6 +59,10 @@ namespace ReportPortal.Client
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + password);
             _httpClient.DefaultRequestHeaders.Add("User-Agent", ".NET Reporter");
+
+            if (proxy != null)
+            { }
+
             BaseUri = uri;
             Project = project;
             Token = password;
@@ -41,19 +70,6 @@ namespace ReportPortal.Client
 #if NET45
             ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
 #endif
-        }
-
-        /// <summary>
-        /// Constructor to initialize a new object of service.
-        /// </summary>
-        /// <param name="uri">Base URI for REST service.</param>
-        /// <param name="project">A project to manage.</param>
-        /// <param name="password">A password for user. Can be UID given from user's profile page.</param>
-        /// <param name="proxy">Proxy for all HTTP requests.</param>
-        public Service(Uri uri, string project, string password, IWebProxy proxy)
-            : this(uri, project, password)
-        {
-
         }
 
         /// <summary>
