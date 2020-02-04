@@ -25,7 +25,7 @@ namespace ReportPortal.Client
         /// <param name="filterOption">Specified criterias for retrieving launches.</param>
         /// <param name="debug">Returns user debug launches or not.</param>
         /// <returns>A list of launches.</returns>
-        public virtual async Task<LaunchesContainer> GetAsync(FilterOption filterOption = null, bool debug = false)
+        public virtual async Task<Content<LaunchResponse>> GetAsync(FilterOption filterOption = null, bool debug = false)
         {
             var uri = BaseUri.Append($"{Project}/launch");
             if (debug) { uri = uri.Append("mode"); }
@@ -37,7 +37,7 @@ namespace ReportPortal.Client
 
             var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<LaunchesContainer>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return ModelSerializer.Deserialize<Content<LaunchResponse>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         /// <summary>

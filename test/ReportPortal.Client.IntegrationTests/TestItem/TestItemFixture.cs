@@ -118,7 +118,7 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
                             new Filter(FilterOperation.Equals, "name", testItemName)
                         }
             });
-            Assert.Equal(2, tests.TestItems.Count());
+            Assert.Equal(2, tests.Items.Count());
 
             var message = await Service.TestItem.FinishAsync(test.Uuid, new FinishTestItemRequest
             {

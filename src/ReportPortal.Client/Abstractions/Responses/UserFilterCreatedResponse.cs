@@ -9,6 +9,6 @@ namespace ReportPortal.Client.Abstractions.Responses
         /// ID of created user filter
         /// </summary>
         [DataMember(Name = "id")]
-        public string Id { get; set; }
+        public long Id { get; set; }
     }
 }

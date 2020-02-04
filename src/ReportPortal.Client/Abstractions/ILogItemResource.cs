@@ -13,6 +13,6 @@ namespace ReportPortal.Client.Abstractions
         Task<byte[]> GetBinaryDataAsync(string id);
         Task<LogItem> GetAsync(long id);
         Task<LogItem> GetAsync(string uuid);
-        Task<LogItemsContainer> GetAsync(FilterOption filterOption = null);
+        Task<Content<LogItem>> GetAsync(FilterOption filterOption = null);
     }
 }

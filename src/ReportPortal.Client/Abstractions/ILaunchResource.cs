@@ -13,7 +13,7 @@ namespace ReportPortal.Client.Abstractions
         Task<Message> DeleteAsync(long id);
         Task<LaunchResponse> GetAsync(long id);
         Task<LaunchResponse> GetAsync(string uuid);
-        Task<LaunchesContainer> GetAsync(FilterOption filterOption = null, bool debug = false);
+        Task<Content<LaunchResponse>> GetAsync(FilterOption filterOption = null, bool debug = false);
         Task<LaunchResponse> MergeAsync(MergeLaunchesRequest model);
         Task<LaunchCreatedResponse> StartAsync(StartLaunchRequest request);
         Task<LaunchFinishedResponse> StopAsync(long id, FinishLaunchRequest model);

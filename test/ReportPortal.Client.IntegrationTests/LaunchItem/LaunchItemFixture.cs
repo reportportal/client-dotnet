@@ -22,7 +22,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
         public async Task GetLaunches()
         {
             var container = await Service.Launch.GetAsync();
-            var launches = container.Launches.ToList();
+            var launches = container.Items.ToList();
             Assert.True(launches.Count() > 0);
         }
 
@@ -30,7 +30,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
         public async Task GetDebugLaunches()
         {
             var launches = await Service.Launch.GetAsync(debug: true);
-            launches.Launches.ForEach((l) => Assert.Equal(LaunchMode.Debug, l.Mode));
+            launches.Items.ToList().ForEach((l) => Assert.Equal(LaunchMode.Debug, l.Mode));
         }
 
         [Fact]
@@ -40,7 +40,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
             {
                 Paging = new Paging(1, 10)
             });
-            Assert.Equal(10, launches.Launches.Count());
+            Assert.Equal(10, launches.Items.Count());
         }
 
         [Fact]
@@ -51,8 +51,8 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
                 Paging = new Paging(1, 10),
                 Filters = new List<Filter> { new Filter(FilterOperation.Contains, "name", "test") }
             });
-            Assert.True(launches.Launches.Count() > 0);
-            foreach (var launch in launches.Launches)
+            Assert.True(launches.Items.Count() > 0);
+            foreach (var launch in launches.Items)
             {
                 Assert.Contains("test", launch.Name.ToLower());
             }
@@ -67,9 +67,9 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
                 Sorting = new Sorting(new List<string> { "startTime" }, SortDirection.Ascending)
             });
 
-            Assert.True(launches.Launches.Count() > 0);
+            Assert.True(launches.Items.Count() > 0);
 
-            Assert.Equal(launches.Launches.Select(l => l.StartTime).OrderBy(st => st), launches.Launches.Select(l => l.StartTime));
+            Assert.Equal(launches.Items.Select(l => l.StartTime).OrderBy(st => st), launches.Items.Select(l => l.StartTime));
         }
 
         [Fact]
@@ -81,9 +81,9 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
                 Sorting = new Sorting(new List<string> { "startTime" }, SortDirection.Descending)
             });
 
-            Assert.True(launches.Launches.Count() > 0);
+            Assert.True(launches.Items.Count() > 0);
 
-            Assert.Equal(launches.Launches.Select(l => l.StartTime).OrderByDescending(st => st), launches.Launches.Select(l => l.StartTime));
+            Assert.Equal(launches.Items.Select(l => l.StartTime).OrderByDescending(st => st), launches.Items.Select(l => l.StartTime));
         }
 
         [Fact]

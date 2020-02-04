@@ -2,17 +2,18 @@
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Client.Models;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ReportPortal.Client.Abstractions
 {
     public interface IUserFilterResource
     {
-        Task<List<UserFilterCreatedResponse>> CreateAsync(CreateUserFilterRequest request);
+        Task<UserFilterCreatedResponse> CreateAsync(CreateUserFilterRequest request);
 
-        Task<UserFilterContainer> GetAsync(FilterOption filterOption = null);
+        Task<Content<UserFilter>> GetAsync(FilterOption filterOption = null);
 
-        Task<Message> DeleteAsync(string filterId);
+        Task<UserFilter> GetAsync(long id);
+
+        Task<Message> DeleteAsync(long id);
     }
 }

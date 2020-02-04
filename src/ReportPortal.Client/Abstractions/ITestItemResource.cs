@@ -15,7 +15,7 @@ namespace ReportPortal.Client.Abstractions
         Task<TestItemModel> GetAsync(long id);
         Task<TestItemModel> GetAsync(string uuid);
         Task<List<TestItemHistoryModel>> GetHistoryAsync(IEnumerable<long> testItemIds, int depth, bool full);
-        Task<TestItemsContainer> GetAsync(FilterOption filterOption = null);
+        Task<Content<TestItemModel>> GetAsync(FilterOption filterOption = null);
         Task<TestItemCreatedResponse> StartAsync(StartTestItemRequest model);
         Task<TestItemCreatedResponse> StartAsync(string uuid, StartTestItemRequest model);
         Task<Message> UpdateAsync(long id, UpdateTestItemRequest model);

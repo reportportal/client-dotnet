@@ -191,7 +191,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
                         {
                             new Filter(FilterOperation.Equals, "item", tempTest.Id)
                         }
-            })).LogItems;
+            })).Items;
             Assert.True(logs.Count() > 0);
 
             var tempLogItem = await Service.LogItem.GetAsync(log.Uuid);

@@ -25,7 +25,7 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="filterOption">Specified criterias for retrieving log items.</param>
         /// <returns>A list of log items.</returns>
-        public virtual async Task<LogItemsContainer> GetAsync(FilterOption filterOption = null)
+        public virtual async Task<Content<LogItem>> GetAsync(FilterOption filterOption = null)
         {
             var uri = BaseUri.Append($"{Project}/log");
 
@@ -36,7 +36,7 @@ namespace ReportPortal.Client
 
             var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<LogItemsContainer>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return ModelSerializer.Deserialize<Content<LogItem>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         /// <summary>

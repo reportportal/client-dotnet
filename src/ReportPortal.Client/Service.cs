@@ -7,9 +7,7 @@ using ReportPortal.Client.Extentions;
 
 namespace ReportPortal.Client
 {
-    /// <summary>
-    /// Class to interact with common Report Portal services. Provides possibility to manage almost of service's entities.
-    /// </summary>
+    /// <inheritdoc/>
     public partial class Service : IClientService
     {
         private readonly HttpClient _httpClient;
@@ -19,8 +17,8 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="uri">Base URI for REST service.</param>
         /// <param name="project">A project to manage.</param>
-        /// <param name="password">A password for user. Can be UID given from user's profile page.</param>
-        public Service(Uri uri, string project, string password) : this(uri, project, password, null)
+        /// <param name="token">A password for user. Can be UID given from user's profile page.</param>
+        public Service(Uri uri, string project, string token) : this(uri, project, token, null)
         {
 
         }
@@ -30,9 +28,9 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="uri">Base URI for REST service.</param>
         /// <param name="project">A project to manage.</param>
-        /// <param name="password">A password for user. Can be UID given from user's profile page.</param>
+        /// <param name="token">A password for user. Can be UID given from user's profile page.</param>
         /// <param name="proxy">Proxy for all HTTP requests.</param>
-        public Service(Uri uri, string project, string password, IWebProxy proxy)
+        public Service(Uri uri, string project, string token, IWebProxy proxy)
         {
             if (proxy != null)
             {
@@ -57,7 +55,7 @@ namespace ReportPortal.Client
 
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + password);
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
             _httpClient.DefaultRequestHeaders.Add("User-Agent", ".NET Reporter");
 
             if (proxy != null)
@@ -65,7 +63,7 @@ namespace ReportPortal.Client
 
             BaseUri = uri;
             Project = project;
-            Token = password;
+            Token = token;
 
 #if NET45
             ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;

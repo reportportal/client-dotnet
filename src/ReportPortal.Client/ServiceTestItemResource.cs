@@ -25,7 +25,7 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="filterOption">Specified criterias for retrieving test items.</param>
         /// <returns>A list of test items.</returns>
-        public virtual async Task<TestItemsContainer> GetAsync(FilterOption filterOption = null)
+        public virtual async Task<Content<TestItemModel>> GetAsync(FilterOption filterOption = null)
         {
             var uri = BaseUri.Append($"{Project}/item");
             if (filterOption != null)
@@ -34,7 +34,7 @@ namespace ReportPortal.Client
             }
             var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<TestItemsContainer>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return ModelSerializer.Deserialize<Content<TestItemModel>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         /// <summary>
