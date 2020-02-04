@@ -2,8 +2,6 @@ using System;
 using System.Threading.Tasks;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Responses;
-using ReportPortal.Client.Models;
-using ReportPortal.Client.Requests;
 
 namespace ReportPortal.Client.IntegrationTests.LogItem
 {

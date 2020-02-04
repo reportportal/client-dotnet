@@ -1,6 +1,5 @@
 ﻿using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Client.Converters;
-using ReportPortal.Client.Models;
 using System;
 using System.Runtime.Serialization;
 using Xunit;

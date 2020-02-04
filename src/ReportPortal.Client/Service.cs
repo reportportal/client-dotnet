@@ -16,9 +16,9 @@ namespace ReportPortal.Client
         /// Constructor to initialize a new object of service.
         /// </summary>
         /// <param name="uri">Base URI for REST service.</param>
-        /// <param name="project">A project to manage.</param>
+        /// <param name="projectName">A project to manage.</param>
         /// <param name="token">A password for user. Can be UID given from user's profile page.</param>
-        public Service(Uri uri, string project, string token) : this(uri, project, token, null)
+        public Service(Uri uri, string projectName, string token) : this(uri, projectName, token, null)
         {
 
         }
@@ -27,10 +27,10 @@ namespace ReportPortal.Client
         /// Constructor to initialize a new object of service.
         /// </summary>
         /// <param name="uri">Base URI for REST service.</param>
-        /// <param name="project">A project to manage.</param>
+        /// <param name="projectName">A project to manage.</param>
         /// <param name="token">A password for user. Can be UID given from user's profile page.</param>
         /// <param name="proxy">Proxy for all HTTP requests.</param>
-        public Service(Uri uri, string project, string token, IWebProxy proxy)
+        public Service(Uri uri, string projectName, string token, IWebProxy proxy)
         {
             if (proxy != null)
             {
@@ -62,7 +62,7 @@ namespace ReportPortal.Client
             { }
 
             BaseUri = uri;
-            Project = project;
+            ProjectName = projectName;
             Token = token;
 
 #if NET45
@@ -88,7 +88,7 @@ namespace ReportPortal.Client
         /// <summary>
         /// Get or set project name to interact with.
         /// </summary>
-        public string Project { get; set; }
+        public string ProjectName { get; set; }
 
         /// <summary>
         /// Base api uri for http requests.
@@ -104,7 +104,7 @@ namespace ReportPortal.Client
         {
             get
             {
-                return new ServiceLaunchResource(_httpClient, BaseUri, Project, Token);
+                return new ServiceLaunchResource(_httpClient, BaseUri, ProjectName, Token);
             }
         }
 
@@ -112,7 +112,7 @@ namespace ReportPortal.Client
         {
             get
             {
-                return new ServiceTestItemResource(_httpClient, BaseUri, Project, Token);
+                return new ServiceTestItemResource(_httpClient, BaseUri, ProjectName, Token);
             }
         }
 
@@ -120,7 +120,7 @@ namespace ReportPortal.Client
         {
             get
             {
-                return new ServiceLogItemResource(_httpClient, BaseUri, Project, Token);
+                return new ServiceLogItemResource(_httpClient, BaseUri, ProjectName, Token);
             }
         }
 
@@ -128,7 +128,7 @@ namespace ReportPortal.Client
         {
             get
             {
-                return new ServiceUserResource(_httpClient, BaseUri, Project, Token);
+                return new ServiceUserResource(_httpClient, BaseUri, ProjectName, Token);
             }
         }
 
@@ -136,7 +136,15 @@ namespace ReportPortal.Client
         {
             get
             {
-                return new ServiceUserFilterResource(_httpClient, BaseUri, Project, Token);
+                return new ServiceUserFilterResource(_httpClient, BaseUri, ProjectName, Token);
+            }
+        }
+
+        public IProjectResource Project
+        {
+            get
+            {
+                return new ServiceProjectResource(_httpClient, BaseUri, ProjectName, Token);
             }
         }
     }

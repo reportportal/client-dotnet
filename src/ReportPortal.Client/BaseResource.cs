@@ -5,11 +5,11 @@ namespace ReportPortal.Client
 {
     public abstract class BaseResource
     {
-        public BaseResource(HttpClient httpClient, Uri baseUri, string project, string token)
+        public BaseResource(HttpClient httpClient, Uri baseUri, string projectName, string token)
         {
             HttpClient = httpClient;
             BaseUri = baseUri;
-            Project = project;
+            ProjectName = projectName;
             Token = token;
         }
 
@@ -17,7 +17,7 @@ namespace ReportPortal.Client
 
         protected Uri BaseUri { get; }
 
-        protected string Project { get; }
+        protected string ProjectName { get; }
 
         protected string Token { get; }
     }

@@ -4,7 +4,6 @@ using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Client.Converters;
 using ReportPortal.Client.Extentions;
-using ReportPortal.Client.Models;
 using System;
 using System.Net.Http;
 using System.Text;
@@ -25,7 +24,7 @@ namespace ReportPortal.Client
         /// <returns></returns>
         public virtual async Task<UserFilterCreatedResponse> CreateAsync(CreateUserFilterRequest model)
         {
-            var uri = BaseUri.Append($"{Project}/filter");
+            var uri = BaseUri.Append($"{ProjectName}/filter");
 
             var body = ModelSerializer.Serialize<CreateUserFilterRequest>(model);
             var response = await HttpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
@@ -40,7 +39,7 @@ namespace ReportPortal.Client
         /// <returns></returns>
         public virtual async Task<Content<UserFilterResponse>> GetAsync(FilterOption filterOption = null)
         {
-            var uri = BaseUri.Append($"{Project}/filter/");
+            var uri = BaseUri.Append($"{ProjectName}/filter/");
             if (filterOption != null)
             {
                 uri = uri.Append($"?{filterOption}");
@@ -52,7 +51,7 @@ namespace ReportPortal.Client
 
         public virtual async Task<UserFilterResponse> GetAsync(long id)
         {
-            var uri = BaseUri.Append($"{Project}/filter/{id}");
+            var uri = BaseUri.Append($"{ProjectName}/filter/{id}");
 
             var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
@@ -66,7 +65,7 @@ namespace ReportPortal.Client
         /// <returns></returns>
         public virtual async Task<MessageResponse> DeleteAsync(long id)
         {
-            var uri = BaseUri.Append($"{Project}/filter/{id}");
+            var uri = BaseUri.Append($"{ProjectName}/filter/{id}");
 
             var response = await HttpClient.DeleteAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();

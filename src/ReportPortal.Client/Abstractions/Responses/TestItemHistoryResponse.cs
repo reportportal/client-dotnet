@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using ReportPortal.Client.Converters;
 using System.Runtime.Serialization;
-using ReportPortal.Client.Models;
 
 namespace ReportPortal.Client.Abstractions.Responses
 {
     [DataContract]
-    public class TestItemHistoryModel
+    public class TestItemHistoryResponse
     {
         [DataMember(Name = "launchNumber")]
         public long LaunchNumber { get; set; }
@@ -36,6 +35,6 @@ namespace ReportPortal.Client.Abstractions.Responses
         public Status LaunchStatus { get { return EnumConverter.ConvertTo<Status>(LaunchStatusString); } set { LaunchStatusString = EnumConverter.ConvertFrom(value); } }
 
         [DataMember(Name = "resources")]
-        public List<TestItemResponse> Resources { get; set; }
+        public IEnumerable<TestItemResponse> Resources { get; set; }
     }
 }

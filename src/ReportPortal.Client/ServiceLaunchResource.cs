@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using ReportPortal.Client.Models;
 using ReportPortal.Client.Converters;
 using System.Net.Http;
 using System.Text;
@@ -27,7 +26,7 @@ namespace ReportPortal.Client
         /// <returns>A list of launches.</returns>
         public virtual async Task<Content<LaunchResponse>> GetAsync(FilterOption filterOption = null, bool debug = false)
         {
-            var uri = BaseUri.Append($"{Project}/launch");
+            var uri = BaseUri.Append($"{ProjectName}/launch");
             if (debug) { uri = uri.Append("mode"); }
 
             if (filterOption != null)
@@ -47,7 +46,7 @@ namespace ReportPortal.Client
         /// <returns>A representation of launch.</returns>
         public virtual async Task<LaunchResponse> GetAsync(string uuid)
         {
-            var uri = BaseUri.Append($"{Project}/launch/uuid/{uuid}");
+            var uri = BaseUri.Append($"{ProjectName}/launch/uuid/{uuid}");
             var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<LaunchResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
@@ -60,7 +59,7 @@ namespace ReportPortal.Client
         /// <returns>A representation of launch.</returns>
         public virtual async Task<LaunchResponse> GetAsync(long id)
         {
-            var uri = BaseUri.Append($"{Project}/launch/{id}");
+            var uri = BaseUri.Append($"{ProjectName}/launch/{id}");
             var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<LaunchResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
@@ -73,7 +72,7 @@ namespace ReportPortal.Client
         /// <returns>Representation of just created launch.</returns>
         public virtual async Task<LaunchCreatedResponse> StartAsync(StartLaunchRequest request)
         {
-            var uri = BaseUri.Append($"{Project}/launch");
+            var uri = BaseUri.Append($"{ProjectName}/launch");
             var body = ModelSerializer.Serialize<StartLaunchRequest>(request);
             var response = await HttpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
@@ -88,7 +87,7 @@ namespace ReportPortal.Client
         /// <returns>A message from service.</returns>
         public virtual async Task<LaunchFinishedResponse> FinishAsync(string uuid, FinishLaunchRequest model)
         {
-            var uri = BaseUri.Append($"{Project}/launch/{uuid}/finish");
+            var uri = BaseUri.Append($"{ProjectName}/launch/{uuid}/finish");
             var body = ModelSerializer.Serialize<FinishLaunchRequest>(model);
             var response = await HttpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
@@ -103,7 +102,7 @@ namespace ReportPortal.Client
         /// <returns>A message from service.</returns>
         public virtual async Task<LaunchFinishedResponse> StopAsync(long id, FinishLaunchRequest model)
         {
-            var uri = BaseUri.Append($"{Project}/launch/{id}/stop");
+            var uri = BaseUri.Append($"{ProjectName}/launch/{id}/stop");
             var body = ModelSerializer.Serialize<FinishLaunchRequest>(model);
             var response = await HttpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
@@ -117,7 +116,7 @@ namespace ReportPortal.Client
         /// <returns>A message from service.</returns>
         public virtual async Task<MessageResponse> DeleteAsync(long id)
         {
-            var uri = BaseUri.Append($"{Project}/launch/{id}");
+            var uri = BaseUri.Append($"{ProjectName}/launch/{id}");
             var response = await HttpClient.DeleteAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
@@ -130,7 +129,7 @@ namespace ReportPortal.Client
         /// <returns>Returns the model of merged launches.</returns>
         public virtual async Task<LaunchResponse> MergeAsync(MergeLaunchesRequest model)
         {
-            var uri = BaseUri.Append($"{Project}/launch/merge");
+            var uri = BaseUri.Append($"{ProjectName}/launch/merge");
             var body = ModelSerializer.Serialize<MergeLaunchesRequest>(model);
             var response = await HttpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
@@ -145,7 +144,7 @@ namespace ReportPortal.Client
         /// <returns>A message from service.</returns>
         public virtual async Task<MessageResponse> UpdateAsync(long id, UpdateLaunchRequest model)
         {
-            var uri = BaseUri.Append($"{Project}/launch/{id}/update");
+            var uri = BaseUri.Append($"{ProjectName}/launch/{id}/update");
             var body = ModelSerializer.Serialize<UpdateLaunchRequest>(model);
             var response = await HttpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
@@ -158,7 +157,7 @@ namespace ReportPortal.Client
         /// <returns>A message from service.</returns>
         public virtual async Task<MessageResponse> AnalyzeAsync(AnalyzeLaunchRequest model)
         {
-            var uri = BaseUri.Append($"{Project}/launch/analyze");
+            var uri = BaseUri.Append($"{ProjectName}/launch/analyze");
             var body = ModelSerializer.Serialize<AnalyzeLaunchRequest>(model);
             var response = await HttpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();

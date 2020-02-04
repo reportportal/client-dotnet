@@ -1,7 +1,5 @@
-﻿using System;
-using ReportPortal.Client.Converters;
+﻿using ReportPortal.Client.Converters;
 using System.Runtime.Serialization;
-using ReportPortal.Client.Models;
 using System.Collections.Generic;
 using System.Linq;
 using ReportPortal.Client.Abstractions.Responses;
