@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using ReportPortal.Client.Abstractions;
+using ReportPortal.Client.Abstractions.Resources;
 using ReportPortal.Client.Extentions;
 
 namespace ReportPortal.Client
@@ -104,7 +105,7 @@ namespace ReportPortal.Client
         {
             get
             {
-                return new ServiceLaunchResource(_httpClient, BaseUri, ProjectName, Token);
+                return new ServiceLaunchResource(_httpClient, BaseUri, ProjectName);
             }
         }
 
@@ -112,7 +113,7 @@ namespace ReportPortal.Client
         {
             get
             {
-                return new ServiceTestItemResource(_httpClient, BaseUri, ProjectName, Token);
+                return new ServiceTestItemResource(_httpClient, BaseUri, ProjectName);
             }
         }
 
@@ -120,7 +121,7 @@ namespace ReportPortal.Client
         {
             get
             {
-                return new ServiceLogItemResource(_httpClient, BaseUri, ProjectName, Token);
+                return new ServiceLogItemResource(_httpClient, BaseUri, ProjectName);
             }
         }
 
@@ -128,7 +129,7 @@ namespace ReportPortal.Client
         {
             get
             {
-                return new ServiceUserResource(_httpClient, BaseUri, ProjectName, Token);
+                return new ServiceUserResource(_httpClient, BaseUri, ProjectName);
             }
         }
 
@@ -136,7 +137,7 @@ namespace ReportPortal.Client
         {
             get
             {
-                return new ServiceUserFilterResource(_httpClient, BaseUri, ProjectName, Token);
+                return new ServiceUserFilterResource(_httpClient, BaseUri, ProjectName);
             }
         }
 
@@ -144,7 +145,7 @@ namespace ReportPortal.Client
         {
             get
             {
-                return new ServiceProjectResource(_httpClient, BaseUri, ProjectName, Token);
+                return new ServiceProjectResource(_httpClient, BaseUri, ProjectName);
             }
         }
     }

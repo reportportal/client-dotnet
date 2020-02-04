@@ -4,16 +4,16 @@ using ReportPortal.Client.Converters;
 using System.Net.Http;
 using System.Text;
 using ReportPortal.Client.Extentions;
-using ReportPortal.Client.Abstractions;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Client.Abstractions.Filtering;
+using ReportPortal.Client.Abstractions.Resources;
 
 namespace ReportPortal.Client
 {
     public class ServiceLaunchResource : BaseResource, ILaunchResource
     {
-        public ServiceLaunchResource(HttpClient httpClient, Uri baseUri, string project, string token) : base(httpClient, baseUri, project, token)
+        public ServiceLaunchResource(HttpClient httpClient, Uri baseUri, string project) : base(httpClient, baseUri, project)
         {
 
         }
@@ -22,12 +22,29 @@ namespace ReportPortal.Client
         /// Returns a list of launches for current project.
         /// </summary>
         /// <param name="filterOption">Specified criterias for retrieving launches.</param>
-        /// <param name="debug">Returns user debug launches or not.</param>
         /// <returns>A list of launches.</returns>
-        public virtual async Task<Content<LaunchResponse>> GetAsync(FilterOption filterOption = null, bool debug = false)
+        public virtual async Task<Content<LaunchResponse>> GetAsync(FilterOption filterOption = null)
         {
             var uri = BaseUri.Append($"{ProjectName}/launch");
-            if (debug) { uri = uri.Append("mode"); }
+
+            if (filterOption != null)
+            {
+                uri = uri.Append($"?{filterOption}");
+            }
+
+            var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
+            response.VerifySuccessStatusCode();
+            return ModelSerializer.Deserialize<Content<LaunchResponse>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+        }
+
+        /// <summary>
+        /// Returns a list of debug launches for current project.
+        /// </summary>
+        /// <param name="filterOption">Specified criterias for retrieving launches.</param>
+        /// <returns>A list of launches.</returns>
+        public virtual async Task<Content<LaunchResponse>> GetDebugAsync(FilterOption filterOption = null)
+        {
+            var uri = BaseUri.Append($"{ProjectName}/launch/mode");
 
             if (filterOption != null)
             {
@@ -55,7 +72,7 @@ namespace ReportPortal.Client
         /// <summary>
         /// Returns specified launch by ID.
         /// </summary>
-        /// <param name="uuid">ID of the launch to retrieve.</param>
+        /// <param name="id">ID of the launch to retrieve.</param>
         /// <returns>A representation of launch.</returns>
         public virtual async Task<LaunchResponse> GetAsync(long id)
         {
@@ -83,12 +100,12 @@ namespace ReportPortal.Client
         /// Finishes specified launch.
         /// </summary>
         /// <param name="uuid">UUID of specified launch.</param>
-        /// <param name="model">Information about representation of launch to finish.</param>
+        /// <param name="request">Information about representation of launch to finish.</param>
         /// <returns>A message from service.</returns>
-        public virtual async Task<LaunchFinishedResponse> FinishAsync(string uuid, FinishLaunchRequest model)
+        public virtual async Task<LaunchFinishedResponse> FinishAsync(string uuid, FinishLaunchRequest request)
         {
             var uri = BaseUri.Append($"{ProjectName}/launch/{uuid}/finish");
-            var body = ModelSerializer.Serialize<FinishLaunchRequest>(model);
+            var body = ModelSerializer.Serialize<FinishLaunchRequest>(request);
             var response = await HttpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<LaunchFinishedResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
@@ -98,12 +115,12 @@ namespace ReportPortal.Client
         /// Stopes specified launch even if inner tests are not finished yet.
         /// </summary>
         /// <param name="id">ID of specified launch.</param>
-        /// <param name="model">Information about representation of launch to finish.</param>
+        /// <param name="request">Information about representation of launch to finish.</param>
         /// <returns>A message from service.</returns>
-        public virtual async Task<LaunchFinishedResponse> StopAsync(long id, FinishLaunchRequest model)
+        public virtual async Task<LaunchFinishedResponse> StopAsync(long id, FinishLaunchRequest request)
         {
             var uri = BaseUri.Append($"{ProjectName}/launch/{id}/stop");
-            var body = ModelSerializer.Serialize<FinishLaunchRequest>(model);
+            var body = ModelSerializer.Serialize<FinishLaunchRequest>(request);
             var response = await HttpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<LaunchFinishedResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
@@ -125,12 +142,12 @@ namespace ReportPortal.Client
         /// <summary>
         /// Merge several launches.
         /// </summary>
-        /// <param name="model">Request for merging.</param>
+        /// <param name="request">Request for merging.</param>
         /// <returns>Returns the model of merged launches.</returns>
-        public virtual async Task<LaunchResponse> MergeAsync(MergeLaunchesRequest model)
+        public virtual async Task<LaunchResponse> MergeAsync(MergeLaunchesRequest request)
         {
             var uri = BaseUri.Append($"{ProjectName}/launch/merge");
-            var body = ModelSerializer.Serialize<MergeLaunchesRequest>(model);
+            var body = ModelSerializer.Serialize<MergeLaunchesRequest>(request);
             var response = await HttpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<LaunchResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
@@ -140,12 +157,12 @@ namespace ReportPortal.Client
         /// Update specified launch.
         /// </summary>
         /// <param name="id">ID of launch to update.</param>
-        /// <param name="model">Information about launch.</param>
+        /// <param name="request">Information about launch.</param>
         /// <returns>A message from service.</returns>
-        public virtual async Task<MessageResponse> UpdateAsync(long id, UpdateLaunchRequest model)
+        public virtual async Task<MessageResponse> UpdateAsync(long id, UpdateLaunchRequest request)
         {
             var uri = BaseUri.Append($"{ProjectName}/launch/{id}/update");
-            var body = ModelSerializer.Serialize<UpdateLaunchRequest>(model);
+            var body = ModelSerializer.Serialize<UpdateLaunchRequest>(request);
             var response = await HttpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
@@ -155,10 +172,10 @@ namespace ReportPortal.Client
         /// Merge several launches.
         /// </summary>
         /// <returns>A message from service.</returns>
-        public virtual async Task<MessageResponse> AnalyzeAsync(AnalyzeLaunchRequest model)
+        public virtual async Task<MessageResponse> AnalyzeAsync(AnalyzeLaunchRequest request)
         {
             var uri = BaseUri.Append($"{ProjectName}/launch/analyze");
-            var body = ModelSerializer.Serialize<AnalyzeLaunchRequest>(model);
+            var body = ModelSerializer.Serialize<AnalyzeLaunchRequest>(request);
             var response = await HttpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));

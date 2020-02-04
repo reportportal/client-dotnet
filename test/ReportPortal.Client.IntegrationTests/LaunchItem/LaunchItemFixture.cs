@@ -29,7 +29,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
         [Fact]
         public async Task GetDebugLaunches()
         {
-            var launches = await Service.Launch.GetAsync(debug: true);
+            var launches = await Service.Launch.GetDebugAsync();
             launches.Items.ToList().ForEach((l) => Assert.Equal(LaunchMode.Debug, l.Mode));
         }
 

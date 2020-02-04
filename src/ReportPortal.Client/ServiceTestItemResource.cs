@@ -7,14 +7,14 @@ using System.Text;
 using ReportPortal.Client.Extentions;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Responses;
-using ReportPortal.Client.Abstractions;
 using ReportPortal.Client.Abstractions.Filtering;
+using ReportPortal.Client.Abstractions.Resources;
 
 namespace ReportPortal.Client
 {
     public class ServiceTestItemResource : BaseResource, ITestItemResource
     {
-        public ServiceTestItemResource(HttpClient httpClient, Uri baseUri, string project, string token) : base(httpClient, baseUri, project, token)
+        public ServiceTestItemResource(HttpClient httpClient, Uri baseUri, string project) : base(httpClient, baseUri, project)
         {
 
         }

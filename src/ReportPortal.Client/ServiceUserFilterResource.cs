@@ -1,6 +1,6 @@
-﻿using ReportPortal.Client.Abstractions;
-using ReportPortal.Client.Abstractions.Filtering;
+﻿using ReportPortal.Client.Abstractions.Filtering;
 using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Client.Abstractions.Resources;
 using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Client.Converters;
 using ReportPortal.Client.Extentions;
@@ -13,12 +13,12 @@ namespace ReportPortal.Client
 {
     public class ServiceUserFilterResource : BaseResource, IUserFilterResource
     {
-        public ServiceUserFilterResource(HttpClient httpClient, Uri baseUri, string project, string apiToken) : base(httpClient, baseUri, project, apiToken)
+        public ServiceUserFilterResource(HttpClient httpClient, Uri baseUri, string project) : base(httpClient, baseUri, project)
         {
         }
 
         /// <summary>
-        /// adds the specified user ilter
+        /// Creates the specified user filter.
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -33,13 +33,13 @@ namespace ReportPortal.Client
         }
 
         /// <summary>
-        /// gets all user filters
+        /// Gets all user filters.
         /// </summary>
         /// <param name="filterOption"></param>
         /// <returns></returns>
         public virtual async Task<Content<UserFilterResponse>> GetAsync(FilterOption filterOption = null)
         {
-            var uri = BaseUri.Append($"{ProjectName}/filter/");
+            var uri = BaseUri.Append($"{ProjectName}/filter");
             if (filterOption != null)
             {
                 uri = uri.Append($"?{filterOption}");
@@ -59,9 +59,9 @@ namespace ReportPortal.Client
         }
 
         /// <summary>
-        /// deletes the specified filter by id
+        /// Deletes the specified filter by id.
         /// </summary>
-        /// <param name="filterId"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
         public virtual async Task<MessageResponse> DeleteAsync(long id)
         {

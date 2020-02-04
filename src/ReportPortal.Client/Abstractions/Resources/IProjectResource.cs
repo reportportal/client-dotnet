@@ -1,7 +1,7 @@
 ﻿using ReportPortal.Client.Abstractions.Responses;
 using System.Threading.Tasks;
 
-namespace ReportPortal.Client.Abstractions
+namespace ReportPortal.Client.Abstractions.Resources
 {
     public interface IProjectResource
     {

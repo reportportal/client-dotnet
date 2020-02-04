@@ -4,7 +4,7 @@ using ReportPortal.Client.Abstractions.Responses;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace ReportPortal.Client.Abstractions
+namespace ReportPortal.Client.Abstractions.Resources
 {
     public interface ITestItemResource
     {

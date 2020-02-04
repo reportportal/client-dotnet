@@ -1,4 +1,6 @@
-﻿namespace ReportPortal.Client.Abstractions
+﻿using ReportPortal.Client.Abstractions.Resources;
+
+namespace ReportPortal.Client.Abstractions
 {
     /// <summary>
     /// Interface to interact with common Report Portal services. Provides possibility to manage almost of service's endpoints.
@@ -16,6 +18,5 @@
         IUserFilterResource UserFilter { get; }
 
         IProjectResource Project { get; }
-
     }
 }

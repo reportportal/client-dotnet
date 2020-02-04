@@ -3,14 +3,14 @@ using System.Threading.Tasks;
 using ReportPortal.Client.Converters;
 using System.Net.Http;
 using ReportPortal.Client.Extentions;
-using ReportPortal.Client.Abstractions;
 using ReportPortal.Client.Abstractions.Responses;
+using ReportPortal.Client.Abstractions.Resources;
 
 namespace ReportPortal.Client
 {
     public class ServiceProjectResource : BaseResource, IProjectResource
     {
-        public ServiceProjectResource(HttpClient httpClient, Uri baseUri, string project, string token) : base(httpClient, baseUri, project, token)
+        public ServiceProjectResource(HttpClient httpClient, Uri baseUri, string project) : base(httpClient, baseUri, project)
         {
 
         }

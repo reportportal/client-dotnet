@@ -4,17 +4,17 @@ using ReportPortal.Client.Converters;
 using System.Net.Http;
 using System.Text;
 using ReportPortal.Client.Extentions;
-using ReportPortal.Client.Abstractions;
 using ReportPortal.Client.Abstractions.Requests;
 using System.Collections.Generic;
 using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Client.Abstractions.Filtering;
+using ReportPortal.Client.Abstractions.Resources;
 
 namespace ReportPortal.Client
 {
     public class ServiceLogItemResource : BaseResource, ILogItemResource
     {
-        public ServiceLogItemResource(HttpClient httpClient, Uri baseUri, string project, string token) : base(httpClient, baseUri, project, token)
+        public ServiceLogItemResource(HttpClient httpClient, Uri baseUri, string project) : base(httpClient, baseUri, project)
         {
 
         }

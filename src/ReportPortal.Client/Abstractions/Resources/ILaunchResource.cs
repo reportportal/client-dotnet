@@ -3,7 +3,7 @@ using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Responses;
 using System.Threading.Tasks;
 
-namespace ReportPortal.Client.Abstractions
+namespace ReportPortal.Client.Abstractions.Resources
 {
     public interface ILaunchResource
     {
@@ -12,7 +12,8 @@ namespace ReportPortal.Client.Abstractions
         Task<MessageResponse> DeleteAsync(long id);
         Task<LaunchResponse> GetAsync(long id);
         Task<LaunchResponse> GetAsync(string uuid);
-        Task<Content<LaunchResponse>> GetAsync(FilterOption filterOption = null, bool debug = false);
+        Task<Content<LaunchResponse>> GetAsync(FilterOption filterOption = null);
+        Task<Content<LaunchResponse>> GetDebugAsync(FilterOption filterOption = null);
         Task<LaunchResponse> MergeAsync(MergeLaunchesRequest model);
         Task<LaunchCreatedResponse> StartAsync(StartLaunchRequest request);
         Task<LaunchFinishedResponse> StopAsync(long id, FinishLaunchRequest model);
