@@ -9,7 +9,7 @@ namespace ReportPortal.Client.Extentions
         public static void VerifySuccessStatusCode(this HttpResponseMessage httpResponseMessage)
         {
             var requestUri = httpResponseMessage.RequestMessage.RequestUri;
-            var body = httpResponseMessage.Content.ReadAsStringAsync().Result;
+            var body = httpResponseMessage.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 
             try
             {
