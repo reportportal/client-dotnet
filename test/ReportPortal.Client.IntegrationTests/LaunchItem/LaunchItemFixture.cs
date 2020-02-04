@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Net.Http;
 using Xunit;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Client.Abstractions.Filtering;
+using ReportPortal.Client.Http;
 
 namespace ReportPortal.Client.IntegrationTests.LaunchItem
 {
@@ -15,7 +15,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
         [Fact]
         public async Task GetInvalidLaunch()
         {
-            await Assert.ThrowsAsync<HttpRequestException>(async () => await Service.Launch.GetAsync("invalid_id"));
+            await Assert.ThrowsAsync<ReportPortalException>(async () => await Service.Launch.GetAsync("invalid_id"));
         }
 
         [Fact]
@@ -168,7 +168,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
             Assert.Equal("Desc", getLaunch.Description);
             Assert.Equal(now.ToString(), getLaunch.StartTime.ToString());
 
-            Assert.Equal(attributes.Select(a => new { a.Key, a.Value}), getLaunch.Attributes.Select(a => new { a.Key, a.Value }));
+            Assert.Equal(attributes.Select(a => new { a.Key, a.Value }), getLaunch.Attributes.Select(a => new { a.Key, a.Value }));
             var message = await Service.Launch.FinishAsync(launch.Uuid, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow

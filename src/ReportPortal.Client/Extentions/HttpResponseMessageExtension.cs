@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReportPortal.Client.Http;
+using System;
 using System.Net.Http;
 
 namespace ReportPortal.Client.Extentions
@@ -14,9 +15,9 @@ namespace ReportPortal.Client.Extentions
             {
                 httpResponseMessage.EnsureSuccessStatusCode();
             }
-            catch(Exception exp)
+            catch (Exception)
             {
-                throw new HttpRequestException($"Unexpected response status code. {httpResponseMessage.RequestMessage.Method} {requestUri}{Environment.NewLine}Response Body: {body}", exp);
+                throw new ReportPortalException($"Response status code does not indicate success: {httpResponseMessage.StatusCode} ({(int)httpResponseMessage.StatusCode}) {httpResponseMessage.RequestMessage.Method} {requestUri}", new HttpRequestException($"Response message: {body}"));
             }
         }
     }
