@@ -10,10 +10,10 @@ namespace ReportPortal.Client.Abstractions
     {
         Task<UserFilterCreatedResponse> CreateAsync(CreateUserFilterRequest request);
 
-        Task<Content<UserFilter>> GetAsync(FilterOption filterOption = null);
+        Task<Content<UserFilterResponse>> GetAsync(FilterOption filterOption = null);
 
-        Task<UserFilter> GetAsync(long id);
+        Task<UserFilterResponse> GetAsync(long id);
 
-        Task<Message> DeleteAsync(long id);
+        Task<MessageResponse> DeleteAsync(long id);
     }
 }

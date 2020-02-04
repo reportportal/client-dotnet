@@ -25,7 +25,7 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="filterOption">Specified criterias for retrieving test items.</param>
         /// <returns>A list of test items.</returns>
-        public virtual async Task<Content<TestItemModel>> GetAsync(FilterOption filterOption = null)
+        public virtual async Task<Content<TestItemResponse>> GetAsync(FilterOption filterOption = null)
         {
             var uri = BaseUri.Append($"{Project}/item");
             if (filterOption != null)
@@ -34,7 +34,7 @@ namespace ReportPortal.Client
             }
             var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<Content<TestItemModel>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return ModelSerializer.Deserialize<Content<TestItemResponse>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         /// <summary>
@@ -42,12 +42,12 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="id">ID of the test item to retrieve.</param>
         /// <returns>A representation of test item.</returns>
-        public virtual async Task<TestItemModel> GetAsync(long id)
+        public virtual async Task<TestItemResponse> GetAsync(long id)
         {
             var uri = BaseUri.Append($"{Project}/item/{id}");
             var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<TestItemModel>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return ModelSerializer.Deserialize<TestItemResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         /// <summary>
@@ -55,12 +55,12 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="uuid">UUID of the test item to retrieve.</param>
         /// <returns>A representation of test item.</returns>
-        public virtual async Task<Abstractions.Responses.TestItemModel> GetAsync(string uuid)
+        public virtual async Task<Abstractions.Responses.TestItemResponse> GetAsync(string uuid)
         {
             var uri = BaseUri.Append($"{Project}/item/uuid/{uuid}");
             var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<TestItemModel>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return ModelSerializer.Deserialize<TestItemResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         /// <summary>
@@ -98,13 +98,13 @@ namespace ReportPortal.Client
         /// <param name="id">ID of specified test item.</param>
         /// <param name="model">Information about representation of test item to finish.</param>
         /// <returns>A message from service.</returns>
-        public virtual async Task<Message> FinishAsync(string id, FinishTestItemRequest model)
+        public virtual async Task<MessageResponse> FinishAsync(string id, FinishTestItemRequest model)
         {
             var uri = BaseUri.Append($"{Project}/item/{id}");
             var body = ModelSerializer.Serialize<FinishTestItemRequest>(model);
             var response = await HttpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return ModelSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         /// <summary>
@@ -113,13 +113,13 @@ namespace ReportPortal.Client
         /// <param name="id">ID of test item to update.</param>
         /// <param name="model">Information about test item.</param>
         /// <returns>A message from service.</returns>
-        public virtual async Task<Message> UpdateAsync(long id, UpdateTestItemRequest model)
+        public virtual async Task<MessageResponse> UpdateAsync(long id, UpdateTestItemRequest model)
         {
             var uri = BaseUri.Append($"{Project}/item/{id}/update");
             var body = ModelSerializer.Serialize<UpdateTestItemRequest>(model);
             var response = await HttpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return ModelSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         /// <summary>
@@ -127,12 +127,12 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="id">ID of the test item to delete.</param>
         /// <returns>A message from service.</returns>
-        public virtual async Task<Message> DeleteAsync(long id)
+        public virtual async Task<MessageResponse> DeleteAsync(long id)
         {
             var uri = BaseUri.Append($"{Project}/item/{id}");
             var response = await HttpClient.DeleteAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return ModelSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         /// <summary>

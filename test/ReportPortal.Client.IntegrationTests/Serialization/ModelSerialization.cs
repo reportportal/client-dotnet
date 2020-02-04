@@ -13,7 +13,7 @@ namespace ReportPortal.Client.IntegrationTests.Serialization
         public void ShouldThrowExceptionIfIncorrectJson()
         {
             var json = "<abc />";
-            var exp = Assert.ThrowsAny<Exception>(() => ModelSerializer.Deserialize<Message>(json));
+            var exp = Assert.ThrowsAny<Exception>(() => ModelSerializer.Deserialize<MessageResponse>(json));
             Assert.Contains(json, exp.Message);
             Assert.NotNull(exp.InnerException);
         }

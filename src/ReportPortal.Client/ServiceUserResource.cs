@@ -15,12 +15,12 @@ namespace ReportPortal.Client
 
         }
 
-        public virtual async Task<User> GetAsync()
+        public virtual async Task<UserResponse> GetAsync()
         {
             var uri = BaseUri.Append($"user");
             var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<User>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return ModelSerializer.Deserialize<UserResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
     }
 }

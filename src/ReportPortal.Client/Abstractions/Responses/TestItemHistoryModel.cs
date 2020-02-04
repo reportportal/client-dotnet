@@ -36,6 +36,6 @@ namespace ReportPortal.Client.Abstractions.Responses
         public Status LaunchStatus { get { return EnumConverter.ConvertTo<Status>(LaunchStatusString); } set { LaunchStatusString = EnumConverter.ConvertFrom(value); } }
 
         [DataMember(Name = "resources")]
-        public List<TestItemModel> Resources { get; set; }
+        public List<TestItemResponse> Resources { get; set; }
     }
 }

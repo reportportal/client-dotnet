@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 namespace ReportPortal.Client.Abstractions.Responses
 {
     [DataContract]
-    public class LogItem
+    public class LogItemResponse
     {
         [DataMember(Name = "id")]
         public long Id { get; set; }

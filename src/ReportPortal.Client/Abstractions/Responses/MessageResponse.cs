@@ -3,7 +3,7 @@
 namespace ReportPortal.Client.Abstractions.Responses
 {
     [DataContract]
-    public class Message
+    public class MessageResponse
     {
         [DataMember(Name = "message")]
         public string Info { get; set; }

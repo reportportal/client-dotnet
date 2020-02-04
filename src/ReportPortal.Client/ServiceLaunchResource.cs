@@ -115,12 +115,12 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="id">ID of the launch to delete.</param>
         /// <returns>A message from service.</returns>
-        public virtual async Task<Message> DeleteAsync(long id)
+        public virtual async Task<MessageResponse> DeleteAsync(long id)
         {
             var uri = BaseUri.Append($"{Project}/launch/{id}");
             var response = await HttpClient.DeleteAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return ModelSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         /// <summary>
@@ -143,26 +143,26 @@ namespace ReportPortal.Client
         /// <param name="id">ID of launch to update.</param>
         /// <param name="model">Information about launch.</param>
         /// <returns>A message from service.</returns>
-        public virtual async Task<Message> UpdateAsync(long id, UpdateLaunchRequest model)
+        public virtual async Task<MessageResponse> UpdateAsync(long id, UpdateLaunchRequest model)
         {
             var uri = BaseUri.Append($"{Project}/launch/{id}/update");
             var body = ModelSerializer.Serialize<UpdateLaunchRequest>(model);
             var response = await HttpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return ModelSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         /// <summary>
         /// Merge several launches.
         /// </summary>
         /// <returns>A message from service.</returns>
-        public virtual async Task<Message> AnalyzeAsync(AnalyzeLaunchRequest model)
+        public virtual async Task<MessageResponse> AnalyzeAsync(AnalyzeLaunchRequest model)
         {
             var uri = BaseUri.Append($"{Project}/launch/analyze");
             var body = ModelSerializer.Serialize<AnalyzeLaunchRequest>(model);
             var response = await HttpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return ModelSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
     }
 }

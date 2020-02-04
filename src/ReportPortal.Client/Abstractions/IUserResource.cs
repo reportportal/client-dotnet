@@ -5,6 +5,6 @@ namespace ReportPortal.Client.Abstractions
 {
     public interface IUserResource
     {
-        Task<User> GetAsync();
+        Task<UserResponse> GetAsync();
     }
 }

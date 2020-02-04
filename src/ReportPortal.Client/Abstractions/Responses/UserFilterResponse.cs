@@ -7,7 +7,7 @@ using ReportPortal.Client.Converters;
 namespace ReportPortal.Client.Abstractions.Responses
 {
     [DataContract]
-    public class UserFilter
+    public class UserFilterResponse
     {
         /// <summary>
         /// ID of user filter.

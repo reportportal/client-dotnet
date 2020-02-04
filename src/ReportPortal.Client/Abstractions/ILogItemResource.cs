@@ -9,10 +9,10 @@ namespace ReportPortal.Client.Abstractions
     public interface ILogItemResource
     {
         Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest model);
-        Task<Message> DeleteAsync(long id);
+        Task<MessageResponse> DeleteAsync(long id);
         Task<byte[]> GetBinaryDataAsync(string id);
-        Task<LogItem> GetAsync(long id);
-        Task<LogItem> GetAsync(string uuid);
-        Task<Content<LogItem>> GetAsync(FilterOption filterOption = null);
+        Task<LogItemResponse> GetAsync(long id);
+        Task<LogItemResponse> GetAsync(string uuid);
+        Task<Content<LogItemResponse>> GetAsync(FilterOption filterOption = null);
     }
 }

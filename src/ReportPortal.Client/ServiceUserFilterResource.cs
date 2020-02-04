@@ -38,7 +38,7 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="filterOption"></param>
         /// <returns></returns>
-        public virtual async Task<Content<UserFilter>> GetAsync(FilterOption filterOption = null)
+        public virtual async Task<Content<UserFilterResponse>> GetAsync(FilterOption filterOption = null)
         {
             var uri = BaseUri.Append($"{Project}/filter/");
             if (filterOption != null)
@@ -47,16 +47,16 @@ namespace ReportPortal.Client
             }
             var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<Content<UserFilter>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return ModelSerializer.Deserialize<Content<UserFilterResponse>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
-        public virtual async Task<UserFilter> GetAsync(long id)
+        public virtual async Task<UserFilterResponse> GetAsync(long id)
         {
             var uri = BaseUri.Append($"{Project}/filter/{id}");
 
             var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<UserFilter>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return ModelSerializer.Deserialize<UserFilterResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         /// <summary>
@@ -64,13 +64,13 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="filterId"></param>
         /// <returns></returns>
-        public virtual async Task<Message> DeleteAsync(long id)
+        public virtual async Task<MessageResponse> DeleteAsync(long id)
         {
             var uri = BaseUri.Append($"{Project}/filter/{id}");
 
             var response = await HttpClient.DeleteAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<Message>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return ModelSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
     }
 }

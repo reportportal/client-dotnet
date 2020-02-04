@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 namespace ReportPortal.Client.Abstractions.Responses
 {
     [DataContract]
-    public class User
+    public class UserResponse
     {
         [DataMember(Name = "fullName")]
         public string Fullname { get; set; }
