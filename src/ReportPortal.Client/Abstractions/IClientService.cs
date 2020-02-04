@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using ReportPortal.Client.Abstractions.Filtering;
-using ReportPortal.Client.Abstractions.Responses;
+﻿using System.Threading.Tasks;
 using ReportPortal.Client.Models;
 using ReportPortal.Client.Requests;
 
@@ -17,10 +14,10 @@ namespace ReportPortal.Client.Abstractions
 
         IUserResource User { get; }
 
-        Task<List<EntryCreated>> AddUserFilterAsync(AddUserFilterRequest model);
-        Task<Message> DeleteUserFilterAsync(string filterId);
+        IUserFilterResource UserFilter { get; }
+
+
         Task<Preference> GetAllPreferences(string userName);
-        Task<UserFilterContainer> GetUserFiltersAsync(FilterOption filterOption = null);
         Task<Service.UpdatePreferencesResponse> UpdatePreferencesAsync(UpdatePreferenceRequest model, string userName);
     }
 }

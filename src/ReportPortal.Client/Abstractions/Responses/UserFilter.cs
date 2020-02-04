@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Text;
-using ReportPortal.Client.Abstractions.Responses;
+using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Converters;
-using ReportPortal.Client.Requests;
 
-namespace ReportPortal.Client.Models
+namespace ReportPortal.Client.Abstractions.Responses
 {
     [DataContract]
     public class UserFilter

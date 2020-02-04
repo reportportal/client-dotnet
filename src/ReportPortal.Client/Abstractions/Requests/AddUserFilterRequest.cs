@@ -3,9 +3,8 @@ using System.Runtime.Serialization;
 using ReportPortal.Client.Abstractions.Filtering;
 using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Client.Converters;
-using ReportPortal.Client.Models;
 
-namespace ReportPortal.Client.Requests
+namespace ReportPortal.Client.Abstractions.Requests
 {
     /// <summary>
     /// Defines a request for creating of user filters

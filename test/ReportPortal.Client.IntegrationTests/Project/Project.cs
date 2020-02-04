@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ReportPortal.Client.Abstractions.Filtering;
+using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Client.Requests;
 using Xunit;
@@ -44,7 +45,7 @@ namespace ReportPortal.Client.IntegrationTests.Project
                 SelectionParameters = selectionParameters
             };
 
-            var userFilters = await Service.AddUserFilterAsync(new AddUserFilterRequest { FilterElements = new List<FilterElement> { filterElement } });
+            var userFilters = await Service.UserFilter.AddAsync(new AddUserFilterRequest { FilterElements = new List<FilterElement> { filterElement } });
 
             var message = await Service.UpdatePreferencesAsync(new UpdatePreferenceRequest { FilderIds = userFilters.Select(x => x.Id) }, Username);
             Assert.Equal(base.Service.Project, message.ProjectRef);
@@ -52,7 +53,7 @@ namespace ReportPortal.Client.IntegrationTests.Project
             var allPreferences = await Service.GetAllPreferences(Username);
             Assert.True(allPreferences.FilterIds.Intersect(userFilters.Select(x => x.Id)).Any());
 
-            userFilters.ForEach(async x => await Service.DeleteUserFilterAsync(x.Id));
+            userFilters.ForEach(async x => await Service.UserFilter.DeleteAsync(x.Id));
         }
     }
 }

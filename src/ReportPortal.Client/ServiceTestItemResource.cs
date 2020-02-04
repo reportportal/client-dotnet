@@ -19,6 +19,7 @@ namespace ReportPortal.Client
         {
 
         }
+
         /// <summary>
         /// Returns a list of test items for specified launch and parent test item (optional).
         /// </summary>

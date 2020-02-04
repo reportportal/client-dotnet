@@ -8,7 +8,7 @@ namespace ReportPortal.Client.Models
     public class LaunchesContainer
     {
         [DataMember(Name = "content")]
-        public List<LaunchResponse> Launches { get; set; } 
+        public List<LaunchResponse> Launches { get; set; }
 
         [DataMember(Name = "page")]
         public Page Page { get; set; }

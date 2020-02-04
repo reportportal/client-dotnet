@@ -133,5 +133,13 @@ namespace ReportPortal.Client
                 return new ServiceUserResource(_httpClient, BaseUri, Project, Token);
             }
         }
+
+        public IUserFilterResource UserFilter
+        {
+            get
+            {
+                return new ServiceUserFilterResource(_httpClient, BaseUri, Project, Token);
+            }
+        }
     }
 }
