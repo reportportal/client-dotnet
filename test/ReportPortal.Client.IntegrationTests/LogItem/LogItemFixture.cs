@@ -28,7 +28,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
         public async Task CteateLogWithAllLevels(LogLevel level)
         {
             var now = DateTime.UtcNow;
-            var log = await Service.LogItem.AddAsync(new AddLogItemRequest
+            var log = await Service.LogItem.CreateAsync(new CreateLogItemRequest
             {
                 TestItemUuid = _fixture.TestUuid,
                 Text = "Log1",
@@ -47,7 +47,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
         public async Task CreateLogWithAttach()
         {
             var data = new byte[] { 1, 2, 3 };
-            var log = await Service.LogItem.AddAsync(new AddLogItemRequest
+            var log = await Service.LogItem.CreateAsync(new CreateLogItemRequest
             {
                 TestItemUuid = _fixture.TestUuid,
                 Text = "Log1",
@@ -69,7 +69,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
         public async Task CreateLogWithJsonAttach()
         {
             var data = Encoding.Default.GetBytes("{\"a\" = true }");
-            var log = await Service.LogItem.AddAsync(new AddLogItemRequest
+            var log = await Service.LogItem.CreateAsync(new CreateLogItemRequest
             {
                 TestItemUuid = _fixture.TestUuid,
                 Text = "Log1",
@@ -91,7 +91,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
         [Fact]
         public async Task CreateLogForLaunch()
         {
-            var log = await Service.LogItem.AddAsync(new AddLogItemRequest
+            var log = await Service.LogItem.CreateAsync(new CreateLogItemRequest
             {
                 LaunchUuid = _fixture.LaunchUuid,
                 Text = "LaunchLog1",
@@ -116,7 +116,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
                 Type = TestItemType.Test
             })).Uuid;
 
-            var log = await Service.LogItem.AddAsync(new AddLogItemRequest
+            var log = await Service.LogItem.CreateAsync(new CreateLogItemRequest
             {
                 TestItemUuid = newTestUuid,
                 Text = "Log1",
@@ -141,7 +141,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
         [Fact]
         public async Task GetLogItem()
         {
-            var addLogItemRequest = new AddLogItemRequest
+            var addLogItemRequest = new CreateLogItemRequest
             {
                 TestItemUuid = _fixture.TestUuid,
                 Text = "Log1",
@@ -149,7 +149,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
                 Level = LogLevel.Info
             };
 
-            var log = await Service.LogItem.AddAsync(addLogItemRequest);
+            var log = await Service.LogItem.CreateAsync(addLogItemRequest);
             Assert.NotNull(log.Uuid);
 
             var gotLogItem = await Service.LogItem.GetAsync(log.Uuid);
@@ -169,7 +169,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
                 Type = TestItemType.Test
             })).Uuid;
 
-            var log = await Service.LogItem.AddAsync(new AddLogItemRequest
+            var log = await Service.LogItem.CreateAsync(new CreateLogItemRequest
             {
                 TestItemUuid = newTestUuid,
                 Text = "Log1",

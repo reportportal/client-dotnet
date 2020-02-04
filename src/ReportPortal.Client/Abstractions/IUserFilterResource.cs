@@ -9,7 +9,7 @@ namespace ReportPortal.Client.Abstractions
 {
     public interface IUserFilterResource
     {
-        Task<List<UserFilterCreatedResponse>> AddAsync(AddUserFilterRequest request);
+        Task<List<UserFilterCreatedResponse>> CreateAsync(CreateUserFilterRequest request);
 
         Task<UserFilterContainer> GetAsync(FilterOption filterOption = null);
 

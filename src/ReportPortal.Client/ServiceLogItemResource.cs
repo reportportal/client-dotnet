@@ -83,20 +83,20 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="model">Information about representation of log item.</param>
         /// <returns>Representation of just created log item.</returns>
-        public virtual async Task<LogItemCreatedResponse> AddAsync(AddLogItemRequest model)
+        public virtual async Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest model)
         {
             var uri = BaseUri.Append($"{Project}/log");
 
             if (model.Attach == null)
             {
-                var body = ModelSerializer.Serialize<AddLogItemRequest>(model);
+                var body = ModelSerializer.Serialize<CreateLogItemRequest>(model);
                 var response = await HttpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
                 response.VerifySuccessStatusCode();
                 return ModelSerializer.Deserialize<LogItemCreatedResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
             }
             else
             {
-                var body = ModelSerializer.Serialize<List<AddLogItemRequest>>(new List<AddLogItemRequest> { model });
+                var body = ModelSerializer.Serialize<List<CreateLogItemRequest>>(new List<CreateLogItemRequest> { model });
                 var multipartContent = new MultipartFormDataContent();
 
                 var jsonContent = new StringContent(body, Encoding.UTF8, "application/json");

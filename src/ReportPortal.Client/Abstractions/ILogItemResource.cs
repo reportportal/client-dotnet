@@ -8,7 +8,7 @@ namespace ReportPortal.Client.Abstractions
 {
     public interface ILogItemResource
     {
-        Task<LogItemCreatedResponse> AddAsync(AddLogItemRequest model);
+        Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest model);
         Task<Message> DeleteAsync(long id);
         Task<byte[]> GetBinaryDataAsync(string id);
         Task<LogItem> GetAsync(long id);

@@ -10,7 +10,7 @@ namespace ReportPortal.Client.Abstractions.Requests
     /// Defines a request for creating of user filters
     /// </summary>
     [DataContract]
-    public class AddUserFilterRequest
+    public class CreateUserFilterRequest
     {
         /// <summary>
         /// list of filter elements

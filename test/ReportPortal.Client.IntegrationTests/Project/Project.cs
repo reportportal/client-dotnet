@@ -45,7 +45,7 @@ namespace ReportPortal.Client.IntegrationTests.Project
                 SelectionParameters = selectionParameters
             };
 
-            var userFilters = await Service.UserFilter.AddAsync(new AddUserFilterRequest { FilterElements = new List<FilterElement> { filterElement } });
+            var userFilters = await Service.UserFilter.CreateAsync(new CreateUserFilterRequest { FilterElements = new List<FilterElement> { filterElement } });
 
             var message = await Service.UpdatePreferencesAsync(new UpdatePreferenceRequest { FilderIds = userFilters.Select(x => x.Id) }, Username);
             Assert.Equal(base.Service.Project, message.ProjectRef);

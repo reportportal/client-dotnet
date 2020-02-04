@@ -24,11 +24,11 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public virtual async Task<List<UserFilterCreatedResponse>> AddAsync(AddUserFilterRequest model)
+        public virtual async Task<List<UserFilterCreatedResponse>> CreateAsync(CreateUserFilterRequest model)
         {
             var uri = BaseUri.Append($"{Project}/filter");
 
-            var body = ModelSerializer.Serialize<AddUserFilterRequest>(model);
+            var body = ModelSerializer.Serialize<CreateUserFilterRequest>(model);
             var response = await HttpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<List<UserFilterCreatedResponse>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));

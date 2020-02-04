@@ -9,7 +9,7 @@ namespace ReportPortal.Client.Abstractions.Requests
     /// Defines a request for logging messages into Report Portal.
     /// </summary>
     [DataContract]
-    public class AddLogItemRequest
+    public class CreateLogItemRequest
     {
         /// <summary>
         /// ID of test item to add new logs.
