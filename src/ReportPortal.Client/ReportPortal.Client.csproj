@@ -3,28 +3,25 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net45;</TargetFrameworks>
     <Version>1.0.0</Version>
-    <Description>Async client for http://reportportal.io Web API</Description>
+    <Description>API client for http://reportportal.io</Description>
     <Authors>Nikolay Borisenko, Report Portal Community</Authors>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>http://reportportal.io</PackageProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/reportportal/client-net/master/Logo.png</PackageIconUrl>
+    <PackageIcon>Logo.png</PackageIcon>
     <RepositoryType>GitHub</RepositoryType>
     <RepositoryUrl>https://github.com/reportportal/client-net</RepositoryUrl>
     <PackageTags>report reportportal api client testing</PackageTags>
 
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.1'">
-    <PackageReference Include="System.Runtime.Serialization.Json" Version="4.3.0" />
-    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
-  </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45'">
     <Reference Include="System.Net.Http" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Build\**" Pack="true" PackagePath="build\" />
+    <None Include="..\*.targets" Pack="true" PackagePath="build\" Visible="false" />
+    <None Include="..\..\Logo.png" Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>
 </Project>
