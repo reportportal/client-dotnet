@@ -1,4 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
+using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Shared.Reporter;
 using System;
 
@@ -14,36 +16,38 @@ namespace ReportPortal.Shared.Benchmark.Reporter
         [Benchmark]
         public void LaunchReporter()
         {
-            var nopService = new NopService(new Uri("https://rp.epam.com/api/v1/"), "", "");
-            var launchReporter = new LaunchReporter(nopService, null, null);
+            var configuration = new Configuration.ConfigurationBuilder().Build();
+
+            var nopService = new NopService();
+            var launchReporter = new LaunchReporter(nopService, configuration, null);
 
             var launchDateTime = DateTime.UtcNow;
 
-            launchReporter.Start(new Client.Requests.StartLaunchRequest
+            launchReporter.Start(new StartLaunchRequest
             {
                 Name = "ReportPortal Benchmark",
                 StartTime = launchDateTime,
-                Mode = Client.Models.LaunchMode.Debug,
+                Mode = LaunchMode.Debug,
                 Tags = new System.Collections.Generic.List<string>()
             });
 
             for (int i = 0; i < SuitesCount; i++)
             {
-                var suiteNode = launchReporter.StartChildTestReporter(new Client.Requests.StartTestItemRequest
+                var suiteNode = launchReporter.StartChildTestReporter(new StartTestItemRequest
                 {
                     Name = $"Suite {i}",
                     StartTime = launchDateTime.AddMilliseconds(-1),
-                    Type = Client.Models.TestItemType.Suite
+                    Type = TestItemType.Suite
                 });
 
-                suiteNode.Finish(new Client.Requests.FinishTestItemRequest
+                suiteNode.Finish(new FinishTestItemRequest
                 {
                     EndTime = launchDateTime,
-                    Status = Client.Models.Status.Passed
+                    Status = Status.Passed
                 });
             }
 
-            launchReporter.Finish(new Client.Requests.FinishLaunchRequest
+            launchReporter.Finish(new FinishLaunchRequest
             {
                 EndTime = launchDateTime
             });
