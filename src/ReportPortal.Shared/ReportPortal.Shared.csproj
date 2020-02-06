@@ -8,7 +8,7 @@
     <Authors>Nikolay Borisenko, Report Portal Community</Authors>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>http://reportportal.io</PackageProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/reportportal/commons-net/master/Logo.png</PackageIconUrl>
+    <PackageIcon>Logo.png</PackageIcon>
     <RepositoryType>GitHub</RepositoryType>
     <RepositoryUrl>https://github.com/reportportal/commons-net</RepositoryUrl>
     <PackageTags>reportportal report reporter api testing</PackageTags>
@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <None Include="..\*.targets" Pack="true" PackagePath="build\" Visible="false" />
+    <None Include="..\..\Logo.png" Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>
 
 </Project>
