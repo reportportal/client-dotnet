@@ -1,4 +1,4 @@
-﻿using ReportPortal.Client.Requests;
+﻿using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Tests.Helpers;
 using Xunit;
@@ -22,7 +22,7 @@ namespace ReportPortal.Shared.Tests.Extensibility.LogFormatter
             Assert.True(Invoked);
         }
 
-        public bool FormatLog(ref AddLogItemRequest logRequest)
+        public bool FormatLog(CreateLogItemRequest logRequest)
         {
             Invoked = true;
             return false;

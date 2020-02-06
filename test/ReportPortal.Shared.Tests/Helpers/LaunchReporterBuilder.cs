@@ -1,4 +1,6 @@
-﻿using ReportPortal.Client;
+﻿using ReportPortal.Client.Abstractions;
+using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Shared.Internal.Delegating;
 using ReportPortal.Shared.Reporter;
 using System;
@@ -7,12 +9,12 @@ namespace ReportPortal.Shared.Tests.Helpers
 {
     public class LaunchReporterBuilder
     {
-        public LaunchReporterBuilder(Service service)
+        public LaunchReporterBuilder(IClientService service)
         {
             Service = service;
         }
 
-        public Service Service { get; }
+        public IClientService Service { get; }
 
         public IRequestExecuterFactory RequestExecuterFactory { get; set; }
 
@@ -29,57 +31,57 @@ namespace ReportPortal.Shared.Tests.Helpers
 
             var launchDateTime = DateTime.UtcNow;
 
-            launchReporter.Start(new Client.Requests.StartLaunchRequest
+            launchReporter.Start(new StartLaunchRequest
             {
                 Name = "ReportPortal Shared",
                 StartTime = launchDateTime,
-                Mode = Client.Models.LaunchMode.Debug,
+                Mode = LaunchMode.Debug,
                 Tags = new System.Collections.Generic.List<string>()
             });
 
             for (int i = 0; i < suitesPerLaunch; i++)
             {
-                var suiteNode = launchReporter.StartChildTestReporter(new Client.Requests.StartTestItemRequest
+                var suiteNode = launchReporter.StartChildTestReporter(new StartTestItemRequest
                 {
                     Name = $"Suite {i}",
                     StartTime = launchDateTime.AddMilliseconds(-1),
-                    Type = Client.Models.TestItemType.Suite
+                    Type = TestItemType.Suite
                 });
 
                 for (int j = 0; j < testsPerSuite; j++)
                 {
-                    var testNode = suiteNode.StartChildTestReporter(new Client.Requests.StartTestItemRequest
+                    var testNode = suiteNode.StartChildTestReporter(new StartTestItemRequest
                     {
                         Name = $"Test {j}",
                         StartTime = launchDateTime,
-                        Type = Client.Models.TestItemType.Step
+                        Type = TestItemType.Step
                     });
 
                     for (int l = 0; l < logsPerTest; l++)
                     {
-                        testNode.Log(new Client.Requests.AddLogItemRequest
+                        testNode.Log(new CreateLogItemRequest
                         {
-                            Level = Client.Models.LogLevel.Info,
+                            Level = LogLevel.Info,
                             Text = $"Log message #{l}",
                             Time = launchDateTime
                         });
                     }
 
-                    testNode.Finish(new Client.Requests.FinishTestItemRequest
+                    testNode.Finish(new FinishTestItemRequest
                     {
                         EndTime = launchDateTime,
-                        Status = Client.Models.Status.Passed
+                        Status = Status.Passed
                     });
                 }
 
-                suiteNode.Finish(new Client.Requests.FinishTestItemRequest
+                suiteNode.Finish(new FinishTestItemRequest
                 {
                     EndTime = launchDateTime,
-                    Status = Client.Models.Status.Passed
+                    Status = Status.Passed
                 });
             }
 
-            launchReporter.Finish(new Client.Requests.FinishLaunchRequest
+            launchReporter.Finish(new FinishLaunchRequest
             {
                 EndTime = launchDateTime
             });

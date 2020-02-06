@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
-using ReportPortal.Client.Models;
-using ReportPortal.Client.Requests;
+using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Shared.Extensibility;
 using Xunit;
 
@@ -13,7 +13,7 @@ namespace ReportPortal.Shared.Tests
         private string mimeType = "image/png";
         private byte[] data = new byte[] { 1 };
 
-        private static AddLogItemRequest _logRequest;
+        private static CreateLogItemRequest _logRequest;
 
         public int Order => 10;
 
@@ -113,7 +113,7 @@ namespace ReportPortal.Shared.Tests
             _logRequest.Attach.Data.Should().BeEquivalentTo(data);
         }
 
-        public bool Handle(AddLogItemRequest logRequest)
+        public bool Handle(CreateLogItemRequest logRequest)
         {
             _logRequest = logRequest;
 

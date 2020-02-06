@@ -1,9 +1,6 @@
-﻿using ReportPortal.Client.Requests;
+﻿using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Tests.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace ReportPortal.Shared.Tests.Extensibility.LogHandler
@@ -27,7 +24,7 @@ namespace ReportPortal.Shared.Tests.Extensibility.LogHandler
             Assert.True(Invoked);
         }
 
-        public bool Handle(AddLogItemRequest logRequest)
+        public bool Handle(CreateLogItemRequest logRequest)
         {
             Invoked = true;
             return false;

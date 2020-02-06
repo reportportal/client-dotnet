@@ -1,5 +1,5 @@
-﻿using ReportPortal.Client.Models;
-using ReportPortal.Client.Requests;
+﻿using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Client.Abstractions.Responses;
 using System;
 
 namespace ReportPortal.Shared
@@ -22,7 +22,7 @@ namespace ReportPortal.Shared
         /// Sends log message to current test context.
         /// </summary>
         /// <param name="logRequest">Full model object for message</param>
-        public static void Message(AddLogItemRequest logRequest)
+        public static void Message(CreateLogItemRequest logRequest)
         {
             foreach (var handler in Bridge.LogHandlerExtensions)
             {
@@ -182,9 +182,9 @@ namespace ReportPortal.Shared
             Message(logRequest);
         }
 
-        private static AddLogItemRequest GetDefaultLogRequest(string text)
+        private static CreateLogItemRequest GetDefaultLogRequest(string text)
         {
-            var logRequest = new AddLogItemRequest
+            var logRequest = new CreateLogItemRequest
             {
                 Time = DateTime.UtcNow,
                 Text = text

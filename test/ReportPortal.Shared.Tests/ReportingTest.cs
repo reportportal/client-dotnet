@@ -1,6 +1,6 @@
 using ReportPortal.Client;
-using ReportPortal.Client.Models;
-using ReportPortal.Client.Requests;
+using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Shared.Reporter;
 using ReportPortal.Shared.Tests.Helpers;
 using System;
@@ -11,7 +11,7 @@ namespace ReportPortal.Shared.Tests
 {
     public class ReportingTest
     {
-        private Service _service = new Service(new Uri("https://rp.epam.com/api/v1/"), "ci-agents-checks", "ba7eb7c8-7b33-42f6-8cf0-e9cd26e717f4");
+        private Service _service = new Service(new Uri("https://beta.demo.reportportal.io/api/v1/"), "default_personal", "2908ac62-6855-4f70-bd38-64d5589a4073");
 
         [Fact]
         public async Task BigAsyncRealTree()
@@ -19,9 +19,11 @@ namespace ReportPortal.Shared.Tests
             var launchScheduler = new LaunchReporterBuilder(_service);
             var launchReporter = launchScheduler.Build(10, 3, 1);
 
-            launchReporter.FinishTask.Wait();
+            launchReporter.Sync();
 
-            await _service.DeleteLaunchAsync(launchReporter.LaunchInfo.Id);
+            var launch = await _service.Launch.GetAsync(launchReporter.LaunchInfo.Uuid);
+
+            await _service.Launch.DeleteAsync(launch.Id);
         }
 
         [Fact]
@@ -30,9 +32,11 @@ namespace ReportPortal.Shared.Tests
             var launchScheduler = new LaunchReporterBuilder(_service);
             var launchReporter = launchScheduler.Build(10, 0, 0);
 
-            launchReporter.FinishTask.Wait();
+            launchReporter.Sync();
 
-            await _service.DeleteLaunchAsync(launchReporter.LaunchInfo.Id);
+            var launch = await _service.Launch.GetAsync(launchReporter.LaunchInfo.Uuid);
+
+            await _service.Launch.DeleteAsync(launch.Id);
         }
 
         [Fact]
@@ -40,42 +44,44 @@ namespace ReportPortal.Shared.Tests
         {
             var launchDateTime = DateTime.UtcNow;
 
-            var launch = await _service.StartLaunchAsync(new Client.Requests.StartLaunchRequest
+            var launch = await _service.Launch.StartAsync(new StartLaunchRequest
             {
                 Name = "UseExistingLaunchId",
                 StartTime = launchDateTime,
-                Mode = Client.Models.LaunchMode.Debug
+                Mode = LaunchMode.Debug
             });
 
             var config = new Configuration.ConfigurationBuilder().Build();
-            config.Values["Launch:Id"] = launch.Id;
+            config.Values["Launch:Id"] = launch.Uuid;
 
             var launchReporter = new LaunchReporter(_service, config, null);
-            launchReporter.Start(new Client.Requests.StartLaunchRequest
+            launchReporter.Start(new StartLaunchRequest
             {
                 Name = "SomeOtherName",
                 StartTime = launchDateTime.AddDays(1)
             });
-            launchReporter.Finish(new Client.Requests.FinishLaunchRequest
+            launchReporter.Finish(new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });
 
-            launchReporter.FinishTask.Wait();
+            launchReporter.Sync();
 
-            Assert.Equal(launch.Id, launchReporter.LaunchInfo.Id);
+            Assert.Equal(launch.Uuid, launchReporter.LaunchInfo.Uuid);
             Assert.Equal(launchDateTime.ToString(), launchReporter.LaunchInfo.StartTime.ToString());
 
-            var reportedLaunch = await _service.GetLaunchAsync(launch.Id);
+            var reportedLaunch = await _service.Launch.GetAsync(launch.Uuid);
             Assert.Equal("UseExistingLaunchId", reportedLaunch.Name);
             Assert.Equal(launchDateTime.ToString(), reportedLaunch.StartTime.ToString());
 
-            await _service.FinishLaunchAsync(launch.Id, new Client.Requests.FinishLaunchRequest
+            await _service.Launch.FinishAsync(launch.Uuid, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });
 
-            await _service.DeleteLaunchAsync(launch.Id);
+            var gotLaunch = await _service.Launch.GetAsync(launchReporter.LaunchInfo.Uuid);
+
+            await _service.Launch.DeleteAsync(gotLaunch.Id);
         }
 
         [Fact]
@@ -83,26 +89,26 @@ namespace ReportPortal.Shared.Tests
         {
             var launchReporter = new LaunchReporter(_service, null, null);
 
-            Assert.Throws<InsufficientExecutionStackException>(() => launchReporter.Finish(new Client.Requests.FinishLaunchRequest()));
+            Assert.Throws<InsufficientExecutionStackException>(() => launchReporter.Finish(new FinishLaunchRequest()));
         }
 
         [Fact]
         public void StartingAlreadyStartedLaunch()
         {
             var launchReporter = new LaunchReporter(_service, null, null);
-            launchReporter.Start(new Client.Requests.StartLaunchRequest());
+            launchReporter.Start(new StartLaunchRequest());
 
-            Assert.Throws<InsufficientExecutionStackException>(() => launchReporter.Start(new Client.Requests.StartLaunchRequest()));
+            Assert.Throws<InsufficientExecutionStackException>(() => launchReporter.Start(new StartLaunchRequest()));
         }
 
         [Fact]
         public void FinishingAlreadyFinishedLaunch()
         {
             var launchReporter = new LaunchReporter(_service, null, null);
-            launchReporter.Start(new Client.Requests.StartLaunchRequest());
-            launchReporter.Finish(new Client.Requests.FinishLaunchRequest());
+            launchReporter.Start(new StartLaunchRequest());
+            launchReporter.Finish(new FinishLaunchRequest());
 
-            Assert.Throws<InsufficientExecutionStackException>(() => launchReporter.Finish(new Client.Requests.FinishLaunchRequest()));
+            Assert.Throws<InsufficientExecutionStackException>(() => launchReporter.Finish(new FinishLaunchRequest()));
         }
 
         [Fact]
@@ -137,7 +143,7 @@ namespace ReportPortal.Shared.Tests
 
             for (int i = 0; i < 20; i++)
             {
-                Log.Message(new AddLogItemRequest
+                Log.Message(new CreateLogItemRequest
                 {
                     Level = LogLevel.Info,
                     Time = DateTime.UtcNow.AddMilliseconds(i),
@@ -145,19 +151,19 @@ namespace ReportPortal.Shared.Tests
                 });
             }
 
-            testNode.Finish(new Client.Requests.FinishTestItemRequest
+            testNode.Finish(new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
-                Status = Client.Models.Status.Passed
+                Status = Status.Passed
             });
 
-            suiteNode.Finish(new Client.Requests.FinishTestItemRequest
+            suiteNode.Finish(new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
-                Status = Client.Models.Status.Passed
+                Status = Status.Passed
             });
 
-            launchReporter.Finish(new Client.Requests.FinishLaunchRequest
+            launchReporter.Finish(new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });

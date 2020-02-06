@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using ReportPortal.Client;
-using ReportPortal.Client.Models;
-using ReportPortal.Client.Requests;
+using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Shared.Extensibility;
 
 namespace ReportPortal.Shared
@@ -99,7 +99,7 @@ namespace ReportPortal.Shared
         [Obsolete("Please use static 'ReportPortal.Shared.Log' class to put your logs.")]
         public static void LogMessage(LogLevel level, string text)
         {
-            var logRequest = new AddLogItemRequest
+            var logRequest = new CreateLogItemRequest
             {
                 Level = level,
                 Time = DateTime.UtcNow,

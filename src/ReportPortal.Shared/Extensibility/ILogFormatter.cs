@@ -1,4 +1,4 @@
-﻿using ReportPortal.Client.Requests;
+﻿using ReportPortal.Client.Abstractions.Requests;
 
 namespace ReportPortal.Shared.Extensibility
 {
@@ -6,6 +6,6 @@ namespace ReportPortal.Shared.Extensibility
     {
         int Order { get; }
 
-        bool FormatLog(ref AddLogItemRequest logRequest);
+        bool FormatLog(CreateLogItemRequest logRequest);
     }
 }

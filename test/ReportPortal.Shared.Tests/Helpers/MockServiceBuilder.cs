@@ -1,5 +1,7 @@
 ﻿using Moq;
-using ReportPortal.Client;
+using ReportPortal.Client.Abstractions;
+using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Client.Abstractions.Responses;
 using System;
 using System.Threading.Tasks;
 
@@ -7,14 +9,20 @@ namespace ReportPortal.Shared.Tests.Helpers
 {
     class MockServiceBuilder
     {
-        public Mock<Service> Build()
+        public Mock<IClientService> Build()
         {
-            var service = new Mock<Service>(new Uri("http://abc.com"), It.IsAny<string>(), It.IsAny<string>());
+            var service = new Mock<IClientService>();
 
-            service.Setup(s => s.StartLaunchAsync(It.IsAny<Client.Requests.StartLaunchRequest>())).Returns(() => Task.FromResult(new Client.Models.Launch { Id = Guid.NewGuid().ToString() }));
+            service.Setup(s => s.Launch.StartAsync(It.IsAny<StartLaunchRequest>())).Returns(() => Task.FromResult(new LaunchCreatedResponse { Uuid = Guid.NewGuid().ToString() }));
 
-            service.Setup(s => s.StartTestItemAsync(It.IsAny<Client.Requests.StartTestItemRequest>())).Returns(() => Task.FromResult(new Client.Models.TestItem { Id = Guid.NewGuid().ToString() }));
-            service.Setup(s => s.StartTestItemAsync(It.IsAny<string>(), It.IsAny<Client.Requests.StartTestItemRequest>())).Returns(() => Task.FromResult(new Client.Models.TestItem { Id = Guid.NewGuid().ToString() }));
+            service.Setup(s => s.TestItem.StartAsync(It.IsAny<StartTestItemRequest>())).Returns(() => Task.FromResult(new TestItemCreatedResponse { Uuid = Guid.NewGuid().ToString() }));
+            service.Setup(s => s.TestItem.StartAsync(It.IsAny<string>(), It.IsAny<StartTestItemRequest>())).Returns(() => Task.FromResult(new TestItemCreatedResponse { Uuid = Guid.NewGuid().ToString() }));
+
+            service.Setup(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest>())).Returns(() => Task.FromResult(new LogItemCreatedResponse { Uuid = Guid.NewGuid().ToString() }));
+
+            service.Setup(s => s.TestItem.FinishAsync(It.IsAny<string>(), It.IsAny<FinishTestItemRequest>())).Returns(() => Task.FromResult(new MessageResponse()));
+
+            service.Setup(s => s.Launch.FinishAsync(It.IsAny<string>(), It.IsAny<FinishLaunchRequest>())).Returns(() => Task.FromResult(new LaunchFinishedResponse()));
 
             return service;
         }

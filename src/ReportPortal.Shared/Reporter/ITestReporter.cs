@@ -1,5 +1,5 @@
-﻿using ReportPortal.Client.Models;
-using ReportPortal.Client.Requests;
+﻿using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Client.Abstractions.Responses;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -7,7 +7,7 @@ namespace ReportPortal.Shared.Reporter
 {
     public interface ITestReporter
     {
-        TestItem TestInfo { get; }
+        TestItemResponse TestInfo { get; }
 
         ITestReporter ParentTestReporter { get; }
 
@@ -25,7 +25,7 @@ namespace ReportPortal.Shared.Reporter
 
         IList<ITestReporter> ChildTestReporters { get; }
 
-        void Log(AddLogItemRequest addLogItemRequest);
+        void Log(CreateLogItemRequest createLogItemRequest);
 
         void Sync();
     }

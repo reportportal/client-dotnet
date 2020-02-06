@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using ReportPortal.Client.Requests;
+using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Extensibility.LogFormatter;
 using System;
 using System.IO;
@@ -14,9 +14,9 @@ namespace ReportPortal.Shared.Tests.Extensibility.LogFormatter
         {
             var formatter = new FileLogFormatter();
 
-            var logRequest = new AddLogItemRequest();
+            var logRequest = new CreateLogItemRequest();
 
-            var isHandled = formatter.FormatLog(ref logRequest);
+            var isHandled = formatter.FormatLog(logRequest);
             isHandled.Should().BeFalse();
         }
 
@@ -25,9 +25,9 @@ namespace ReportPortal.Shared.Tests.Extensibility.LogFormatter
         {
             var formatter = new FileLogFormatter();
 
-            var logRequest = new AddLogItemRequest() { Text = "" };
+            var logRequest = new CreateLogItemRequest() { Text = "" };
 
-            var isHandled = formatter.FormatLog(ref logRequest);
+            var isHandled = formatter.FormatLog(logRequest);
             isHandled.Should().BeFalse();
         }
 
@@ -40,9 +40,9 @@ namespace ReportPortal.Shared.Tests.Extensibility.LogFormatter
             var filePath = Path.GetTempPath() + Path.GetRandomFileName();
             File.WriteAllText(filePath, data);
 
-            var logRequest = new AddLogItemRequest() { Text = $"{{rp#file#{filePath}}}" };
+            var logRequest = new CreateLogItemRequest() { Text = $"{{rp#file#{filePath}}}" };
 
-            var isHandled = formatter.FormatLog(ref logRequest);
+            var isHandled = formatter.FormatLog(logRequest);
             isHandled.Should().BeTrue();
             logRequest.Attach.Should().NotBeNull();
             logRequest.Attach.Data.Should().BeEquivalentTo(data);
@@ -55,9 +55,9 @@ namespace ReportPortal.Shared.Tests.Extensibility.LogFormatter
 
             var incorrectFilePath = "q.w";
 
-            var logRequest = new AddLogItemRequest() { Text = $"{{rp#file#{incorrectFilePath}}}" };
+            var logRequest = new CreateLogItemRequest() { Text = $"{{rp#file#{incorrectFilePath}}}" };
 
-            formatter.Invoking(f => f.FormatLog(ref logRequest)).Should().Throw<Exception>();
+            formatter.Invoking(f => f.FormatLog(logRequest)).Should().Throw<Exception>();
         }
     }
 }

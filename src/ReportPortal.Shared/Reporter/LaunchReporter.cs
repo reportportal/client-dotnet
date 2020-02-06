@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ReportPortal.Client;
-using ReportPortal.Client.Models;
-using ReportPortal.Client.Requests;
+using ReportPortal.Client.Abstractions;
+using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Configuration.Providers;
 using ReportPortal.Shared.Internal.Delegating;
@@ -17,30 +17,30 @@ namespace ReportPortal.Shared.Reporter
 
         private readonly IConfiguration _configuration;
 
-        private readonly Service _service;
+        private readonly IClientService _service;
 
         private readonly IRequestExecuter _requestExecuter;
 
         private readonly object _lockObj = new object();
 
         [Obsolete("This ctor will be removed. Use (Service service, IConfiguration configuration, IRequestExecuter requestExecuter)")]
-        public LaunchReporter(Service service) : this(service, null, null)
+        public LaunchReporter(IClientService service) : this(service, null, null)
         {
             _service = service;
         }
 
         [Obsolete("This ctor will be removed. Use (Service service, IConfiguration configuration, IRequestExecuter requestExecuter) where launchId argument can be spicified by IConfiguration [Launch:Id]")]
-        public LaunchReporter(Service service, string launchId) : this(service)
+        public LaunchReporter(IClientService service, string launchId) : this(service)
         {
             _isExternalLaunchId = true;
 
-            LaunchInfo = new Launch
+            LaunchInfo = new LaunchResponse
             {
-                Id = launchId
+                Uuid = launchId
             };
         }
 
-        public LaunchReporter(Service service, IConfiguration configuration, IRequestExecuter requestExecuter)
+        public LaunchReporter(IClientService service, IConfiguration configuration, IRequestExecuter requestExecuter)
         {
             _service = service;
 
@@ -64,19 +64,19 @@ namespace ReportPortal.Shared.Reporter
             }
 
             // identify whether launch is already started by any external system
-            var externalLaunchId = _configuration.GetValue<string>("Launch:Id", null);
-            if (externalLaunchId != null)
+            var externalLaunchUuid = _configuration.GetValue<string>("Launch:Id", null);
+            if (externalLaunchUuid != null)
             {
                 _isExternalLaunchId = true;
 
-                LaunchInfo = new Launch
+                LaunchInfo = new LaunchResponse
                 {
-                    Id = externalLaunchId
+                    Uuid = externalLaunchUuid
                 };
             }
         }
 
-        public Launch LaunchInfo { get; private set; }
+        public LaunchResponse LaunchInfo { get; private set; }
 
         private bool _isExternalLaunchId = false;
 
@@ -98,14 +98,11 @@ namespace ReportPortal.Shared.Reporter
                 // start new launch item
                 StartTask = Task.Run(async () =>
                 {
-                    string launchId;
+                    var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.StartAsync(request)).ConfigureAwait(false);
 
-                    var launch = await _requestExecuter.ExecuteAsync(() => _service.StartLaunchAsync(request)).ConfigureAwait(false);
-                    launchId = launch.Id;
-
-                    LaunchInfo = new Launch
+                    LaunchInfo = new LaunchResponse
                     {
-                        Id = launchId,
+                        Uuid = launch.Uuid,
                         Name = request.Name,
                         StartTime = request.StartTime
                     };
@@ -116,7 +113,7 @@ namespace ReportPortal.Shared.Reporter
                 // get launch info
                 StartTask = Task.Run(async () =>
                 {
-                    LaunchInfo = await _requestExecuter.ExecuteAsync(() => _service.GetLaunchAsync(LaunchInfo.Id)).ConfigureAwait(false);
+                    LaunchInfo = await _requestExecuter.ExecuteAsync(() => _service.Launch.GetAsync(LaunchInfo.Uuid)).ConfigureAwait(false);
                 });
             }
         }
@@ -157,7 +154,7 @@ namespace ReportPortal.Shared.Reporter
 
                         if (StartTask.IsCanceled)
                         {
-                            exp = new Exception($"Cannot finish launch due {_service.Timeout} timeout while starting it.");
+                            exp = new Exception($"Cannot finish launch due timeout while starting it.");
                         }
 
                         TraceLogger.Error(exp.ToString());
@@ -178,7 +175,7 @@ namespace ReportPortal.Shared.Reporter
                                 }
                                 else if (failedChildTestReporter.FinishTask.IsCanceled)
                                 {
-                                    errors.Add(new Exception($"Cannot finish launch due {_service.Timeout} timeout while finishing test item."));
+                                    errors.Add(new Exception($"Cannot finish launch due timeout while finishing test item."));
                                 }
                             }
 
@@ -195,7 +192,7 @@ namespace ReportPortal.Shared.Reporter
 
                     if (!_isExternalLaunchId)
                     {
-                        await _requestExecuter.ExecuteAsync(() => _service.FinishLaunchAsync(LaunchInfo.Id, request)).ConfigureAwait(false);
+                        await _requestExecuter.ExecuteAsync(() => _service.Launch.FinishAsync(LaunchInfo.Uuid, request)).ConfigureAwait(false);
                     }
                 }
                 finally

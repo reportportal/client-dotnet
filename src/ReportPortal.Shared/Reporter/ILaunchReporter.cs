@@ -1,5 +1,5 @@
-﻿using ReportPortal.Client.Models;
-using ReportPortal.Client.Requests;
+﻿using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Client.Abstractions.Responses;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -7,7 +7,7 @@ namespace ReportPortal.Shared.Reporter
 {
     public interface ILaunchReporter
     {
-        Launch LaunchInfo { get; }
+        LaunchResponse LaunchInfo { get; }
 
         void Start(StartLaunchRequest startLaunchRequest);
 
