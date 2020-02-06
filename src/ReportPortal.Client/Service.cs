@@ -59,9 +59,6 @@ namespace ReportPortal.Client
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
             _httpClient.DefaultRequestHeaders.Add("User-Agent", ".NET Reporter");
 
-            if (proxy != null)
-            { }
-
             BaseUri = uri;
             ProjectName = projectName;
             Token = token;
@@ -69,6 +66,13 @@ namespace ReportPortal.Client
 #if NET45
             ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
 #endif
+
+            Launch = new ServiceLaunchResource(_httpClient, BaseUri, ProjectName);
+            TestItem = new ServiceTestItemResource(_httpClient, BaseUri, ProjectName);
+            LogItem = new ServiceLogItemResource(_httpClient, BaseUri, ProjectName);
+            User = new ServiceUserResource(_httpClient, BaseUri, ProjectName);
+            UserFilter = new ServiceUserFilterResource(_httpClient, BaseUri, ProjectName);
+            Project = new ServiceProjectResource(_httpClient, BaseUri, ProjectName);
         }
 
         /// <summary>
@@ -89,64 +93,34 @@ namespace ReportPortal.Client
         /// <summary>
         /// Get or set project name to interact with.
         /// </summary>
-        public string ProjectName { get; set; }
+        public string ProjectName { get; }
 
         /// <summary>
         /// Base api uri for http requests.
         /// </summary>
-        public Uri BaseUri { get; set; }
+        public Uri BaseUri { get; }
 
         /// <summary>
         /// User token to interact with api.
         /// </summary>
-        public string Token { get; set; }
+        public string Token { get; }
 
-        public ILaunchResource Launch
-        {
-            get
-            {
-                return new ServiceLaunchResource(_httpClient, BaseUri, ProjectName);
-            }
-        }
+        /// <inheritdoc/>
+        public ILaunchResource Launch { get; }
 
-        public ITestItemResource TestItem
-        {
-            get
-            {
-                return new ServiceTestItemResource(_httpClient, BaseUri, ProjectName);
-            }
-        }
+        /// <inheritdoc/>
+        public ITestItemResource TestItem { get; }
 
-        public ILogItemResource LogItem
-        {
-            get
-            {
-                return new ServiceLogItemResource(_httpClient, BaseUri, ProjectName);
-            }
-        }
+        /// <inheritdoc/>
+        public ILogItemResource LogItem { get; }
 
-        public IUserResource User
-        {
-            get
-            {
-                return new ServiceUserResource(_httpClient, BaseUri, ProjectName);
-            }
-        }
+        /// <inheritdoc/>
+        public IUserResource User { get; }
 
-        public IUserFilterResource UserFilter
-        {
-            get
-            {
-                return new ServiceUserFilterResource(_httpClient, BaseUri, ProjectName);
-            }
-        }
+        /// <inheritdoc/>
+        public IUserFilterResource UserFilter { get; }
 
-        public IProjectResource Project
-        {
-            get
-            {
-                return new ServiceProjectResource(_httpClient, BaseUri, ProjectName);
-            }
-        }
+        /// <inheritdoc/>
+        public IProjectResource Project { get; }
     }
 }
