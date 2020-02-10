@@ -38,6 +38,8 @@ namespace ReportPortal.Shared.Reporter
 
         public void Start(StartTestItemRequest startTestItemRequest)
         {
+            if (startTestItemRequest == null) throw new ArgumentNullException(nameof(startTestItemRequest));
+
             if (StartTask != null)
             {
                 var exp = new InsufficientExecutionStackException("The test item is already scheduled for starting.");
@@ -102,6 +104,8 @@ namespace ReportPortal.Shared.Reporter
 
         public void Finish(FinishTestItemRequest request)
         {
+            if (request == null) throw new ArgumentNullException(nameof(request));
+
             TraceLogger.Verbose($"Scheduling request to finish test item in {GetHashCode()} proxy instance");
 
             if (StartTask == null)
@@ -119,14 +123,21 @@ namespace ReportPortal.Shared.Reporter
             }
 
             var dependentTasks = new List<Task>();
+
             dependentTasks.Add(StartTask);
+
             if (_additionalTasks != null)
             {
                 dependentTasks.AddRange(_additionalTasks);
             }
             if (ChildTestReporters != null)
             {
-                dependentTasks.AddRange(ChildTestReporters.Select(tn => tn.FinishTask));
+                var childTestReporterFinishTasks = ChildTestReporters.Select(tn => tn.FinishTask);
+                if (childTestReporterFinishTasks.Contains(null))
+                {
+                    throw new InsufficientExecutionStackException("Some of child test item(s) are not scheduled to finish yet.");
+                }
+                dependentTasks.AddRange(childTestReporterFinishTasks);
             }
 
             FinishTask = Task.Factory.ContinueWhenAll(dependentTasks.ToArray(), async a =>
@@ -279,6 +290,7 @@ namespace ReportPortal.Shared.Reporter
         }
 
         // TODO: need remove (used by specflow only)
+        [Obsolete("Hey SpecFlow plugin, please use ILogHandler on your side")]
         public int ThreadId { get; set; }
     }
 

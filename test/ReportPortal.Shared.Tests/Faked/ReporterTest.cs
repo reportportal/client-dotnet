@@ -268,5 +268,33 @@ namespace ReportPortal.Shared.Tests.Faked
             service.Verify(s => s.Launch.FinishAsync(It.IsAny<string>(), It.IsAny<FinishLaunchRequest>()), Times.Once);
             service.Verify(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest>()), Times.Exactly(30 * 30));
         }
+
+        [Fact]
+        public void FinishLaunchWhenChildTestItemIsNotScheduledToFinish()
+        {
+            var service = new MockServiceBuilder().Build();
+
+            var launch = new LaunchReporter(service.Object, null, null);
+            launch.Start(new StartLaunchRequest { });
+
+            var test = launch.StartChildTestReporter(new StartTestItemRequest { });
+
+            var exp = Assert.Throws<InsufficientExecutionStackException>(() => launch.Finish(new FinishLaunchRequest { }));
+            Assert.Contains("are not scheduled to finish yet", exp.Message);
+        }
+
+        [Fact]
+        public void FinishTestItemWhenChildTestItemIsNotScheduledToFinish()
+        {
+            var service = new MockServiceBuilder().Build();
+
+            var launch = new LaunchReporter(service.Object, null, null);
+            launch.Start(new StartLaunchRequest { });
+            var test = launch.StartChildTestReporter(new StartTestItemRequest());
+            var innerTest = test.StartChildTestReporter(new StartTestItemRequest());
+
+            var exp = Assert.Throws<InsufficientExecutionStackException>(() => test.Finish(new FinishTestItemRequest()));
+            Assert.Contains("are not scheduled to finish yet", exp.Message);
+        }
     }
 }

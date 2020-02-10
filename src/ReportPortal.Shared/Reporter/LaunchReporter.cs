@@ -84,6 +84,8 @@ namespace ReportPortal.Shared.Reporter
 
         public void Start(StartLaunchRequest request)
         {
+            if (request == null) throw new ArgumentNullException(nameof(request));
+
             TraceLogger.Verbose($"Scheduling request to start new '{request.Name}' launch in {GetHashCode()} proxy instance");
 
             if (StartTask != null)
@@ -121,6 +123,8 @@ namespace ReportPortal.Shared.Reporter
         public Task FinishTask { get; private set; }
         public void Finish(FinishLaunchRequest request)
         {
+            if (request == null) throw new ArgumentNullException(nameof(request));
+
             TraceLogger.Verbose($"Scheduling request to finish launch in {GetHashCode()} proxy instance");
 
             if (StartTask == null)
@@ -140,8 +144,14 @@ namespace ReportPortal.Shared.Reporter
             var dependentTasks = new List<Task>();
             if (ChildTestReporters != null)
             {
-                dependentTasks.AddRange(ChildTestReporters.Select(tn => tn.FinishTask));
+                var childTestReporterFinishTasks = ChildTestReporters.Select(tn => tn.FinishTask);
+                if (childTestReporterFinishTasks.Contains(null))
+                {
+                    throw new InsufficientExecutionStackException("Some of child test item(s) are not scheduled to finish yet.");
+                }
+                dependentTasks.AddRange(childTestReporterFinishTasks);
             }
+
             dependentTasks.Add(StartTask);
 
             FinishTask = Task.Factory.ContinueWhenAll(dependentTasks.ToArray(), async (dts) =>
