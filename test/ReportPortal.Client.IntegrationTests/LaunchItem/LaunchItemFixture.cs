@@ -336,5 +336,83 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
             var delMessage = await Service.Launch.DeleteAsync(getLaunch.Id);
             Assert.Contains("successfully", delMessage.Info);
         }
+
+        [Fact]
+        public async Task RerunLaunch()
+        {
+            var name = Guid.NewGuid().ToString();
+
+            var launch1Response = await Service.Launch.StartAsync(new StartLaunchRequest
+            {
+                Name = name,
+                StartTime = DateTime.UtcNow,
+                Mode = LaunchMode.Default
+            });
+
+            var launch2Response = await Service.Launch.StartAsync(new StartLaunchRequest
+            {
+                Name = name,
+                StartTime = DateTime.UtcNow,
+                Mode = LaunchMode.Default,
+                IsRerun = true
+            });
+
+            Assert.Equal(launch1Response.Uuid, launch2Response.Uuid);
+
+            await Service.Launch.FinishAsync(launch1Response.Uuid, new FinishLaunchRequest { EndTime = DateTime.UtcNow });
+
+            // api doesn't allow to finish launch twice?! So when using rerun, we can start launch, but it seems we should not finish launch
+            await Assert.ThrowsAnyAsync<ReportPortalException>(() => Service.Launch.FinishAsync(launch2Response.Uuid, new FinishLaunchRequest { EndTime = DateTime.UtcNow }));
+
+            var gotLaunch = await Service.Launch.GetAsync(launch1Response.Uuid);
+            await Service.Launch.DeleteAsync(gotLaunch.Id);
+        }
+
+        [Fact]
+        public async Task RerunToSpecificLaunch()
+        {
+            var name = Guid.NewGuid().ToString();
+
+            var launch1Response = await Service.Launch.StartAsync(new StartLaunchRequest
+            {
+                Name = name,
+                StartTime = DateTime.UtcNow,
+                Mode = LaunchMode.Default
+            });
+
+            var launch2Response = await Service.Launch.StartAsync(new StartLaunchRequest
+            {
+                Name = name,
+                StartTime = DateTime.UtcNow,
+                Mode = LaunchMode.Default,
+                // if we want to rerun specific launch, we have to set IsRerun=true also. Otherwise api creates new launch
+                IsRerun = true,
+                RerunOfLaunchUuid = launch1Response.Uuid
+            });
+
+            Assert.Equal(launch1Response.Uuid, launch2Response.Uuid);
+
+            await Service.Launch.FinishAsync(launch1Response.Uuid, new FinishLaunchRequest { EndTime = DateTime.UtcNow });
+
+            // api doesn't allow to finish launch twice?! So when using rerun, we can start launch, but it seems we should not finish launch
+            await Assert.ThrowsAnyAsync<ReportPortalException>(() => Service.Launch.FinishAsync(launch2Response.Uuid, new FinishLaunchRequest { EndTime = DateTime.UtcNow }));
+
+            var gotLaunch = await Service.Launch.GetAsync(launch1Response.Uuid);
+            await Service.Launch.DeleteAsync(gotLaunch.Id);
+        }
+
+        [Fact]
+        public async Task RerunNonExistingLaunch()
+        {
+            var request = new StartLaunchRequest
+            {
+                Name = "Some unique " + Guid.NewGuid().ToString(),
+                StartTime = DateTime.UtcNow,
+                Mode = LaunchMode.Default,
+                IsRerun = true
+            };
+
+            await Assert.ThrowsAnyAsync<ReportPortalException>(() => Service.Launch.StartAsync(request));
+        }
     }
 }
