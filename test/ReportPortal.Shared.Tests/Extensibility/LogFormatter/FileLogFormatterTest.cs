@@ -3,6 +3,7 @@ using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Extensibility.LogFormatter;
 using System;
 using System.IO;
+using System.Text;
 using Xunit;
 
 namespace ReportPortal.Shared.Tests.Extensibility.LogFormatter
@@ -45,7 +46,7 @@ namespace ReportPortal.Shared.Tests.Extensibility.LogFormatter
             var isHandled = formatter.FormatLog(logRequest);
             isHandled.Should().BeTrue();
             logRequest.Attach.Should().NotBeNull();
-            logRequest.Attach.Data.Should().BeEquivalentTo(data);
+            logRequest.Attach.Data.Should().BeEquivalentTo(Encoding.UTF8.GetBytes(data));
         }
 
         [Fact]
