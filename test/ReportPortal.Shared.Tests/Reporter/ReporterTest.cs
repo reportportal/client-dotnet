@@ -10,7 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace ReportPortal.Shared.Tests.Faked
+namespace ReportPortal.Shared.Tests.Reporter
 {
     public class ReporterTest
     {
@@ -179,7 +179,7 @@ namespace ReportPortal.Shared.Tests.Faked
 
             var launchReporters = new List<Mock<LaunchReporter>>();
 
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 100; i++)
             {
                 var launchReporter = new Mock<LaunchReporter>(service.Object);
 
@@ -192,7 +192,7 @@ namespace ReportPortal.Shared.Tests.Faked
                 launchReporters.Add(launchReporter);
             }
 
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 100; i++)
             {
                 var launchReporter = launchReporters[i];
 
@@ -203,7 +203,7 @@ namespace ReportPortal.Shared.Tests.Faked
                 Assert.Equal($"ReportPortal Shared {i}", launchReporter.Object.LaunchInfo.Name);
             }
 
-            service.Verify(s => s.Launch.StartAsync(It.IsAny<StartLaunchRequest>()), Times.Exactly(1000));
+            service.Verify(s => s.Launch.StartAsync(It.IsAny<StartLaunchRequest>()), Times.Exactly(100));
         }
 
         [Fact]
@@ -253,10 +253,10 @@ namespace ReportPortal.Shared.Tests.Faked
         [Fact]
         public void LogsReportingShouldBeOneByOne()
         {
-            var logDelay = TimeSpan.FromMilliseconds(100);
+            var logDelay = TimeSpan.FromMilliseconds(10);
 
             var service = new MockServiceBuilder().Build();
-            service.Setup(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest>())).Returns(async () => { await Task.Delay(logDelay); return new LogItemCreatedResponse(); });
+            service.Setup(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest>())).ReturnsAsync(new LogItemCreatedResponse(), logDelay);
 
             var launchScheduler = new LaunchReporterBuilder(service.Object);
             var launchReporter = launchScheduler.Build(1, 30, 30);
