@@ -8,9 +8,15 @@ namespace ReportPortal.Shared.Internal.Logging
     {
         private TraceSource _traceSource;
 
+        private int _appDomainId;
+        private string _appDomainFriendlyName;
+
         public TraceLogger(TraceSource traceSource)
         {
             _traceSource = traceSource;
+
+            _appDomainId = AppDomain.CurrentDomain.Id;
+            _appDomainFriendlyName = AppDomain.CurrentDomain.FriendlyName;
         }
 
         public void Info(string message)
@@ -35,7 +41,7 @@ namespace ReportPortal.Shared.Internal.Logging
 
         private void Message(TraceEventType eventType, string message)
         {
-            _traceSource.TraceEvent(eventType, System.Threading.Thread.CurrentThread.ManagedThreadId, $"{DateTime.Now.ToString("HH:mm:ss.fffffff")} : {AppDomain.CurrentDomain.Id}-{AppDomain.CurrentDomain.FriendlyName} : {message}");
+            _traceSource.TraceEvent(eventType, 0, $"{DateTime.Now.ToString("HH:mm:ss.fffffff")} : {_appDomainId}-{_appDomainFriendlyName} : {message}");
         }
     }
 }
