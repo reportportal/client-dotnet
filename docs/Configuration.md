@@ -2,6 +2,7 @@
 There are several configuration sources to configure reporting.
 
 - Json file
+- Directory source
 - Environment variables
 
 ## Json file
@@ -24,8 +25,11 @@ Values in json file are considered as flatten list. The following json file will
 }
 ```
 
+## Directory source
+It's easier to define some property in any textual file. Agent finds all these files and considers them as configuration source. For example to define `Section1:PropertyAbc` property just create a file with `ReportPortal_Section1_PropertyAbc` name, put any value into this file, and agent will take it during test results reporting. 
+
 ## Environment variables
-Sometimes it's usefull to specify configuration properties via environment variables. To specify `Section1:PropertyAbc` property just set environment variable with `ReportPortal_Section1_PropertyAbc` name. Variable names should start from `ReportPortal_` prefix, and `_` symbol is used as delimeter of nested variables.
+Sometimes it's useful to specify configuration properties via environment variables. To specify `Section1:PropertyAbc` property just set environment variable with `ReportPortal_Section1_PropertyAbc` name. Variable names should start from `ReportPortal_` prefix, and `_` symbol is used as delimeter of nested variables.
 
 
 # HTTP requests retry
