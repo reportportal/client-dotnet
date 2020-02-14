@@ -20,7 +20,7 @@ namespace ReportPortal.Shared.Configuration
         IConfigurationBuilder Add(IConfigurationProvider provider);
 
         /// <summary>
-        /// Asks all providers to fetch configuration variables from a source.
+        /// Asks all registered providers to fetch configuration variables from a source.
         /// </summary>
         /// <returns>Configuration instance with fethed configuration variables.</returns>
         IConfiguration Build();

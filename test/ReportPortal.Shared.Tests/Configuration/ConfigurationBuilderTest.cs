@@ -113,7 +113,7 @@ namespace ReportPortal.Shared.Tests.Configuration
 
             var config = new ConfigurationBuilder().AddJsonFile(filePath: tempFile).Build();
 
-            Assert.Equal(1, config.Values.Count);
+            Assert.Equal(1, config.Properties.Count);
 
             var variable = config.GetValue<string>("prop1:prop2");
             Assert.Equal("value2", variable);
@@ -167,7 +167,7 @@ namespace ReportPortal.Shared.Tests.Configuration
 
             var config = new ConfigurationBuilder().AddJsonFile(filePath: tempFile).Build();
 
-            Assert.Equal(2, config.Values.Count);
+            Assert.Equal(2, config.Properties.Count);
 
             var variable1 = config.GetValue<string>("prop1");
             Assert.Equal("value1;value2;", variable1);
@@ -281,7 +281,7 @@ namespace ReportPortal.Shared.Tests.Configuration
 
             var config = new ConfigurationBuilder().AddDefaults(dir.FullName).Build();
 
-            config.Values.Should().HaveCount(2);
+            config.Properties.Should().HaveCount(2);
 
             dir.Delete(true);
         }

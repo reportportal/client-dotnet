@@ -32,7 +32,7 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
         public void ShouldCreateLinearExecuter()
         {
             var configuration = new ConfigurationBuilder().Build();
-            configuration.Values["Server:Retry:Strategy"] = "linear";
+            configuration.Properties["Server:Retry:Strategy"] = "linear";
             var factory = new RequestExecuterFactory(configuration);
             var executer = factory.Create();
 
@@ -46,7 +46,7 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
         public void ShouldThrowExceptionForUnknownStrategy()
         {
             var configuration = new ConfigurationBuilder().Build();
-            configuration.Values["Server:Retry:Strategy"] = "any_unknown_value";
+            configuration.Properties["Server:Retry:Strategy"] = "any_unknown_value";
             var factory = new RequestExecuterFactory(configuration);
 
             factory.Invoking((f) => f.Create()).Should().Throw<ArgumentOutOfRangeException>().WithMessage("*any_unknown_value*");
@@ -56,9 +56,9 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
         public void ConfigurableExponentialRetry()
         {
             var configuration = new ConfigurationBuilder().Build();
-            configuration.Values["Server:Retry:Strategy"] = "exponential";
-            configuration.Values["Server:Retry:MaxAttempts"] = 5;
-            configuration.Values["Server:Retry:BaseIndex"] = 6;
+            configuration.Properties["Server:Retry:Strategy"] = "exponential";
+            configuration.Properties["Server:Retry:MaxAttempts"] = 5;
+            configuration.Properties["Server:Retry:BaseIndex"] = 6;
             var executer = new RequestExecuterFactory(configuration).Create() as ExponentialRetryRequestExecuter;
 
             executer.MaxRetryAttemps.Should().Be(5);
@@ -69,9 +69,9 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
         public void ConfigurableLinearRetry()
         {
             var configuration = new ConfigurationBuilder().Build();
-            configuration.Values["Server:Retry:Strategy"] = "linear";
-            configuration.Values["Server:Retry:MaxAttempts"] = 5;
-            configuration.Values["Server:Retry:Delay"] = 6000; //secs
+            configuration.Properties["Server:Retry:Strategy"] = "linear";
+            configuration.Properties["Server:Retry:MaxAttempts"] = 5;
+            configuration.Properties["Server:Retry:Delay"] = 6000; //secs
             var executer = new RequestExecuterFactory(configuration).Create() as LinearRetryRequestExecuter;
 
             executer.MaxRetryAttemps.Should().Be(5);

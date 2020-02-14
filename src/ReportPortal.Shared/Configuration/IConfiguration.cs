@@ -10,7 +10,7 @@ namespace ReportPortal.Shared.Configuration
         /// <summary>
         /// Fethed configuration variables.
         /// </summary>
-        IDictionary<string, object> Values { get; }
+        IDictionary<string, object> Properties { get; }
 
         /// <summary>
         /// Returns value of configuration property.

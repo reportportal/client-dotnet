@@ -30,7 +30,7 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
         public void ShouldCreateThrottler()
         {
             var configuration = new ConfigurationBuilder().Build();
-            configuration.Values["Server:MaximumConnectionsNumber"] = "5";
+            configuration.Properties["Server:MaximumConnectionsNumber"] = "5";
             var factory = new RequestExecutionThrottleFactory(configuration);
             var ithrottler = factory.Create();
 

@@ -6,12 +6,21 @@ using System.Xml;
 
 namespace ReportPortal.Shared.Configuration.Providers
 {
+    /// <summary>
+    /// Parse json file with configuration properties as flatten dictionary.
+    /// </summary>
     public class JsonFileConfigurationProvider : IConfigurationProvider
     {
-        private string _delimeter;
-        private string _filePath;
-        private bool _optional;
+        private readonly string _delimeter;
+        private readonly string _filePath;
+        private readonly bool _optional;
 
+        /// <summary>
+        /// Creates new instance of <see cref="JsonFileConfigurationProvider" /> class.
+        /// </summary>
+        /// <param name="delimeter">Char which represents hierarchy of flatten properties.</param>
+        /// <param name="filePath">The path to json file.</param>
+        /// <param name="optional">If file doesn't exist then empty disctionary will be returns.</param>
         public JsonFileConfigurationProvider(string delimeter, string filePath, bool optional)
         {
             _delimeter = delimeter;
@@ -19,19 +28,20 @@ namespace ReportPortal.Shared.Configuration.Providers
             _optional = optional;
         }
 
-        public IDictionary<string, string> Properties { get; } = new Dictionary<string, string>();
-
+        /// <inheritdoc />
         public IDictionary<string, string> Load()
         {
+            var properties = new Dictionary<string, string>();
+
             if (File.Exists(_filePath))
             {
                 var json = File.ReadAllText(_filePath);
 
-                var properties = GetFlattenProperties(json);
+                var flattenProperties = GetFlattenProperties(json);
 
-                foreach (var property in properties)
+                foreach (var property in flattenProperties)
                 {
-                    Properties[property.Key] = property.Value;
+                    properties[property.Key] = property.Value;
                 }
             }
             else if (!_optional)
@@ -39,7 +49,7 @@ namespace ReportPortal.Shared.Configuration.Providers
                 throw new FileLoadException($"Required configuration file '{_filePath}' was not found.");
             }
 
-            return Properties;
+            return properties;
         }
 
         private Dictionary<string, string> GetFlattenProperties(string json)

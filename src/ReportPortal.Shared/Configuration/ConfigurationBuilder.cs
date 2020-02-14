@@ -24,9 +24,9 @@ namespace ReportPortal.Shared.Configuration
 
             foreach (var provider in Providers)
             {
-                provider.Load();
+                var originalProperties = provider.Load();
 
-                foreach (var property in provider.Properties)
+                foreach (var property in originalProperties)
                 {
                     if (property.Value.StartsWith(ConfigurationPath.AppenderPrefix))
                     {

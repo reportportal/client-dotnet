@@ -52,7 +52,7 @@ namespace ReportPortal.Shared.Tests
             });
 
             var config = new Shared.Configuration.ConfigurationBuilder().Build();
-            config.Values["Launch:Id"] = launch.Uuid;
+            config.Properties["Launch:Id"] = launch.Uuid;
 
             var launchReporter = new LaunchReporter(_service, config, null);
             launchReporter.Start(new StartLaunchRequest
