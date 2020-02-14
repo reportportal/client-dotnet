@@ -51,7 +51,7 @@ namespace ReportPortal.Shared.Tests
                 Mode = LaunchMode.Debug
             });
 
-            var config = new Configuration.ConfigurationBuilder().Build();
+            var config = new Shared.Configuration.ConfigurationBuilder().Build();
             config.Values["Launch:Id"] = launch.Uuid;
 
             var launchReporter = new LaunchReporter(_service, config, null);

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ReportPortal.Shared.Configuration
 {
@@ -23,11 +22,11 @@ namespace ReportPortal.Shared.Configuration
         {
             var properties = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
-            foreach(var provider in Providers)
+            foreach (var provider in Providers)
             {
                 provider.Load();
 
-                foreach(var property in provider.Properties)
+                foreach (var property in provider.Properties)
                 {
                     if (property.Value.StartsWith(ConfigurationPath.AppenderPrefix))
                     {

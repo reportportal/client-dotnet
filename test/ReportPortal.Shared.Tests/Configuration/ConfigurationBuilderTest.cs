@@ -1,3 +1,4 @@
+using FluentAssertions;
 using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Configuration.Providers;
 using System;
@@ -6,9 +7,9 @@ using System.IO;
 using System.Xml;
 using Xunit;
 
-namespace ReportPortal.Shared.Tests
+namespace ReportPortal.Shared.Tests.Configuration
 {
-    public class ConfigurationTest
+    public class ConfigurationBuilderTest
     {
         [Theory]
         [InlineData("REPORTPORTAL_ABC", "ABC", "test")]
@@ -262,13 +263,27 @@ namespace ReportPortal.Shared.Tests
         [Fact]
         public void ShouldNotThrowExceptionIfJsonFileNotFound()
         {
-             new ConfigurationBuilder().AddJsonFile("qwe.json").Build();
+            new ConfigurationBuilder().AddJsonFile("qwe.json").Build();
         }
 
         [Fact]
         public void ShouldThrowExceptionIfJsonFileNotFound()
         {
             Assert.Throws<FileLoadException>(() => new ConfigurationBuilder().AddJsonFile("qwe.json", optional: false).Build());
+        }
+
+        [Fact]
+        public void ShouldUseDefaults()
+        {
+            var dir = Directory.CreateDirectory(Path.GetRandomFileName());
+            File.AppendAllText(dir + "\\ReportPortal_prop1", "value1");
+            File.AppendAllText(dir + "\\ReportPortal.config.json", @"{""prop2"": ""value2""}");
+
+            var config = new ConfigurationBuilder().AddDefaults(dir.FullName).Build();
+
+            config.Values.Should().HaveCount(2);
+
+            dir.Delete(true);
         }
     }
 }
