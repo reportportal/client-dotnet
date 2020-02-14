@@ -9,6 +9,7 @@ using Xunit;
 
 namespace ReportPortal.Shared.Tests.Configuration
 {
+    // todo: isolate tests which setting environment variables, it affects others tests
     public class ConfigurationBuilderTest
     {
         [Theory]
