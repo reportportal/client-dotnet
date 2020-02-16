@@ -77,5 +77,14 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
             executer.MaxRetryAttemps.Should().Be(5);
             executer.Delay.Should().Be(6000);
         }
+
+        [Fact]
+        public void ShouldCreateNoneExecuter()
+        {
+            var configuration = new ConfigurationBuilder().Build();
+            configuration.Properties["Server:Retry:Strategy"] = "none";
+            var executer = new RequestExecuterFactory(configuration).Create();
+            executer.Should().BeOfType<NoneRetryRequestExecuter>();
+        }
     }
 }

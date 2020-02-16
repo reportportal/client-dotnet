@@ -34,6 +34,9 @@ namespace ReportPortal.Shared.Internal.Delegating
             IRequestExecuter executer;
             switch (retryStrategy.ToLowerInvariant())
             {
+                case "none":
+                    executer = new NoneRetryRequestExecuter(throttler);
+                    break;
                 case "exponential":
                     var maxExponentialAttempts = _configuration.GetValue("Server:Retry:MaxAttempts", 3);
                     var baseExponentialIndex = _configuration.GetValue("Server:Retry:BaseIndex", 2);
