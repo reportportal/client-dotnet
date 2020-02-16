@@ -39,7 +39,7 @@ During tests execution agent sends test results as http requests to server. In c
 Configure `Server:MaximumConnectionsNumber` property to set the maximum number of concurrent requests.
 
 ## Retry requests
-Set `Server:Retry:Strategy` property to `Exponential` (default) or `Linear`.
+Set `Server:Retry:Strategy` property to `Exponential` (default) or `Linear` or `None`.
 
 ### Exponential
 Failed requests will be retried with continuosly increased delays between attemps.
@@ -52,3 +52,6 @@ Given default values reporter will wait 8 seconds (2^3), then 16 seconds (2^4).
 ### Linear
 - `Server:Retry:MaxAttempts` - how many times retry request (3 attempts by default)
 - `Server:Retry:Delay` - how long to wait between attempts (5000 milliseconds by default)
+
+### None
+Requests are not repeated, only 1 attempt is allocated for all requests.
