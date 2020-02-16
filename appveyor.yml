@@ -19,8 +19,8 @@ test_script:
 
 after_test:
   - dotnet pack
-  - codecov -f .\test\ReportPortal.Shared.Tests\Coverage.*.xml
-  - dotnet run -c Release --project test\ReportPortal.Shared.Benchmark
+  - codecov -f test/ReportPortal.Shared.Tests/Coverage.*.xml
+  - dotnet run -c Release --project test/ReportPortal.Shared.Benchmark
 
 artifacts:
   - path: '**\*.nupkg'
