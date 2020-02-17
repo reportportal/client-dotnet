@@ -120,8 +120,8 @@ namespace ReportPortal.Shared.Reporter
                     LaunchInfo = new LaunchInfo
                     {
                         Uuid = launch.Uuid,
-                        Name = request.Name,
-                        StartTime = request.StartTime
+                        Name = launch.Name,
+                        StartTime = launch.StartTime
                     };
                 });
             }
