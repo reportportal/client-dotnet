@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ReportPortal.Client.Converters;
 using System.Runtime.Serialization;
+using ReportPortal.Client.Abstractions.Models;
 
 namespace ReportPortal.Client.Abstractions.Responses
 {
@@ -47,7 +48,7 @@ namespace ReportPortal.Client.Abstractions.Responses
         [DataMember(Name = "retry")]
         public bool IsRetry { get; set; }
 
-        public Status Status 
+        public Status Status
         { 
             get => EnumConverter.ConvertTo<Status>(StatusString);
             set => StatusString = EnumConverter.ConvertFrom(value);
