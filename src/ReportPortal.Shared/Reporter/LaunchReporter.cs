@@ -34,7 +34,7 @@ namespace ReportPortal.Shared.Reporter
         {
             _isExternalLaunchId = true;
 
-            LaunchInfo = new LaunchResponse
+            LaunchInfo = new LaunchInfo
             {
                 Uuid = launchId
             };
@@ -69,14 +69,14 @@ namespace ReportPortal.Shared.Reporter
             {
                 _isExternalLaunchId = true;
 
-                LaunchInfo = new LaunchResponse
+                LaunchInfo = new LaunchInfo
                 {
                     Uuid = externalLaunchUuid
                 };
             }
         }
 
-        public LaunchResponse LaunchInfo { get; private set; }
+        public LaunchInfo LaunchInfo { get; private set; }
 
         private bool _isExternalLaunchId = false;
 
@@ -102,7 +102,7 @@ namespace ReportPortal.Shared.Reporter
                 {
                     var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.StartAsync(request)).ConfigureAwait(false);
 
-                    LaunchInfo = new LaunchResponse
+                    LaunchInfo = new LaunchInfo
                     {
                         Uuid = launch.Uuid,
                         Name = request.Name,
@@ -115,7 +115,14 @@ namespace ReportPortal.Shared.Reporter
                 // get launch info
                 StartTask = Task.Run(async () =>
                 {
-                    LaunchInfo = await _requestExecuter.ExecuteAsync(() => _service.Launch.GetAsync(LaunchInfo.Uuid)).ConfigureAwait(false);
+                    var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.GetAsync(LaunchInfo.Uuid)).ConfigureAwait(false);
+
+                    LaunchInfo = new LaunchInfo
+                    {
+                        Uuid = launch.Uuid,
+                        Name = request.Name,
+                        StartTime = request.StartTime
+                    };
                 });
             }
         }

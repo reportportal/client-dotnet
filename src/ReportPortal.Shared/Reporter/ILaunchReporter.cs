@@ -1,5 +1,4 @@
 ﻿using ReportPortal.Client.Abstractions.Requests;
-using ReportPortal.Client.Abstractions.Responses;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -7,7 +6,7 @@ namespace ReportPortal.Shared.Reporter
 {
     public interface ILaunchReporter
     {
-        LaunchResponse LaunchInfo { get; }
+        LaunchInfo LaunchInfo { get; }
 
         void Start(StartLaunchRequest startLaunchRequest);
 

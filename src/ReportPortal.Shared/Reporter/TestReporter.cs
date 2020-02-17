@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using ReportPortal.Client.Abstractions;
 using ReportPortal.Client.Abstractions.Requests;
-using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Shared.Internal.Delegating;
 using ReportPortal.Shared.Internal.Logging;
 
@@ -28,7 +27,7 @@ namespace ReportPortal.Shared.Reporter
             ParentTestReporter = parentTestReporter;
         }
 
-        public TestItemResponse TestInfo { get; private set; }
+        public TestInfo TestInfo { get; private set; }
 
         public ILaunchReporter LaunchReporter { get; }
 
@@ -74,7 +73,7 @@ namespace ReportPortal.Shared.Reporter
 
                     var testModel = await _requestExecuter.ExecuteAsync(() => _service.TestItem.StartAsync(startTestItemRequest)).ConfigureAwait(false);
 
-                    TestInfo = new TestItemResponse
+                    TestInfo = new TestInfo
                     {
                         Uuid = testModel.Uuid
                     };
@@ -88,7 +87,7 @@ namespace ReportPortal.Shared.Reporter
 
                     var testModel = await _requestExecuter.ExecuteAsync(() => _service.TestItem.StartAsync(ParentTestReporter.TestInfo.Uuid, startTestItemRequest)).ConfigureAwait(false);
 
-                    TestInfo = new TestItemResponse
+                    TestInfo = new TestInfo
                     {
                         Uuid = testModel.Uuid
                     };
