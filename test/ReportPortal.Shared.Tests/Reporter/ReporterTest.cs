@@ -296,5 +296,16 @@ namespace ReportPortal.Shared.Tests.Reporter
             var exp = Assert.Throws<InsufficientExecutionStackException>(() => test.Finish(new FinishTestItemRequest()));
             Assert.Contains("are not scheduled to finish yet", exp.Message);
         }
+
+        [Fact]
+        public void ShouldThrowExceptionWhenStartingAlreadyStartedTestItem()
+        {
+            var service = new MockServiceBuilder().Build();
+
+            var launch = new LaunchReporter(service.Object, null, null);
+            launch.Start(new StartLaunchRequest());
+            var test = launch.StartChildTestReporter(new StartTestItemRequest());
+            test.Invoking(t => t.Start(new StartTestItemRequest())).Should().ThrowExactly<InsufficientExecutionStackException>();
+        }
     }
 }
