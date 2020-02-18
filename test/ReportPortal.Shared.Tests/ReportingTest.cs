@@ -87,34 +87,7 @@ namespace ReportPortal.Shared.Tests
         }
 
         [Fact]
-        public void FinishingNonStartedLaunch()
-        {
-            var launchReporter = new LaunchReporter(_service, null, null);
-
-            Assert.Throws<InsufficientExecutionStackException>(() => launchReporter.Finish(new FinishLaunchRequest()));
-        }
-
-        [Fact]
-        public void StartingAlreadyStartedLaunch()
-        {
-            var launchReporter = new LaunchReporter(_service, null, null);
-            launchReporter.Start(new StartLaunchRequest());
-
-            Assert.Throws<InsufficientExecutionStackException>(() => launchReporter.Start(new StartLaunchRequest()));
-        }
-
-        [Fact]
-        public void FinishingAlreadyFinishedLaunch()
-        {
-            var launchReporter = new LaunchReporter(_service, null, null);
-            launchReporter.Start(new StartLaunchRequest());
-            launchReporter.Finish(new FinishLaunchRequest());
-
-            Assert.Throws<InsufficientExecutionStackException>(() => launchReporter.Finish(new FinishLaunchRequest()));
-        }
-
-        [Fact]
-        public void BridgeLogMessage()
+        public async Task BridgeLogMessage()
         {
             var launchReporter = new LaunchReporter(_service, null, null);
 
@@ -170,7 +143,10 @@ namespace ReportPortal.Shared.Tests
                 EndTime = DateTime.UtcNow
             });
 
-            launchReporter.FinishTask.Wait();
+            launchReporter.Sync();
+
+            var gotLaunch = await _service.Launch.GetAsync(launchReporter.LaunchInfo.Uuid);
+            await _service.Launch.DeleteAsync(gotLaunch.Id);
         }
 
         [Fact(Skip = "There are issues with rerun on server side")]

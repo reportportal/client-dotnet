@@ -284,6 +284,36 @@ namespace ReportPortal.Shared.Tests.Reporter
         }
 
         [Fact]
+        public void FinishLaunchWhichIsAlreadyFinished()
+        {
+            var service = new MockServiceBuilder().Build();
+
+            var launch = new LaunchReporter(service.Object, null, null);
+            launch.Start(new StartLaunchRequest { });
+            launch.Finish(new FinishLaunchRequest());
+            launch.Invoking(l => l.Finish(new FinishLaunchRequest())).Should().Throw<InsufficientExecutionStackException>().And.Message.Should().Contain("already scheduled for finishing");
+        }
+
+        [Fact]
+        public void FinishLaunchWhichIsNotStarted()
+        {
+            var service = new MockServiceBuilder().Build();
+
+            var launch = new LaunchReporter(service.Object, null, null);
+            launch.Invoking(l => l.Finish(new FinishLaunchRequest())).Should().Throw<InsufficientExecutionStackException>().And.Message.Should().Contain("wasn't scheduled for starting");
+        }
+
+        [Fact]
+        public void StartingLaunchWhichIsAlreadyStarted()
+        {
+            var service = new MockServiceBuilder().Build();
+
+            var launch = new LaunchReporter(service.Object, null, null);
+            launch.Start(new StartLaunchRequest { });
+            launch.Invoking(l => l.Start(new StartLaunchRequest { })).Should().Throw<InsufficientExecutionStackException>().And.Message.Should().Contain("already scheduled for starting");
+        }
+
+        [Fact]
         public void FinishTestItemWhenChildTestItemIsNotScheduledToFinish()
         {
             var service = new MockServiceBuilder().Build();
