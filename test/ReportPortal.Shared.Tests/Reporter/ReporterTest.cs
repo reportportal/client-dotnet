@@ -337,5 +337,37 @@ namespace ReportPortal.Shared.Tests.Reporter
             var test = launch.StartChildTestReporter(new StartTestItemRequest());
             test.Invoking(t => t.Start(new StartTestItemRequest())).Should().ThrowExactly<InsufficientExecutionStackException>();
         }
+
+        [Fact]
+        public void RerunLaunch()
+        {
+            var service = new MockServiceBuilder().Build();
+
+            var config = new Shared.Configuration.ConfigurationBuilder().Build();
+            config.Properties["Launch:RerunOf"] = "any_uuid_of_existing_launch";
+
+            var launch = new LaunchReporter(service.Object, config, null);
+            launch.Start(new StartLaunchRequest() { StartTime = DateTime.UtcNow });
+            launch.Finish(new FinishLaunchRequest() { EndTime = DateTime.UtcNow });
+            launch.Sync();
+
+            service.Verify(s => s.Launch.StartAsync(It.IsAny<StartLaunchRequest>()), Times.Once);
+            service.Verify(s => s.Launch.FinishAsync(It.IsAny<string>(), It.IsAny<FinishLaunchRequest>()), Times.Never);
+        }
+
+        [Fact]
+        public void LaunchShouldCareOfFinishTime()
+        {
+            var launchStartTime = DateTime.UtcNow;
+
+            var service = new MockServiceBuilder().Build();
+
+            var launch = new LaunchReporter(service.Object, null, null);
+            launch.Start(new StartLaunchRequest() { StartTime = launchStartTime });
+            launch.Finish(new FinishLaunchRequest() { EndTime = launchStartTime.AddDays(-1) });
+            launch.Sync();
+
+            launch.LaunchInfo.EndTime.Should().Be(launch.LaunchInfo.StartTime);
+        }
     }
 }

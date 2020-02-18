@@ -226,6 +226,17 @@ namespace ReportPortal.Shared.Tests.Configuration
         }
 
         [Fact]
+        public void ShouldNotReturnDefaultIfListFound()
+        {
+            var config = new ConfigurationBuilder().Build();
+            config.Properties["a"] = "a1;a2";
+
+            var list = config.GetValues("a", new List<string> { "abc" });
+
+            list.Should().BeEquivalentTo(new List<string> { "a1", "a2" });
+        }
+
+        [Fact]
         public void ShouldMergeValuesIfStartsWithPlus()
         {
             Environment.SetEnvironmentVariable("REPORTPORTAL_A", "++value1");

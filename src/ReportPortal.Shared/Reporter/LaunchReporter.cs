@@ -226,6 +226,7 @@ namespace ReportPortal.Shared.Reporter
                     if (request.EndTime < LaunchInfo.StartTime)
                     {
                         request.EndTime = LaunchInfo.StartTime;
+                        LaunchInfo.EndTime = request.EndTime;
                     }
 
                     if (!_isExternalLaunchId && _rerunOfUuid == null)
