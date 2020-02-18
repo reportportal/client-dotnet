@@ -74,11 +74,15 @@ namespace ReportPortal.Shared.Reporter
                     Uuid = externalLaunchUuid
                 };
             }
+
+            // identify whether launch should be rerun
+            _rerunOfUuid = _configuration.GetValue<string>("Launch:RerunOf", null);
         }
 
         public LaunchInfo LaunchInfo { get; private set; }
 
         private bool _isExternalLaunchId = false;
+        private string _rerunOfUuid = null;
 
         public Task StartTask { get; private set; }
 
@@ -95,7 +99,24 @@ namespace ReportPortal.Shared.Reporter
                 throw exp;
             }
 
-            if (!_isExternalLaunchId)
+            if (_rerunOfUuid != null)
+            {
+                request.IsRerun = true;
+                request.RerunOfLaunchUuid = _rerunOfUuid;
+                // start rerun launch item
+                StartTask = Task.Run(async () =>
+                {
+                    var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.StartAsync(request)).ConfigureAwait(false);
+
+                    LaunchInfo = new LaunchInfo
+                    {
+                        Uuid = launch.Uuid,
+                        Name = request.Name,
+                        StartTime = request.StartTime
+                    };
+                });
+            }
+            else if (!_isExternalLaunchId)
             {
                 // start new launch item
                 StartTask = Task.Run(async () =>
@@ -207,7 +228,7 @@ namespace ReportPortal.Shared.Reporter
                         request.EndTime = LaunchInfo.StartTime;
                     }
 
-                    if (!_isExternalLaunchId)
+                    if (!_isExternalLaunchId && _rerunOfUuid == null)
                     {
                         await _requestExecuter.ExecuteAsync(() => _service.Launch.FinishAsync(LaunchInfo.Uuid, request)).ConfigureAwait(false);
                     }

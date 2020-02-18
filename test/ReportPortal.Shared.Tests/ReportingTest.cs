@@ -1,9 +1,11 @@
 using ReportPortal.Client;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Responses;
+using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Reporter;
 using ReportPortal.Shared.Tests.Helpers;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -169,6 +171,121 @@ namespace ReportPortal.Shared.Tests
             });
 
             launchReporter.FinishTask.Wait();
+        }
+
+        [Fact(Skip = "There are issues with rerun on server side")]
+        public async Task UseRerunLaunchId()
+        {
+            var launchDateTime = DateTime.UtcNow;
+            var launchName = "UseRerunLaunchId";
+
+            var launch = await _service.Launch.StartAsync(new StartLaunchRequest
+            {
+                Name = launchName,
+                StartTime = launchDateTime,
+                Mode = LaunchMode.Debug
+            });
+
+            var config = new ConfigurationBuilder().Build();
+            config.Properties["Launch:RerunOf"] = launch.Uuid;
+
+            var tasks = new List<Task<LaunchReporter>>();
+            for (int i = 0; i < 3; i++)
+            {
+                tasks.Add(Task.Run(() =>
+                {
+                    var r_launch = new LaunchReporter(_service, config, null);
+
+                    r_launch.Start(new StartLaunchRequest
+                    {
+                        Name = "UseRerunLaunchId",
+                        StartTime = launchDateTime,
+                        Mode = LaunchMode.Debug
+                    });
+
+                    for (int j = 0; j < 30; j++)
+                    {
+                        var r_suiteReporter = r_launch.StartChildTestReporter(new StartTestItemRequest
+                        {
+                            Name = $"Suite {j}",
+                            StartTime = launchDateTime,
+                            Type = TestItemType.Suite
+                        });
+
+                        for (int jj = 0; jj < 3; jj++)
+                        {
+                            var rr_suiteReporter = r_suiteReporter.StartChildTestReporter(new StartTestItemRequest
+                            {
+                                Name = $"Suite {jj}",
+                                StartTime = launchDateTime,
+                                Type = TestItemType.Suite
+                            });
+
+                            for (int k = 0; k < 0; k++)
+                            {
+                                var r_test = rr_suiteReporter.StartChildTestReporter(new StartTestItemRequest
+                                {
+                                    Name = $"Test {k}",
+                                    StartTime = launchDateTime,
+                                    Type = TestItemType.Step
+                                });
+
+                                for (int l = 0; l < 0; l++)
+                                {
+                                    r_test.Log(new CreateLogItemRequest
+                                    {
+                                        Level = LogLevel.Info,
+                                        Text = $"Log message #{l}",
+                                        Time = launchDateTime
+                                    });
+                                }
+
+                                r_test.Finish(new FinishTestItemRequest
+                                {
+                                    EndTime = launchDateTime,
+                                    Status = Status.Passed
+                                });
+                            }
+
+                            rr_suiteReporter.Finish(new FinishTestItemRequest
+                            {
+                                EndTime = launchDateTime,
+                                Status = Status.Passed
+                            });
+                        }
+
+                        r_suiteReporter.Finish(new FinishTestItemRequest
+                        {
+                            EndTime = launchDateTime,
+                            Status = Status.Passed
+                        });
+                    }
+
+                    r_launch.Finish(new FinishLaunchRequest
+                    {
+                        EndTime = launchDateTime
+                    });
+
+                    r_launch.Sync();
+
+                    return r_launch;
+                }));
+            }
+
+            Task.WaitAll(tasks.ToArray());
+
+            var reportedLaunch = await _service.Launch.GetAsync(launch.Uuid);
+            Assert.Equal(launchName, reportedLaunch.Name);
+            Assert.Equal(launchDateTime.ToString(), reportedLaunch.StartTime.ToString());
+
+            await _service.Launch.FinishAsync(launch.Uuid, new FinishLaunchRequest
+            {
+                EndTime = DateTime.UtcNow
+            });
+
+            //var gotLaunch = await _service.Launch.GetAsync(launchReporter.LaunchInfo.Uuid);
+
+            //await _service.Launch.DeleteAsync(gotLaunch.Id);
         }
     }
 }
