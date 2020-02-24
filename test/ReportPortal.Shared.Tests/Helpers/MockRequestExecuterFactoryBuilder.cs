@@ -12,11 +12,11 @@ namespace ReportPortal.Shared.Tests.Helpers
         {
             var requestExecuter = new Mock<IRequestExecuter>();
 
-            requestExecuter.Setup(re => re.ExecuteAsync(It.IsAny<Func<Task<LaunchCreatedResponse>>>())).Returns<Func<Task<LaunchCreatedResponse>>>(v => v.Invoke());
-            requestExecuter.Setup(re => re.ExecuteAsync(It.IsAny<Func<Task<TestItemCreatedResponse>>>())).Returns<Func<Task<TestItemCreatedResponse>>>(v => v.Invoke());
-            requestExecuter.Setup(re => re.ExecuteAsync(It.IsAny<Func<Task<LogItemCreatedResponse>>>())).Returns<Func<Task<LogItemCreatedResponse>>>(v => v.Invoke());
-            requestExecuter.Setup(re => re.ExecuteAsync(It.IsAny<Func<Task<MessageResponse>>>())).Returns<Func<Task<MessageResponse>>>(v => v.Invoke());
-            requestExecuter.Setup(re => re.ExecuteAsync(It.IsAny<Func<Task<LaunchFinishedResponse>>>())).Returns<Func<Task<LaunchFinishedResponse>>>(v => v.Invoke());
+            requestExecuter.Setup(re => re.ExecuteAsync(It.IsAny<Func<Task<LaunchCreatedResponse>>>(), It.IsAny<Action<Exception>>())).Returns<Func<Task<LaunchCreatedResponse>>, Action>((f, c) => f.Invoke());
+            requestExecuter.Setup(re => re.ExecuteAsync(It.IsAny<Func<Task<TestItemCreatedResponse>>>(), It.IsAny<Action<Exception>>())).Returns<Func<Task<TestItemCreatedResponse>>, Action>((f, c) => f.Invoke());
+            requestExecuter.Setup(re => re.ExecuteAsync(It.IsAny<Func<Task<LogItemCreatedResponse>>>(), It.IsAny<Action<Exception>>())).Returns<Func<Task<LogItemCreatedResponse>>, Action>((f, c) => f.Invoke());
+            requestExecuter.Setup(re => re.ExecuteAsync(It.IsAny<Func<Task<MessageResponse>>>(), It.IsAny<Action<Exception>>())).Returns<Func<Task<MessageResponse>>, Action>((f, c) => f.Invoke());
+            requestExecuter.Setup(re => re.ExecuteAsync(It.IsAny<Func<Task<LaunchFinishedResponse>>>(), It.IsAny<Action<Exception>>())).Returns<Func<Task<LaunchFinishedResponse>>, Action>((f, c) => f.Invoke());
 
             var requestExecuterFactory = new Mock<IRequestExecuterFactory>();
             requestExecuterFactory.Setup(f => f.Create()).Returns(requestExecuter.Object);

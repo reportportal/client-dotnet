@@ -48,5 +48,20 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
             throttler.Verify(t => t.ReserveAsync(), Times.Once());
             throttler.Verify(t => t.Release(), Times.Once());
         }
+
+        [Fact]
+        public void ShouldNotInvokeCallbackAction()
+        {
+            var executer = new NoneRetryRequestExecuter(null);
+
+            var action = new Mock<Func<Task<string>>>();
+            action.Setup(a => a()).Throws<TaskCanceledException>();
+
+            var invokedTimes = 0;
+
+            executer.Awaiting(e => e.ExecuteAsync(action.Object, (exp) => invokedTimes++)).Should().Throw<TaskCanceledException>();
+
+            invokedTimes.Should().Be(0);
+        }
     }
 }

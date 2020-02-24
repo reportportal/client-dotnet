@@ -106,7 +106,7 @@ namespace ReportPortal.Shared.Reporter
                 // start rerun launch item
                 StartTask = Task.Run(async () =>
                 {
-                    var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.StartAsync(request)).ConfigureAwait(false);
+                    var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.StartAsync(request), null).ConfigureAwait(false);
 
                     LaunchInfo = new LaunchInfo
                     {
@@ -121,7 +121,7 @@ namespace ReportPortal.Shared.Reporter
                 // start new launch item
                 StartTask = Task.Run(async () =>
                 {
-                    var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.StartAsync(request)).ConfigureAwait(false);
+                    var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.StartAsync(request), null).ConfigureAwait(false);
 
                     LaunchInfo = new LaunchInfo
                     {
@@ -136,7 +136,7 @@ namespace ReportPortal.Shared.Reporter
                 // get launch info
                 StartTask = Task.Run(async () =>
                 {
-                    var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.GetAsync(LaunchInfo.Uuid)).ConfigureAwait(false);
+                    var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.GetAsync(LaunchInfo.Uuid), null).ConfigureAwait(false);
 
                     LaunchInfo = new LaunchInfo
                     {
@@ -231,7 +231,7 @@ namespace ReportPortal.Shared.Reporter
 
                     if (!_isExternalLaunchId && _rerunOfUuid == null)
                     {
-                        await _requestExecuter.ExecuteAsync(() => _service.Launch.FinishAsync(LaunchInfo.Uuid, request)).ConfigureAwait(false);
+                        await _requestExecuter.ExecuteAsync(() => _service.Launch.FinishAsync(LaunchInfo.Uuid, request), null).ConfigureAwait(false);
                     }
                 }
                 finally

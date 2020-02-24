@@ -22,7 +22,7 @@ namespace ReportPortal.Shared.Internal.Delegating
         }
 
         /// <inheritdoc/>
-        public async Task<T> ExecuteAsync<T>(Func<Task<T>> func)
+        public async Task<T> ExecuteAsync<T>(Func<Task<T>> func, Action<Exception> beforeNextAttempt = null)
         {
             T result = default(T);
 

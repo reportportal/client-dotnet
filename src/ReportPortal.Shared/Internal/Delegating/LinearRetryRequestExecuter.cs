@@ -57,7 +57,7 @@ namespace ReportPortal.Shared.Internal.Delegating
         public int Delay { get; private set; }
 
         /// <inheritdoc/>
-        public async Task<T> ExecuteAsync<T>(Func<Task<T>> func)
+        public async Task<T> ExecuteAsync<T>(Func<Task<T>> func, Action<Exception> beforeNextAttempt = null)
         {
             T result = default(T);
 
@@ -79,6 +79,8 @@ namespace ReportPortal.Shared.Internal.Delegating
                     {
                         TraceLogger.Error($"Error while invoking '{func.Method.Name}' method. Current attempt: {i}. Waiting {Delay} milliseconds and retrying it.\n{exp}");
                         await Task.Delay(Delay).ConfigureAwait(false);
+
+                        beforeNextAttempt?.Invoke(exp);
                     }
                     else
                     {

@@ -71,7 +71,7 @@ namespace ReportPortal.Shared.Reporter
                         startTestItemRequest.StartTime = LaunchReporter.LaunchInfo.StartTime;
                     }
 
-                    var testModel = await _requestExecuter.ExecuteAsync(() => _service.TestItem.StartAsync(startTestItemRequest)).ConfigureAwait(false);
+                    var testModel = await _requestExecuter.ExecuteAsync(() => _service.TestItem.StartAsync(startTestItemRequest), null).ConfigureAwait(false);
 
                     TestInfo = new TestInfo
                     {
@@ -85,7 +85,7 @@ namespace ReportPortal.Shared.Reporter
                         startTestItemRequest.StartTime = ParentTestReporter.TestInfo.StartTime;
                     }
 
-                    var testModel = await _requestExecuter.ExecuteAsync(() => _service.TestItem.StartAsync(ParentTestReporter.TestInfo.Uuid, startTestItemRequest)).ConfigureAwait(false);
+                    var testModel = await _requestExecuter.ExecuteAsync(() => _service.TestItem.StartAsync(ParentTestReporter.TestInfo.Uuid, startTestItemRequest), null).ConfigureAwait(false);
 
                     TestInfo = new TestInfo
                     {
@@ -188,7 +188,7 @@ namespace ReportPortal.Shared.Reporter
                         request.EndTime = TestInfo.StartTime;
                     }
 
-                    await _requestExecuter.ExecuteAsync(() => _service.TestItem.FinishAsync(TestInfo.Uuid, request)).ConfigureAwait(false);
+                    await _requestExecuter.ExecuteAsync(() => _service.TestItem.FinishAsync(TestInfo.Uuid, request), null).ConfigureAwait(false);
                 }
                 finally
                 {
@@ -272,7 +272,7 @@ namespace ReportPortal.Shared.Reporter
                                 formatter.FormatLog(request);
                             }
 
-                            await _requestExecuter.ExecuteAsync(() => _service.LogItem.CreateAsync(request)).ConfigureAwait(false);
+                            await _requestExecuter.ExecuteAsync(() => _service.LogItem.CreateAsync(request), null).ConfigureAwait(false);
                         }
                     }).Unwrap();
 

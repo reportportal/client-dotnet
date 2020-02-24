@@ -12,8 +12,9 @@ namespace ReportPortal.Shared.Internal.Delegating
         /// Executes func.
         /// </summary>
         /// <param name="func">Function for execution.</param>
+        /// <param name="beforeNextAttemptCallback">Callback action to be invoked between attempts.</param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        Task<T> ExecuteAsync<T>(Func<Task<T>> func);
+        Task<T> ExecuteAsync<T>(Func<Task<T>> func, Action<Exception> beforeNextAttemptCallback);
     }
 }
