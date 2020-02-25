@@ -47,7 +47,7 @@ namespace ReportPortal.Shared.Configuration.Providers
 
                 foreach (var candidate in candidates)
                 {
-                    var key = candidate.Name.ToLowerInvariant().Replace($"{_prefix}{_delimeter}", string.Empty).Replace(_delimeter, ConfigurationPath.KeyDelimeter);
+                    var key = candidate.Name.ToLowerInvariant().Replace($"{_prefix.ToLowerInvariant()}{_delimeter}", string.Empty).Replace(_delimeter, ConfigurationPath.KeyDelimeter);
                     var value = File.ReadAllText(candidate.FullName);
 
                     properties[key] = value;

@@ -16,7 +16,7 @@ namespace ReportPortal.Shared.Tests.Configuration
             var dir = Directory.CreateDirectory(Path.GetRandomFileName());
             File.AppendAllText(dir + "\\rp_a1", "a1_value");
 
-            var dirProvider = new DirectoryProbingConfigurationProvider(dir.FullName, "rp", "_", false);
+            var dirProvider = new DirectoryProbingConfigurationProvider(dir.FullName, "rP", "_", false);
             dirProvider.Load().Should().HaveCount(1).And.ContainKey("a1").WhichValue.Should().Be("a1_value");
 
             dir.Delete(true);

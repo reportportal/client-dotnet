@@ -8,7 +8,7 @@ namespace ReportPortal.Shared.Configuration
     public interface IConfiguration
     {
         /// <summary>
-        /// Fethed configuration variables.
+        /// Fetched configuration variables.
         /// </summary>
         IDictionary<string, object> Properties { get; }
 

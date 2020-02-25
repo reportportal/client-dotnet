@@ -303,7 +303,7 @@ namespace ReportPortal.Shared.Tests.Configuration
 
             var config = new ConfigurationBuilder().AddDefaults(dir.FullName).Build();
 
-            config.Properties.Should().HaveCountGreaterOrEqualTo(2);
+            config.Properties.Should().HaveCountGreaterOrEqualTo(2).And.ContainKeys("prop1", "prop2");
 
             dir.Delete(true);
         }
