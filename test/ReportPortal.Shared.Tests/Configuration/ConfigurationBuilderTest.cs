@@ -25,6 +25,8 @@ namespace ReportPortal.Shared.Tests.Configuration
             var variable = config.GetValue<string>(paramName);
 
             Assert.Equal(paramValue, variable);
+
+            Environment.SetEnvironmentVariable(paramFullName, null);
         }
 
         [Fact]
@@ -90,6 +92,8 @@ namespace ReportPortal.Shared.Tests.Configuration
             var value = config.GetValue<string>("prop1");
 
             Assert.Equal("over_value1", value);
+
+            Environment.SetEnvironmentVariable("REPORTPORTAL_prop1", null);
         }
 
         [Fact]
@@ -246,6 +250,8 @@ namespace ReportPortal.Shared.Tests.Configuration
             var variable = config.GetValue<string>("A");
 
             Assert.Equal("value1value1", variable);
+
+            Environment.SetEnvironmentVariable("REPORTPORTAL_A", null);
         }
 
         [Fact]
@@ -258,6 +264,8 @@ namespace ReportPortal.Shared.Tests.Configuration
             var list = config.GetValues<string>("A");
 
             Assert.Equal(new List<string> { "value1", "value1" }, list);
+
+            Environment.SetEnvironmentVariable("REPORTPORTAL_A", null);
         }
 
         [Fact]
@@ -270,6 +278,8 @@ namespace ReportPortal.Shared.Tests.Configuration
             var value = config.GetValue<string>("prop1:prop2");
 
             Assert.Equal("value1", value);
+
+            Environment.SetEnvironmentVariable("CUSTOMPREFIX_prop1-prop2", null);
         }
 
         [Fact]
@@ -293,7 +303,7 @@ namespace ReportPortal.Shared.Tests.Configuration
 
             var config = new ConfigurationBuilder().AddDefaults(dir.FullName).Build();
 
-            config.Properties.Should().HaveCount(2);
+            config.Properties.Should().HaveCountGreaterOrEqualTo(2);
 
             dir.Delete(true);
         }

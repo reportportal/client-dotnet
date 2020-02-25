@@ -63,7 +63,7 @@ namespace ReportPortal.Shared.Tests.Internal.Logging
 
         public void Dispose()
         {
-            Environment.SetEnvironmentVariable("ReportPortal_TraceLevel", "");
+            Environment.SetEnvironmentVariable("ReportPortal_TraceLevel", null);
         }
     }
 }
