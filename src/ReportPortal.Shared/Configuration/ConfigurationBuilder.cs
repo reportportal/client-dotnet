@@ -28,7 +28,7 @@ namespace ReportPortal.Shared.Configuration
 
                 foreach (var property in originalProperties)
                 {
-                    if (property.Value.StartsWith(ConfigurationPath.AppenderPrefix))
+                    if (property.Value.StartsWith(ConfigurationPath.AppenderPrefix, StringComparison.OrdinalIgnoreCase))
                     {
                         if (properties.ContainsKey(property.Key))
                         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace ReportPortal.Shared.Internal.Logging
 {
@@ -41,7 +42,7 @@ namespace ReportPortal.Shared.Internal.Logging
 
         private void Message(TraceEventType eventType, string message)
         {
-            _traceSource.TraceEvent(eventType, 0, $"{DateTime.Now.ToString("HH:mm:ss.fffffff")} : {_appDomainId}-{_appDomainFriendlyName} : {message}");
+            _traceSource.TraceEvent(eventType, 0, $"{DateTime.Now.ToString("HH:mm:ss.fffffff", CultureInfo.InvariantCulture)} : {_appDomainId}-{_appDomainFriendlyName} : {message}");
         }
     }
 }

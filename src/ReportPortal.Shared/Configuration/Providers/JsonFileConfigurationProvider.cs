@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Text;
@@ -56,49 +57,50 @@ namespace ReportPortal.Shared.Configuration.Providers
         {
             var properties = new Dictionary<string, string>();
 
-            var jsonReader = JsonReaderWriterFactory.CreateJsonReader(Encoding.UTF8.GetBytes(json), new XmlDictionaryReaderQuotas());
-
-            string propertyName = string.Empty;
-            string propertyValue = null;
-
-            while (jsonReader.Read())
+            using (var jsonReader = JsonReaderWriterFactory.CreateJsonReader(Encoding.UTF8.GetBytes(json), new XmlDictionaryReaderQuotas()))
             {
-                if (jsonReader.NodeType == XmlNodeType.Element)
-                {
-                    propertyName += $"{_delimeter}{jsonReader.Name}";
-                }
-                else if (jsonReader.NodeType == XmlNodeType.EndElement)
-                {
-                    if (jsonReader.Name != "item" && jsonReader.Name != "root" && propertyValue != null)
-                    {
-                        properties[propertyName.Replace($"{_delimeter}root{_delimeter}", "").Replace(_delimeter, ConfigurationPath.KeyDelimeter)] = propertyValue;
+                string propertyName = string.Empty;
+                string propertyValue = null;
 
-                        propertyValue = null;
-                    }
-
-                    propertyName = propertyName.Substring(0, propertyName.Length - jsonReader.Name.Length - _delimeter.Length);
-                }
-                else if (jsonReader.NodeType == XmlNodeType.Text)
+                while (jsonReader.Read())
                 {
-                    if (propertyName.EndsWith("item"))
+                    if (jsonReader.NodeType == XmlNodeType.Element)
                     {
-                        propertyValue += $"{jsonReader.Value};";
+                        propertyName += $"{_delimeter}{jsonReader.Name}";
                     }
-                    else
+                    else if (jsonReader.NodeType == XmlNodeType.EndElement)
                     {
-                        // \n character is considered as new Text element in JsonReader, so we are verifying whether it's continuing previous text and just append it
-                        if (propertyValue == null)
+                        if (jsonReader.Name != "item" && jsonReader.Name != "root" && propertyValue != null)
                         {
-                            propertyValue = jsonReader.Value;
+                            properties[propertyName.Replace($"{_delimeter}root{_delimeter}", "").Replace(_delimeter, ConfigurationPath.KeyDelimeter)] = propertyValue;
+
+                            propertyValue = null;
+                        }
+
+                        propertyName = propertyName.Substring(0, propertyName.Length - jsonReader.Name.Length - _delimeter.Length);
+                    }
+                    else if (jsonReader.NodeType == XmlNodeType.Text)
+                    {
+                        if (propertyName.EndsWith("item", StringComparison.OrdinalIgnoreCase))
+                        {
+                            propertyValue += $"{jsonReader.Value};";
                         }
                         else
                         {
-                            propertyValue += jsonReader.Value;
+                            // \n character is considered as new Text element in JsonReader, so we are verifying whether it's continuing previous text and just append it
+                            if (propertyValue == null)
+                            {
+                                propertyValue = jsonReader.Value;
+                            }
+                            else
+                            {
+                                propertyValue += jsonReader.Value;
+                            }
                         }
                     }
                 }
-            }
 
+            }
             return properties;
         }
     }

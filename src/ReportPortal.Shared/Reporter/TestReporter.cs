@@ -207,6 +207,8 @@ namespace ReportPortal.Shared.Reporter
 
         public ITestReporter StartChildTestReporter(StartTestItemRequest request)
         {
+            if (request == null) throw new ArgumentNullException(nameof(request));
+
             TraceLogger.Verbose($"Scheduling request to start new '{request.Name}' test item in {GetHashCode()} proxy instance");
 
             var newTestNode = new TestReporter(_service, LaunchReporter, this, _requestExecuter);

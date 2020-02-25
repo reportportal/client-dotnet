@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace ReportPortal.Shared.Configuration
@@ -26,12 +27,12 @@ namespace ReportPortal.Shared.Configuration
         {
             if (!Properties.ContainsKey(property))
             {
-                throw new KeyNotFoundException(string.Format(_notFoundMessage, property));
+                throw new KeyNotFoundException(string.Format(CultureInfo.InvariantCulture, _notFoundMessage, property));
             }
 
             var propertyValue = Properties[property];
 
-            return (T)Convert.ChangeType(propertyValue, typeof(T));
+            return (T)Convert.ChangeType(propertyValue, typeof(T), CultureInfo.InvariantCulture);
         }
 
         /// <inheritdoc />
@@ -52,12 +53,12 @@ namespace ReportPortal.Shared.Configuration
         {
             if (!Properties.ContainsKey(property))
             {
-                throw new KeyNotFoundException(string.Format(_notFoundMessage, property));
+                throw new KeyNotFoundException(string.Format(CultureInfo.InvariantCulture, _notFoundMessage, property));
             }
 
             var propertyValue = Properties[property];
 
-            var values = propertyValue.ToString().Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).Select(i => (T)Convert.ChangeType(i, typeof(T))).ToList();
+            var values = propertyValue.ToString().Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).Select(i => (T)Convert.ChangeType(i, typeof(T), CultureInfo.InvariantCulture)).ToList();
 
             return values;
         }

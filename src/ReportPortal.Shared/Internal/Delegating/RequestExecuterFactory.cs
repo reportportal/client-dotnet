@@ -48,7 +48,7 @@ namespace ReportPortal.Shared.Internal.Delegating
                     executer = new LinearRetryRequestExecuter(maxLinearAttempts, linearDelay, throttler);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("Server:Retry:Strategy", $"Unknown '{retryStrategy}' retry strategy. Possible values are 'exponential' and 'linear'.");
+                    throw new Exception($"Unknown '{retryStrategy}' retry strategy.");
             }
 
             return executer;

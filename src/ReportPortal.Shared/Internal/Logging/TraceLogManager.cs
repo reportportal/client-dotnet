@@ -20,6 +20,8 @@ namespace ReportPortal.Shared.Internal.Logging
         /// <returns><see cref="ITraceLogger"/> instance for logging internal messages</returns>
         public static ITraceLogger GetLogger(Type type)
         {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
             if (_traceLoggers == null)
             {
                 lock (_lockObj)

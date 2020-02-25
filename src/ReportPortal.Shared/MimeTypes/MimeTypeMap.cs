@@ -640,7 +640,7 @@ namespace ReportPortal.Shared.MimeTypes
                 throw new ArgumentNullException(nameof(extension));
             }
 
-            if (!extension.StartsWith("."))
+            if (!extension.StartsWith(".", StringComparison.OrdinalIgnoreCase))
             {
                 extension = "." + extension;
             }

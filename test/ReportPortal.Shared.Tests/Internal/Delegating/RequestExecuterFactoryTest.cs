@@ -49,7 +49,7 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
             configuration.Properties["Server:Retry:Strategy"] = "any_unknown_value";
             var factory = new RequestExecuterFactory(configuration);
 
-            factory.Invoking((f) => f.Create()).Should().Throw<ArgumentOutOfRangeException>().WithMessage("*any_unknown_value*");
+            factory.Invoking((f) => f.Create()).Should().Throw<Exception>().WithMessage("*any_unknown_value*");
         }
 
         [Fact]

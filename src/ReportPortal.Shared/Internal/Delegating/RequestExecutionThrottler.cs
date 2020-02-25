@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace ReportPortal.Shared.Internal.Delegating
 {
     /// <inheritdoc/>
-    public class RequestExecutionThrottler : IRequestExecutionThrottler
+    public class RequestExecutionThrottler : IRequestExecutionThrottler, IDisposable
     {
         private Logging.ITraceLogger TraceLogger { get; } = Logging.TraceLogManager.GetLogger<RequestExecutionThrottler>();
 
@@ -44,6 +44,11 @@ namespace ReportPortal.Shared.Internal.Delegating
         public void Release()
         {
             _concurrentAwaiter.Release();
+        }
+
+        public void Dispose()
+        {
+            _concurrentAwaiter.Dispose();
         }
     }
 }

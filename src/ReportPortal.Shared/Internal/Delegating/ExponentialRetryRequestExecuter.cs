@@ -59,6 +59,8 @@ namespace ReportPortal.Shared.Internal.Delegating
         /// <inheritdoc/>
         public async Task<T> ExecuteAsync<T>(Func<Task<T>> func, Action<Exception> beforeNextAttempt = null)
         {
+            if (func == null) throw new ArgumentNullException(nameof(func));
+
             T result = default(T);
 
             for (int i = 0; i < MaxRetryAttemps; i++)
