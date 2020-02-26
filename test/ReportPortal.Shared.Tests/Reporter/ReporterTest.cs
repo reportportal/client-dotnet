@@ -37,6 +37,41 @@ namespace ReportPortal.Shared.Tests.Reporter
             launchReporter.ChildTestReporters.SelectMany(s => s.ChildTestReporters).Select(t => t.TestInfo.Uuid).Should().OnlyHaveUniqueItems();
         }
 
+        [Fact]
+        public void MixingTestsAndLogs()
+        {
+            var service = new MockServiceBuilder().Build();
+
+            var launchReporter = new LaunchReporter(service.Object, null, null);
+            launchReporter.Start(new StartLaunchRequest { StartTime = DateTime.UtcNow });
+
+            for (int i = 0; i < 10; i++)
+            {
+                var suite = launchReporter.StartChildTestReporter(new StartTestItemRequest { StartTime = DateTime.UtcNow });
+
+                suite.Log(new CreateLogItemRequest { Time = DateTime.UtcNow });
+
+                for (int j = 0; j < 20; j++)
+                {
+                    var test = suite.StartChildTestReporter(new StartTestItemRequest { StartTime = DateTime.UtcNow });
+
+                    test.Log(new CreateLogItemRequest { Time = DateTime.UtcNow });
+
+                    test.Finish(new FinishTestItemRequest { EndTime = DateTime.UtcNow });
+                }
+
+                suite.Log(new CreateLogItemRequest { Time = DateTime.UtcNow });
+
+                suite.Finish(new FinishTestItemRequest { EndTime = DateTime.UtcNow });
+            }
+
+            launchReporter.Finish(new FinishLaunchRequest { EndTime = DateTime.UtcNow });
+
+            launchReporter.Sync();
+
+            service.Verify(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest>()), Times.Exactly(20 * 10 + 10 * 2));
+        }
+
         [Theory]
         [InlineData(1, 1, 1)]
         [InlineData(10, 10, 10)]
