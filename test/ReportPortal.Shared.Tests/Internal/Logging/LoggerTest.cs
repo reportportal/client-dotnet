@@ -61,6 +61,31 @@ namespace ReportPortal.Shared.Tests.Internal.Logging
             Assert.DoesNotContain("should_not_see_it", File.ReadAllText(_defaultLogFilePath));
         }
 
+        [Fact]
+        public void ShouldSaveToBaseDir()
+        {
+            var obj = new { A = "a" };
+            var tempDir = Directory.CreateDirectory(Path.GetRandomFileName());
+            var logger = TraceLogManager.GetLogger(obj.GetType(), tempDir.FullName);
+            logger.Info("some message");
+            Assert.True(File.Exists($"{tempDir.FullName}\\{_defaultLogFilePath}"));
+
+            
+
+            tempDir.Delete(true);
+        }
+
+        [Fact]
+        public void ShouldSaveIfBaseDirDoesntExist()
+        {
+            var obj = new { A = "a" };
+            var tempDir = new DirectoryInfo(Path.GetRandomFileName());
+            var logger = TraceLogManager.GetLogger(obj.GetType(), tempDir.FullName);
+            logger.Info("some message");
+            Assert.False(File.Exists($"{tempDir.FullName}\\{_defaultLogFilePath}"));
+            Assert.True(File.Exists(_defaultLogFilePath));
+        }
+
         public void Dispose()
         {
             Environment.SetEnvironmentVariable("ReportPortal_TraceLevel", null);

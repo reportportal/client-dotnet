@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 
 namespace ReportPortal.Shared.Internal.Logging
 {
@@ -17,8 +18,9 @@ namespace ReportPortal.Shared.Internal.Logging
         /// Gets or creates new logger for requested type.
         /// </summary>
         /// <param name="type">Type where logger should be registered for</param>
+        /// <param name="baseDir">Directory for log files. Optional.</param>
         /// <returns><see cref="ITraceLogger"/> instance for logging internal messages</returns>
-        public static ITraceLogger GetLogger(Type type)
+        public static ITraceLogger GetLogger(Type type, string baseDir = null)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
 
@@ -52,6 +54,11 @@ namespace ReportPortal.Shared.Internal.Logging
 
                     var logFileName = $"{type.Assembly.GetName().Name}.{Process.GetCurrentProcess().Id}.log";
 
+                    if (baseDir != null && Directory.Exists(baseDir))
+                    {
+                        logFileName = Path.Combine(baseDir, logFileName);
+                    }
+
                     var traceListener = new DefaultTraceListener
                     {
                         Filter = new SourceFilter(traceSource.Name),
@@ -72,9 +79,9 @@ namespace ReportPortal.Shared.Internal.Logging
         /// </summary>
         /// <typeparam name="T">Type where logger should be registered for</typeparam>
         /// <returns><see cref="ITraceLogger"/> instance for logging internal messages</returns>
-        public static ITraceLogger GetLogger<T>()
+        public static ITraceLogger GetLogger<T>(string baseDir = null)
         {
-            return GetLogger(typeof(T));
+            return GetLogger(typeof(T), baseDir);
         }
     }
 }
