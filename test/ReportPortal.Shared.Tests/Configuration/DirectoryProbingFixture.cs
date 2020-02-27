@@ -38,11 +38,12 @@ namespace ReportPortal.Shared.Tests.Configuration
         }
 
         [Fact]
-        public void ShouldSkipBinaryFiles()
+        public void ShouldSkipSomeFiles()
         {
             var dir = Directory.CreateDirectory(Path.GetRandomFileName());
             File.AppendAllText(dir + "\\rp.a1.eXe", "a1_value");
             File.AppendAllText(dir + "\\rp_a1.dll", "a1_value");
+            File.AppendAllText(dir + "\\rp_a1.log", "a1_value");
 
             var dirProvider = new DirectoryProbingConfigurationProvider(dir.FullName, "rp", "_", false);
             dirProvider.Load().Should().BeEmpty();

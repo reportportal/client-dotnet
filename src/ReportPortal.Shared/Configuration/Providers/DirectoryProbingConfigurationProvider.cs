@@ -43,7 +43,9 @@ namespace ReportPortal.Shared.Configuration.Providers
                 var escapedDelimeter = Regex.Escape(_delimeter);
                 var pattern = $"{_prefix.ToLowerInvariant()}({escapedDelimeter}[a-zA-Z]+)+";
 
-                var candidates = directory.EnumerateFiles().Where(f => Regex.IsMatch(f.Name.ToLowerInvariant(), pattern) && !f.Extension.Equals(".dll", StringComparison.OrdinalIgnoreCase) && !f.Extension.Equals(".exe", StringComparison.OrdinalIgnoreCase));
+                var ignoredFileExtensions = new string[] { ".exe", ".dll", ".log" };
+
+                var candidates = directory.EnumerateFiles().Where(f => Regex.IsMatch(f.Name.ToLowerInvariant(), pattern) && !ignoredFileExtensions.Contains(f.Extension.ToLowerInvariant()));
 
                 foreach (var candidate in candidates)
                 {
