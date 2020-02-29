@@ -44,6 +44,7 @@ namespace ReportPortal.Shared.Tests.Configuration
             File.AppendAllText(dir + "\\rp.a1.eXe", "a1_value");
             File.AppendAllText(dir + "\\rp_a1.dll", "a1_value");
             File.AppendAllText(dir + "\\rp_a1.log", "a1_value");
+            File.AppendAllText(dir + "\\rp_a1.pdb", "a1_value");
 
             var dirProvider = new DirectoryProbingConfigurationProvider(dir.FullName, "rp", "_", false);
             dirProvider.Load().Should().BeEmpty();
