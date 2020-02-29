@@ -43,7 +43,7 @@ namespace ReportPortal.Shared.Configuration.Providers
                 var escapedDelimeter = Regex.Escape(_delimeter);
                 var pattern = $"{_prefix.ToLowerInvariant()}({escapedDelimeter}[a-zA-Z]+)+";
 
-                var ignoredFileExtensions = new string[] { ".exe", ".dll", "pdb", ".log" };
+                var ignoredFileExtensions = new string[] { ".exe", ".dll", ".pdb", ".log" };
 
                 var candidates = directory.EnumerateFiles().Where(f => Regex.IsMatch(f.Name.ToLowerInvariant(), pattern) && !ignoredFileExtensions.Contains(f.Extension.ToLowerInvariant()));
 
