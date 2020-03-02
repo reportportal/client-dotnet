@@ -5,8 +5,10 @@ There are several configuration sources to configure reporting.
 - Directory source
 - Environment variables
 
+Configuration sources are not mandatory, you can use any of them, or in combination. But specifying of same properties is mandatory, e.g. URI to server Web API. If some property is defined in several sources, the latest one is used by reporters. If you want concatenate a value which is already defined in configuration chain, just begin your value from `++` entry. Specifying `reportportal_launch_description` env variable with `++this is additional launch info` will be used in cooperation with defined property value in json file. Or `reportportal_launch_tags` = `++more_tag_1;and_one_more_2` tags will be added to launch instead of overwriting it. 
+
 ## Json file
-Agents read the `ReportPortal.config.json` file for configuration properties. This file should be located in the same directory where agent dll file is located.
+Agents read the `ReportPortal.config.json` file for configuration properties. This file should be located in the same directory where agent dll file is located (usually it's your tests output `bin\Debug` directory).
 
 ```
 bin
@@ -26,7 +28,7 @@ Values in json file are considered as flatten list. The following json file will
 ```
 
 ## Directory source
-It's easier to define some property in any textual file. Agent finds all these files and considers them as configuration source. For example to define `Section1:PropertyAbc` property just create a file with `ReportPortal_Section1_PropertyAbc` name, put any value into this file, and agent will take it during test results reporting. 
+It's easier to define some property in any textual file. Agent finds all these files and considers them as configuration source. For example to define `Section1:PropertyAbc` property just create a file with `ReportPortal_Section1_PropertyAbc` name, put any value into this file, and agent will take it during test results reporting.
 
 ## Environment variables
 Sometimes it's useful to specify configuration properties via environment variables. To specify `Section1:PropertyAbc` property just set environment variable with `ReportPortal_Section1_PropertyAbc` name. Variable names should start from `ReportPortal_` prefix, and `_` symbol is used as delimeter of nested variables.
