@@ -191,6 +191,17 @@ namespace ReportPortal.Shared.Tests.Configuration
             Assert.Throws<XmlException>(() => new ConfigurationBuilder().AddJsonFile(filePath: tempFile).Build());
         }
 
+        // this test might pass in future when we will use oanother ser/derser library
+        [Fact]
+        public void MightRaiseExceptionIfJsonIsNotStandartized()
+        {
+            var tempFile = Path.GetTempFileName();
+
+            File.WriteAllText(tempFile, "{\n// this is comment?\n}");
+
+            Assert.Throws<XmlException>(() => new ConfigurationBuilder().AddJsonFile(filePath: tempFile).Build());
+        }
+
         [Fact]
         public void ShouldRaiseExceptionIfVariableNotFound()
         {
