@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using ReportPortal.Client.Converters;
 using System.Net.Http;
 using System.Text;
@@ -10,27 +9,22 @@ using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Client.Abstractions.Filtering;
 using ReportPortal.Client.Abstractions.Resources;
 
-namespace ReportPortal.Client
+namespace ReportPortal.Client.Resources
 {
-    public class ServiceLogItemResource : BaseResource, ILogItemResource
+    class ServiceLogItemResource : ServiceBaseResource, ILogItemResource
     {
-        public ServiceLogItemResource(HttpClient httpClient, Uri baseUri, string project) : base(httpClient, baseUri, project)
+        public ServiceLogItemResource(HttpClient httpClient, string project) : base(httpClient, project)
         {
 
         }
 
-        /// <summary>
-        /// Returns a list of log items for specified test item.
-        /// </summary>
-        /// <param name="filterOption">Specified criterias for retrieving log items.</param>
-        /// <returns>A list of log items.</returns>
-        public virtual async Task<Content<LogItemResponse>> GetAsync(FilterOption filterOption = null)
+        public async Task<Content<LogItemResponse>> GetAsync(FilterOption filterOption = null)
         {
-            var uri = BaseUri.Append($"{ProjectName}/log");
+            var uri = $"{ProjectName}/log";
 
             if (filterOption != null)
             {
-                uri = uri.Append($"?{filterOption}");
+                uri += $"?{filterOption}";
             }
 
             var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
@@ -38,53 +32,33 @@ namespace ReportPortal.Client
             return ModelSerializer.Deserialize<Content<LogItemResponse>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
-        /// <summary>
-        /// Returns specified log item by UUID.
-        /// </summary>
-        /// <param name="uuid">UUID of the log item to retrieve.</param>
-        /// <returns>A representation of log item/</returns>
-        public virtual async Task<LogItemResponse> GetAsync(string uuid)
+        public async Task<LogItemResponse> GetAsync(string uuid)
         {
-            var uri = BaseUri.Append($"{ProjectName}/log/uuid/{uuid}");
+            var uri = $"{ProjectName}/log/uuid/{uuid}";
             var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<LogItemResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
-        /// <summary>
-        /// Returns specified log item by ID.
-        /// </summary>
-        /// <param name="id">ID of the log item to retrieve.</param>
-        /// <returns>A representation of log item/</returns>
-        public virtual async Task<LogItemResponse> GetAsync(long id)
+        public async Task<LogItemResponse> GetAsync(long id)
         {
-            var uri = BaseUri.Append($"{ProjectName}/log/{id}");
+            var uri = $"{ProjectName}/log/{id}";
             var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<LogItemResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
-        /// <summary>
-        /// Returns binary data of attached file to log message.
-        /// </summary>
-        /// <param name="id">ID of data.</param>
-        /// <returns>Array of bytes.</returns>
-        public virtual async Task<byte[]> GetBinaryDataAsync(string id)
+        public async Task<byte[]> GetBinaryDataAsync(string id)
         {
-            var uri = BaseUri.Append($"data/{ProjectName}/{id}");
+            var uri = $"data/{ProjectName}/{id}";
             var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Creates a new log item.
-        /// </summary>
-        /// <param name="model">Information about representation of log item.</param>
-        /// <returns>Representation of just created log item.</returns>
-        public virtual async Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest model)
+        public async Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest model)
         {
-            var uri = BaseUri.Append($"{ProjectName}/log");
+            var uri = $"{ProjectName}/log";
 
             if (model.Attach == null)
             {
@@ -119,14 +93,9 @@ namespace ReportPortal.Client
             public List<LogItemCreatedResponse> LogItems { get; set; }
         }
 
-        /// <summary>
-        /// Deletes specified log item.
-        /// </summary>
-        /// <param name="id">ID of the log item to delete.</param>
-        /// <returns>A message from service.</returns>
-        public virtual async Task<MessageResponse> DeleteAsync(long id)
+        public async Task<MessageResponse> DeleteAsync(long id)
         {
-            var uri = BaseUri.Append($"{ProjectName}/log/{id}");
+            var uri = $"{ProjectName}/log/{id}";
             var response = await HttpClient.DeleteAsync(uri).ConfigureAwait(false);
             response.VerifySuccessStatusCode();
             return ModelSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));

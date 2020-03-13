@@ -1,15 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace ReportPortal.Client.Extentions
 {
     public static class UriExtensions
     {
-        public static Uri Append(this Uri uri, params string[] paths)
+        public static Uri Normalize(this Uri uri)
         {
-            return new Uri(paths.Aggregate(uri.AbsoluteUri, (current, path) => string.Format("{0}/{1}", current.TrimEnd('/'), path.TrimStart('/'))));
+            var normalizedUri = uri;
+
+            if (!uri.LocalPath.ToLowerInvariant().Contains("api/v1"))
+            {
+                normalizedUri = new Uri(uri + "api/v1/");
+            }
+            if (!normalizedUri.ToString().EndsWith("/"))
+            {
+                normalizedUri = new Uri(normalizedUri + "/");
+            }
+
+            return normalizedUri;
         }
     }
 }

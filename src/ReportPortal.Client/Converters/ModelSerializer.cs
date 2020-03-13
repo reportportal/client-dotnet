@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
@@ -16,32 +14,36 @@ namespace ReportPortal.Client.Converters
             {
                 UseSimpleDictionaryFormat = true
             };
+
             DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(T), settings);
-            MemoryStream stream = new MemoryStream();
-            var bytes = Encoding.UTF8.GetBytes(json);
-            stream.Write(bytes, 0, bytes.Length);
-            stream.Position = 0;
 
-            T result;
-            try
+            using (var stream = new MemoryStream())
             {
-                result = (T)serializer.ReadObject(stream);
-            }
-            catch (SerializationException exp)
-            {
-                throw new SerializationException($"Cannot deserialize json to '{typeof(T).Name}' type.{Environment.NewLine}{json}", exp);
-            }
+                var bytes = Encoding.UTF8.GetBytes(json);
+                stream.Write(bytes, 0, bytes.Length);
+                stream.Position = 0;
 
-            return result;
+                try
+                {
+                    return (T)serializer.ReadObject(stream);
+                }
+                catch (SerializationException exp)
+                {
+                    throw new SerializationException($"Cannot deserialize json to '{typeof(T).Name}' type.{Environment.NewLine}{json}", exp);
+                }
+            }
         }
 
         public static string Serialize<T>(object obj)
         {
             DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(T));
-            MemoryStream stream = new MemoryStream();
-            serializer.WriteObject(stream, obj);
-            var bytes = stream.ToArray();
-            return Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+
+            using (MemoryStream stream = new MemoryStream())
+            {
+                serializer.WriteObject(stream, obj);
+                var bytes = stream.ToArray();
+                return Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+            }
         }
     }
 }

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using ReportPortal.Client.Abstractions.Requests;
-using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Client.Abstractions.Filtering;
 using ReportPortal.Client.Http;
 using ReportPortal.Client.Abstractions.Models;
@@ -150,26 +149,25 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
             Assert.Contains("successfully", delMessage.Info);
         }
 
-        [Fact(Skip = "Temporary ignore this test to make it possible deploy beta version")]
+        [Fact]
         public async Task StartFinishDeleteFullLaunch()
         {
             var now = DateTime.UtcNow;
-            var attributes = new List<StartLaunchRequest.Attribute> { new StartLaunchRequest.Attribute { Key = "a1", Value = "v1" }, new StartLaunchRequest.Attribute { Key = "a2", Value = "v2" } };
+            var attributes = new List<ItemAttribute> { new ItemAttribute { Key = "a1", Value = "v1" }, new ItemAttribute { Key = "a2", Value = "v2" }, new ItemAttribute { Key = "", Value = "v3" }, new ItemAttribute { Key = null, Value = "v4" } };
             var launch = await Service.Launch.StartAsync(new StartLaunchRequest
             {
                 Name = "StartFinishDeleteFullLaunch",
                 Description = "Desc",
                 StartTime = now,
                 Attributes = attributes
-                //Tags = new List<string> { "tag1", "tag2", "tag3" },
-            }); ;
+            });
             Assert.NotNull(launch.Uuid);
             var getLaunch = await Service.Launch.GetAsync(launch.Uuid);
             Assert.Equal("StartFinishDeleteFullLaunch", getLaunch.Name);
             Assert.Equal("Desc", getLaunch.Description);
             Assert.Equal(now.ToString(), getLaunch.StartTime.ToString());
 
-            Assert.Equal(attributes.Select(a => new { a.Key, a.Value }), getLaunch.Attributes.Select(a => new { a.Key, a.Value }));
+            Assert.Equal(attributes.OrderBy(a => a.Key).Select(a => new { a.Key, a.Value }).ToList(), getLaunch.Attributes.OrderBy(a => a.Key).Select(a => new { a.Key, a.Value }).ToList());
             var message = await Service.Launch.FinishAsync(launch.Uuid, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using ReportPortal.Client.Converters;
 using System.Runtime.Serialization;
+using ReportPortal.Client.Converters;
 using ReportPortal.Client.Abstractions.Models;
 
 namespace ReportPortal.Client.Abstractions.Responses
@@ -85,20 +85,7 @@ namespace ReportPortal.Client.Abstractions.Responses
         /// Test item attributes.
         /// </summary>
         [DataMember(Name = "attributes")]
-        public IEnumerable<Attribute> Attributes { get; set; }
-
-        [DataContract]
-        public class Attribute
-        {
-            [DataMember(Name = "key")]
-            public string Key { get; set; }
-
-            [DataMember(Name = "value")]
-            public string Value { get; set; }
-
-            [DataMember(Name = "system")]
-            public bool IsSystem { get; set; }
-        }
+        public IEnumerable<ItemAttribute> Attributes { get; set; }
     }
 
     [DataContract]

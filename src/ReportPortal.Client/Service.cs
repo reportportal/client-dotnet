@@ -5,11 +5,12 @@ using System.Net.Http.Headers;
 using ReportPortal.Client.Abstractions;
 using ReportPortal.Client.Abstractions.Resources;
 using ReportPortal.Client.Extentions;
+using ReportPortal.Client.Resources;
 
 namespace ReportPortal.Client
 {
     /// <inheritdoc/>
-    public partial class Service : IClientService
+    public partial class Service : IClientService, IDisposable
     {
         private readonly HttpClient _httpClient;
 
@@ -48,18 +49,14 @@ namespace ReportPortal.Client
                 _httpClient = new HttpClient();
             }
 
-            if (!uri.LocalPath.ToLowerInvariant().Contains("api/v1"))
-            {
-                uri = uri.Append("api/v1");
-            }
-            _httpClient.BaseAddress = uri;
+
+            _httpClient.BaseAddress = uri.Normalize();
 
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
             _httpClient.DefaultRequestHeaders.Add("User-Agent", ".NET Reporter");
 
-            BaseUri = uri;
             ProjectName = projectName;
             Token = token;
 
@@ -67,12 +64,12 @@ namespace ReportPortal.Client
             ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
 #endif
 
-            Launch = new ServiceLaunchResource(_httpClient, BaseUri, ProjectName);
-            TestItem = new ServiceTestItemResource(_httpClient, BaseUri, ProjectName);
-            LogItem = new ServiceLogItemResource(_httpClient, BaseUri, ProjectName);
-            User = new ServiceUserResource(_httpClient, BaseUri, ProjectName);
-            UserFilter = new ServiceUserFilterResource(_httpClient, BaseUri, ProjectName);
-            Project = new ServiceProjectResource(_httpClient, BaseUri, ProjectName);
+            Launch = new ServiceLaunchResource(_httpClient, ProjectName);
+            TestItem = new ServiceTestItemResource(_httpClient, ProjectName);
+            LogItem = new ServiceLogItemResource(_httpClient, ProjectName);
+            User = new ServiceUserResource(_httpClient, ProjectName);
+            UserFilter = new ServiceUserFilterResource(_httpClient, ProjectName);
+            Project = new ServiceProjectResource(_httpClient, ProjectName);
         }
 
         /// <summary>
@@ -96,11 +93,6 @@ namespace ReportPortal.Client
         public string ProjectName { get; }
 
         /// <summary>
-        /// Base api uri for http requests.
-        /// </summary>
-        public Uri BaseUri { get; }
-
-        /// <summary>
         /// User token to interact with api.
         /// </summary>
         public string Token { get; }
@@ -122,5 +114,10 @@ namespace ReportPortal.Client
 
         /// <inheritdoc/>
         public IProjectResource Project { get; }
+
+        public void Dispose()
+        {
+            _httpClient.Dispose();
+        }
     }
 }

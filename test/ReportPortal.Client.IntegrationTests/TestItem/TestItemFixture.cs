@@ -139,7 +139,7 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
         [Fact(Skip = "Temporary ignore this test to make it possible deploy beta version")]
         public async Task StartFinishFullTest()
         {
-            var attributes = new List<StartTestItemRequest.Attribute> { new StartTestItemRequest.Attribute { Key = "a1", Value = "v1" }, new StartTestItemRequest.Attribute { Key = "a2", Value = "v2" } };
+            var attributes = new List<ItemAttribute> { new ItemAttribute { Key = "a1", Value = "v1" }, new ItemAttribute { Key = "a2", Value = "v2" } };
             var parameters = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("a1", "v1") };
             var startTestItemRequest = new StartTestItemRequest
             {
