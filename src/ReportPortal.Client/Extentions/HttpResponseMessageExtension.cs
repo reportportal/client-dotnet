@@ -1,5 +1,4 @@
-﻿using ReportPortal.Client.Http;
-using System;
+﻿using System;
 using System.Net.Http;
 
 namespace ReportPortal.Client.Extentions

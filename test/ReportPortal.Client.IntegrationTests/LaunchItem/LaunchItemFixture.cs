@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Xunit;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Filtering;
-using ReportPortal.Client.Http;
 using ReportPortal.Client.Abstractions.Models;
 
 namespace ReportPortal.Client.IntegrationTests.LaunchItem

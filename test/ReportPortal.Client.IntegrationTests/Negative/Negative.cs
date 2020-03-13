@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using ReportPortal.Client.Abstractions.Requests;
-using ReportPortal.Client.Http;
 using Xunit;
 
 namespace ReportPortal.Client.IntegrationTests.Negative
