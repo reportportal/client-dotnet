@@ -1,11 +1,9 @@
 ﻿using ReportPortal.Client.Abstractions;
 using ReportPortal.Client.Abstractions.Resources;
-using ReportPortal.Client.Extentions;
 using ReportPortal.Client.Resources;
 using System;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 
 namespace ReportPortal.Client
 {
@@ -19,46 +17,18 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="uri">Base URI for REST service.</param>
         /// <param name="projectName">A project to manage.</param>
-        /// <param name="token">A password for user. Can be UID given from user's profile page.</param>
-        public Service(Uri uri, string projectName, string token) : this(uri, projectName, token, null)
+        /// <param name="token">A token for user. Can be UID given from user's profile page.</param>
+        /// <param name="httpClientFactory">Factory object to create an instance of <see cref="HttpClient"/>.</param>
+        public Service(Uri uri, string projectName, string token, IHttpClientFactory httpClientFactory = null)
         {
-
-        }
-
-        /// <summary>
-        /// Constructor to initialize a new object of service.
-        /// </summary>
-        /// <param name="uri">Base URI for REST service.</param>
-        /// <param name="projectName">A project to manage.</param>
-        /// <param name="token">A password for user. Can be UID given from user's profile page.</param>
-        /// <param name="proxy">Proxy for all HTTP requests.</param>
-        public Service(Uri uri, string projectName, string token, IWebProxy proxy)
-        {
-            if (proxy != null)
-            {
-                var httpClientHandler = new HttpClientHandler
-                {
-                    Proxy = proxy,
-                    UseProxy = true
-                };
-
-                _httpClient = new HttpClient(httpClientHandler);
-            }
-            else
-            {
-                _httpClient = new HttpClient();
-            }
-
-
-            _httpClient.BaseAddress = uri.Normalize();
-
-            _httpClient.DefaultRequestHeaders.Clear();
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            _httpClient.DefaultRequestHeaders.Add("User-Agent", ".NET Reporter");
-
             ProjectName = projectName;
-            Token = token;
+
+            if (httpClientFactory == null)
+            {
+                httpClientFactory = new HttpClientFactory(uri, token);
+            }
+
+            _httpClient = httpClientFactory.Create();
 
 #if NET45
             ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
@@ -73,29 +43,9 @@ namespace ReportPortal.Client
         }
 
         /// <summary>
-        /// Timeout for http requests.
-        /// </summary>
-        public TimeSpan Timeout
-        {
-            get
-            {
-                return _httpClient.Timeout;
-            }
-            set
-            {
-                _httpClient.Timeout = value;
-            }
-        }
-
-        /// <summary>
         /// Get or set project name to interact with.
         /// </summary>
         public string ProjectName { get; }
-
-        /// <summary>
-        /// User token to interact with api.
-        /// </summary>
-        public string Token { get; }
 
         /// <inheritdoc/>
         public ILaunchResource Launch { get; }
