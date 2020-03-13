@@ -1,8 +1,8 @@
-﻿using System;
+﻿using ReportPortal.Client.Abstractions.Requests;
+using System;
 using System.Net.Http;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
-using ReportPortal.Client.Abstractions.Requests;
 using Xunit;
 
 namespace ReportPortal.Client.IntegrationTests.Negative

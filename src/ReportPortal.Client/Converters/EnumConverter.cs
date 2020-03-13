@@ -1,5 +1,5 @@
-﻿using System;
-using ReportPortal.Client.Extentions;
+﻿using ReportPortal.Client.Extentions;
+using System;
 
 namespace ReportPortal.Client.Converters
 {
@@ -12,7 +12,7 @@ namespace ReportPortal.Client.Converters
             {
                 if (enumValue.GetDescriptionAttribute() == value)
                 {
-                    res =  enumValue;
+                    res = enumValue;
                 }
             }
             return res;

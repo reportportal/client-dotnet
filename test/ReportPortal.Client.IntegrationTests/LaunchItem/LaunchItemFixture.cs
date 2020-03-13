@@ -1,11 +1,11 @@
-﻿using System;
+﻿using ReportPortal.Client.Abstractions.Filtering;
+using ReportPortal.Client.Abstractions.Models;
+using ReportPortal.Client.Abstractions.Requests;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
-using ReportPortal.Client.Abstractions.Requests;
-using ReportPortal.Client.Abstractions.Filtering;
-using ReportPortal.Client.Abstractions.Models;
 
 namespace ReportPortal.Client.IntegrationTests.LaunchItem
 {

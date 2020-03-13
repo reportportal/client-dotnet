@@ -1,8 +1,8 @@
-﻿using System;
+﻿using ReportPortal.Client.Abstractions.Models;
+using ReportPortal.Client.Converters;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using ReportPortal.Client.Converters;
-using ReportPortal.Client.Abstractions.Models;
 
 namespace ReportPortal.Client.Abstractions.Responses
 {
@@ -38,7 +38,7 @@ namespace ReportPortal.Client.Abstractions.Responses
 
         public DateTime? EndTime
         {
-            get => EndTimeString == null? (DateTime?)null: DateTimeConverter.ConvertTo(EndTimeString);
+            get => EndTimeString == null ? (DateTime?)null : DateTimeConverter.ConvertTo(EndTimeString);
             set => EndTimeString = DateTimeConverter.ConvertFrom(value.GetValueOrDefault());
         }
 
@@ -49,7 +49,7 @@ namespace ReportPortal.Client.Abstractions.Responses
         public bool IsRetry { get; set; }
 
         public Status Status
-        { 
+        {
             get => EnumConverter.ConvertTo<Status>(StatusString);
             set => StatusString = EnumConverter.ConvertFrom(value);
         }
@@ -57,8 +57,8 @@ namespace ReportPortal.Client.Abstractions.Responses
         [DataMember(Name = "type")]
         public string TypeString { get; set; }
 
-        public TestItemType Type 
-        { 
+        public TestItemType Type
+        {
             get => EnumConverter.ConvertTo<TestItemType>(TypeString);
             set => TypeString = EnumConverter.ConvertFrom(value);
         }

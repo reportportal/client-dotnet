@@ -40,7 +40,7 @@ namespace ReportPortal.Client.Abstractions.Filtering
         {
             Operation = operation;
             Field = field;
-            Values = new List<object> {value};
+            Values = new List<object> { value };
             Values.AddRange(values);
         }
 
@@ -48,6 +48,6 @@ namespace ReportPortal.Client.Abstractions.Filtering
 
         public string Field { get; set; }
 
-        public List<object> Values { get; set; } 
+        public List<object> Values { get; set; }
     }
 }

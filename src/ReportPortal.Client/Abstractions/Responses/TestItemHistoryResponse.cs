@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Converters;
+using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
-using ReportPortal.Client.Abstractions.Models;
 
 namespace ReportPortal.Client.Abstractions.Responses
 {

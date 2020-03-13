@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using ReportPortal.Client.Abstractions.Responses;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
-using ReportPortal.Client.Abstractions.Responses;
 
 namespace ReportPortal.Client.Abstractions.Requests
 {

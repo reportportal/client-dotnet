@@ -1,5 +1,5 @@
-﻿using System;
-using ReportPortal.Client.Converters;
+﻿using ReportPortal.Client.Converters;
+using System;
 using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Abstractions.Requests

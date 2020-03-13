@@ -1,5 +1,5 @@
-﻿using System;
-using ReportPortal.Client.Extentions;
+﻿using ReportPortal.Client.Extentions;
+using System;
 using Xunit;
 
 namespace ReportPortal.Client.IntegrationTests.ServiceFixture

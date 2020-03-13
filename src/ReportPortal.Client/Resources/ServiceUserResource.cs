@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
-using ReportPortal.Client.Converters;
-using System.Net.Http;
-using ReportPortal.Client.Extentions;
+﻿using ReportPortal.Client.Abstractions.Resources;
 using ReportPortal.Client.Abstractions.Responses;
-using ReportPortal.Client.Abstractions.Resources;
+using ReportPortal.Client.Converters;
+using ReportPortal.Client.Extentions;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace ReportPortal.Client.Resources
 {

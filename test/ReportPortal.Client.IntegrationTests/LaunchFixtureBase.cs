@@ -1,6 +1,6 @@
-﻿using System;
+﻿using ReportPortal.Client.Abstractions.Requests;
+using System;
 using System.Threading.Tasks;
-using ReportPortal.Client.Abstractions.Requests;
 
 namespace ReportPortal.Client.IntegrationTests
 {
@@ -20,7 +20,7 @@ namespace ReportPortal.Client.IntegrationTests
                 })).Uuid;
                 LaunchId = (await Service.Launch.GetAsync(LaunchUuid)).Id;
             }).Wait();
-         }
+        }
 
         public void Dispose()
         {

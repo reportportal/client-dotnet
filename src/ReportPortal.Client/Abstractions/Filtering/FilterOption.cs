@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using ReportPortal.Client.Extentions;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using ReportPortal.Client.Extentions;
 using System.Text;
-using ReportPortal.Client.Abstractions.Filtering;
 
 namespace ReportPortal.Client.Abstractions.Filtering
 {
