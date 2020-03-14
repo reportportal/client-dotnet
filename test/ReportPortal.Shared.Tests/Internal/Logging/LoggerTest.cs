@@ -68,9 +68,7 @@ namespace ReportPortal.Shared.Tests.Internal.Logging
             var tempDir = Directory.CreateDirectory(Path.GetRandomFileName());
             var logger = TraceLogManager.GetLogger(obj.GetType(), tempDir.FullName);
             logger.Info("some message");
-            Assert.True(File.Exists($"{tempDir.FullName}\\{_defaultLogFilePath}"));
-
-            
+            Assert.True(File.Exists($"{tempDir.FullName}/{_defaultLogFilePath}"));
 
             tempDir.Delete(true);
         }

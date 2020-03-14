@@ -182,6 +182,17 @@ namespace ReportPortal.Shared.Tests.Configuration
         }
 
         [Fact]
+        public void ShouldJsonFileNameBeCaseInsensitive()
+        {
+            var tempFile = Path.GetTempFileName();
+
+            File.WriteAllText(tempFile.ToLowerInvariant(), "{ \"a\": true }");
+
+            var config = new ConfigurationBuilder().AddJsonFile(tempFile.ToUpperInvariant()).Build();
+            config.GetValue<bool>("a").Should().BeTrue();
+        }
+
+        [Fact]
         public void ShouldRaiseExceptionIfJsonIsIncorrect()
         {
             var tempFile = Path.GetTempFileName();
@@ -309,8 +320,8 @@ namespace ReportPortal.Shared.Tests.Configuration
         public void ShouldUseDefaults()
         {
             var dir = Directory.CreateDirectory(Path.GetRandomFileName());
-            File.AppendAllText(dir + "\\ReportPortal_prop1", "value1");
-            File.AppendAllText(dir + "\\ReportPortal.config.json", @"{""prop2"": ""value2""}");
+            File.AppendAllText(dir + "/ReportPortal_prop1", "value1");
+            File.AppendAllText(dir + "/ReportPortal.config.json", @"{""prop2"": ""value2""}");
 
             var config = new ConfigurationBuilder().AddDefaults(dir.FullName).Build();
 

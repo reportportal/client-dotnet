@@ -14,7 +14,7 @@ namespace ReportPortal.Shared.Tests.Configuration
         public void ShouldFindDirectory()
         {
             var dir = Directory.CreateDirectory(Path.GetRandomFileName());
-            File.AppendAllText(dir + "\\rp_a1", "a1_value");
+            File.AppendAllText(Path.Combine(dir.FullName, "rp_a1"), "a1_value");
 
             var dirProvider = new DirectoryProbingConfigurationProvider(dir.FullName, "rP", "_", false);
             dirProvider.Load().Should().HaveCount(1).And.ContainKey("a1").WhichValue.Should().Be("a1_value");
@@ -26,8 +26,8 @@ namespace ReportPortal.Shared.Tests.Configuration
         public void ShouldConsiderSeveralFiles()
         {
             var dir = Directory.CreateDirectory(Path.GetRandomFileName());
-            File.AppendAllText(dir + "\\rp_a1", "a1_value");
-            File.AppendAllText(dir + "\\rp_a2_b1", "a2_b1_value");
+            File.AppendAllText(dir + "/rp_a1", "a1_value");
+            File.AppendAllText(dir + "/rp_a2_b1", "a2_b1_value");
 
             var dirProvider = new DirectoryProbingConfigurationProvider(dir.FullName, "rp", "_", false);
             var properties = dirProvider.Load();
@@ -41,10 +41,10 @@ namespace ReportPortal.Shared.Tests.Configuration
         public void ShouldSkipSomeFiles()
         {
             var dir = Directory.CreateDirectory(Path.GetRandomFileName());
-            File.AppendAllText(dir + "\\rp.a1.eXe", "a1_value");
-            File.AppendAllText(dir + "\\rp_a1.dll", "a1_value");
-            File.AppendAllText(dir + "\\rp_a1.log", "a1_value");
-            File.AppendAllText(dir + "\\rp_a1.pdb", "a1_value");
+            File.AppendAllText(dir + "/rp.a1.eXe", "a1_value");
+            File.AppendAllText(dir + "/rp_a1.dll", "a1_value");
+            File.AppendAllText(dir + "/rp_a1.log", "a1_value");
+            File.AppendAllText(dir + "/rp_a1.pdb", "a1_value");
 
             var dirProvider = new DirectoryProbingConfigurationProvider(dir.FullName, "rp", "_", false);
             dirProvider.Load().Should().BeEmpty();
