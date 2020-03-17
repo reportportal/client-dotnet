@@ -30,7 +30,7 @@ namespace ReportPortal.Shared.Configuration
         T GetValue<T>(string property, T defaultValue);
 
         /// <summary>
-        /// Returns value of configuration property.
+        /// Returns values of configuration property.
         /// </summary>
         /// <param name="property"></param>
         /// <typeparam name="T"></typeparam>
@@ -38,12 +38,28 @@ namespace ReportPortal.Shared.Configuration
         IEnumerable<T> GetValues<T>(string property);
 
         /// <summary>
-        /// Returns value of configuration property.
+        /// Returns values of configuration property.
         /// </summary>
         /// <param name="property"></param>
         /// <param name="defaultValue"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         IEnumerable<T> GetValues<T>(string property, IEnumerable<T> defaultValue);
+
+        /// <summary>
+        /// Returns pairs of key:value of configuration property.
+        /// </summary>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        IEnumerable<KeyValuePair<string, T>> GetKeyValues<T>(string property);
+
+        /// <summary>
+        /// Returns pairs of key:value of configuration property.
+        /// </summary>
+        /// <param name="property"></param>
+        /// <param name="defaultValue"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        IEnumerable<KeyValuePair<string, T>> GetKeyValues<T>(string property, IEnumerable<KeyValuePair<string, T>> defaultValue);
     }
 }

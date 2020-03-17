@@ -317,6 +317,42 @@ namespace ReportPortal.Shared.Tests.Configuration
         }
 
         [Fact]
+        public void ShouldGetKeyValue()
+        {
+            var config = new ConfigurationBuilder().Build();
+            config.Properties["a"] = "k1:v1";
+
+            config.GetKeyValues<string>("a").Should().BeEquivalentTo(new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("k1", "v1") });
+        }
+
+        [Fact]
+        public void ShouldGetKeyValues()
+        {
+            var config = new ConfigurationBuilder().Build();
+            config.Properties["a"] = "k1:v1;k2:v2";
+
+            config.GetKeyValues<string>("a").Should().BeEquivalentTo(
+                new List<KeyValuePair<string, string>>(){
+                    new KeyValuePair<string, string>("k1", "v1"),
+                    new KeyValuePair<string, string>("k2", "v2")
+                });
+        }
+
+        [Fact]
+        public void ShouldGetKeyValuesWithEmptyKey()
+        {
+            var config = new ConfigurationBuilder().Build();
+            config.Properties["a"] = "k1:v1;v2;k3:v3:v3";
+
+            config.GetKeyValues<string>("A").Should().BeEquivalentTo(
+                new List<KeyValuePair<string, string>>(){
+                    new KeyValuePair<string, string>("k1", "v1"),
+                    new KeyValuePair<string, string>("", "v2"),
+                    new KeyValuePair<string, string>("k3", "v3:v3")
+                });
+        }
+
+        [Fact]
         public void ShouldUseDefaults()
         {
             var dir = Directory.CreateDirectory(Path.GetRandomFileName());

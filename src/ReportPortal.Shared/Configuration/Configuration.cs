@@ -75,5 +75,53 @@ namespace ReportPortal.Shared.Configuration
                 return GetValues<T>(property);
             }
         }
+
+        /// <inheritdoc />
+        public IEnumerable<KeyValuePair<string, T>> GetKeyValues<T>(string property)
+        {
+            if (!Properties.ContainsKey(property))
+            {
+                throw new KeyNotFoundException(string.Format(CultureInfo.InvariantCulture, _notFoundMessage, property));
+            }
+
+            var result = new List<KeyValuePair<string, T>>();
+
+            var values = Properties[property].ToString().Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+            foreach(var value in values)
+            {
+                var entries = value.Split(':');
+
+                string key;
+                string keyValue;
+
+                if(entries.Length == 1)
+                {
+                    key = string.Empty;
+                    keyValue = value;
+                }
+                else
+                {
+                    key = entries[0];
+                    keyValue = value.Substring(key.Length + 1);
+                }
+
+                result.Add(new KeyValuePair<string, T>(key, (T)Convert.ChangeType(keyValue, typeof(T), CultureInfo.InvariantCulture)));
+            }
+
+            return result;
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<KeyValuePair<string, T>> GetKeyValues<T>(string property, IEnumerable<KeyValuePair<string, T>> defaultValue)
+        {
+            if (!Properties.ContainsKey(property))
+            {
+                return defaultValue;
+            }
+            else
+            {
+                return GetKeyValues<T>(property);
+            }
+        }
     }
 }
