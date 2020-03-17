@@ -1,6 +1,6 @@
 ﻿using ReportPortal.Client.Abstractions;
+using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
-using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Shared.Internal.Delegating;
 using ReportPortal.Shared.Reporter;
 using System;

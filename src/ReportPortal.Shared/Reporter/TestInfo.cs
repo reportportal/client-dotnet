@@ -1,4 +1,4 @@
-﻿using ReportPortal.Client.Abstractions.Responses;
+﻿using ReportPortal.Client.Abstractions.Models;
 using System;
 
 namespace ReportPortal.Shared.Reporter
