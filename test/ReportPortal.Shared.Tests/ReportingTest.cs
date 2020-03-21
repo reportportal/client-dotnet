@@ -97,8 +97,7 @@ namespace ReportPortal.Shared.Tests
             {
                 Name = "ReportPortal Shared",
                 StartTime = DateTime.UtcNow,
-                Mode = LaunchMode.Debug,
-                Tags = new System.Collections.Generic.List<string>()
+                Mode = LaunchMode.Debug
             });
 
 

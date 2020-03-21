@@ -35,8 +35,7 @@ namespace ReportPortal.Shared.Tests.Helpers
             {
                 Name = "ReportPortal Shared",
                 StartTime = launchDateTime,
-                Mode = LaunchMode.Debug,
-                Tags = new System.Collections.Generic.List<string>()
+                Mode = LaunchMode.Debug
             });
 
             for (int i = 0; i < suitesPerLaunch; i++)

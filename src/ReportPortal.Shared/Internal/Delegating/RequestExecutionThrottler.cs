@@ -46,6 +46,9 @@ namespace ReportPortal.Shared.Internal.Delegating
             _concurrentAwaiter.Release();
         }
 
+        /// <summary>
+        /// Releases all resources used by RequestExecutionThrottler.
+        /// </summary>
         public void Dispose()
         {
             _concurrentAwaiter.Dispose();
