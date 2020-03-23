@@ -11,6 +11,8 @@ namespace ReportPortal.Shared.Internal.Delegating
 
         private SemaphoreSlim _concurrentAwaiter;
 
+        private int _maximumConcurrentCountRequested;
+
         /// <summary>
         /// Initializes new instance of <see cref="RequestExecutionThrottler"/>
         /// </summary>
@@ -38,6 +40,17 @@ namespace ReportPortal.Shared.Internal.Delegating
             await _concurrentAwaiter.WaitAsync().ConfigureAwait(false);
 
             TraceLogger.Verbose($"Executer is reserved. Available executers after reservation: {_concurrentAwaiter.CurrentCount}");
+
+            // track maximum level of actual concurrent requests
+            lock (_concurrentAwaiter)
+            {
+                var maximumConcurrentCountRequested = MaxCapacity - _concurrentAwaiter.CurrentCount;
+                if (maximumConcurrentCountRequested > _maximumConcurrentCountRequested)
+                {
+                    _maximumConcurrentCountRequested = maximumConcurrentCountRequested;
+                    TraceLogger.Verbose($"Maximum level of actual concurrent requests has been changed to {_maximumConcurrentCountRequested}");
+                }
+            }
         }
 
         /// <inheritdoc/>
