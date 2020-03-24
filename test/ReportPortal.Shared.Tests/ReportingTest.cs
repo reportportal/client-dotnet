@@ -91,8 +91,6 @@ namespace ReportPortal.Shared.Tests
         {
             var launchReporter = new LaunchReporter(_service, null, null);
 
-            Bridge.Context.LaunchReporter = launchReporter;
-
             launchReporter.Start(new StartLaunchRequest
             {
                 Name = "ReportPortal Shared",

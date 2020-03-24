@@ -112,11 +112,11 @@ namespace ReportPortal.Shared.Logging
             Message(logRequest);
         }
 
-        public void Message(CreateLogItemRequest logRequest)
+        public virtual void Message(CreateLogItemRequest logRequest)
         {
             foreach (var handler in Bridge.LogHandlerExtensions)
             {
-                var isHandled = handler.Handle(logRequest);
+                var isHandled = handler.Handle(this, logRequest);
 
                 if (isHandled) break;
             }

@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading;
 using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Shared.Logging;
 using ReportPortal.Shared.Reporter;
 
 namespace ReportPortal.Shared.Extensibility.LogHandler
@@ -9,7 +10,17 @@ namespace ReportPortal.Shared.Extensibility.LogHandler
     {
         public int Order => int.MaxValue;
 
-        public bool Handle(CreateLogItemRequest logRequest)
+        public void BeginScope(ILogScope logScope)
+        {
+            
+        }
+
+        public void EndScope(ILogScope logScope)
+        {
+            
+        }
+
+        public bool Handle(ILogScope logScope, CreateLogItemRequest logRequest)
         {
             var handled = false;
 

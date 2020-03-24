@@ -2,6 +2,7 @@
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Extensibility;
+using ReportPortal.Shared.Logging;
 using Xunit;
 
 namespace ReportPortal.Shared.Tests
@@ -113,11 +114,21 @@ namespace ReportPortal.Shared.Tests
             _logRequest.Attach.Data.Should().BeEquivalentTo(data);
         }
 
-        public bool Handle(CreateLogItemRequest logRequest)
+        public bool Handle(ILogScope logScope, CreateLogItemRequest logRequest)
         {
             _logRequest = logRequest;
 
             return false;
+        }
+
+        public void BeginScope(ILogScope logScope)
+        {
+            
+        }
+
+        public void EndScope(ILogScope logScope)
+        {
+            
         }
     }
 }

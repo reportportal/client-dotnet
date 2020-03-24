@@ -1,4 +1,6 @@
 ﻿using FluentAssertions;
+using Moq;
+using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Logging;
 using System;
 using System.Collections.Generic;
@@ -147,6 +149,27 @@ namespace ReportPortal.Shared.Tests
 
                 Log.ActiveScope.Should().Be(ExpectedScope);
             }
+        }
+
+        [Fact]
+        public void ShouldNotifyLogHandlers()
+        {
+            var handler = new Mock<ILogHandler>();
+            Bridge.LogHandlerExtensions.Add(handler.Object);
+
+            Log.Info("abc");
+            for (int i = 0; i < 5; i++)
+            {
+                using (var scope = Log.BeginNewScope("scope"))
+                {
+                    Log.Info("qwe");
+                }
+            }
+
+            handler.Verify(h => h.Handle(null, It.IsAny<Client.Abstractions.Requests.CreateLogItemRequest>()), Times.Once);
+            handler.Verify(h => h.Handle(It.IsAny<ILogScope>(), It.IsAny<Client.Abstractions.Requests.CreateLogItemRequest>()), Times.Exactly(6));
+            handler.Verify(h => h.BeginScope(It.IsAny<ILogScope>()), Times.Exactly(5));
+            handler.Verify(h => h.EndScope(It.IsAny<ILogScope>()), Times.Exactly(5));
         }
     }
 }

@@ -14,10 +14,20 @@ namespace ReportPortal.Shared.Logging
             }
 
             _parent = parent;
+
+            foreach (var logHandler in Bridge.LogHandlerExtensions)
+            {
+                logHandler.BeginScope(this);
+            }
         }
 
         public override void Dispose()
         {
+            foreach (var logHandler in Bridge.LogHandlerExtensions)
+            {
+                logHandler.EndScope(this);
+            }
+
             _logScopeManager.ActiveScope = _parent;
         }
     }
