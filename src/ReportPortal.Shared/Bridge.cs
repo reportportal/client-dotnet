@@ -8,6 +8,8 @@ using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Extensibility;
 
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ReportPortal.Shared.Tests")]
+
 namespace ReportPortal.Shared
 {
     public static class Bridge

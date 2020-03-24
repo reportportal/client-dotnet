@@ -1,6 +1,7 @@
 ﻿using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Responses;
+using ReportPortal.Shared.Logging;
 using System;
 
 namespace ReportPortal.Shared
@@ -18,6 +19,27 @@ namespace ReportPortal.Shared
     public static class Log
     {
         private const string FileName = "attachment_name";
+
+        /// <summary>
+        /// Begins new logged scope aka nested step.
+        /// </summary>
+        /// <param name="name">Logical operation name.</param>
+        /// <returns></returns>
+        public static ILogScope BeginNewScope(string name)
+        {
+            return LogScopeManager.Current.ActiveScope.BeginNewScope(name);
+        }
+
+        /// <summary>
+        /// Returns an instance of rooted scope which you can use to log massages, instead of active scope.
+        /// </summary>
+        public static ILogScope RootScope => LogScopeManager.Current.RootScope;
+
+        /// <summary>
+        /// Returns an instance of active scope where your code is running.
+        /// This scope is used by all methods by default like <see cref="Info(string)"/> or <see cref="Debug(string, string, byte[])"/>.
+        /// </summary>
+        public static ILogScope ActiveScope => LogScopeManager.Current.ActiveScope;
 
         /// <summary>
         /// Sends log message to current test context.
@@ -198,5 +220,7 @@ namespace ReportPortal.Shared
         {
             return new Attach(FileName, mimeType, content);
         }
+
+
     }
 }
