@@ -13,7 +13,7 @@ namespace ReportPortal.Shared.Tests
 {
     public class ReportingTest
     {
-        private Service _service = new Service(new Uri("https://beta.demo.reportportal.io/api/v1/"), "default_personal", "2908ac62-6855-4f70-bd38-64d5589a4073");
+        private Service _service = new Service(new Uri("https://beta.demo.reportportal.io/api/v1/"), "default_personal", "72606fd9-3b79-4ceb-b6e7-df6c5b2a94ae");
 
         [Fact]
         public async Task BigAsyncRealTree()
