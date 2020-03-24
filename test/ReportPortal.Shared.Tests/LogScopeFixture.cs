@@ -163,11 +163,14 @@ namespace ReportPortal.Shared.Tests
                 using (var scope = Log.BeginNewScope("scope"))
                 {
                     Log.Info("qwe");
+
+                    Log.RootScope.Info("abc");
                 }
             }
+            Log.Info("abc");
 
-            handler.Verify(h => h.Handle(null, It.IsAny<Client.Abstractions.Requests.CreateLogItemRequest>()), Times.Once);
-            handler.Verify(h => h.Handle(It.IsAny<ILogScope>(), It.IsAny<Client.Abstractions.Requests.CreateLogItemRequest>()), Times.Exactly(6));
+            handler.Verify(h => h.Handle(null, It.IsAny<Client.Abstractions.Requests.CreateLogItemRequest>()), Times.Exactly(7));
+            handler.Verify(h => h.Handle(It.Is<ILogScope>(ls => ls != null), It.IsAny<Client.Abstractions.Requests.CreateLogItemRequest>()), Times.Exactly(5));
             handler.Verify(h => h.BeginScope(It.IsAny<ILogScope>()), Times.Exactly(5));
             handler.Verify(h => h.EndScope(It.IsAny<ILogScope>()), Times.Exactly(5));
         }

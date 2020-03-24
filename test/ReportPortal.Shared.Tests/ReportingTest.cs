@@ -53,7 +53,7 @@ namespace ReportPortal.Shared.Tests
                 Mode = LaunchMode.Debug
             });
 
-            var config = new Shared.Configuration.ConfigurationBuilder().Build();
+            var config = new ConfigurationBuilder().Build();
             config.Properties["Launch:Id"] = launch.Uuid;
 
             var launchReporter = new LaunchReporter(_service, config, null);
@@ -91,13 +91,14 @@ namespace ReportPortal.Shared.Tests
         {
             var launchReporter = new LaunchReporter(_service, null, null);
 
+            Bridge.Context.LaunchReporter = launchReporter;
+
             launchReporter.Start(new StartLaunchRequest
             {
                 Name = "ReportPortal Shared",
                 StartTime = DateTime.UtcNow,
                 Mode = LaunchMode.Debug
             });
-
 
             var suiteNode = launchReporter.StartChildTestReporter(new StartTestItemRequest
             {
@@ -113,13 +114,31 @@ namespace ReportPortal.Shared.Tests
                 Type = TestItemType.Step
             });
 
+            //nested steps
             for (int i = 0; i < 20; i++)
             {
-                Log.Message(new CreateLogItemRequest
+                var stepNode = testNode.StartChildTestReporter(new StartTestItemRequest
                 {
-                    Level = LogLevel.Info,
-                    Time = DateTime.UtcNow.AddMilliseconds(i),
-                    Text = $"Log {i}"
+                    Name = $"Step {i}",
+                    StartTime = DateTime.UtcNow,
+                    Type = TestItemType.Step,
+                    HasStats = false
+                });
+
+                for (int j = 0; j < 20; j++)
+                {
+                    Log.Message(new CreateLogItemRequest
+                    {
+                        Level = LogLevel.Info,
+                        Time = DateTime.UtcNow.AddMilliseconds(j),
+                        Text = $"Log {j}"
+                    });
+                }
+
+                stepNode.Finish(new FinishTestItemRequest
+                {
+                    EndTime = DateTime.UtcNow,
+                    Status = Status.Passed
                 });
             }
 
