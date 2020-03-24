@@ -18,7 +18,7 @@ namespace ReportPortal.Shared
     /// </example>
     public static class Log
     {
-        private const string FileName = "attachment_name";
+        private static readonly ILogScopeManager _logScopeManager = LogScopeManager.Current;
 
         /// <summary>
         /// Begins new logged scope aka nested step.
@@ -27,19 +27,19 @@ namespace ReportPortal.Shared
         /// <returns></returns>
         public static ILogScope BeginNewScope(string name)
         {
-            return LogScopeManager.Current.ActiveScope.BeginNewScope(name);
+            return _logScopeManager.ActiveScope.BeginNewScope(name);
         }
 
         /// <summary>
         /// Returns an instance of rooted scope which you can use to log massages, instead of active scope.
         /// </summary>
-        public static ILogScope RootScope => LogScopeManager.Current.RootScope;
+        public static ILogScope RootScope => _logScopeManager.RootScope;
 
         /// <summary>
         /// Returns an instance of active scope where your code is running.
         /// This scope is used by all methods by default like <see cref="Info(string)"/> or <see cref="Debug(string, string, byte[])"/>.
         /// </summary>
-        public static ILogScope ActiveScope => LogScopeManager.Current.ActiveScope;
+        public static ILogScope ActiveScope => _logScopeManager.ActiveScope;
 
         /// <summary>
         /// Sends log message to current test context.
@@ -47,12 +47,7 @@ namespace ReportPortal.Shared
         /// <param name="logRequest">Full model object for message</param>
         public static void Message(CreateLogItemRequest logRequest)
         {
-            foreach (var handler in Bridge.LogHandlerExtensions)
-            {
-                var isHandled = handler.Handle(logRequest);
-
-                if (isHandled) break;
-            }
+            _logScopeManager.ActiveScope.Message(logRequest);
         }
 
         /// <summary>
@@ -61,9 +56,7 @@ namespace ReportPortal.Shared
         /// <param name="message">Text of the message</param>
         public static void Info(string message)
         {
-            var logRequest = GetDefaultLogRequest(message);
-            logRequest.Level = LogLevel.Info;
-            Message(logRequest);
+            _logScopeManager.ActiveScope.Info(message);
         }
 
         /// <summary>
@@ -74,10 +67,7 @@ namespace ReportPortal.Shared
         /// <param name="content">Array of bytes</param>
         public static void Info(string message, string mimeType, byte[] content)
         {
-            var logRequest = GetDefaultLogRequest(message);
-            logRequest.Level = LogLevel.Info;
-            logRequest.Attach = GetAttachFromFileInfo(mimeType, content);
-            Message(logRequest);
+            _logScopeManager.ActiveScope.Info(message, mimeType, content);
         }
 
         /// <summary>
@@ -86,9 +76,7 @@ namespace ReportPortal.Shared
         /// <param name="message">Text of the message</param>
         public static void Debug(string message)
         {
-            var logRequest = GetDefaultLogRequest(message);
-            logRequest.Level = LogLevel.Debug;
-            Message(logRequest);
+            _logScopeManager.ActiveScope.Debug(message);
         }
 
         /// <summary>
@@ -99,10 +87,7 @@ namespace ReportPortal.Shared
         /// <param name="content">Array of bytes</param>
         public static void Debug(string message, string mimeType, byte[] content)
         {
-            var logRequest = GetDefaultLogRequest(message);
-            logRequest.Level = LogLevel.Debug;
-            logRequest.Attach = GetAttachFromFileInfo(mimeType, content);
-            Message(logRequest);
+            _logScopeManager.ActiveScope.Debug(message, mimeType, content);
         }
 
         /// <summary>
@@ -111,9 +96,7 @@ namespace ReportPortal.Shared
         /// <param name="message">Text of the message</param>
         public static void Trace(string message)
         {
-            var logRequest = GetDefaultLogRequest(message);
-            logRequest.Level = LogLevel.Trace;
-            Message(logRequest);
+            _logScopeManager.ActiveScope.Trace(message);
         }
 
         /// <summary>
@@ -124,10 +107,7 @@ namespace ReportPortal.Shared
         /// <param name="content">Array of bytes</param>
         public static void Trace(string message, string mimeType, byte[] content)
         {
-            var logRequest = GetDefaultLogRequest(message);
-            logRequest.Level = LogLevel.Trace;
-            logRequest.Attach = GetAttachFromFileInfo(mimeType, content);
-            Message(logRequest);
+            _logScopeManager.ActiveScope.Trace(message, mimeType, content);
         }
 
         /// <summary>
@@ -136,9 +116,7 @@ namespace ReportPortal.Shared
         /// <param name="message">Text of the message</param>
         public static void Error(string message)
         {
-            var logRequest = GetDefaultLogRequest(message);
-            logRequest.Level = LogLevel.Error;
-            Message(logRequest);
+            _logScopeManager.ActiveScope.Error(message);
         }
 
         /// <summary>
@@ -149,10 +127,7 @@ namespace ReportPortal.Shared
         /// <param name="content">Array of bytes</param>
         public static void Error(string message, string mimeType, byte[] content)
         {
-            var logRequest = GetDefaultLogRequest(message);
-            logRequest.Level = LogLevel.Error;
-            logRequest.Attach = GetAttachFromFileInfo(mimeType, content);
-            Message(logRequest);
+            _logScopeManager.ActiveScope.Error(message, mimeType, content);
         }
 
         /// <summary>
@@ -161,9 +136,7 @@ namespace ReportPortal.Shared
         /// <param name="message">Text of the message</param>
         public static void Fatal(string message)
         {
-            var logRequest = GetDefaultLogRequest(message);
-            logRequest.Level = LogLevel.Fatal;
-            Message(logRequest);
+            _logScopeManager.ActiveScope.Fatal(message);
         }
 
         /// <summary>
@@ -174,10 +147,7 @@ namespace ReportPortal.Shared
         /// <param name="content">Array of bytes</param>
         public static void Fatal(string message, string mimeType, byte[] content)
         {
-            var logRequest = GetDefaultLogRequest(message);
-            logRequest.Level = LogLevel.Fatal;
-            logRequest.Attach = GetAttachFromFileInfo(mimeType, content);
-            Message(logRequest);
+            _logScopeManager.ActiveScope.Fatal(message, mimeType, content);
         }
 
         /// <summary>
@@ -186,9 +156,7 @@ namespace ReportPortal.Shared
         /// <param name="message">Text of the message</param>
         public static void Warn(string message)
         {
-            var logRequest = GetDefaultLogRequest(message);
-            logRequest.Level = LogLevel.Warning;
-            Message(logRequest);
+            _logScopeManager.ActiveScope.Warn(message);
         }
 
         /// <summary>
@@ -199,28 +167,7 @@ namespace ReportPortal.Shared
         /// <param name="content">Array of bytes</param>
         public static void Warn(string message, string mimeType, byte[] content)
         {
-            var logRequest = GetDefaultLogRequest(message);
-            logRequest.Level = LogLevel.Warning;
-            logRequest.Attach = GetAttachFromFileInfo(mimeType, content);
-            Message(logRequest);
+            _logScopeManager.ActiveScope.Warn(message, mimeType, content);
         }
-
-        private static CreateLogItemRequest GetDefaultLogRequest(string text)
-        {
-            var logRequest = new CreateLogItemRequest
-            {
-                Time = DateTime.UtcNow,
-                Text = text
-            };
-
-            return logRequest;
-        }
-
-        private static Attach GetAttachFromFileInfo(string mimeType, byte[] content)
-        {
-            return new Attach(FileName, mimeType, content);
-        }
-
-
     }
 }
