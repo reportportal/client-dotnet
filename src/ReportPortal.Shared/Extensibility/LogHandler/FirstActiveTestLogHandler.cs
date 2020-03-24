@@ -12,12 +12,12 @@ namespace ReportPortal.Shared.Extensibility.LogHandler
 
         public void BeginScope(ILogScope logScope)
         {
-            
+
         }
 
         public void EndScope(ILogScope logScope)
         {
-            
+
         }
 
         public bool Handle(ILogScope logScope, CreateLogItemRequest logRequest)
@@ -38,7 +38,8 @@ namespace ReportPortal.Shared.Extensibility.LogHandler
                 }
             }
 
-            return handled;
+            //return handled;
+            return false;
         }
 
         private ITestReporter FindNonFinishedTestReporter(ITestReporter testReporter, int threadId)

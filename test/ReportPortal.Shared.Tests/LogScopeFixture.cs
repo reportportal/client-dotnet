@@ -10,6 +10,7 @@ using Xunit;
 
 namespace ReportPortal.Shared.Tests
 {
+    [CollectionDefinition(nameof(LogScopeFixture), DisableParallelization = true)]
     public class LogScopeFixture
     {
         [Fact]
