@@ -41,24 +41,23 @@ namespace ReportPortal.Shared.Tests
         [Fact]
         public void ShouldAlwaysHaveActiveScopedLog()
         {
-            LogScopeManager.Current.ActiveScope.Should().BeSameAs(LogScopeManager.Current.ActiveScope);
-            var rootScope = LogScopeManager.Current.ActiveScope;
-            LogScopeManager.Current.ActiveScope.Should().NotBeNull();
-            LogScopeManager.Current.ActiveScope.Should().BeOfType<RootLogScope>();
+            Log.ActiveScope.Should().BeSameAs(Log.ActiveScope);
+            var rootScope = Log.ActiveScope;
+            Log.ActiveScope.Should().NotBeNull();
 
             using (var scope = Log.BeginNewScope("q"))
             {
-                LogScopeManager.Current.ActiveScope.Should().BeSameAs(scope);
+                Log.ActiveScope.Should().BeSameAs(scope);
 
                 using (var scope2 = scope.BeginNewScope("q"))
                 {
-                    LogScopeManager.Current.ActiveScope.Should().BeSameAs(scope2);
+                    Log.ActiveScope.Should().BeSameAs(scope2);
                 }
 
-                LogScopeManager.Current.ActiveScope.Should().BeSameAs(scope);
+                Log.ActiveScope.Should().BeSameAs(scope);
             }
 
-            LogScopeManager.Current.ActiveScope.Should().BeSameAs(rootScope);
+            Log.ActiveScope.Should().BeSameAs(rootScope);
         }
 
         [Fact]
@@ -67,7 +66,6 @@ namespace ReportPortal.Shared.Tests
             Log.ActiveScope.Should().BeSameAs(Log.ActiveScope);
             var rootScope = Log.ActiveScope;
             Log.ActiveScope.Should().NotBeNull();
-            Log.ActiveScope.Should().BeOfType<RootLogScope>();
 
             await Task.Delay(1);
 
