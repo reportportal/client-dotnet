@@ -8,7 +8,7 @@ namespace ReportPortal.Shared.Internal.Delegating
     /// </summary>
     public class NoneRetryRequestExecuter : IRequestExecuter
     {
-        private Logging.ITraceLogger TraceLogger { get; } = Logging.TraceLogManager.GetLogger<NoneRetryRequestExecuter>();
+        private Logging.ITraceLogger TraceLogger { get; } = Logging.TraceLogManager.Instance.GetLogger<NoneRetryRequestExecuter>();
 
         private IRequestExecutionThrottler _concurrentThrottler;
 

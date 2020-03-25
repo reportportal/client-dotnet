@@ -15,7 +15,7 @@ namespace ReportPortal.Shared.Reporter
         private readonly IClientService _service;
         private readonly IRequestExecuter _requestExecuter;
 
-        private static ITraceLogger TraceLogger { get; } = TraceLogManager.GetLogger<TestReporter>();
+        private static ITraceLogger TraceLogger { get; } = TraceLogManager.Instance.GetLogger<TestReporter>();
 
         private readonly object _lockObj = new object();
 

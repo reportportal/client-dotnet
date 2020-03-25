@@ -9,7 +9,7 @@ namespace ReportPortal.Shared.Internal.Delegating
     /// </summary>
     public class LinearRetryRequestExecuter : IRequestExecuter
     {
-        private Logging.ITraceLogger TraceLogger { get; } = Logging.TraceLogManager.GetLogger<LinearRetryRequestExecuter>();
+        private Logging.ITraceLogger TraceLogger { get; } = Logging.TraceLogManager.Instance.GetLogger<LinearRetryRequestExecuter>();
 
         private IRequestExecutionThrottler _concurrentThrottler;
 

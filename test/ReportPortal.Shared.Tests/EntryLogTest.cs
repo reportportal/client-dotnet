@@ -123,12 +123,12 @@ namespace ReportPortal.Shared.Tests
 
         public void BeginScope(ILogScope logScope)
         {
-            
+
         }
 
         public void EndScope(ILogScope logScope)
         {
-            
+
         }
     }
 }

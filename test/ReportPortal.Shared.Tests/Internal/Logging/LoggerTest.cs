@@ -24,6 +24,8 @@ namespace ReportPortal.Shared.Tests.Internal.Logging
         [Fact]
         public void ConcurrentWriters()
         {
+            var logManager = new TraceLogManager();
+
             var tasks = new List<Task>();
 
             for (int i = 0; i < 20; i++)
@@ -31,10 +33,10 @@ namespace ReportPortal.Shared.Tests.Internal.Logging
                 var eventId = i;
                 tasks.Add(Task.Factory.StartNew(() =>
                 {
-                    _out.WriteLine(TraceLogManager.GetLogger<LoggerTest>().GetHashCode().ToString());
-                    TraceLogManager.GetLogger<LoggerTest>().Info($"my message #{eventId}");
-                    TraceLogManager.GetLogger<LoggerTest>().Error($"my message #{eventId}");
-                    TraceLogManager.GetLogger<LoggerTest>().Warn($"my message #{eventId}");
+                    _out.WriteLine(logManager.GetLogger<LoggerTest>().GetHashCode().ToString());
+                    logManager.GetLogger<LoggerTest>().Info($"my message #{eventId}");
+                    logManager.GetLogger<LoggerTest>().Error($"my message #{eventId}");
+                    logManager.GetLogger<LoggerTest>().Warn($"my message #{eventId}");
                 }));
             }
 
@@ -52,7 +54,7 @@ namespace ReportPortal.Shared.Tests.Internal.Logging
         [Fact]
         public void ShouldNotCaptureDefaultTrace()
         {
-            TraceLogManager.GetLogger<LoggerTest>().Info("should_see_it");
+            new TraceLogManager().GetLogger<LoggerTest>().Info("should_see_it");
 
             Assert.Contains("should_see_it", File.ReadAllText(_defaultLogFilePath));
 
@@ -66,7 +68,7 @@ namespace ReportPortal.Shared.Tests.Internal.Logging
         {
             var obj = new { A = "a" };
             var tempDir = Directory.CreateDirectory(Path.GetRandomFileName());
-            var logger = TraceLogManager.GetLogger(obj.GetType(), tempDir.FullName);
+            var logger = TraceLogManager.Instance.WithBaseDir(tempDir.FullName).GetLogger(obj.GetType());
             logger.Info("some message");
             Assert.True(File.Exists($"{tempDir.FullName}/{_defaultLogFilePath}"));
 
@@ -78,7 +80,7 @@ namespace ReportPortal.Shared.Tests.Internal.Logging
         {
             var obj = new { A = "a" };
             var tempDir = new DirectoryInfo(Path.GetRandomFileName());
-            var logger = TraceLogManager.GetLogger(obj.GetType(), tempDir.FullName);
+            var logger = TraceLogManager.Instance.WithBaseDir(tempDir.FullName).GetLogger(obj.GetType());
             logger.Info("some message");
             Assert.False(File.Exists($"{tempDir.FullName}\\{_defaultLogFilePath}"));
             Assert.True(File.Exists(_defaultLogFilePath));

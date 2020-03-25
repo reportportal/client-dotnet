@@ -13,7 +13,7 @@ namespace ReportPortal.Shared.Reporter
 {
     public class LaunchReporter : ILaunchReporter
     {
-        private Internal.Logging.ITraceLogger TraceLogger { get; } = Internal.Logging.TraceLogManager.GetLogger<LaunchReporter>();
+        private Internal.Logging.ITraceLogger TraceLogger { get; } = Internal.Logging.TraceLogManager.Instance.GetLogger<LaunchReporter>();
 
         private readonly IConfiguration _configuration;
 

@@ -7,7 +7,7 @@ namespace ReportPortal.Shared.Internal.Delegating
     /// <inheritdoc/>
     public class RequestExecutionThrottler : IRequestExecutionThrottler, IDisposable
     {
-        private Logging.ITraceLogger TraceLogger { get; } = Logging.TraceLogManager.GetLogger<RequestExecutionThrottler>();
+        private Logging.ITraceLogger TraceLogger { get; } = Logging.TraceLogManager.Instance.GetLogger<RequestExecutionThrottler>();
 
         private SemaphoreSlim _concurrentAwaiter;
 

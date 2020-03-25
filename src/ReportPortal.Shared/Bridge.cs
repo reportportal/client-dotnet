@@ -12,7 +12,7 @@ namespace ReportPortal.Shared
 {
     public static class Bridge
     {
-        private static Internal.Logging.ITraceLogger TraceLogger { get; } = Internal.Logging.TraceLogManager.GetLogger(typeof(Bridge));
+        private static Internal.Logging.ITraceLogger TraceLogger { get; } = Internal.Logging.TraceLogManager.Instance.GetLogger(typeof(Bridge));
 
         static Bridge()
         {

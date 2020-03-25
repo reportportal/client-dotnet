@@ -8,7 +8,7 @@ namespace ReportPortal.Shared.Logging
     /// </summary>
     sealed class LogScopeManager : ILogScopeManager
     {
-        private ITraceLogger TraceLogger => TraceLogManager.GetLogger(typeof(LogScopeManager));
+        private ITraceLogger TraceLogger => TraceLogManager.Instance.GetLogger(typeof(LogScopeManager));
 
         private AsyncLocal<ILogScope> _activeLogScope = new AsyncLocal<ILogScope>();
 

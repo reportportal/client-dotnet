@@ -9,7 +9,7 @@ namespace ReportPortal.Shared.Internal.Delegating
     /// </summary>
     public class ExponentialRetryRequestExecuter : IRequestExecuter
     {
-        private Logging.ITraceLogger TraceLogger { get; } = Logging.TraceLogManager.GetLogger<ExponentialRetryRequestExecuter>();
+        private Logging.ITraceLogger TraceLogger { get; } = Logging.TraceLogManager.Instance.GetLogger<ExponentialRetryRequestExecuter>();
 
         private IRequestExecutionThrottler _concurrentThrottler;
 
