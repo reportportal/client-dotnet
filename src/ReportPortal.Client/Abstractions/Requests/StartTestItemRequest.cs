@@ -61,7 +61,8 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// <summary>
         /// A list of tags.
         /// </summary>
-        [DataMember(Name = "tags", EmitDefaultValue = true)]
+        [Obsolete("Use Attributes instead of Tags.")]
+        [DataMember(Name = "tags", EmitDefaultValue = false)]
         public IEnumerable<string> Tags { get; set; }
 
         /// <summary>
