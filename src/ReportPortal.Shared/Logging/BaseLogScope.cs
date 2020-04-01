@@ -12,9 +12,25 @@ namespace ReportPortal.Shared.Logging
         public BaseLogScope(ILogScopeManager logScopeManager)
         {
             _logScopeManager = logScopeManager;
+
+            BeginTime = DateTime.UtcNow;
         }
 
-        public ILogScope BeginNewScope(string name)
+        public virtual string Id { get; } = Guid.NewGuid().ToString();
+
+        public virtual ILogScope Parent { get; }
+
+        public virtual string Name { get; }
+
+        public virtual DateTime BeginTime { get; }
+
+        private DateTime _endTime;
+        public virtual DateTime EndTime
+        {
+            get { return _endTime; }
+        }
+
+        public virtual ILogScope BeginNewScope(string name)
         {
             var logScope = new LogScope(_logScopeManager, this, name);
             _logScopeManager.ActiveScope = logScope;
@@ -140,7 +156,7 @@ namespace ReportPortal.Shared.Logging
 
         public virtual void Dispose()
         {
-
+            _endTime = DateTime.UtcNow;
         }
     }
 }

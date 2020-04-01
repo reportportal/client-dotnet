@@ -46,15 +46,20 @@ namespace ReportPortal.Shared.Tests
         {
             Log.ActiveScope.Should().BeSameAs(Log.ActiveScope);
             var rootScope = Log.ActiveScope;
+            rootScope.Name.Should().BeNull();
             Log.ActiveScope.Should().NotBeNull();
+            Log.ActiveScope.Parent.Should().BeNull();
 
             using (var scope = Log.BeginNewScope("q"))
             {
+                scope.Parent.Should().BeNull();
+                scope.Name.Should().Be("q");
                 Log.ActiveScope.Should().BeSameAs(scope);
 
                 using (var scope2 = scope.BeginNewScope("q"))
                 {
                     Log.ActiveScope.Should().BeSameAs(scope2);
+                    scope2.Parent.Should().Be(scope);
                 }
 
                 Log.ActiveScope.Should().BeSameAs(scope);
@@ -67,6 +72,7 @@ namespace ReportPortal.Shared.Tests
         public async Task ShouldAlwaysHaveActiveAsyncScopedLog()
         {
             Log.ActiveScope.Should().BeSameAs(Log.ActiveScope);
+            Log.ActiveScope.Id.Should().Be(Log.ActiveScope.Id);
             var rootScope = Log.ActiveScope;
             Log.ActiveScope.Should().NotBeNull();
 

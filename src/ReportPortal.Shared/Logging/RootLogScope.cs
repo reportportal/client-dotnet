@@ -18,5 +18,13 @@ namespace ReportPortal.Shared.Logging
                 if (isHandled) break;
             }
         }
+
+        public override ILogScope BeginNewScope(string name)
+        {
+            var logScope = new LogScope(_logScopeManager, null, name);
+            _logScopeManager.ActiveScope = logScope;
+
+            return logScope;
+        }
     }
 }

@@ -9,6 +9,31 @@ namespace ReportPortal.Shared.Logging
     public interface ILogScope : IDisposable
     {
         /// <summary>
+        /// Unique ID of current logging scope.
+        /// </summary>
+        string Id { get; }
+
+        /// <summary>
+        /// Parent logging scope.
+        /// </summary>
+        ILogScope Parent { get; }
+
+        /// <summary>
+        /// Logical login scope name.
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
+        /// Time when loging scope began.
+        /// </summary>
+        DateTime BeginTime { get; }
+
+        /// <summary>
+        /// Time when logging scope ended.
+        /// </summary>
+        DateTime EndTime { get; }
+
+        /// <summary>
         /// Starts new logging scope beginning from active scope.
         /// </summary>
         /// <param name="name">A name of the scope.</param>
