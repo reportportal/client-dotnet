@@ -15,7 +15,7 @@ namespace ReportPortal.Shared
     /// </example>
     public static class Log
     {
-        private static readonly ILogScopeManager _logScopeManager = LogScopeManager.Current;
+        private static readonly ILogScopeManager _logScopeManager = LogScopeManager.Instance;
 
         /// <summary>
         /// Begins new logged scope aka nested step.

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net46;</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net46;net45;</TargetFrameworks>
     <PackageId>ReportPortal.Shared</PackageId>
     <Version>1.0.0</Version>
     <Description>Multithreaded reporter of test results to http://reportportal.io</Description>
@@ -26,7 +26,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\*.targets" Pack="true" PackagePath="build\" Visible="false" />
+    <None Include="Build\**\*.targets" Pack="true" PackagePath="build\" />
+    
     <None Include="..\..\Logo.png" Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>
 

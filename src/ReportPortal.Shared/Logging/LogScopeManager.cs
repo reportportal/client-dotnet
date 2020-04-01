@@ -1,4 +1,5 @@
 ﻿using ReportPortal.Shared.Internal.Logging;
+using System;
 using System.Threading;
 
 namespace ReportPortal.Shared.Logging
@@ -6,10 +7,11 @@ namespace ReportPortal.Shared.Logging
     /// <summary>
     /// Context awware manager of <see cref="ILogScope"/> instances.
     /// </summary>
-    sealed class LogScopeManager : ILogScopeManager
+    sealed partial class LogScopeManager : ILogScopeManager
     {
         private ITraceLogger TraceLogger => TraceLogManager.Instance.GetLogger(typeof(LogScopeManager));
 
+#if !NET45
         private AsyncLocal<ILogScope> _activeLogScope = new AsyncLocal<ILogScope>();
 
         private AsyncLocal<ILogScope> _rootLogScope = new AsyncLocal<ILogScope>();
@@ -51,30 +53,18 @@ namespace ReportPortal.Shared.Logging
                 _rootLogScope.Value = value;
             }
         }
+#endif
 
-        private static readonly object s_lockObj = new object();
-
-        private static ILogScopeManager _current;
+        private static Lazy<ILogScopeManager> _instance = new Lazy<ILogScopeManager>(() => new LogScopeManager());
 
         /// <summary>
-        /// Returns current instance of <see cref="ILogScopeManager"/>.
+        /// Returns instance of <see cref="ILogScopeManager"/>.
         /// </summary>
-        public static ILogScopeManager Current
+        public static ILogScopeManager Instance
         {
             get
             {
-                if (_current == null)
-                {
-                    lock (s_lockObj)
-                    {
-                        if (_current == null)
-                        {
-                            _current = new LogScopeManager();
-                        }
-                    }
-                }
-
-                return _current;
+                return _instance.Value;
             }
         }
     }
