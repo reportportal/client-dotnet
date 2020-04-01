@@ -4,10 +4,13 @@ using ReportPortal.Client.Abstractions.Requests;
 
 namespace ReportPortal.Shared.Extensibility.LogFormatter
 {
+    /// <inheritdoc/>
     public class Base64LogFormatter : ILogFormatter
     {
+        /// <inheritdoc/>
         public int Order => 10;
 
+        /// <inheritdoc/>
         public bool FormatLog(CreateLogItemRequest logRequest)
         {
             if (logRequest.Text != null)

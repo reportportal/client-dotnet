@@ -17,6 +17,9 @@ namespace ReportPortal.Shared.Internal.Logging
 
         private static readonly Lazy<TraceLogManager> _instance = new Lazy<TraceLogManager>(() => new TraceLogManager());
 
+        /// <summary>
+        /// Returns single instance of <see cref="TraceLogManager"/>
+        /// </summary>
         public static TraceLogManager Instance
         {
             get

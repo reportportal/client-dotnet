@@ -184,5 +184,18 @@ namespace ReportPortal.Shared.Tests
 
             Bridge.LogHandlerExtensions.Remove(handler.Object);
         }
+
+        [Fact]
+        public void ShouldImplicitlySetBeginAndEndTime()
+        {
+            ILogScope scope = Log.BeginNewScope("q");
+
+            scope.BeginTime.Should().BeCloseTo(DateTime.UtcNow);
+            scope.EndTime.Should().BeNull();
+
+            scope.Dispose();
+
+            scope.EndTime.Should().BeCloseTo(DateTime.UtcNow);
+        }
     }
 }

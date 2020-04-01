@@ -48,7 +48,7 @@ namespace ReportPortal.Shared.Logging
                     {
                         if (_rootScope == null)
                         {
-                            _rootScope = new RootLogScope(this);
+                            RootScope = new RootLogScope(this);
                         }
                     }
                 }

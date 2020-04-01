@@ -31,7 +31,7 @@ namespace ReportPortal.Shared.Logging
         /// <summary>
         /// Time when logging scope ended.
         /// </summary>
-        DateTime EndTime { get; }
+        DateTime? EndTime { get; }
 
         /// <summary>
         /// Starts new logging scope beginning from active scope.

@@ -5,10 +5,13 @@ using System.Text.RegularExpressions;
 
 namespace ReportPortal.Shared.Extensibility.LogFormatter
 {
+    /// <inheritdoc/>
     public class FileLogFormatter : ILogFormatter
     {
+        /// <inheritdoc/>
         public int Order => 10;
 
+        /// <inheritdoc/>
         public bool FormatLog(CreateLogItemRequest logRequest)
         {
             if (logRequest.Text != null)

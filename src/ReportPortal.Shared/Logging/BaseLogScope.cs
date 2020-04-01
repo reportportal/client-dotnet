@@ -24,11 +24,7 @@ namespace ReportPortal.Shared.Logging
 
         public virtual DateTime BeginTime { get; }
 
-        private DateTime _endTime;
-        public virtual DateTime EndTime
-        {
-            get { return _endTime; }
-        }
+        public virtual DateTime? EndTime {get; private set;}
 
         public virtual ILogScope BeginNewScope(string name)
         {
@@ -156,7 +152,7 @@ namespace ReportPortal.Shared.Logging
 
         public virtual void Dispose()
         {
-            _endTime = DateTime.UtcNow;
+            EndTime = DateTime.UtcNow;
         }
     }
 }
