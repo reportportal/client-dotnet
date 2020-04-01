@@ -1,20 +1,32 @@
 ﻿using FluentAssertions;
+using Moq;
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Logging;
+using System;
 using Xunit;
 
 namespace ReportPortal.Shared.Tests
 {
     [CollectionDefinition(nameof(EntryLogTest), DisableParallelization = true)]
-    public class EntryLogTest : ILogHandler
+    public class EntryLogTest : IDisposable
     {
         private string text = "text";
         private string mimeType = "image/png";
         private byte[] data = new byte[] { 1 };
 
-        private static CreateLogItemRequest _logRequest;
+        private Mock<ILogHandler> _logHandler;
+
+        public EntryLogTest()
+        {
+            _logHandler = new Mock<ILogHandler>();
+            _logHandler.Setup(lh => lh.Handle(It.IsAny<ILogScope>(), It.IsAny<CreateLogItemRequest>())).Callback((ILogScope ls, CreateLogItemRequest clr) => { _logRequest = clr; });
+
+            Bridge.LogHandlerExtensions.Add(_logHandler.Object);
+        }
+
+        private CreateLogItemRequest _logRequest;
 
         public int Order => 10;
 
@@ -114,21 +126,9 @@ namespace ReportPortal.Shared.Tests
             _logRequest.Attach.Data.Should().BeEquivalentTo(data);
         }
 
-        public bool Handle(ILogScope logScope, CreateLogItemRequest logRequest)
+        public void Dispose()
         {
-            _logRequest = logRequest;
-
-            return false;
-        }
-
-        public void BeginScope(ILogScope logScope)
-        {
-
-        }
-
-        public void EndScope(ILogScope logScope)
-        {
-
+            Bridge.LogHandlerExtensions.Remove(_logHandler.Object);
         }
     }
 }
