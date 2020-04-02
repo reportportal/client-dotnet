@@ -204,33 +204,32 @@ namespace ReportPortal.Shared.Tests
         {
             using (var scope = Log.BeginNewScope("a"))
             {
-                scope.Status.Should().Be(Status.InProgress);
+                scope.Status.Should().Be(LogScopeStatus.InProgress);
             }
         }
 
         [Fact]
         public void StatusOfRootScopeShouldAlwaysBeInProgress()
         {
-            Log.RootScope.Status.Should().Be(Status.InProgress);
-            Log.RootScope.Status = Status.Passed;
-            Log.RootScope.Status.Should().Be(Status.InProgress);
+            Log.RootScope.Status.Should().Be(LogScopeStatus.InProgress);
+            Log.RootScope.Status = LogScopeStatus.Passed;
+            Log.RootScope.Status.Should().Be(LogScopeStatus.InProgress);
         }
 
         [Fact]
         public void StatusShouldBeImplicitlyPassedForEndedScope()
         {
             var scope = Log.BeginNewScope("a");
-            scope.Status.Should().Be(Status.InProgress);
+            scope.Status.Should().Be(LogScopeStatus.InProgress);
             scope.Dispose();
-            scope.Status.Should().Be(Status.Passed);
+            scope.Status.Should().Be(LogScopeStatus.Passed);
         }
 
         [Theory]
-        [InlineData(Status.Passed)]
-        [InlineData(Status.Failed)]
-        [InlineData(Status.Interrupted)]
-        [InlineData(Status.Skipped)]
-        public void ShouldBeAbleToChangeStatus(Status status)
+        [InlineData(LogScopeStatus.Passed)]
+        [InlineData(LogScopeStatus.Failed)]
+        [InlineData(LogScopeStatus.Skipped)]
+        public void ShouldBeAbleToChangeStatus(LogScopeStatus status)
         {
             var scope = Log.BeginNewScope("a");
             scope.Status = status;

@@ -26,7 +26,7 @@ namespace ReportPortal.Shared.Logging
 
         public virtual DateTime? EndTime { get; private set; }
 
-        public virtual Status Status { get; set; } = Status.InProgress;
+        public virtual LogScopeStatus Status { get; set; } = LogScopeStatus.InProgress;
 
         public virtual ILogScope BeginNewScope(string name)
         {
@@ -156,9 +156,9 @@ namespace ReportPortal.Shared.Logging
         {
             EndTime = DateTime.UtcNow;
 
-            if (Status == Status.InProgress)
+            if (Status == LogScopeStatus.InProgress)
             {
-                Status = Status.Passed;
+                Status = LogScopeStatus.Passed;
             }
         }
     }
