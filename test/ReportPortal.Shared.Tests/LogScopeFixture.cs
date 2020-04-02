@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Moq;
+using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Logging;
 using System;
@@ -196,6 +197,39 @@ namespace ReportPortal.Shared.Tests
             scope.Dispose();
 
             scope.EndTime.Should().BeCloseTo(DateTime.UtcNow);
+        }
+
+        [Fact]
+        public void StatusShouldBeInProgressByDefault()
+        {
+            Log.ActiveScope.Status.Should().Be(Status.InProgress);
+        }
+
+        [Fact]
+        public void StatusShouldBeImplicitlyPassedForEndedScope()
+        {
+            var scope = Log.BeginNewScope("a");
+            scope.Status.Should().Be(Status.InProgress);
+            scope.Dispose();
+            scope.Status.Should().Be(Status.Passed);
+        }
+
+        [Theory]
+        [InlineData(Status.Passed)]
+        [InlineData(Status.Failed)]
+        [InlineData(Status.Interrupted)]
+        [InlineData(Status.Skipped)]
+        public void ShouldBeAbleToChangeStatus(Status status)
+        {
+            Log.ActiveScope.Status = status;
+            Log.ActiveScope.Status.Should().Be(status);
+
+            var scope = Log.BeginNewScope("a");
+            scope.Status = status;
+            scope.Status.Should().Be(status);
+            scope.Dispose();
+            scope.Status.Should().Be(status);
+
         }
     }
 }

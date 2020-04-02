@@ -24,7 +24,9 @@ namespace ReportPortal.Shared.Logging
 
         public virtual DateTime BeginTime { get; }
 
-        public virtual DateTime? EndTime {get; private set;}
+        public virtual DateTime? EndTime { get; private set; }
+
+        public virtual Status Status { get; set; } = Status.InProgress;
 
         public virtual ILogScope BeginNewScope(string name)
         {
@@ -153,6 +155,11 @@ namespace ReportPortal.Shared.Logging
         public virtual void Dispose()
         {
             EndTime = DateTime.UtcNow;
+
+            if (Status == Status.InProgress)
+            {
+                Status = Status.Passed;
+            }
         }
     }
 }

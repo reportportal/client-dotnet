@@ -1,4 +1,5 @@
-﻿using ReportPortal.Client.Abstractions.Requests;
+﻿using ReportPortal.Client.Abstractions.Models;
+using ReportPortal.Client.Abstractions.Requests;
 using System;
 
 namespace ReportPortal.Shared.Logging
@@ -32,6 +33,11 @@ namespace ReportPortal.Shared.Logging
         /// Time when logging scope ended.
         /// </summary>
         DateTime? EndTime { get; }
+
+        /// <summary>
+        /// Logging scope status.
+        /// </summary>
+        Status Status { get; set; }
 
         /// <summary>
         /// Starts new logging scope beginning from active scope.
