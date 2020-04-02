@@ -75,7 +75,7 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// A list of parameters.
         /// </summary>
         [DataMember(Name = "parameters")]
-        public IEnumerable<KeyValuePair<string, string>> Parameters { get; set; }
+        public IList<KeyValuePair<string, string>> Parameters { get; set; }
 
         /// <summary>
         /// A test item unique id.
@@ -83,6 +83,9 @@ namespace ReportPortal.Client.Abstractions.Requests
         [DataMember(Name = "uniqueId", EmitDefaultValue = true)]
         public string UniqueId { get; set; }
 
+        /// <summary>
+        /// Define if test item has stats. If false - considered as nested step.
+        /// </summary>
         [DataMember(Name = "hasStats")]
         public bool HasStats { get; set; } = true;
 
@@ -90,6 +93,6 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// Test item attributes.
         /// </summary>
         [DataMember(Name = "attributes")]
-        public IEnumerable<ItemAttribute> Attributes { get; set; }
+        public IList<ItemAttribute> Attributes { get; set; }
     }
 }

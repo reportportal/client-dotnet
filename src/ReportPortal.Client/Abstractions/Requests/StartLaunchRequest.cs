@@ -75,6 +75,6 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// Launch attributes.
         /// </summary>
         [DataMember(Name = "attributes")]
-        public IEnumerable<ItemAttribute> Attributes { get; set; }
+        public IList<ItemAttribute> Attributes { get; set; }
     }
 }
