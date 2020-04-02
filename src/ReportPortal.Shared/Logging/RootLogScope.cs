@@ -1,4 +1,5 @@
-﻿using ReportPortal.Client.Abstractions.Requests;
+﻿using ReportPortal.Client.Abstractions.Models;
+using ReportPortal.Client.Abstractions.Requests;
 
 namespace ReportPortal.Shared.Logging
 {
@@ -8,6 +9,8 @@ namespace ReportPortal.Shared.Logging
         {
 
         }
+
+        public override Status Status { get => base.Status; set { } }
 
         public override void Message(CreateLogItemRequest logRequest)
         {

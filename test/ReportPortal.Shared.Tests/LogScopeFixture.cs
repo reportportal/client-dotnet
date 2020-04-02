@@ -202,7 +202,18 @@ namespace ReportPortal.Shared.Tests
         [Fact]
         public void StatusShouldBeInProgressByDefault()
         {
-            Log.ActiveScope.Status.Should().Be(Status.InProgress);
+            using (var scope = Log.BeginNewScope("a"))
+            {
+                scope.Status.Should().Be(Status.InProgress);
+            }
+        }
+
+        [Fact]
+        public void StatusOfRootScopeShouldAlwaysBeInProgress()
+        {
+            Log.RootScope.Status.Should().Be(Status.InProgress);
+            Log.RootScope.Status = Status.Passed;
+            Log.RootScope.Status.Should().Be(Status.InProgress);
         }
 
         [Fact]
@@ -221,15 +232,11 @@ namespace ReportPortal.Shared.Tests
         [InlineData(Status.Skipped)]
         public void ShouldBeAbleToChangeStatus(Status status)
         {
-            Log.ActiveScope.Status = status;
-            Log.ActiveScope.Status.Should().Be(status);
-
             var scope = Log.BeginNewScope("a");
             scope.Status = status;
             scope.Status.Should().Be(status);
             scope.Dispose();
             scope.Status.Should().Be(status);
-
         }
     }
 }
