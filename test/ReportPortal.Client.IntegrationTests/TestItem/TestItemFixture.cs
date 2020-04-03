@@ -1,4 +1,5 @@
-﻿using ReportPortal.Client.Abstractions.Filtering;
+﻿using FluentAssertions;
+using ReportPortal.Client.Abstractions.Filtering;
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Responses;
@@ -76,7 +77,7 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Test,
-                Tags = new List<string> { "MyTag1" }
+                Attributes = new List<ItemAttribute> { new ItemAttribute { Value = "MyTag1" } }
             });
 
             Assert.NotNull(test.Uuid);
@@ -136,7 +137,7 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
             Assert.Contains("successfully", message2.Info);
         }
 
-        [Fact(Skip = "Temporary ignore this test to make it possible deploy beta version")]
+        [Fact]
         public async Task StartFinishFullTest()
         {
             var attributes = new List<ItemAttribute> { new ItemAttribute { Key = "a1", Value = "v1" }, new ItemAttribute { Key = "a2", Value = "v2" } };
@@ -149,8 +150,7 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
                 Type = TestItemType.Test,
                 Description = "Desc for test",
                 Attributes = attributes,
-                Parameters = parameters,
-                Tags = new List<string> { "b", "c" }
+                Parameters = parameters
             };
 
             var test = await Service.TestItem.StartAsync(startTestItemRequest);
@@ -163,8 +163,8 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
             Assert.Equal(startTestItemRequest.Type, getTest.Type);
             Assert.Equal(startTestItemRequest.Description, getTest.Description);
             Assert.Equal(parameters, getTest.Parameters);
-            Assert.Equal(attributes.Select(a => new { a.Key, a.Value }), getTest.Attributes.Select(a => new { a.Key, a.Value }));
-
+            getTest.Attributes.Should().BeEquivalentTo(attributes);
+            
             var finishTestItemRequest = new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
@@ -293,7 +293,7 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
                 Name = "Suite1",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Suite,
-                Tags = new List<string> { "abc", "qwe" }
+                Attributes = new List<ItemAttribute> { new ItemAttribute { Value = "abc" }, new ItemAttribute { Value = "qwe" } }
             });
 
             var test = await Service.TestItem.StartAsync(suite.Uuid, new StartTestItemRequest

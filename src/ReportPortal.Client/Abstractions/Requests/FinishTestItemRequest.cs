@@ -54,8 +54,15 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// <summary>
         /// A list of tags.
         /// </summary>
-        [DataMember(Name = "tags")]
+        [Obsolete("Use Attributes instead of tags")]
+        [DataMember(Name = "tags", EmitDefaultValue = false)]
         public List<string> Tags { get; set; }
+
+        /// <summary>
+        /// Sets attributes when finishing test item.
+        /// </summary>
+        /// <value>List of attributes.</value>
+        public IList<ItemAttribute> Attributes { get; set; }
 
         /// <summary>
         /// Retry status indicator.
