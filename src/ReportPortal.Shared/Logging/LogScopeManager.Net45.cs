@@ -8,7 +8,9 @@ namespace ReportPortal.Shared.Logging
 
     sealed partial class LogScopeManager
     {
-        private readonly string _logicalDataKey = "__AsyncLocalLogScope_Active__" + Guid.NewGuid().ToString("D");
+        private readonly string _logicalActiveDataKey = "__AsyncLocalLogScope_Active__" + Guid.NewGuid().ToString("D");
+
+        private readonly string _logicalRootDataKey = "__AsyncLocalLogScope_Root__" + Guid.NewGuid().ToString("D");
 
         /// <summary>
         /// Returns current active LogScope which provides methods for logging.
@@ -17,7 +19,7 @@ namespace ReportPortal.Shared.Logging
         {
             get
             {
-                var handle = CallContext.LogicalGetData(_logicalDataKey) as ObjectHandle;
+                var handle = CallContext.LogicalGetData(_logicalActiveDataKey) as ObjectHandle;
                 var activeScope = handle?.Unwrap() as ILogScope;
 
                 if (activeScope == null)
@@ -30,34 +32,36 @@ namespace ReportPortal.Shared.Logging
             }
             set
             {
-                CallContext.LogicalSetData(_logicalDataKey, new ObjectHandle(value));
+                CallContext.LogicalSetData(_logicalActiveDataKey, new ObjectHandle(value));
             }
         }
 
         private static readonly object s_lockObj = new object();
 
-        private ILogScope _rootScope;
-
         public ILogScope RootScope
         {
             get
             {
-                if (_rootScope == null)
+                ILogScope rootScope;
+
+                lock (s_lockObj)
                 {
-                    lock (s_lockObj)
+                    var handle = CallContext.LogicalGetData(_logicalRootDataKey) as ObjectHandle;
+                    rootScope = handle?.Unwrap() as ILogScope;
+
+                    if (rootScope == null)
                     {
-                        if (_rootScope == null)
-                        {
-                            RootScope = new RootLogScope(this);
-                        }
+                        rootScope = new RootLogScope(this);
+
+                        RootScope = rootScope;
                     }
                 }
 
-                return _rootScope;
+                return rootScope;
             }
             private set
             {
-                _rootScope = value;
+                CallContext.LogicalSetData(_logicalRootDataKey, new ObjectHandle(value));
             }
         }
     }
