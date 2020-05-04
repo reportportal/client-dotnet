@@ -22,9 +22,9 @@ namespace ReportPortal.Shared
         /// </summary>
         /// <param name="name">Logical operation name.</param>
         /// <returns></returns>
-        public static ILogScope BeginNewScope(string name)
+        public static ILogScope BeginScope(string name)
         {
-            return _logScopeManager.ActiveScope.BeginNewScope(name);
+            return _logScopeManager.ActiveScope.BeginScope(name);
         }
 
         /// <summary>

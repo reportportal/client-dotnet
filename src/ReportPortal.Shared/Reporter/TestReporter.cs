@@ -95,8 +95,6 @@ namespace ReportPortal.Shared.Reporter
 
                 TestInfo.StartTime = startTestItemRequest.StartTime;
             }).Unwrap();
-
-            ThreadId = Thread.CurrentThread.ManagedThreadId;
         }
 
         public Task FinishTask { get; private set; }
@@ -289,10 +287,6 @@ namespace ReportPortal.Shared.Reporter
 
             FinishTask?.GetAwaiter().GetResult();
         }
-
-        // TODO: need remove (used by specflow only)
-        [Obsolete("Hey SpecFlow plugin, please use ILogHandler on your side")]
-        public int ThreadId { get; set; }
     }
 
 }

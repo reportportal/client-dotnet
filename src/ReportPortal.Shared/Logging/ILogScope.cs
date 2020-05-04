@@ -43,7 +43,7 @@ namespace ReportPortal.Shared.Logging
         /// </summary>
         /// <param name="name">A name of the scope.</param>
         /// <returns></returns>
-        ILogScope BeginNewScope(string name);
+        ILogScope BeginScope(string name);
 
         /// <summary>
         /// Sends log message to current test context.

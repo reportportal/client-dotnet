@@ -1,7 +1,7 @@
 ﻿namespace ReportPortal.Shared.Logging
 {
     /// <summary>
-    /// Status of current logging scope.
+    /// Status of logging scope.
     /// </summary>
     public enum LogScopeStatus
     {

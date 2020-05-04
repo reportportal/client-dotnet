@@ -28,7 +28,7 @@ namespace ReportPortal.Shared.Logging
 
         public virtual LogScopeStatus Status { get; set; } = LogScopeStatus.InProgress;
 
-        public virtual ILogScope BeginNewScope(string name)
+        public virtual ILogScope BeginScope(string name)
         {
             var logScope = new LogScope(_logScopeManager, this, name);
             _logScopeManager.ActiveScope = logScope;

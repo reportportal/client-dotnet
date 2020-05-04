@@ -19,7 +19,7 @@ namespace ReportPortal.Shared.Tests
         {
             Action action = () =>
             {
-                using (var s = Log.BeginNewScope(null))
+                using (var s = Log.BeginScope(null))
                 {
 
                 }
@@ -33,7 +33,7 @@ namespace ReportPortal.Shared.Tests
         {
             Action action = () =>
             {
-                using (var s = Log.BeginNewScope(""))
+                using (var s = Log.BeginScope(""))
                 {
 
                 }
@@ -51,13 +51,13 @@ namespace ReportPortal.Shared.Tests
             Log.ActiveScope.Should().NotBeNull();
             Log.ActiveScope.Parent.Should().BeNull();
 
-            using (var scope = Log.BeginNewScope("q"))
+            using (var scope = Log.BeginScope("q"))
             {
                 scope.Parent.Should().BeNull();
                 scope.Name.Should().Be("q");
                 Log.ActiveScope.Should().BeSameAs(scope);
 
-                using (var scope2 = scope.BeginNewScope("q"))
+                using (var scope2 = scope.BeginScope("q"))
                 {
                     Log.ActiveScope.Should().BeSameAs(scope2);
                     scope2.Parent.Should().Be(scope);
@@ -81,14 +81,14 @@ namespace ReportPortal.Shared.Tests
 
             Log.ActiveScope.Should().BeSameAs(rootScope);
 
-            using (var scope = Log.BeginNewScope("q"))
+            using (var scope = Log.BeginScope("q"))
             {
                 await Task.Delay(1);
 
                 Log.ActiveScope.Should().BeSameAs(scope);
                 Log.RootScope.Should().BeSameAs(rootScope);
 
-                using (var scope2 = scope.BeginNewScope("q"))
+                using (var scope2 = scope.BeginScope("q"))
                 {
                     await Task.Delay(1);
 
@@ -131,7 +131,7 @@ namespace ReportPortal.Shared.Tests
         {
             await Task.Delay(1);
 
-            using (var scope = Log.BeginNewScope("q"))
+            using (var scope = Log.BeginScope("q"))
             {
                 await Task.Delay(new Random().Next(20));
                 Log.RootScope.Should().BeSameAs(expectedRootScope);
@@ -151,7 +151,7 @@ namespace ReportPortal.Shared.Tests
 
             public void Do()
             {
-                using (var scope = Log.ActiveScope.BeginNewScope("q"))
+                using (var scope = Log.ActiveScope.BeginScope("q"))
                 {
                     Thread.Sleep(new Random().Next(20));
                 }
@@ -169,7 +169,7 @@ namespace ReportPortal.Shared.Tests
             Log.Info("abc");
             for (int i = 0; i < 5; i++)
             {
-                using (var scope = Log.BeginNewScope("scope"))
+                using (var scope = Log.BeginScope("scope"))
                 {
                     Log.Info("qwe");
 
@@ -189,7 +189,7 @@ namespace ReportPortal.Shared.Tests
         [Fact]
         public void ShouldImplicitlySetBeginAndEndTime()
         {
-            ILogScope scope = Log.BeginNewScope("q");
+            ILogScope scope = Log.BeginScope("q");
 
             scope.BeginTime.Should().BeCloseTo(DateTime.UtcNow);
             scope.EndTime.Should().BeNull();
@@ -202,7 +202,7 @@ namespace ReportPortal.Shared.Tests
         [Fact]
         public void StatusShouldBeInProgressByDefault()
         {
-            using (var scope = Log.BeginNewScope("a"))
+            using (var scope = Log.BeginScope("a"))
             {
                 scope.Status.Should().Be(LogScopeStatus.InProgress);
             }
@@ -219,7 +219,7 @@ namespace ReportPortal.Shared.Tests
         [Fact]
         public void StatusShouldBeImplicitlyPassedForEndedScope()
         {
-            var scope = Log.BeginNewScope("a");
+            var scope = Log.BeginScope("a");
             scope.Status.Should().Be(LogScopeStatus.InProgress);
             scope.Dispose();
             scope.Status.Should().Be(LogScopeStatus.Passed);
@@ -231,7 +231,7 @@ namespace ReportPortal.Shared.Tests
         [InlineData(LogScopeStatus.Skipped)]
         public void ShouldBeAbleToChangeStatus(LogScopeStatus status)
         {
-            var scope = Log.BeginNewScope("a");
+            var scope = Log.BeginScope("a");
             scope.Status = status;
             scope.Status.Should().Be(status);
             scope.Dispose();

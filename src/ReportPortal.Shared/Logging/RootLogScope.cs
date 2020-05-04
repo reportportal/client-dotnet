@@ -21,7 +21,7 @@ namespace ReportPortal.Shared.Logging
             }
         }
 
-        public override ILogScope BeginNewScope(string name)
+        public override ILogScope BeginScope(string name)
         {
             var logScope = new LogScope(_logScopeManager, null, name);
             _logScopeManager.ActiveScope = logScope;
