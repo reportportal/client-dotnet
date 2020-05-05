@@ -77,12 +77,15 @@ namespace ReportPortal.Shared.Reporter
 
             // identify whether launch should be rerun
             _rerunOfUuid = _configuration.GetValue<string>("Launch:RerunOf", null);
+
+            _isRerun = _configuration.GetValue("Launch:Rerun", false);
         }
 
         public LaunchInfo LaunchInfo { get; private set; }
 
         private bool _isExternalLaunchId = false;
         private string _rerunOfUuid = null;
+        private bool _isRerun;
 
         public Task StartTask { get; private set; }
 
@@ -118,6 +121,11 @@ namespace ReportPortal.Shared.Reporter
             }
             else if (!_isExternalLaunchId)
             {
+                if (_isRerun)
+                {
+                    request.IsRerun = true;
+                }
+
                 // start new launch item
                 StartTask = Task.Run(async () =>
                 {
