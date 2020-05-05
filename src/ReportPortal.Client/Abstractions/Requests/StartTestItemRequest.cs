@@ -84,6 +84,12 @@ namespace ReportPortal.Client.Abstractions.Requests
         public string UniqueId { get; set; }
 
         /// <summary>
+        /// Test Case ID.
+        /// </summary>
+        [DataMember(Name = "testCaseId")]
+        public string TestCaseId { get; set; }
+
+        /// <summary>
         /// Define if test item has stats. If false - considered as nested step.
         /// </summary>
         [DataMember(Name = "hasStats")]
