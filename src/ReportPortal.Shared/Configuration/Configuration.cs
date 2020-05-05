@@ -17,7 +17,7 @@ namespace ReportPortal.Shared.Configuration
             Properties = values;
         }
 
-        private readonly string _notFoundMessage = "Property '{0}' not found in the configuration.";
+        private readonly string _notFoundMessage = "Property '{0}' not found in the configuration. Make sure you have configured it properly.";
 
         /// <inheritdoc />
         public IDictionary<string, object> Properties { get; }
@@ -31,6 +31,25 @@ namespace ReportPortal.Shared.Configuration
             }
 
             var propertyValue = Properties[property];
+
+            if (typeof(T) == typeof(bool))
+            {
+                var trueValues = new List<string> { "true", "yes", "y", "1" };
+                var falseValues = new List<string> { "false", "no", "n", "0" };
+
+                if (trueValues.Any(v => propertyValue.ToString().ToLowerInvariant() == v))
+                {
+                    return (T)(object)true;
+                }
+                else if (falseValues.Any(v => propertyValue.ToString().ToLowerInvariant() == v))
+                {
+                    return (T)(object)false;
+                }
+                else
+                {
+                    throw new InvalidCastException($"Unknown '{propertyValue}' value for '{typeof(T)}'.");
+                }
+            }
 
             return (T)Convert.ChangeType(propertyValue, typeof(T), CultureInfo.InvariantCulture);
         }
@@ -87,14 +106,14 @@ namespace ReportPortal.Shared.Configuration
             var result = new List<KeyValuePair<string, T>>();
 
             var values = Properties[property].ToString().Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
-            foreach(var value in values)
+            foreach (var value in values)
             {
                 var entries = value.Split(':');
 
                 string key;
                 string keyValue;
 
-                if(entries.Length == 1)
+                if (entries.Length == 1)
                 {
                     key = string.Empty;
                     keyValue = value;

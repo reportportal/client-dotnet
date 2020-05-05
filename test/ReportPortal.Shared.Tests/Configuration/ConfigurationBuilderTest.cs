@@ -251,6 +251,32 @@ namespace ReportPortal.Shared.Tests.Configuration
             Assert.Equal(new List<string> { "abc" }, list);
         }
 
+        [Theory]
+        [InlineData("true")]
+        [InlineData("tRue")]
+        [InlineData("yes")]
+        [InlineData("y")]
+        [InlineData("1")]
+        public void ShouldReturnTrueBooleanValue(string value)
+        {
+            var config = new ConfigurationBuilder().Build();
+            config.Properties["a"] = value;
+            Assert.True(config.GetValue<bool>("a"));
+        }
+
+        [Theory]
+        [InlineData("false")]
+        [InlineData("fAlse")]
+        [InlineData("no")]
+        [InlineData("n")]
+        [InlineData("0")]
+        public void ShouldReturnFalseBooleanValue(string value)
+        {
+            var config = new ConfigurationBuilder().Build();
+            config.Properties["a"] = value;
+            Assert.False(config.GetValue<bool>("a"));
+        }
+
         [Fact]
         public void ShouldNotReturnDefaultIfListFound()
         {

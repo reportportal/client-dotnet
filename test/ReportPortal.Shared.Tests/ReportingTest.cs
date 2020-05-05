@@ -287,7 +287,7 @@ namespace ReportPortal.Shared.Tests
             var launchDateTime = DateTime.UtcNow;
             var launchName = "UseRerun";
 
-            /* var launch = await _service.Launch.StartAsync(new StartLaunchRequest
+            var launch = await _service.Launch.StartAsync(new StartLaunchRequest
             {
                 Name = launchName,
                 StartTime = launchDateTime,
@@ -297,7 +297,7 @@ namespace ReportPortal.Shared.Tests
             await _service.Launch.FinishAsync(launch.Uuid, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
-            }); */
+            });
 
             var config = new ConfigurationBuilder().Build();
             config.Properties["Launch:Rerun"] = true;
@@ -383,7 +383,7 @@ namespace ReportPortal.Shared.Tests
 
             var gotLaunch = await _service.Launch.GetAsync(r_launch.LaunchInfo.Uuid);
 
-            //await _service.Launch.DeleteAsync(gotLaunch.Id);
+            await _service.Launch.DeleteAsync(gotLaunch.Id);
         }
     }
 }
