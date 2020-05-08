@@ -70,6 +70,22 @@ namespace ReportPortal.Client.Resources
             }
         }
 
+        protected async Task<byte[]> GetAsBytesAsync(string uri)
+        {
+            using (var httpRequest = new HttpRequestMessage(HttpMethod.Get, uri))
+            {
+                using (var response = await HttpClient.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false))
+                {
+                    using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                    {
+                        await CheckSuccessStatusCodeAsync(response, stream).ConfigureAwait(false);
+
+                        return await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+                    }
+                }
+            }
+        }
+
         private async Task CheckSuccessStatusCodeAsync(HttpResponseMessage response, Stream stream)
         {
             if (!response.IsSuccessStatusCode)

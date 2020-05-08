@@ -42,7 +42,7 @@ namespace ReportPortal.Client.Resources
 
         public async Task<byte[]> GetBinaryDataAsync(string id)
         {
-            return await GetAsJsonAsync<byte[]>($"data/{ProjectName}/{id}");
+            return await GetAsBytesAsync($"data/{ProjectName}/{id}");
         }
 
         public async Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request)
