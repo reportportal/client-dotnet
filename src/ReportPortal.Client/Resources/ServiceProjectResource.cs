@@ -1,7 +1,5 @@
 ﻿using ReportPortal.Client.Abstractions.Resources;
 using ReportPortal.Client.Abstractions.Responses;
-using ReportPortal.Client.Converters;
-using ReportPortal.Client.Extentions;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -16,20 +14,14 @@ namespace ReportPortal.Client.Resources
 
         public async Task<MessageResponse> UpdatePreferencesAsync(string projectName, string userName, long filterId)
         {
-            var uri = $"project/{projectName}/preference/{userName}/{filterId}";
-
-            var response = await HttpClient.PutAsync(uri, new StringContent(string.Empty)).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await PutAsJsonAsync<MessageResponse, object>(
+                $"project/{projectName}/preference/{userName}/{filterId}",
+                string.Empty);
         }
 
         public async Task<PreferenceResponse> GetAllPreferences(string projectName, string userName)
         {
-            var uri = $"project/{projectName}/preference/{userName}";
-
-            var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<PreferenceResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await GetAsJsonAsync<PreferenceResponse>($"project/{projectName}/preference/{userName}");
         }
     }
 }

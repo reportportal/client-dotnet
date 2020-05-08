@@ -2,7 +2,9 @@
 using ReportPortal.Client.Abstractions.Resources;
 using ReportPortal.Client.Resources;
 using System;
+#if NET45
 using System.Net;
+#endif
 using System.Net.Http;
 
 namespace ReportPortal.Client

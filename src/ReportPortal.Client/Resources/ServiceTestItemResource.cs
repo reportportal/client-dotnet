@@ -2,11 +2,8 @@
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Resources;
 using ReportPortal.Client.Abstractions.Responses;
-using ReportPortal.Client.Converters;
-using ReportPortal.Client.Extentions;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ReportPortal.Client.Resources
@@ -25,87 +22,65 @@ namespace ReportPortal.Client.Resources
             {
                 uri += $"?{filterOption}";
             }
-            var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<Content<TestItemResponse>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+
+            return await GetAsJsonAsync<Content<TestItemResponse>>(uri);
         }
 
         public async Task<TestItemResponse> GetAsync(long id)
         {
-            var uri = $"{ProjectName}/item/{id}";
-            var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<TestItemResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await GetAsJsonAsync<TestItemResponse>($"{ProjectName}/item/{id}");
         }
 
         public async Task<TestItemResponse> GetAsync(string uuid)
         {
-            var uri = $"{ProjectName}/item/uuid/{uuid}";
-            var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<TestItemResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await GetAsJsonAsync<TestItemResponse>($"{ProjectName}/item/uuid/{uuid}");
         }
 
         public async Task<TestItemCreatedResponse> StartAsync(StartTestItemRequest request)
         {
-            var uri = $"{ProjectName}/item";
-            var body = ModelSerializer.Serialize<StartTestItemRequest>(request);
-            var response = await HttpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<TestItemCreatedResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await PostAsJsonAsync<TestItemCreatedResponse, StartTestItemRequest>(
+                $"{ProjectName}/item",
+                request);
         }
 
         public async Task<TestItemCreatedResponse> StartAsync(string uuid, StartTestItemRequest request)
         {
-            var uri = $"{ProjectName}/item/{uuid}";
-            var body = ModelSerializer.Serialize<StartTestItemRequest>(request);
-            var response = await HttpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<TestItemCreatedResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await PostAsJsonAsync<TestItemCreatedResponse, StartTestItemRequest>(
+                $"{ProjectName}/item/{uuid}",
+                request);
         }
 
         public async Task<MessageResponse> FinishAsync(string id, FinishTestItemRequest request)
         {
-            var uri = $"{ProjectName}/item/{id}";
-            var body = ModelSerializer.Serialize<FinishTestItemRequest>(request);
-            var response = await HttpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await PutAsJsonAsync<MessageResponse, FinishTestItemRequest>(
+                $"{ProjectName}/item/{id}",
+                request);
         }
 
         public async Task<MessageResponse> UpdateAsync(long id, UpdateTestItemRequest request)
         {
-            var uri = $"{ProjectName}/item/{id}/update";
-            var body = ModelSerializer.Serialize<UpdateTestItemRequest>(request);
-            var response = await HttpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await PutAsJsonAsync<MessageResponse, UpdateTestItemRequest>(
+                $"{ProjectName}/item/{id}/update",
+                request);
         }
 
         public async Task<MessageResponse> DeleteAsync(long id)
         {
-            var uri = $"{ProjectName}/item/{id}";
-            var response = await HttpClient.DeleteAsync(uri).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/item/{id}");
         }
 
         public async Task<IEnumerable<Issue>> AssignIssuesAsync(AssignTestItemIssuesRequest request)
         {
-            var uri = $"{ProjectName}/item";
-            var body = ModelSerializer.Serialize<AssignTestItemIssuesRequest>(request);
-            var response = await HttpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<IEnumerable<Issue>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await PutAsJsonAsync<IEnumerable<Issue>, AssignTestItemIssuesRequest>(
+                $"{ProjectName}/item",
+                request);
         }
 
         public async Task<IEnumerable<TestItemHistoryResponse>> GetHistoryAsync(IEnumerable<long> testItemIds, int depth, bool full)
         {
             var uri = $"{ProjectName}/item/history?ids={string.Join(",", testItemIds)}&history_depth={depth}&is_full={full}";
 
-            var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<IEnumerable<TestItemHistoryResponse>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await GetAsJsonAsync<IEnumerable<TestItemHistoryResponse>>(uri);
         }
     }
 }
