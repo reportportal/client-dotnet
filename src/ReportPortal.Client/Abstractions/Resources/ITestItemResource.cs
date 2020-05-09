@@ -50,11 +50,10 @@ namespace ReportPortal.Client.Abstractions.Resources
         /// <summary>
         /// Get the history of test items executions.
         /// </summary>
-        /// <param name="testItemIds">IDs of test items.</param>
+        /// <param name="id">ID of test item.</param>
         /// <param name="depth">How many executions to return.</param>
-        /// <param name="full"></param>
         /// <returns>The list of execution history.</returns>
-        Task<IEnumerable<TestItemHistoryResponse>> GetHistoryAsync(IEnumerable<long> testItemIds, int depth, bool full);
+        Task<Content<TestItemHistoryContainer>> GetHistoryAsync(long id, int depth);
 
         /// <summary>
         /// Returns a list of test items for specified launch and parent test item (optional).

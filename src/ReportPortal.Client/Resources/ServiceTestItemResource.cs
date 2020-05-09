@@ -76,11 +76,11 @@ namespace ReportPortal.Client.Resources
                 request);
         }
 
-        public async Task<IEnumerable<TestItemHistoryResponse>> GetHistoryAsync(IEnumerable<long> testItemIds, int depth, bool full)
+        public async Task<Content<TestItemHistoryContainer>> GetHistoryAsync(long id, int depth)
         {
-            var uri = $"{ProjectName}/item/history?ids={string.Join(",", testItemIds)}&history_depth={depth}&is_full={full}";
+            var uri = $"{ProjectName}/item/history?filter.eq.id={id}&type=line&historyDepth={depth}";
 
-            return await GetAsJsonAsync<IEnumerable<TestItemHistoryResponse>>(uri);
+            return await GetAsJsonAsync<Content<TestItemHistoryContainer>>(uri);
         }
     }
 }

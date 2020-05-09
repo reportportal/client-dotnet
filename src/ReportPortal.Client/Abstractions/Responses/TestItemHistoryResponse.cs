@@ -7,6 +7,16 @@ using System.Runtime.Serialization;
 namespace ReportPortal.Client.Abstractions.Responses
 {
     [DataContract]
+    public class TestItemHistoryContainer
+    {
+        [DataMember(Name = "testCaseHash")]
+        public string TestCaseHash { get; set; }
+
+        [DataMember(Name = "resources")]
+        public IEnumerable<TestItemHistoryResponse> Resources { get; set; }
+    }
+
+    [DataContract]
     public class TestItemHistoryResponse
     {
         [DataMember(Name = "launchNumber")]
