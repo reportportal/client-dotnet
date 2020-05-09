@@ -80,7 +80,11 @@ namespace ReportPortal.Client.Resources
                     {
                         await CheckSuccessStatusCodeAsync(response, stream).ConfigureAwait(false);
 
-                        return await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            stream.CopyTo(memoryStream);
+                            return memoryStream.ToArray();
+                        }
                     }
                 }
             }
