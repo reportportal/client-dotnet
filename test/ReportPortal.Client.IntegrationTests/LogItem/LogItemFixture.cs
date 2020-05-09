@@ -82,8 +82,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
             var getLog = await Service.LogItem.GetAsync(log.Uuid);
             Assert.Equal("Log1", getLog.Text);
 
-            var logMessage = await Service.LogItem.GetAsync(log.Uuid);
-            var binaryId = logMessage.Content.Id;
+            var binaryId = getLog.Content.Id;
 
             var logData = await Service.LogItem.GetBinaryDataAsync(binaryId);
             Assert.Equal(data, logData);

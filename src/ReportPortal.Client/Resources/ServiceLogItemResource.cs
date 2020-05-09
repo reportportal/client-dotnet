@@ -27,57 +27,43 @@ namespace ReportPortal.Client.Resources
                 uri += $"?{filterOption}";
             }
 
-            var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<Content<LogItemResponse>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await GetAsJsonAsync<Content<LogItemResponse>>(uri);
         }
 
         public async Task<LogItemResponse> GetAsync(string uuid)
         {
-            var uri = $"{ProjectName}/log/uuid/{uuid}";
-            var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<LogItemResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await GetAsJsonAsync<LogItemResponse>($"{ProjectName}/log/uuid/{uuid}");
         }
 
         public async Task<LogItemResponse> GetAsync(long id)
         {
-            var uri = $"{ProjectName}/log/{id}";
-            var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<LogItemResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await GetAsJsonAsync<LogItemResponse>($"{ProjectName}/log/{id}");
         }
 
         public async Task<byte[]> GetBinaryDataAsync(string id)
         {
-            var uri = $"data/{ProjectName}/{id}";
-            var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+            return await GetAsBytesAsync($"data/{ProjectName}/{id}");
         }
 
-        public async Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest model)
+        public async Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request)
         {
             var uri = $"{ProjectName}/log";
 
-            if (model.Attach == null)
+            if (request.Attach == null)
             {
-                var body = ModelSerializer.Serialize<CreateLogItemRequest>(model);
-                var response = await HttpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
-                response.VerifySuccessStatusCode();
-                return ModelSerializer.Deserialize<LogItemCreatedResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+                return await PostAsJsonAsync<LogItemCreatedResponse, CreateLogItemRequest>(uri, request);
             }
             else
             {
-                var body = ModelSerializer.Serialize<List<CreateLogItemRequest>>(new List<CreateLogItemRequest> { model });
+                var body = ModelSerializer.Serialize<List<CreateLogItemRequest>>(new List<CreateLogItemRequest> { request });
                 var multipartContent = new MultipartFormDataContent();
 
                 var jsonContent = new StringContent(body, Encoding.UTF8, "application/json");
                 multipartContent.Add(jsonContent, "json_request_part");
 
-                var byteArrayContent = new ByteArrayContent(model.Attach.Data, 0, model.Attach.Data.Length);
-                byteArrayContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(model.Attach.MimeType);
-                multipartContent.Add(byteArrayContent, "file", model.Attach.Name);
+                var byteArrayContent = new ByteArrayContent(request.Attach.Data, 0, request.Attach.Data.Length);
+                byteArrayContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(request.Attach.MimeType);
+                multipartContent.Add(byteArrayContent, "file", request.Attach.Name);
 
                 var response = await HttpClient.PostAsync(uri, multipartContent).ConfigureAwait(false);
                 response.VerifySuccessStatusCode();
@@ -95,10 +81,7 @@ namespace ReportPortal.Client.Resources
 
         public async Task<MessageResponse> DeleteAsync(long id)
         {
-            var uri = $"{ProjectName}/log/{id}";
-            var response = await HttpClient.DeleteAsync(uri).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/log/{id}");
         }
     }
 }

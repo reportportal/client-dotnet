@@ -24,6 +24,11 @@ namespace ReportPortal.Client.Abstractions.Resources
         /// <returns></returns>
         Task<Content<UserFilterResponse>> GetAsync(FilterOption filterOption = null);
 
+        /// <summary>
+        /// Gets user filter by id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         Task<UserFilterResponse> GetAsync(long id);
 
         /// <summary>

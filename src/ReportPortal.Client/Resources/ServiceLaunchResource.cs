@@ -2,10 +2,7 @@
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Resources;
 using ReportPortal.Client.Abstractions.Responses;
-using ReportPortal.Client.Converters;
-using ReportPortal.Client.Extentions;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ReportPortal.Client.Resources
@@ -26,9 +23,7 @@ namespace ReportPortal.Client.Resources
                 uri += $"?{filterOption}";
             }
 
-            var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<Content<LaunchResponse>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await GetAsJsonAsync<Content<LaunchResponse>>(uri).ConfigureAwait(false);
         }
 
         public async Task<Content<LaunchResponse>> GetDebugAsync(FilterOption filterOption = null)
@@ -40,87 +35,52 @@ namespace ReportPortal.Client.Resources
                 uri += $"?{filterOption}";
             }
 
-            var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<Content<LaunchResponse>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await GetAsJsonAsync<Content<LaunchResponse>>(uri);
         }
 
         public async Task<LaunchResponse> GetAsync(string uuid)
         {
-            var uri = $"{ProjectName}/launch/uuid/{uuid}";
-            var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<LaunchResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await GetAsJsonAsync<LaunchResponse>($"{ProjectName}/launch/uuid/{uuid}");
         }
 
         public async Task<LaunchResponse> GetAsync(long id)
         {
-            var uri = $"{ProjectName}/launch/{id}";
-            var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<LaunchResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await GetAsJsonAsync<LaunchResponse>($"{ProjectName}/launch/{id}");
         }
 
         public async Task<LaunchCreatedResponse> StartAsync(StartLaunchRequest request)
         {
-            var uri = $"{ProjectName}/launch";
-            var body = ModelSerializer.Serialize<StartLaunchRequest>(request);
-            var response = await HttpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<LaunchCreatedResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await PostAsJsonAsync<LaunchCreatedResponse, StartLaunchRequest>($"{ProjectName}/launch", request);
         }
 
         public async Task<LaunchFinishedResponse> FinishAsync(string uuid, FinishLaunchRequest request)
         {
-            var uri = $"{ProjectName}/launch/{uuid}/finish";
-            var body = ModelSerializer.Serialize<FinishLaunchRequest>(request);
-            var response = await HttpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<LaunchFinishedResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await PutAsJsonAsync<LaunchFinishedResponse, FinishLaunchRequest>($"{ProjectName}/launch/{uuid}/finish", request);
         }
 
         public async Task<LaunchFinishedResponse> StopAsync(long id, FinishLaunchRequest request)
         {
-            var uri = $"{ProjectName}/launch/{id}/stop";
-            var body = ModelSerializer.Serialize<FinishLaunchRequest>(request);
-            var response = await HttpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<LaunchFinishedResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await PutAsJsonAsync<LaunchFinishedResponse, FinishLaunchRequest>($"{ProjectName}/launch/{id}/stop", request);
         }
 
         public async Task<MessageResponse> DeleteAsync(long id)
         {
-            var uri = $"{ProjectName}/launch/{id}";
-            var response = await HttpClient.DeleteAsync(uri).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/launch/{id}");
         }
 
         public async Task<LaunchResponse> MergeAsync(MergeLaunchesRequest request)
         {
-            var uri = $"{ProjectName}/launch/merge";
-            var body = ModelSerializer.Serialize<MergeLaunchesRequest>(request);
-            var response = await HttpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<LaunchResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await PostAsJsonAsync<LaunchResponse, MergeLaunchesRequest>($"{ProjectName}/launch/merge", request);
         }
 
         public async Task<MessageResponse> UpdateAsync(long id, UpdateLaunchRequest request)
         {
-            var uri = $"{ProjectName}/launch/{id}/update";
-            var body = ModelSerializer.Serialize<UpdateLaunchRequest>(request);
-            var response = await HttpClient.PutAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await PutAsJsonAsync<MessageResponse, UpdateLaunchRequest>($"{ProjectName}/launch/{id}/update", request);
         }
 
         public async Task<MessageResponse> AnalyzeAsync(AnalyzeLaunchRequest request)
         {
-            var uri = $"{ProjectName}/launch/analyze";
-            var body = ModelSerializer.Serialize<AnalyzeLaunchRequest>(request);
-            var response = await HttpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await PostAsJsonAsync<MessageResponse, AnalyzeLaunchRequest>($"{ProjectName}/launch/analyze", request);
         }
     }
 }

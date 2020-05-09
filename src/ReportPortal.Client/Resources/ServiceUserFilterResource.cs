@@ -2,10 +2,7 @@
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Resources;
 using ReportPortal.Client.Abstractions.Responses;
-using ReportPortal.Client.Converters;
-using ReportPortal.Client.Extentions;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ReportPortal.Client.Resources
@@ -16,14 +13,9 @@ namespace ReportPortal.Client.Resources
         {
         }
 
-        public async Task<UserFilterCreatedResponse> CreateAsync(CreateUserFilterRequest model)
+        public async Task<UserFilterCreatedResponse> CreateAsync(CreateUserFilterRequest request)
         {
-            var uri = $"{ProjectName}/filter";
-
-            var body = ModelSerializer.Serialize<CreateUserFilterRequest>(model);
-            var response = await HttpClient.PostAsync(uri, new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<UserFilterCreatedResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await PostAsJsonAsync<UserFilterCreatedResponse, CreateUserFilterRequest>($"{ProjectName}/filter", request);
         }
 
         public async Task<Content<UserFilterResponse>> GetAsync(FilterOption filterOption = null)
@@ -33,27 +25,18 @@ namespace ReportPortal.Client.Resources
             {
                 uri += $"?{filterOption}";
             }
-            var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<Content<UserFilterResponse>>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+
+            return await GetAsJsonAsync<Content<UserFilterResponse>>(uri);
         }
 
         public async Task<UserFilterResponse> GetAsync(long id)
         {
-            var uri = $"{ProjectName}/filter/{id}";
-
-            var response = await HttpClient.GetAsync(uri).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<UserFilterResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await GetAsJsonAsync<UserFilterResponse>($"{ProjectName}/filter/{id}");
         }
 
         public async Task<MessageResponse> DeleteAsync(long id)
         {
-            var uri = $"{ProjectName}/filter/{id}";
-
-            var response = await HttpClient.DeleteAsync(uri).ConfigureAwait(false);
-            response.VerifySuccessStatusCode();
-            return ModelSerializer.Deserialize<MessageResponse>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return await DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/filter/{id}");
         }
     }
 }
