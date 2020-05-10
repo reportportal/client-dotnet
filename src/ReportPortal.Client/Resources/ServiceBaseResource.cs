@@ -61,7 +61,7 @@ namespace ReportPortal.Client.Resources
                     {
                         using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                         {
-                            CheckSuccessStatusCodeAsync(response, stream);
+                            CheckSuccessStatusCode(response, stream);
 
                             return ModelSerializer.Deserialize<TResponse>(stream);
                         }
@@ -78,7 +78,7 @@ namespace ReportPortal.Client.Resources
                 {
                     using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                     {
-                        CheckSuccessStatusCodeAsync(response, stream);
+                        CheckSuccessStatusCode(response, stream);
 
                         using (var memoryStream = new MemoryStream())
                         {
@@ -90,7 +90,7 @@ namespace ReportPortal.Client.Resources
             }
         }
 
-        private void CheckSuccessStatusCodeAsync(HttpResponseMessage response, Stream stream)
+        private void CheckSuccessStatusCode(HttpResponseMessage response, Stream stream)
         {
             if (!response.IsSuccessStatusCode)
             {
