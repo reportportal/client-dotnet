@@ -61,7 +61,7 @@ namespace ReportPortal.Client.Resources
                     {
                         using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                         {
-                            await CheckSuccessStatusCodeAsync(response, stream).ConfigureAwait(false);
+                            CheckSuccessStatusCodeAsync(response, stream);
 
                             return ModelSerializer.Deserialize<TResponse>(stream);
                         }
@@ -78,7 +78,7 @@ namespace ReportPortal.Client.Resources
                 {
                     using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                     {
-                        await CheckSuccessStatusCodeAsync(response, stream).ConfigureAwait(false);
+                        CheckSuccessStatusCodeAsync(response, stream);
 
                         using (var memoryStream = new MemoryStream())
                         {
@@ -90,13 +90,13 @@ namespace ReportPortal.Client.Resources
             }
         }
 
-        private async Task CheckSuccessStatusCodeAsync(HttpResponseMessage response, Stream stream)
+        private void CheckSuccessStatusCodeAsync(HttpResponseMessage response, Stream stream)
         {
             if (!response.IsSuccessStatusCode)
             {
                 using (var reader = new StreamReader(stream))
                 {
-                    string body = await reader.ReadToEndAsync().ConfigureAwait(false);
+                    string body = reader.ReadToEnd();
                     throw new ReportPortalException($"Response status code does not indicate success: {response.StatusCode} ({(int)response.StatusCode}) {response.RequestMessage.Method} {response.RequestMessage.RequestUri}", new HttpRequestException($"Response message: {body}"));
                 }
             }
