@@ -114,7 +114,7 @@ namespace ReportPortal.Shared.Benchmark.Reporter
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<TestItemHistoryResponse>> GetHistoryAsync(IEnumerable<long> testItemIds, int depth, bool full)
+        public Task<Content<TestItemHistoryContainer>> GetHistoryAsync(long testItemId, int depth)
         {
             throw new NotImplementedException();
         }
