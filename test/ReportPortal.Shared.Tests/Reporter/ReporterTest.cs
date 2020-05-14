@@ -2,6 +2,7 @@
 using Moq;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Responses;
+using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Reporter;
 using ReportPortal.Shared.Tests.Helpers;
 using System;
@@ -42,7 +43,7 @@ namespace ReportPortal.Shared.Tests.Reporter
         {
             var service = new MockServiceBuilder().Build();
 
-            var launchReporter = new LaunchReporter(service.Object, null, null);
+            var launchReporter = new LaunchReporter(service.Object, null, null, new ExtensionManager());
             launchReporter.Start(new StartLaunchRequest { StartTime = DateTime.UtcNow });
 
             for (int i = 0; i < 10; i++)
@@ -216,7 +217,7 @@ namespace ReportPortal.Shared.Tests.Reporter
 
             for (int i = 0; i < 100; i++)
             {
-                var launchReporter = new Mock<LaunchReporter>(service.Object);
+                var launchReporter = new Mock<LaunchReporter>(service.Object, null, null, new ExtensionManager());
 
                 launchReporter.Object.Start(new StartLaunchRequest
                 {
@@ -309,7 +310,7 @@ namespace ReportPortal.Shared.Tests.Reporter
         {
             var service = new MockServiceBuilder().Build();
 
-            var launch = new LaunchReporter(service.Object, null, null);
+            var launch = new LaunchReporter(service.Object, null, null, new ExtensionManager());
             launch.Start(new StartLaunchRequest { });
 
             var test = launch.StartChildTestReporter(new StartTestItemRequest { });
@@ -323,7 +324,7 @@ namespace ReportPortal.Shared.Tests.Reporter
         {
             var service = new MockServiceBuilder().Build();
 
-            var launch = new LaunchReporter(service.Object, null, null);
+            var launch = new LaunchReporter(service.Object, null, null, new Mock<IExtensionManager>().Object);
             launch.Start(new StartLaunchRequest { });
             launch.Finish(new FinishLaunchRequest());
             launch.Invoking(l => l.Finish(new FinishLaunchRequest())).Should().Throw<InsufficientExecutionStackException>().And.Message.Should().Contain("already scheduled for finishing");
@@ -334,7 +335,7 @@ namespace ReportPortal.Shared.Tests.Reporter
         {
             var service = new MockServiceBuilder().Build();
 
-            var launch = new LaunchReporter(service.Object, null, null);
+            var launch = new LaunchReporter(service.Object, null, null, new ExtensionManager());
             launch.Invoking(l => l.Finish(new FinishLaunchRequest())).Should().Throw<InsufficientExecutionStackException>().And.Message.Should().Contain("wasn't scheduled for starting");
         }
 
@@ -343,7 +344,7 @@ namespace ReportPortal.Shared.Tests.Reporter
         {
             var service = new MockServiceBuilder().Build();
 
-            var launch = new LaunchReporter(service.Object, null, null);
+            var launch = new LaunchReporter(service.Object, null, null, new ExtensionManager());
             launch.Start(new StartLaunchRequest { });
             launch.Invoking(l => l.Start(new StartLaunchRequest { })).Should().Throw<InsufficientExecutionStackException>().And.Message.Should().Contain("already scheduled for starting");
         }
@@ -353,7 +354,7 @@ namespace ReportPortal.Shared.Tests.Reporter
         {
             var service = new MockServiceBuilder().Build();
 
-            var launch = new LaunchReporter(service.Object, null, null);
+            var launch = new LaunchReporter(service.Object, null, null, new Mock<IExtensionManager>().Object);
             launch.Start(new StartLaunchRequest { });
             var test = launch.StartChildTestReporter(new StartTestItemRequest());
             var innerTest = test.StartChildTestReporter(new StartTestItemRequest());
@@ -367,7 +368,7 @@ namespace ReportPortal.Shared.Tests.Reporter
         {
             var service = new MockServiceBuilder().Build();
 
-            var launch = new LaunchReporter(service.Object, null, null);
+            var launch = new LaunchReporter(service.Object, null, null, new Mock<IExtensionManager>().Object);
             launch.Start(new StartLaunchRequest());
             var test = launch.StartChildTestReporter(new StartTestItemRequest());
             test.Invoking(t => t.Start(new StartTestItemRequest())).Should().ThrowExactly<InsufficientExecutionStackException>();
@@ -381,7 +382,7 @@ namespace ReportPortal.Shared.Tests.Reporter
             var config = new Shared.Configuration.ConfigurationBuilder().Build();
             config.Properties["Launch:RerunOf"] = "any_uuid_of_existing_launch";
 
-            var launch = new LaunchReporter(service.Object, config, null);
+            var launch = new LaunchReporter(service.Object, config, null, new Mock<IExtensionManager>().Object);
             launch.Start(new StartLaunchRequest() { StartTime = DateTime.UtcNow });
             launch.Finish(new FinishLaunchRequest() { EndTime = DateTime.UtcNow });
             launch.Sync();
@@ -397,7 +398,7 @@ namespace ReportPortal.Shared.Tests.Reporter
 
             var service = new MockServiceBuilder().Build();
 
-            var launch = new LaunchReporter(service.Object, null, null);
+            var launch = new LaunchReporter(service.Object, null, null, new ExtensionManager());
             launch.Start(new StartLaunchRequest() { StartTime = launchStartTime });
             launch.Finish(new FinishLaunchRequest() { EndTime = launchStartTime.AddDays(-1) });
             launch.Sync();

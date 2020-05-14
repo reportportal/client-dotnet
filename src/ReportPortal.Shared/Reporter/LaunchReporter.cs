@@ -4,9 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using ReportPortal.Client.Abstractions;
 using ReportPortal.Client.Abstractions.Requests;
-using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Shared.Configuration;
-using ReportPortal.Shared.Configuration.Providers;
+using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Internal.Delegating;
 
 namespace ReportPortal.Shared.Reporter
@@ -21,26 +20,11 @@ namespace ReportPortal.Shared.Reporter
 
         private readonly IRequestExecuter _requestExecuter;
 
+        private readonly IExtensionManager _extensionManager;
+
         private readonly object _lockObj = new object();
 
-        [Obsolete("This ctor will be removed. Use (Service service, IConfiguration configuration, IRequestExecuter requestExecuter)")]
-        public LaunchReporter(IClientService service) : this(service, null, null)
-        {
-            _service = service;
-        }
-
-        [Obsolete("This ctor will be removed. Use (Service service, IConfiguration configuration, IRequestExecuter requestExecuter) where launchId argument can be spicified by IConfiguration [Launch:Id]")]
-        public LaunchReporter(IClientService service, string launchId) : this(service)
-        {
-            _isExternalLaunchId = true;
-
-            LaunchInfo = new LaunchInfo
-            {
-                Uuid = launchId
-            };
-        }
-
-        public LaunchReporter(IClientService service, IConfiguration configuration, IRequestExecuter requestExecuter)
+        public LaunchReporter(IClientService service, IConfiguration configuration, IRequestExecuter requestExecuter, IExtensionManager extensionManager)
         {
             _service = service;
 
@@ -54,14 +38,9 @@ namespace ReportPortal.Shared.Reporter
                 _configuration = new ConfigurationBuilder().AddJsonFile(jsonPath).AddEnvironmentVariables().Build();
             }
 
-            if (requestExecuter != null)
-            {
-                _requestExecuter = requestExecuter;
-            }
-            else
-            {
-                _requestExecuter = new RequestExecuterFactory(_configuration).Create();
-            }
+            _requestExecuter = requestExecuter ?? new RequestExecuterFactory(_configuration).Create();
+
+            _extensionManager = extensionManager ?? throw new ArgumentNullException(nameof(extensionManager));
 
             // identify whether launch is already started by any external system
             var externalLaunchUuid = _configuration.GetValue<string>("Launch:Id", null);
@@ -254,7 +233,7 @@ namespace ReportPortal.Shared.Reporter
 
         public ITestReporter StartChildTestReporter(StartTestItemRequest request)
         {
-            var newTestNode = new TestReporter(_service, this, null, _requestExecuter);
+            var newTestNode = new TestReporter(_service, this, null, _requestExecuter, _extensionManager);
             newTestNode.Start(request);
 
             lock (_lockObj)

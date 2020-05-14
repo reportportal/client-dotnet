@@ -51,7 +51,7 @@ namespace ReportPortal.Shared.Logging
 
                     if (rootScope == null)
                     {
-                        rootScope = new RootLogScope(this);
+                        rootScope = new RootLogScope(this, _extensionManager);
 
                         RootScope = rootScope;
                     }

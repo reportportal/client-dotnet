@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using ReportPortal.Client.Abstractions;
 using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Internal.Delegating;
 using ReportPortal.Shared.Internal.Logging;
 
@@ -14,15 +14,17 @@ namespace ReportPortal.Shared.Reporter
     {
         private readonly IClientService _service;
         private readonly IRequestExecuter _requestExecuter;
+        private readonly IExtensionManager _extensionManager;
 
         private static ITraceLogger TraceLogger { get; } = TraceLogManager.Instance.GetLogger<TestReporter>();
 
         private readonly object _lockObj = new object();
 
-        public TestReporter(IClientService service, ILaunchReporter launchReporter, ITestReporter parentTestReporter, IRequestExecuter requestExecuter)
+        public TestReporter(IClientService service, ILaunchReporter launchReporter, ITestReporter parentTestReporter, IRequestExecuter requestExecuter, IExtensionManager extensionManager)
         {
             _service = service;
             _requestExecuter = requestExecuter;
+            _extensionManager = extensionManager;
             LaunchReporter = launchReporter;
             ParentTestReporter = parentTestReporter;
         }
@@ -209,7 +211,7 @@ namespace ReportPortal.Shared.Reporter
 
             TraceLogger.Verbose($"Scheduling request to start new '{request.Name}' test item in {GetHashCode()} proxy instance");
 
-            var newTestNode = new TestReporter(_service, LaunchReporter, this, _requestExecuter);
+            var newTestNode = new TestReporter(_service, LaunchReporter, this, _requestExecuter, _extensionManager);
             newTestNode.Start(request);
 
             lock (_lockObj)
@@ -267,7 +269,7 @@ namespace ReportPortal.Shared.Reporter
 
                             request.TestItemUuid = TestInfo.Uuid;
 
-                            foreach (var formatter in Bridge.LogFormatterExtensions)
+                            foreach (var formatter in _extensionManager.LogFormatters)
                             {
                                 formatter.FormatLog(request);
                             }

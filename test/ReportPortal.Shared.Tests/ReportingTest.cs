@@ -2,6 +2,7 @@ using ReportPortal.Client;
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Configuration;
+using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Reporter;
 using ReportPortal.Shared.Tests.Helpers;
 using System;
@@ -11,7 +12,7 @@ using Xunit;
 
 namespace ReportPortal.Shared.Tests
 {
-    [CollectionDefinition(nameof(ReportingTest), DisableParallelization = true)]
+    [Collection("Static")]
     public class ReportingTest
     {
         private readonly Service _service = new Service(new Uri("https://alpha.reportportal.io/api/v1/"), "default_personal", "cd9c39d6-c9a2-45b0-8e48-c4f0151114d0");
@@ -59,7 +60,7 @@ namespace ReportPortal.Shared.Tests
             var config = new ConfigurationBuilder().Build();
             config.Properties["Launch:Id"] = launch.Uuid;
 
-            var launchReporter = new LaunchReporter(_service, config, null);
+            var launchReporter = new LaunchReporter(_service, config, null, new ExtensionManager());
             launchReporter.Start(new StartLaunchRequest
             {
                 Name = "SomeOtherName",
@@ -89,85 +90,6 @@ namespace ReportPortal.Shared.Tests
             await _service.Launch.DeleteAsync(gotLaunch.Id);
         }
 
-        [Fact]
-        public async Task BridgeLogMessage()
-        {
-            var launchReporter = new LaunchReporter(_service, null, null);
-
-            Bridge.Context.LaunchReporter = launchReporter;
-
-            launchReporter.Start(new StartLaunchRequest
-            {
-                Name = "ReportPortal Shared",
-                StartTime = DateTime.UtcNow,
-                Mode = LaunchMode.Debug
-            });
-
-            var suiteNode = launchReporter.StartChildTestReporter(new StartTestItemRequest
-            {
-                Name = $"Suite",
-                StartTime = DateTime.UtcNow,
-                Type = TestItemType.Suite
-            });
-
-            var testNode = suiteNode.StartChildTestReporter(new StartTestItemRequest
-            {
-                Name = $"Test",
-                StartTime = DateTime.UtcNow,
-                Type = TestItemType.Step
-            });
-
-            //nested steps
-            for (int i = 0; i < 20; i++)
-            {
-                var stepNode = testNode.StartChildTestReporter(new StartTestItemRequest
-                {
-                    Name = $"Step {i}",
-                    StartTime = DateTime.UtcNow,
-                    Type = TestItemType.Step,
-                    HasStats = false
-                });
-
-                for (int j = 0; j < 20; j++)
-                {
-                    Log.Message(new CreateLogItemRequest
-                    {
-                        Level = LogLevel.Info,
-                        Time = DateTime.UtcNow.AddMilliseconds(j),
-                        Text = $"Log {j}"
-                    });
-                }
-
-                stepNode.Finish(new FinishTestItemRequest
-                {
-                    EndTime = DateTime.UtcNow,
-                    Status = Status.Passed
-                });
-            }
-
-            testNode.Finish(new FinishTestItemRequest
-            {
-                EndTime = DateTime.UtcNow,
-                Status = Status.Passed
-            });
-
-            suiteNode.Finish(new FinishTestItemRequest
-            {
-                EndTime = DateTime.UtcNow,
-                Status = Status.Passed
-            });
-
-            launchReporter.Finish(new FinishLaunchRequest
-            {
-                EndTime = DateTime.UtcNow
-            });
-
-            launchReporter.Sync();
-
-            var gotLaunch = await _service.Launch.GetAsync(launchReporter.LaunchInfo.Uuid);
-            await _service.Launch.DeleteAsync(gotLaunch.Id);
-        }
-
         [Fact(Skip = "There are issues with rerun on server side")]
         public async Task UseRerunLaunchId()
         {
@@ -189,7 +111,7 @@ namespace ReportPortal.Shared.Tests
             {
                 tasks.Add(Task.Run(() =>
                 {
-                    var r_launch = new LaunchReporter(_service, config, null);
+                    var r_launch = new LaunchReporter(_service, config, null, null);
 
                     r_launch.Start(new StartLaunchRequest
                     {
@@ -305,7 +227,7 @@ namespace ReportPortal.Shared.Tests
             config.Properties["Launch:Rerun"] = true;
 
 
-            var r_launch = new LaunchReporter(_service, config, null);
+            var r_launch = new LaunchReporter(_service, config, null, new ExtensionManager());
 
             r_launch.Start(new StartLaunchRequest
             {

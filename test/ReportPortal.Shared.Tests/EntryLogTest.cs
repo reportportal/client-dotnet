@@ -9,7 +9,7 @@ using Xunit;
 
 namespace ReportPortal.Shared.Tests
 {
-    [CollectionDefinition(nameof(EntryLogTest), DisableParallelization = true)]
+    [Collection("Static")]
     public class EntryLogTest : IDisposable
     {
         private string text = "text";
@@ -23,7 +23,7 @@ namespace ReportPortal.Shared.Tests
             _logHandler = new Mock<ILogHandler>();
             _logHandler.Setup(lh => lh.Handle(It.IsAny<ILogScope>(), It.IsAny<CreateLogItemRequest>())).Callback((ILogScope ls, CreateLogItemRequest clr) => { _logRequest = clr; });
 
-            Bridge.LogHandlerExtensions.Add(_logHandler.Object);
+            ExtensionManager.Instance.LogHandlers.Add(_logHandler.Object);
         }
 
         private CreateLogItemRequest _logRequest;
@@ -128,7 +128,7 @@ namespace ReportPortal.Shared.Tests
 
         public void Dispose()
         {
-            Bridge.LogHandlerExtensions.Remove(_logHandler.Object);
+            ExtensionManager.Instance.LogHandlers.Remove(_logHandler.Object);
         }
     }
 }

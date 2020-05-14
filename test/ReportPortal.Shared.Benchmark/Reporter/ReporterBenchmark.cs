@@ -19,7 +19,7 @@ namespace ReportPortal.Shared.Benchmark.Reporter
             var configuration = new Configuration.ConfigurationBuilder().Build();
 
             var nopService = new NopService();
-            var launchReporter = new LaunchReporter(nopService, configuration, null);
+            var launchReporter = new LaunchReporter(nopService, configuration, null, null);
 
             var launchDateTime = DateTime.UtcNow;
 

@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using Moq;
-using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Logging;
 using System;
@@ -11,7 +10,7 @@ using Xunit;
 
 namespace ReportPortal.Shared.Tests
 {
-    [CollectionDefinition(nameof(LogScopeFixture), DisableParallelization = true)]
+    [Collection("Static")]
     public class LogScopeFixture
     {
         [Fact]
@@ -164,26 +163,23 @@ namespace ReportPortal.Shared.Tests
         public void ShouldNotifyLogHandlers()
         {
             var handler = new Mock<ILogHandler>();
-            Bridge.LogHandlerExtensions.Add(handler.Object);
+            ExtensionManager.Instance.LogHandlers.Add(handler.Object);
 
-            Log.Info("abc");
             for (int i = 0; i < 5; i++)
             {
                 using (var scope = Log.BeginScope("scope"))
                 {
-                    Log.Info("qwe");
-
+                    Log.ActiveScope.Info("abc");
                     Log.RootScope.Info("abc");
                 }
             }
-            Log.Info("abc");
 
-            handler.Verify(h => h.Handle(null, It.IsAny<Client.Abstractions.Requests.CreateLogItemRequest>()), Times.Exactly(7));
+            handler.Verify(h => h.Handle(null, It.IsAny<Client.Abstractions.Requests.CreateLogItemRequest>()), Times.Exactly(5));
             handler.Verify(h => h.Handle(It.Is<ILogScope>(ls => ls != null), It.IsAny<Client.Abstractions.Requests.CreateLogItemRequest>()), Times.Exactly(5));
             handler.Verify(h => h.BeginScope(It.IsAny<ILogScope>()), Times.Exactly(5));
             handler.Verify(h => h.EndScope(It.IsAny<ILogScope>()), Times.Exactly(5));
 
-            Bridge.LogHandlerExtensions.Remove(handler.Object);
+            ExtensionManager.Instance.LogHandlers.Remove(handler.Object);
         }
 
         [Fact]

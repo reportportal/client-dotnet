@@ -1,6 +1,7 @@
 ﻿using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Responses;
+using ReportPortal.Shared.Extensibility;
 using System;
 
 namespace ReportPortal.Shared.Logging
@@ -9,9 +10,12 @@ namespace ReportPortal.Shared.Logging
     {
         protected ILogScopeManager _logScopeManager;
 
-        public BaseLogScope(ILogScopeManager logScopeManager)
+        protected IExtensionManager _extensionManager;
+
+        public BaseLogScope(ILogScopeManager logScopeManager, IExtensionManager extensionManager)
         {
             _logScopeManager = logScopeManager;
+            _extensionManager = extensionManager;
 
             BeginTime = DateTime.UtcNow;
         }
@@ -30,7 +34,7 @@ namespace ReportPortal.Shared.Logging
 
         public virtual ILogScope BeginScope(string name)
         {
-            var logScope = new LogScope(_logScopeManager, this, name);
+            var logScope = new LogScope(_logScopeManager, _extensionManager, this, name);
             _logScopeManager.ActiveScope = logScope;
 
             return logScope;
@@ -128,7 +132,7 @@ namespace ReportPortal.Shared.Logging
 
         public virtual void Message(CreateLogItemRequest logRequest)
         {
-            foreach (var handler in Bridge.LogHandlerExtensions)
+            foreach (var handler in _extensionManager.LogHandlers)
             {
                 var isHandled = handler.Handle(this, logRequest);
 

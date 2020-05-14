@@ -1,10 +1,11 @@
-﻿using System;
+﻿using ReportPortal.Shared.Extensibility;
+using System;
 
 namespace ReportPortal.Shared.Logging
 {
     class LogScope : BaseLogScope
     {
-        public LogScope(ILogScopeManager logScopeManager, ILogScope parent, string name) : base(logScopeManager)
+        public LogScope(ILogScopeManager logScopeManager, IExtensionManager extensionManager, ILogScope parent, string name) : base(logScopeManager, extensionManager)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -14,7 +15,7 @@ namespace ReportPortal.Shared.Logging
             Parent = parent;
             Name = name;
 
-            foreach (var logHandler in Bridge.LogHandlerExtensions)
+            foreach (var logHandler in _extensionManager.LogHandlers)
             {
                 logHandler.BeginScope(this);
             }
@@ -28,7 +29,7 @@ namespace ReportPortal.Shared.Logging
         {
             base.Dispose();
 
-            foreach (var logHandler in Bridge.LogHandlerExtensions)
+            foreach (var logHandler in _extensionManager.LogHandlers)
             {
                 logHandler.EndScope(this);
             }

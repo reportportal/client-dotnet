@@ -1,10 +1,11 @@
 ﻿using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Shared.Extensibility;
 
 namespace ReportPortal.Shared.Logging
 {
     class RootLogScope : BaseLogScope
     {
-        public RootLogScope(ILogScopeManager logScopeManager) : base(logScopeManager)
+        public RootLogScope(ILogScopeManager logScopeManager, IExtensionManager extensionManager) : base(logScopeManager, extensionManager)
         {
 
         }
@@ -13,7 +14,7 @@ namespace ReportPortal.Shared.Logging
 
         public override void Message(CreateLogItemRequest logRequest)
         {
-            foreach (var handler in Bridge.LogHandlerExtensions)
+            foreach (var handler in _extensionManager.LogHandlers)
             {
                 var isHandled = handler.Handle(null, logRequest);
 
@@ -23,7 +24,7 @@ namespace ReportPortal.Shared.Logging
 
         public override ILogScope BeginScope(string name)
         {
-            var logScope = new LogScope(_logScopeManager, null, name);
+            var logScope = new LogScope(_logScopeManager, _extensionManager, null, name);
             _logScopeManager.ActiveScope = logScope;
 
             return logScope;

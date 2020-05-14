@@ -1,6 +1,7 @@
 ﻿using ReportPortal.Client.Abstractions;
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Internal.Delegating;
 using ReportPortal.Shared.Reporter;
 using System;
@@ -18,6 +19,8 @@ namespace ReportPortal.Shared.Tests.Helpers
 
         public IRequestExecuterFactory RequestExecuterFactory { get; set; }
 
+        public IExtensionManager ExtensionManager { get; set; } = new ExtensionManager();
+
         public LaunchReporterBuilder With(IRequestExecuterFactory requestExecuterFactory)
         {
             RequestExecuterFactory = requestExecuterFactory;
@@ -25,9 +28,16 @@ namespace ReportPortal.Shared.Tests.Helpers
             return this;
         }
 
+        public LaunchReporterBuilder With(IExtensionManager extensionManager)
+        {
+            ExtensionManager = extensionManager;
+
+            return this;
+        }
+
         public LaunchReporter Build(int suitesPerLaunch, int testsPerSuite, int logsPerTest)
         {
-            var launchReporter = new LaunchReporter(Service, null, RequestExecuterFactory?.Create());
+            var launchReporter = new LaunchReporter(Service, null, RequestExecuterFactory?.Create(), ExtensionManager);
 
             var launchDateTime = DateTime.UtcNow;
 

@@ -68,7 +68,7 @@ namespace ReportPortal.Shared.Tests.Internal.Logging
         {
             var obj = new { A = "a" };
             var tempDir = Directory.CreateDirectory(Path.GetRandomFileName());
-            var logger = TraceLogManager.Instance.WithBaseDir(tempDir.FullName).GetLogger(obj.GetType());
+            var logger = new TraceLogManager().WithBaseDir(tempDir.FullName).GetLogger(obj.GetType());
             logger.Info("some message");
             Assert.True(File.Exists($"{tempDir.FullName}/{_defaultLogFilePath}"));
 
@@ -80,7 +80,7 @@ namespace ReportPortal.Shared.Tests.Internal.Logging
         {
             var obj = new { A = "a" };
             var tempDir = new DirectoryInfo(Path.GetRandomFileName());
-            var logger = TraceLogManager.Instance.WithBaseDir(tempDir.FullName).GetLogger(obj.GetType());
+            var logger = new TraceLogManager().WithBaseDir(tempDir.FullName).GetLogger(obj.GetType());
             logger.Info("some message");
             Assert.False(File.Exists($"{tempDir.FullName}\\{_defaultLogFilePath}"));
             Assert.True(File.Exists(_defaultLogFilePath));
