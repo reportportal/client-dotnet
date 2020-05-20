@@ -1,6 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Reporter;
 using System;
 
@@ -19,7 +20,7 @@ namespace ReportPortal.Shared.Benchmark.Reporter
             var configuration = new Configuration.ConfigurationBuilder().Build();
 
             var nopService = new NopService();
-            var launchReporter = new LaunchReporter(nopService, configuration, null, null);
+            var launchReporter = new LaunchReporter(nopService, configuration, null, new ExtensionManager());
 
             var launchDateTime = DateTime.UtcNow;
 
