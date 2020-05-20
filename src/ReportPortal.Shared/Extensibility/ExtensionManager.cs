@@ -10,7 +10,13 @@ namespace ReportPortal.Shared.Extensibility
     {
         private static Internal.Logging.ITraceLogger TraceLogger { get; } = Internal.Logging.TraceLogManager.Instance.GetLogger(typeof(ExtensionManager));
 
-        private static Lazy<IExtensionManager> _instance = new Lazy<IExtensionManager>(() => { var ext = new ExtensionManager(); ext.Explore(Environment.CurrentDirectory); return ext; });
+        private static Lazy<IExtensionManager> _instance = new Lazy<IExtensionManager>(() =>
+            {
+                var ext = new ExtensionManager();
+                ext.Explore(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+                ext.Explore(Environment.CurrentDirectory);
+                return ext;
+            });
 
         public static IExtensionManager Instance => _instance.Value;
 
