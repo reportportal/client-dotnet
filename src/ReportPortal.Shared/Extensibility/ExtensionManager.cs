@@ -22,6 +22,8 @@ namespace ReportPortal.Shared.Extensibility
 
         private List<string> _exploredPaths = new List<string>();
 
+        private List<string> _exploredAssemblies = new List<string>();
+
         private static object _lockObj = new object();
 
         public void Explore(string path)
@@ -50,32 +52,36 @@ namespace ReportPortal.Shared.Extensibility
 
                         foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies().Where(a => a.GetName().Name.Contains("ReportPortal")))
                         {
-                            TraceLogger.Verbose($"Exploring '{assembly.FullName}' assembly for extensions.");
-                            try
+                            if (!_exploredAssemblies.Contains(assembly.Location))
                             {
-                                foreach (var type in assembly.GetTypes().Where(t => t.IsClass))
+                                _exploredAssemblies.Add(assembly.Location);
+                                TraceLogger.Verbose($"Exploring '{assembly.FullName}' assembly for extensions.");
+                                try
                                 {
-                                    if (iLogHandlerExtensionInterfaceType.IsAssignableFrom(type))
+                                    foreach (var type in assembly.GetTypes().Where(t => t.IsClass))
                                     {
-                                        var extension = Activator.CreateInstance(type);
-                                        logHandlers.Add((ILogHandler)extension);
-                                        TraceLogger.Info($"Registered '{type.FullName}' type as {nameof(ILogHandler)} extension.");
-                                    }
+                                        if (iLogHandlerExtensionInterfaceType.IsAssignableFrom(type))
+                                        {
+                                            var extension = Activator.CreateInstance(type);
+                                            logHandlers.Add((ILogHandler)extension);
+                                            TraceLogger.Info($"Registered '{type.FullName}' type as {nameof(ILogHandler)} extension.");
+                                        }
 
-                                    if (iLogFormatterExtensionInterfaceType.IsAssignableFrom(type))
-                                    {
-                                        var extension = Activator.CreateInstance(type);
-                                        logFormatters.Add((ILogFormatter)extension);
-                                        TraceLogger.Info($"Registered '{type.FullName}' type as {nameof(ILogFormatter)} extension.");
+                                        if (iLogFormatterExtensionInterfaceType.IsAssignableFrom(type))
+                                        {
+                                            var extension = Activator.CreateInstance(type);
+                                            logFormatters.Add((ILogFormatter)extension);
+                                            TraceLogger.Info($"Registered '{type.FullName}' type as {nameof(ILogFormatter)} extension.");
+                                        }
                                     }
                                 }
-                            }
-                            catch (ReflectionTypeLoadException exp)
-                            {
-                                TraceLogger.Error($"Couldn't load '{assembly.GetName().Name}' assembly into domain. \n {exp}");
-                                foreach (var loaderException in exp.LoaderExceptions)
+                                catch (ReflectionTypeLoadException exp)
                                 {
-                                    TraceLogger.Error(loaderException.ToString());
+                                    TraceLogger.Error($"Couldn't load '{assembly.GetName().Name}' assembly into domain. \n {exp}");
+                                    foreach (var loaderException in exp.LoaderExceptions)
+                                    {
+                                        TraceLogger.Error(loaderException.ToString());
+                                    }
                                 }
                             }
                         }
