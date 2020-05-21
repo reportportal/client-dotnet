@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <_ReportPortal_Shared_Runtime_Path>$(MSBuildThisFileDirectory)..\..\lib\net45\ReportPortal.Shared.dll</_ReportPortal_Shared_Runtime_Path>
+  </PropertyGroup>
+
+  <Target Name="ReportPortal_CopyConfigJsonFile" AfterTargets="BeforeBuild" Condition=" Exists('ReportPortal.config.json') ">
+    <ItemGroup>
+      <None Include="ReportPortal.config.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+  </Target>
+
+</Project>

@@ -1,3 +1,5 @@
+using FluentAssertions;
+using System;
 using Xunit;
 
 namespace ReportPortal.Shared.Tests
@@ -11,7 +13,14 @@ namespace ReportPortal.Shared.Tests
         [InlineData("application/octet-stream", ".unknown")]
         public void GetMimeType(string expectedMime, string fileExtension)
         {
-            Assert.Equal(expectedMime, MimeTypes.MimeTypeMap.GetMimeType(fileExtension));
+            MimeTypes.MimeTypeMap.GetMimeType(fileExtension).Should().Be(expectedMime);
+        }
+
+        [Fact]
+        public void ShouldThrowArgumentNullException()
+        {
+            Action act = () => MimeTypes.MimeTypeMap.GetMimeType(null);
+            act.Should().Throw<ArgumentNullException>();
         }
     }
 }

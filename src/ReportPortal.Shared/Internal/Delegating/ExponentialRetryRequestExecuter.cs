@@ -9,7 +9,7 @@ namespace ReportPortal.Shared.Internal.Delegating
     /// </summary>
     public class ExponentialRetryRequestExecuter : IRequestExecuter
     {
-        private Logging.ITraceLogger TraceLogger { get; } = Logging.TraceLogManager.GetLogger<ExponentialRetryRequestExecuter>();
+        private Logging.ITraceLogger TraceLogger { get; } = Logging.TraceLogManager.Instance.GetLogger<ExponentialRetryRequestExecuter>();
 
         private IRequestExecutionThrottler _concurrentThrottler;
 
@@ -57,9 +57,11 @@ namespace ReportPortal.Shared.Internal.Delegating
         public int BaseIndex { get; private set; }
 
         /// <inheritdoc/>
-        public async Task<T> ExecuteAsync<T>(Func<Task<T>> func)
+        public async Task<T> ExecuteAsync<T>(Func<Task<T>> func, Action<Exception> beforeNextAttempt = null)
         {
-            T result = default;
+            if (func == null) throw new ArgumentNullException(nameof(func));
+
+            T result = default(T);
 
             for (int i = 0; i < MaxRetryAttemps; i++)
             {
@@ -69,6 +71,7 @@ namespace ReportPortal.Shared.Internal.Delegating
                     {
                         await _concurrentThrottler.ReserveAsync().ConfigureAwait(false);
                     }
+
                     TraceLogger.Verbose($"Invoking {func.Method.Name} method... Current attempt: {i}");
                     result = await func().ConfigureAwait(false);
                     break;
@@ -80,6 +83,8 @@ namespace ReportPortal.Shared.Internal.Delegating
                         var delay = (int)Math.Pow(BaseIndex, i + MaxRetryAttemps);
                         TraceLogger.Error($"Error while invoking '{func.Method.Name}' method. Current attempt: {i}. Waiting {delay} seconds and retrying it.\n{exp}");
                         await Task.Delay(delay * 1000).ConfigureAwait(false);
+
+                        beforeNextAttempt?.Invoke(exp);
                     }
                     else
                     {

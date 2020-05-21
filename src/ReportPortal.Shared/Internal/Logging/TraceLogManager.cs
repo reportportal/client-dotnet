@@ -1,14 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 
 namespace ReportPortal.Shared.Internal.Logging
 {
     /// <summary>
     /// Class to manage all internal loggers.
     /// </summary>
-    public static class TraceLogManager
+    public class TraceLogManager
     {
+        static TraceLogManager()
+        {
+
+        }
+
+        private static readonly Lazy<TraceLogManager> _instance = new Lazy<TraceLogManager>(() => new TraceLogManager());
+
+        /// <summary>
+        /// Returns single instance of <see cref="TraceLogManager"/>
+        /// </summary>
+        public static TraceLogManager Instance
+        {
+            get
+            {
+                return _instance.Value;
+            }
+        }
+
+        private string _baseDir = Environment.CurrentDirectory;
+
+
+        /// <summary>
+        /// Fluently sets BaseDir.
+        /// </summary>
+        /// <param name="baseDir"></param>
+        /// <returns></returns>
+        public TraceLogManager WithBaseDir(string baseDir)
+        {
+            _baseDir = baseDir;
+
+            return this;
+        }
+
         readonly static object _lockObj = new object();
 
         static Dictionary<Type, ITraceLogger> _traceLoggers;
@@ -18,8 +52,10 @@ namespace ReportPortal.Shared.Internal.Logging
         /// </summary>
         /// <param name="type">Type where logger should be registered for</param>
         /// <returns><see cref="ITraceLogger"/> instance for logging internal messages</returns>
-        public static ITraceLogger GetLogger(Type type)
+        public ITraceLogger GetLogger(Type type)
         {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
             if (_traceLoggers == null)
             {
                 lock (_lockObj)
@@ -47,8 +83,10 @@ namespace ReportPortal.Shared.Internal.Logging
                     var traceSource = new TraceSource(type.Name);
 
                     traceSource.Switch = new SourceSwitch("ReportPortal_TraceSwitch", traceLevel.ToString());
-
+                    
                     var logFileName = $"{type.Assembly.GetName().Name}.{Process.GetCurrentProcess().Id}.log";
+
+                    logFileName = Path.Combine(_baseDir, logFileName);
 
                     var traceListener = new DefaultTraceListener
                     {
@@ -70,7 +108,7 @@ namespace ReportPortal.Shared.Internal.Logging
         /// </summary>
         /// <typeparam name="T">Type where logger should be registered for</typeparam>
         /// <returns><see cref="ITraceLogger"/> instance for logging internal messages</returns>
-        public static ITraceLogger GetLogger<T>()
+        public ITraceLogger GetLogger<T>()
         {
             return GetLogger(typeof(T));
         }

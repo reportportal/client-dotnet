@@ -34,6 +34,9 @@ namespace ReportPortal.Shared.Internal.Delegating
             IRequestExecuter executer;
             switch (retryStrategy.ToLowerInvariant())
             {
+                case "none":
+                    executer = new NoneRetryRequestExecuter(throttler);
+                    break;
                 case "exponential":
                     var maxExponentialAttempts = _configuration.GetValue("Server:Retry:MaxAttempts", 3);
                     var baseExponentialIndex = _configuration.GetValue("Server:Retry:BaseIndex", 2);
@@ -45,7 +48,7 @@ namespace ReportPortal.Shared.Internal.Delegating
                     executer = new LinearRetryRequestExecuter(maxLinearAttempts, linearDelay, throttler);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("Server:Retry:Strategy", $"Unknown '{retryStrategy}' retry strategy. Possible values are 'exponential' and 'linear'.");
+                    throw new Exception($"Unknown '{retryStrategy}' retry strategy.");
             }
 
             return executer;

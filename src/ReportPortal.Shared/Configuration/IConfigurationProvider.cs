@@ -8,14 +8,9 @@ namespace ReportPortal.Shared.Configuration
     public interface IConfigurationProvider
     {
         /// <summary>
-        /// Returns fetched configuration variables.
+        /// Fethes configuration variables as dictionary.
         /// </summary>
-        IDictionary<string, string> Properties { get; }
-
-        /// <summary>
-        /// Fethes configuration variables.
-        /// </summary>
-        /// <returns></returns>
+        /// <returns>Dictionary where key is property name and value is property value.</returns>
         IDictionary<string, string> Load();
     }
 }

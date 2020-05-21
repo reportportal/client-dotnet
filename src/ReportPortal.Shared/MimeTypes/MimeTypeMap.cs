@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace ReportPortal.Shared.MimeTypes
 {
+    /// <summary>
+    /// Maps file extension to mime type.
+    /// </summary>
     public static class MimeTypeMap
     {
         private static Dictionary<string, string> _mappings;
@@ -625,6 +628,11 @@ namespace ReportPortal.Shared.MimeTypes
             };
         }
 
+        /// <summary>
+        /// Tries to map file extension to mime type.
+        /// </summary>
+        /// <param name="extension">File extension.</param>
+        /// <returns>Mime type. "application/octet-stream" will be returned for unknown files.</returns>
         public static string GetMimeType(string extension)
         {
             if (extension == null)
@@ -632,7 +640,7 @@ namespace ReportPortal.Shared.MimeTypes
                 throw new ArgumentNullException(nameof(extension));
             }
 
-            if (!extension.StartsWith("."))
+            if (!extension.StartsWith(".", StringComparison.OrdinalIgnoreCase))
             {
                 extension = "." + extension;
             }

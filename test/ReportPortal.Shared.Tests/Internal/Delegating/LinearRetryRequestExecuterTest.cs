@@ -13,14 +13,14 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
         [Fact]
         public void DelayShouldBeGreaterOrEqualZero()
         {
-            Action ctor = () => new LinearRetryRequestExecuter(1, delay: -1, null);
+            Action ctor = () => new LinearRetryRequestExecuter(1, delay: -1, throttler: null);
             ctor.Should().Throw<ArgumentException>();
         }
 
         [Fact]
         public void MaxAttemptsShouldBeGreaterZero()
         {
-            Action ctor = () => new LinearRetryRequestExecuter(0, delay: 0, null);
+            Action ctor = () => new LinearRetryRequestExecuter(0, delay: 0, throttler: null);
             ctor.Should().Throw<ArgumentException>();
         }
 
@@ -85,6 +85,21 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
 
             throttler.Verify(t => t.ReserveAsync(), Times.Exactly(5));
             throttler.Verify(t => t.Release(), Times.Exactly(5));
+        }
+
+        [Fact]
+        public void ShouldInvokeCallbackAction()
+        {
+            var executer = new LinearRetryRequestExecuter(5, 0);
+
+            var action = new Mock<Func<Task<string>>>();
+            action.Setup(a => a()).Throws<TaskCanceledException>();
+
+            var invokedTimes = 0;
+
+            executer.Awaiting(e => e.ExecuteAsync(action.Object, (exp) => invokedTimes++)).Should().Throw<TaskCanceledException>();
+
+            invokedTimes.Should().Be(4);
         }
     }
 }

@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net45;</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net46;net45;</TargetFrameworks>
     <PackageId>ReportPortal.Shared</PackageId>
     <Version>1.0.0</Version>
     <Description>Multithreaded reporter of test results to http://reportportal.io</Description>
     <Authors>Nikolay Borisenko, Report Portal Community</Authors>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>http://reportportal.io</PackageProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/reportportal/commons-net/master/Logo.png</PackageIconUrl>
+    <PackageIcon>Logo.png</PackageIcon>
     <RepositoryType>GitHub</RepositoryType>
     <RepositoryUrl>https://github.com/reportportal/commons-net</RepositoryUrl>
     <PackageTags>reportportal report reporter api testing</PackageTags>
@@ -20,13 +20,15 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="ReportPortal.Client" Version="2.1.15">
+    <PackageReference Include="ReportPortal.Client" Version="3.0.0-beta.2">
       <PrivateAssets>contentfiles;analyzers;</PrivateAssets>
     </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\*.targets" Pack="true" PackagePath="build\" Visible="false" />
+    <None Include="Build\**\*.targets" Pack="true" PackagePath="build\" />
+    
+    <None Include="..\..\Logo.png" Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>
 
 </Project>

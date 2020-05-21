@@ -1,14 +1,17 @@
 ﻿using System;
-using ReportPortal.Client.Requests;
 using System.Text.RegularExpressions;
+using ReportPortal.Client.Abstractions.Requests;
 
 namespace ReportPortal.Shared.Extensibility.LogFormatter
 {
+    /// <inheritdoc/>
     public class Base64LogFormatter : ILogFormatter
     {
+        /// <inheritdoc/>
         public int Order => 10;
 
-        public bool FormatLog(ref AddLogItemRequest logRequest)
+        /// <inheritdoc/>
+        public bool FormatLog(CreateLogItemRequest logRequest)
         {
             if (logRequest.Text != null)
             {
@@ -21,7 +24,7 @@ namespace ReportPortal.Shared.Extensibility.LogFormatter
                     var mimeType = match.Groups[1].Value;
                     var bytes = Convert.FromBase64String(match.Groups[2].Value);
 
-                    logRequest.Attach = new Client.Models.Attach("file", mimeType, bytes);
+                    logRequest.Attach = new Client.Abstractions.Responses.Attach("file", mimeType, bytes);
 
                     return true;
                 }

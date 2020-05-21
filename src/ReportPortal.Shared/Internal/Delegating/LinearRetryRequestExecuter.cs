@@ -9,7 +9,7 @@ namespace ReportPortal.Shared.Internal.Delegating
     /// </summary>
     public class LinearRetryRequestExecuter : IRequestExecuter
     {
-        private Logging.ITraceLogger TraceLogger { get; } = Logging.TraceLogManager.GetLogger<LinearRetryRequestExecuter>();
+        private Logging.ITraceLogger TraceLogger { get; } = Logging.TraceLogManager.Instance.GetLogger<LinearRetryRequestExecuter>();
 
         private IRequestExecutionThrottler _concurrentThrottler;
 
@@ -57,9 +57,11 @@ namespace ReportPortal.Shared.Internal.Delegating
         public int Delay { get; private set; }
 
         /// <inheritdoc/>
-        public async Task<T> ExecuteAsync<T>(Func<Task<T>> func)
+        public async Task<T> ExecuteAsync<T>(Func<Task<T>> func, Action<Exception> beforeNextAttempt = null)
         {
-            T result = default;
+            if (func == null) throw new ArgumentNullException(nameof(func));
+
+            T result = default(T);
 
             for (int i = 0; i < MaxRetryAttemps; i++)
             {
@@ -79,6 +81,8 @@ namespace ReportPortal.Shared.Internal.Delegating
                     {
                         TraceLogger.Error($"Error while invoking '{func.Method.Name}' method. Current attempt: {i}. Waiting {Delay} milliseconds and retrying it.\n{exp}");
                         await Task.Delay(Delay).ConfigureAwait(false);
+
+                        beforeNextAttempt?.Invoke(exp);
                     }
                     else
                     {

@@ -1,3 +1,4 @@
+using FluentAssertions;
 using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Configuration.Providers;
 using System;
@@ -6,9 +7,10 @@ using System.IO;
 using System.Xml;
 using Xunit;
 
-namespace ReportPortal.Shared.Tests
+namespace ReportPortal.Shared.Tests.Configuration
 {
-    public class ConfigurationTest
+    // todo: isolate tests which setting environment variables, it affects others tests
+    public class ConfigurationBuilderTest
     {
         [Theory]
         [InlineData("REPORTPORTAL_ABC", "ABC", "test")]
@@ -23,6 +25,8 @@ namespace ReportPortal.Shared.Tests
             var variable = config.GetValue<string>(paramName);
 
             Assert.Equal(paramValue, variable);
+
+            Environment.SetEnvironmentVariable(paramFullName, null);
         }
 
         [Fact]
@@ -88,6 +92,8 @@ namespace ReportPortal.Shared.Tests
             var value = config.GetValue<string>("prop1");
 
             Assert.Equal("over_value1", value);
+
+            Environment.SetEnvironmentVariable("REPORTPORTAL_prop1", null);
         }
 
         [Fact]
@@ -112,7 +118,7 @@ namespace ReportPortal.Shared.Tests
 
             var config = new ConfigurationBuilder().AddJsonFile(filePath: tempFile).Build();
 
-            Assert.Equal(1, config.Values.Count);
+            Assert.Equal(1, config.Properties.Count);
 
             var variable = config.GetValue<string>("prop1:prop2");
             Assert.Equal("value2", variable);
@@ -166,7 +172,7 @@ namespace ReportPortal.Shared.Tests
 
             var config = new ConfigurationBuilder().AddJsonFile(filePath: tempFile).Build();
 
-            Assert.Equal(2, config.Values.Count);
+            Assert.Equal(2, config.Properties.Count);
 
             var variable1 = config.GetValue<string>("prop1");
             Assert.Equal("value1;value2;", variable1);
@@ -176,11 +182,33 @@ namespace ReportPortal.Shared.Tests
         }
 
         [Fact]
+        public void ShouldJsonFileNameBeCaseInsensitive()
+        {
+            var tempFile = Path.GetTempFileName();
+
+            File.WriteAllText(tempFile.ToLowerInvariant(), "{ \"a\": true }");
+
+            var config = new ConfigurationBuilder().AddJsonFile(tempFile.ToUpperInvariant()).Build();
+            config.GetValue<bool>("a").Should().BeTrue();
+        }
+
+        [Fact]
         public void ShouldRaiseExceptionIfJsonIsIncorrect()
         {
             var tempFile = Path.GetTempFileName();
 
             File.WriteAllText(tempFile, "Bh}");
+
+            Assert.Throws<XmlException>(() => new ConfigurationBuilder().AddJsonFile(filePath: tempFile).Build());
+        }
+
+        // this test might pass in future when we will use oanother ser/derser library
+        [Fact]
+        public void MightRaiseExceptionIfJsonIsNotStandartized()
+        {
+            var tempFile = Path.GetTempFileName();
+
+            File.WriteAllText(tempFile, "{\n// this is comment?\n}");
 
             Assert.Throws<XmlException>(() => new ConfigurationBuilder().AddJsonFile(filePath: tempFile).Build());
         }
@@ -223,6 +251,43 @@ namespace ReportPortal.Shared.Tests
             Assert.Equal(new List<string> { "abc" }, list);
         }
 
+        [Theory]
+        [InlineData("true")]
+        [InlineData("tRue")]
+        [InlineData("yes")]
+        [InlineData("y")]
+        [InlineData("1")]
+        public void ShouldReturnTrueBooleanValue(string value)
+        {
+            var config = new ConfigurationBuilder().Build();
+            config.Properties["a"] = value;
+            Assert.True(config.GetValue<bool>("a"));
+        }
+
+        [Theory]
+        [InlineData("false")]
+        [InlineData("fAlse")]
+        [InlineData("no")]
+        [InlineData("n")]
+        [InlineData("0")]
+        public void ShouldReturnFalseBooleanValue(string value)
+        {
+            var config = new ConfigurationBuilder().Build();
+            config.Properties["a"] = value;
+            Assert.False(config.GetValue<bool>("a"));
+        }
+
+        [Fact]
+        public void ShouldNotReturnDefaultIfListFound()
+        {
+            var config = new ConfigurationBuilder().Build();
+            config.Properties["a"] = "a1;a2";
+
+            var list = config.GetValues("a", new List<string> { "abc" });
+
+            list.Should().BeEquivalentTo(new List<string> { "a1", "a2" });
+        }
+
         [Fact]
         public void ShouldMergeValuesIfStartsWithPlus()
         {
@@ -233,6 +298,8 @@ namespace ReportPortal.Shared.Tests
             var variable = config.GetValue<string>("A");
 
             Assert.Equal("value1value1", variable);
+
+            Environment.SetEnvironmentVariable("REPORTPORTAL_A", null);
         }
 
         [Fact]
@@ -245,6 +312,8 @@ namespace ReportPortal.Shared.Tests
             var list = config.GetValues<string>("A");
 
             Assert.Equal(new List<string> { "value1", "value1" }, list);
+
+            Environment.SetEnvironmentVariable("REPORTPORTAL_A", null);
         }
 
         [Fact]
@@ -257,18 +326,70 @@ namespace ReportPortal.Shared.Tests
             var value = config.GetValue<string>("prop1:prop2");
 
             Assert.Equal("value1", value);
+
+            Environment.SetEnvironmentVariable("CUSTOMPREFIX_prop1-prop2", null);
         }
 
         [Fact]
         public void ShouldNotThrowExceptionIfJsonFileNotFound()
         {
-             new ConfigurationBuilder().AddJsonFile("qwe.json").Build();
+            new ConfigurationBuilder().AddJsonFile("qwe.json").Build();
         }
 
         [Fact]
         public void ShouldThrowExceptionIfJsonFileNotFound()
         {
             Assert.Throws<FileLoadException>(() => new ConfigurationBuilder().AddJsonFile("qwe.json", optional: false).Build());
+        }
+
+        [Fact]
+        public void ShouldGetKeyValue()
+        {
+            var config = new ConfigurationBuilder().Build();
+            config.Properties["a"] = "k1:v1";
+
+            config.GetKeyValues<string>("a").Should().BeEquivalentTo(new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("k1", "v1") });
+        }
+
+        [Fact]
+        public void ShouldGetKeyValues()
+        {
+            var config = new ConfigurationBuilder().Build();
+            config.Properties["a"] = "k1:v1;k2:v2";
+
+            config.GetKeyValues<string>("a").Should().BeEquivalentTo(
+                new List<KeyValuePair<string, string>>(){
+                    new KeyValuePair<string, string>("k1", "v1"),
+                    new KeyValuePair<string, string>("k2", "v2")
+                });
+        }
+
+        [Fact]
+        public void ShouldGetKeyValuesWithEmptyKey()
+        {
+            var config = new ConfigurationBuilder().Build();
+            config.Properties["a"] = "k1:v1;v2;k3:v3:v3";
+
+            config.GetKeyValues<string>("A").Should().BeEquivalentTo(
+                new List<KeyValuePair<string, string>>(){
+                    new KeyValuePair<string, string>("k1", "v1"),
+                    new KeyValuePair<string, string>("", "v2"),
+                    new KeyValuePair<string, string>("k3", "v3:v3")
+                });
+        }
+
+        [Fact]
+        public void ShouldUseDefaults()
+        {
+            var dir = Directory.CreateDirectory(Path.GetRandomFileName());
+            File.AppendAllText(dir + "/ReportPortal_prop1", "value1");
+            File.AppendAllText(dir + "/ReportPortal.config.json", @"{""prop2"": ""value2""}");
+
+            var config = new ConfigurationBuilder().AddDefaults(dir.FullName).Build();
+
+            config.Properties.Should().HaveCountGreaterOrEqualTo(2).And.ContainKeys("prop1", "prop2");
+
+            dir.Delete(true);
         }
     }
 }

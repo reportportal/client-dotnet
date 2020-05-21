@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using ReportPortal.Client;
-using ReportPortal.Client.Models;
-using ReportPortal.Client.Requests;
+using ReportPortal.Client.Abstractions;
+using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Internal.Delegating;
 using ReportPortal.Shared.Internal.Logging;
 
@@ -13,22 +12,24 @@ namespace ReportPortal.Shared.Reporter
 {
     public class TestReporter : ITestReporter
     {
-        private readonly Service _service;
+        private readonly IClientService _service;
         private readonly IRequestExecuter _requestExecuter;
+        private readonly IExtensionManager _extensionManager;
 
-        private static ITraceLogger TraceLogger { get; } = TraceLogManager.GetLogger<TestReporter>();
+        private static ITraceLogger TraceLogger { get; } = TraceLogManager.Instance.GetLogger<TestReporter>();
 
         private readonly object _lockObj = new object();
 
-        public TestReporter(Service service, ILaunchReporter launchReporter, ITestReporter parentTestReporter, IRequestExecuter requestExecuter)
+        public TestReporter(IClientService service, ILaunchReporter launchReporter, ITestReporter parentTestReporter, IRequestExecuter requestExecuter, IExtensionManager extensionManager)
         {
             _service = service;
             _requestExecuter = requestExecuter;
+            _extensionManager = extensionManager;
             LaunchReporter = launchReporter;
             ParentTestReporter = parentTestReporter;
         }
 
-        public TestItem TestInfo { get; private set; }
+        public TestInfo TestInfo { get; private set; }
 
         public ILaunchReporter LaunchReporter { get; }
 
@@ -38,6 +39,8 @@ namespace ReportPortal.Shared.Reporter
 
         public void Start(StartTestItemRequest startTestItemRequest)
         {
+            if (startTestItemRequest == null) throw new ArgumentNullException(nameof(startTestItemRequest));
+
             if (StartTask != null)
             {
                 var exp = new InsufficientExecutionStackException("The test item is already scheduled for starting.");
@@ -55,14 +58,14 @@ namespace ReportPortal.Shared.Reporter
 
                     if (pt.IsCanceled)
                     {
-                        exp = new Exception($"Cannot start test item due {_service.Timeout} timeout while starting parent.");
+                        exp = new Exception($"Cannot start test item due timeout while starting parent.");
                     }
 
                     TraceLogger.Error(exp.ToString());
                     throw exp;
                 }
 
-                startTestItemRequest.LaunchId = LaunchReporter.LaunchInfo.Id;
+                startTestItemRequest.LaunchUuid = LaunchReporter.LaunchInfo.Uuid;
                 if (ParentTestReporter == null)
                 {
                     if (startTestItemRequest.StartTime < LaunchReporter.LaunchInfo.StartTime)
@@ -70,11 +73,11 @@ namespace ReportPortal.Shared.Reporter
                         startTestItemRequest.StartTime = LaunchReporter.LaunchInfo.StartTime;
                     }
 
-                    var testModel = await _requestExecuter.ExecuteAsync(() => _service.StartTestItemAsync(startTestItemRequest)).ConfigureAwait(false);
+                    var testModel = await _requestExecuter.ExecuteAsync(() => _service.TestItem.StartAsync(startTestItemRequest), null).ConfigureAwait(false);
 
-                    TestInfo = new TestItem
+                    TestInfo = new TestInfo
                     {
-                        Id = testModel.Id
+                        Uuid = testModel.Uuid
                     };
                 }
                 else
@@ -84,24 +87,24 @@ namespace ReportPortal.Shared.Reporter
                         startTestItemRequest.StartTime = ParentTestReporter.TestInfo.StartTime;
                     }
 
-                    var testModel = await _requestExecuter.ExecuteAsync(() => _service.StartTestItemAsync(ParentTestReporter.TestInfo.Id, startTestItemRequest)).ConfigureAwait(false);
+                    var testModel = await _requestExecuter.ExecuteAsync(() => _service.TestItem.StartAsync(ParentTestReporter.TestInfo.Uuid, startTestItemRequest), null).ConfigureAwait(false);
 
-                    TestInfo = new TestItem
+                    TestInfo = new TestInfo
                     {
-                        Id = testModel.Id
+                        Uuid = testModel.Uuid
                     };
                 }
 
                 TestInfo.StartTime = startTestItemRequest.StartTime;
             }).Unwrap();
-
-            ThreadId = Thread.CurrentThread.ManagedThreadId;
         }
 
         public Task FinishTask { get; private set; }
 
         public void Finish(FinishTestItemRequest request)
         {
+            if (request == null) throw new ArgumentNullException(nameof(request));
+
             TraceLogger.Verbose($"Scheduling request to finish test item in {GetHashCode()} proxy instance");
 
             if (StartTask == null)
@@ -119,14 +122,21 @@ namespace ReportPortal.Shared.Reporter
             }
 
             var dependentTasks = new List<Task>();
+
             dependentTasks.Add(StartTask);
+
             if (_additionalTasks != null)
             {
                 dependentTasks.AddRange(_additionalTasks);
             }
             if (ChildTestReporters != null)
             {
-                dependentTasks.AddRange(ChildTestReporters.Select(tn => tn.FinishTask));
+                var childTestReporterFinishTasks = ChildTestReporters.Select(tn => tn.FinishTask);
+                if (childTestReporterFinishTasks.Contains(null))
+                {
+                    throw new InsufficientExecutionStackException("Some of child test item(s) are not scheduled to finish yet.");
+                }
+                dependentTasks.AddRange(childTestReporterFinishTasks);
             }
 
             FinishTask = Task.Factory.ContinueWhenAll(dependentTasks.ToArray(), async a =>
@@ -139,7 +149,7 @@ namespace ReportPortal.Shared.Reporter
 
                         if (StartTask.IsCanceled)
                         {
-                            exp = new Exception($"Cannot finish test item due {_service.Timeout} timeout while starting it.");
+                            exp = new Exception($"Cannot finish test item due timeout while starting it.");
                         }
 
                         TraceLogger.Error(exp.ToString());
@@ -160,7 +170,7 @@ namespace ReportPortal.Shared.Reporter
                                 }
                                 else if (failedChildTestReporter.FinishTask.IsCanceled)
                                 {
-                                    errors.Add(new Exception($"{_service.Timeout} timeout while finishing child test item."));
+                                    errors.Add(new Exception($"Timeout while finishing child test item."));
                                 }
                             }
 
@@ -178,7 +188,7 @@ namespace ReportPortal.Shared.Reporter
                         request.EndTime = TestInfo.StartTime;
                     }
 
-                    await _requestExecuter.ExecuteAsync(() => _service.FinishTestItemAsync(TestInfo.Id, request)).ConfigureAwait(false);
+                    await _requestExecuter.ExecuteAsync(() => _service.TestItem.FinishAsync(TestInfo.Uuid, request), null).ConfigureAwait(false);
                 }
                 finally
                 {
@@ -197,9 +207,11 @@ namespace ReportPortal.Shared.Reporter
 
         public ITestReporter StartChildTestReporter(StartTestItemRequest request)
         {
+            if (request == null) throw new ArgumentNullException(nameof(request));
+
             TraceLogger.Verbose($"Scheduling request to start new '{request.Name}' test item in {GetHashCode()} proxy instance");
 
-            var newTestNode = new TestReporter(_service, LaunchReporter, this, _requestExecuter);
+            var newTestNode = new TestReporter(_service, LaunchReporter, this, _requestExecuter, _extensionManager);
             newTestNode.Start(request);
 
             lock (_lockObj)
@@ -218,25 +230,7 @@ namespace ReportPortal.Shared.Reporter
             return newTestNode;
         }
 
-        public void Update(UpdateTestItemRequest request)
-        {
-            if (FinishTask == null || !FinishTask.IsCompleted)
-            {
-                lock (_lockObj)
-                {
-                    if (_additionalTasks == null)
-                    {
-                        _additionalTasks = new List<Task>();
-                    }
-                    _additionalTasks.Add(StartTask.ContinueWith(async a =>
-                    {
-                        await _requestExecuter.ExecuteAsync(() => _service.UpdateTestItemAsync(TestInfo.Id, request));
-                    }).Unwrap());
-                }
-            }
-        }
-
-        public void Log(AddLogItemRequest request)
+        public void Log(CreateLogItemRequest request)
         {
             if (StartTask == null)
             {
@@ -273,14 +267,14 @@ namespace ReportPortal.Shared.Reporter
                                 request.Time = TestInfo.StartTime;
                             }
 
-                            request.TestItemId = TestInfo.Id;
+                            request.TestItemUuid = TestInfo.Uuid;
 
-                            foreach (var formatter in Bridge.LogFormatterExtensions)
+                            foreach (var formatter in _extensionManager.LogFormatters)
                             {
-                                formatter.FormatLog(ref request);
+                                formatter.FormatLog(request);
                             }
 
-                            await _requestExecuter.ExecuteAsync(() => _service.AddLogItemAsync(request)).ConfigureAwait(false);
+                            await _requestExecuter.ExecuteAsync(() => _service.LogItem.CreateAsync(request), null).ConfigureAwait(false);
                         }
                     }).Unwrap();
 
@@ -295,9 +289,6 @@ namespace ReportPortal.Shared.Reporter
 
             FinishTask?.GetAwaiter().GetResult();
         }
-
-        // TODO: need remove (used by specflow only)
-        public int ThreadId { get; set; }
     }
 
 }

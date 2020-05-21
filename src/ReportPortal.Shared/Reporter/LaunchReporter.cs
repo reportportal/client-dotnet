@@ -2,45 +2,29 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ReportPortal.Client;
-using ReportPortal.Client.Models;
-using ReportPortal.Client.Requests;
+using ReportPortal.Client.Abstractions;
+using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Configuration;
-using ReportPortal.Shared.Configuration.Providers;
+using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Internal.Delegating;
 
 namespace ReportPortal.Shared.Reporter
 {
     public class LaunchReporter : ILaunchReporter
     {
-        private Internal.Logging.ITraceLogger TraceLogger { get; } = Internal.Logging.TraceLogManager.GetLogger<LaunchReporter>();
+        private Internal.Logging.ITraceLogger TraceLogger { get; } = Internal.Logging.TraceLogManager.Instance.GetLogger<LaunchReporter>();
 
         private readonly IConfiguration _configuration;
 
-        private readonly Service _service;
+        private readonly IClientService _service;
 
         private readonly IRequestExecuter _requestExecuter;
 
+        private readonly IExtensionManager _extensionManager;
+
         private readonly object _lockObj = new object();
 
-        [Obsolete("This ctor will be removed. Use (Service service, IConfiguration configuration, IRequestExecuter requestExecuter)")]
-        public LaunchReporter(Service service) : this(service, null, null)
-        {
-            _service = service;
-        }
-
-        [Obsolete("This ctor will be removed. Use (Service service, IConfiguration configuration, IRequestExecuter requestExecuter) where launchId argument can be spicified by IConfiguration [Launch:Id]")]
-        public LaunchReporter(Service service, string launchId) : this(service)
-        {
-            _isExternalLaunchId = true;
-
-            LaunchInfo = new Launch
-            {
-                Id = launchId
-            };
-        }
-
-        public LaunchReporter(Service service, IConfiguration configuration, IRequestExecuter requestExecuter)
+        public LaunchReporter(IClientService service, IConfiguration configuration, IRequestExecuter requestExecuter, IExtensionManager extensionManager)
         {
             _service = service;
 
@@ -54,36 +38,40 @@ namespace ReportPortal.Shared.Reporter
                 _configuration = new ConfigurationBuilder().AddJsonFile(jsonPath).AddEnvironmentVariables().Build();
             }
 
-            if (requestExecuter != null)
-            {
-                _requestExecuter = requestExecuter;
-            }
-            else
-            {
-                _requestExecuter = new RequestExecuterFactory(_configuration).Create();
-            }
+            _requestExecuter = requestExecuter ?? new RequestExecuterFactory(_configuration).Create();
+
+            _extensionManager = extensionManager ?? throw new ArgumentNullException(nameof(extensionManager));
 
             // identify whether launch is already started by any external system
-            var externalLaunchId = _configuration.GetValue<string>("Launch:Id", null);
-            if (externalLaunchId != null)
+            var externalLaunchUuid = _configuration.GetValue<string>("Launch:Id", null);
+            if (externalLaunchUuid != null)
             {
                 _isExternalLaunchId = true;
 
-                LaunchInfo = new Launch
+                LaunchInfo = new LaunchInfo
                 {
-                    Id = externalLaunchId
+                    Uuid = externalLaunchUuid
                 };
             }
+
+            // identify whether launch should be rerun
+            _rerunOfUuid = _configuration.GetValue<string>("Launch:RerunOf", null);
+
+            _isRerun = _configuration.GetValue("Launch:Rerun", false);
         }
 
-        public Launch LaunchInfo { get; private set; }
+        public LaunchInfo LaunchInfo { get; private set; }
 
         private bool _isExternalLaunchId = false;
+        private string _rerunOfUuid = null;
+        private bool _isRerun;
 
         public Task StartTask { get; private set; }
 
         public void Start(StartLaunchRequest request)
         {
+            if (request == null) throw new ArgumentNullException(nameof(request));
+
             TraceLogger.Verbose($"Scheduling request to start new '{request.Name}' launch in {GetHashCode()} proxy instance");
 
             if (StartTask != null)
@@ -93,19 +81,38 @@ namespace ReportPortal.Shared.Reporter
                 throw exp;
             }
 
-            if (!_isExternalLaunchId)
+            if (_rerunOfUuid != null)
             {
+                request.IsRerun = true;
+                request.RerunOfLaunchUuid = _rerunOfUuid;
+                // start rerun launch item
+                StartTask = Task.Run(async () =>
+                {
+                    var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.StartAsync(request), null).ConfigureAwait(false);
+
+                    LaunchInfo = new LaunchInfo
+                    {
+                        Uuid = launch.Uuid,
+                        Name = request.Name,
+                        StartTime = request.StartTime
+                    };
+                });
+            }
+            else if (!_isExternalLaunchId)
+            {
+                if (_isRerun)
+                {
+                    request.IsRerun = true;
+                }
+
                 // start new launch item
                 StartTask = Task.Run(async () =>
                 {
-                    string launchId;
+                    var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.StartAsync(request), null).ConfigureAwait(false);
 
-                    var launch = await _requestExecuter.ExecuteAsync(() => _service.StartLaunchAsync(request)).ConfigureAwait(false);
-                    launchId = launch.Id;
-
-                    LaunchInfo = new Launch
+                    LaunchInfo = new LaunchInfo
                     {
-                        Id = launchId,
+                        Uuid = launch.Uuid,
                         Name = request.Name,
                         StartTime = request.StartTime
                     };
@@ -116,7 +123,14 @@ namespace ReportPortal.Shared.Reporter
                 // get launch info
                 StartTask = Task.Run(async () =>
                 {
-                    LaunchInfo = await _requestExecuter.ExecuteAsync(() => _service.GetLaunchAsync(LaunchInfo.Id)).ConfigureAwait(false);
+                    var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.GetAsync(LaunchInfo.Uuid), null).ConfigureAwait(false);
+
+                    LaunchInfo = new LaunchInfo
+                    {
+                        Uuid = launch.Uuid,
+                        Name = launch.Name,
+                        StartTime = launch.StartTime
+                    };
                 });
             }
         }
@@ -124,6 +138,8 @@ namespace ReportPortal.Shared.Reporter
         public Task FinishTask { get; private set; }
         public void Finish(FinishLaunchRequest request)
         {
+            if (request == null) throw new ArgumentNullException(nameof(request));
+
             TraceLogger.Verbose($"Scheduling request to finish launch in {GetHashCode()} proxy instance");
 
             if (StartTask == null)
@@ -143,8 +159,14 @@ namespace ReportPortal.Shared.Reporter
             var dependentTasks = new List<Task>();
             if (ChildTestReporters != null)
             {
-                dependentTasks.AddRange(ChildTestReporters.Select(tn => tn.FinishTask));
+                var childTestReporterFinishTasks = ChildTestReporters.Select(tn => tn.FinishTask);
+                if (childTestReporterFinishTasks.Contains(null))
+                {
+                    throw new InsufficientExecutionStackException("Some of child test item(s) are not scheduled to finish yet.");
+                }
+                dependentTasks.AddRange(childTestReporterFinishTasks);
             }
+
             dependentTasks.Add(StartTask);
 
             FinishTask = Task.Factory.ContinueWhenAll(dependentTasks.ToArray(), async (dts) =>
@@ -157,7 +179,7 @@ namespace ReportPortal.Shared.Reporter
 
                         if (StartTask.IsCanceled)
                         {
-                            exp = new Exception($"Cannot finish launch due {_service.Timeout} timeout while starting it.");
+                            exp = new Exception($"Cannot finish launch due timeout while starting it.");
                         }
 
                         TraceLogger.Error(exp.ToString());
@@ -178,7 +200,7 @@ namespace ReportPortal.Shared.Reporter
                                 }
                                 else if (failedChildTestReporter.FinishTask.IsCanceled)
                                 {
-                                    errors.Add(new Exception($"Cannot finish launch due {_service.Timeout} timeout while finishing test item."));
+                                    errors.Add(new Exception($"Cannot finish launch due timeout while finishing test item."));
                                 }
                             }
 
@@ -191,11 +213,12 @@ namespace ReportPortal.Shared.Reporter
                     if (request.EndTime < LaunchInfo.StartTime)
                     {
                         request.EndTime = LaunchInfo.StartTime;
+                        LaunchInfo.EndTime = request.EndTime;
                     }
 
-                    if (!_isExternalLaunchId)
+                    if (!_isExternalLaunchId && _rerunOfUuid == null)
                     {
-                        await _requestExecuter.ExecuteAsync(() => _service.FinishLaunchAsync(LaunchInfo.Id, request)).ConfigureAwait(false);
+                        await _requestExecuter.ExecuteAsync(() => _service.Launch.FinishAsync(LaunchInfo.Uuid, request), null).ConfigureAwait(false);
                     }
                 }
                 finally
@@ -210,7 +233,7 @@ namespace ReportPortal.Shared.Reporter
 
         public ITestReporter StartChildTestReporter(StartTestItemRequest request)
         {
-            var newTestNode = new TestReporter(_service, this, null, _requestExecuter);
+            var newTestNode = new TestReporter(_service, this, null, _requestExecuter, _extensionManager);
             newTestNode.Start(request);
 
             lock (_lockObj)

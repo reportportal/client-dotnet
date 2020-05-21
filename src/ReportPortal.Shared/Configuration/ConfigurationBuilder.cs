@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ReportPortal.Shared.Configuration
 {
@@ -21,33 +20,33 @@ namespace ReportPortal.Shared.Configuration
         /// <inheritdoc />
         public IConfiguration Build()
         {
-            var values = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            var properties = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
-            foreach(var provider in Providers)
+            foreach (var provider in Providers)
             {
-                provider.Load();
+                var originalProperties = provider.Load();
 
-                foreach(var value in provider.Properties)
+                foreach (var property in originalProperties)
                 {
-                    if (value.Value.StartsWith(ConfigurationPath.AppenderPrefix))
+                    if (property.Value.StartsWith(ConfigurationPath.AppenderPrefix, StringComparison.OrdinalIgnoreCase))
                     {
-                        if (values.ContainsKey(value.Key))
+                        if (properties.ContainsKey(property.Key))
                         {
-                            values[value.Key] += value.Value.Substring(ConfigurationPath.AppenderPrefix.Length);
+                            properties[property.Key] += property.Value.Substring(ConfigurationPath.AppenderPrefix.Length);
                         }
                         else
                         {
-                            values[value.Key] = value.Value.Substring(ConfigurationPath.AppenderPrefix.Length);
+                            properties[property.Key] = property.Value.Substring(ConfigurationPath.AppenderPrefix.Length);
                         }
                     }
                     else
                     {
-                        values[value.Key] = value.Value;
+                        properties[property.Key] = property.Value;
                     }
                 }
             }
 
-            return new Configuration(values);
+            return new Configuration(properties);
         }
     }
 }

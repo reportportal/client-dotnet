@@ -1,33 +1,28 @@
-﻿using ReportPortal.Client.Requests;
+﻿using Moq;
+using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Tests.Helpers;
+using System.Collections.Generic;
 using Xunit;
 
 namespace ReportPortal.Shared.Tests.Extensibility.LogFormatter
 {
-    public class LogFormatterTest : ILogFormatter
+    public class LogFormatterTest
     {
-        public int Order => 10;
-
         [Fact]
         public void ShouldInvokeFormatLogMethod()
         {
             var service = new MockServiceBuilder().Build();
+            var logFormatter = new Mock<ILogFormatter>();
+            var extensionManager = new Mock<IExtensionManager>();
+            extensionManager.Setup(p => p.LogFormatters).Returns(new List<ILogFormatter> { logFormatter.Object });
 
-            var launchScheduler = new LaunchReporterBuilder(service.Object);
+            var launchScheduler = new LaunchReporterBuilder(service.Object).With(extensionManager.Object);
             var launchReporter = launchScheduler.Build(1, 1, 1);
 
             launchReporter.Sync();
 
-            Assert.True(Invoked);
+            logFormatter.Verify(lf => lf.FormatLog(It.IsAny<CreateLogItemRequest>()), Times.Once);
         }
-
-        public bool FormatLog(ref AddLogItemRequest logRequest)
-        {
-            Invoked = true;
-            return false;
-        }
-
-        private static bool Invoked { get; set; }
     }
 }

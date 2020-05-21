@@ -1,15 +1,18 @@
-﻿using ReportPortal.Client.Requests;
+﻿using ReportPortal.Client.Abstractions.Requests;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace ReportPortal.Shared.Extensibility.LogFormatter
 {
+    /// <inheritdoc/>
     public class FileLogFormatter : ILogFormatter
     {
+        /// <inheritdoc/>
         public int Order => 10;
 
-        public bool FormatLog(ref AddLogItemRequest logRequest)
+        /// <inheritdoc/>
+        public bool FormatLog(CreateLogItemRequest logRequest)
         {
             if (logRequest.Text != null)
             {
@@ -25,7 +28,7 @@ namespace ReportPortal.Shared.Extensibility.LogFormatter
                     {
                         var mimeType = MimeTypes.MimeTypeMap.GetMimeType(Path.GetExtension(filePath));
 
-                        logRequest.Attach = new Client.Models.Attach(Path.GetFileName(filePath), mimeType, File.ReadAllBytes(filePath));
+                        logRequest.Attach = new Client.Abstractions.Responses.Attach(Path.GetFileName(filePath), mimeType, File.ReadAllBytes(filePath));
 
                         return true;
                     }

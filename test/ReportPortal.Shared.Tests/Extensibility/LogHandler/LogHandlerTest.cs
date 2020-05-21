@@ -1,38 +1,23 @@
-﻿using ReportPortal.Client.Requests;
+﻿using Moq;
+using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Extensibility;
-using ReportPortal.Shared.Tests.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace ReportPortal.Shared.Tests.Extensibility.LogHandler
 {
-    public class LogHandlerTest : ILogHandler
+    [Collection("Static")]
+    public class LogHandlerTest
     {
-        public int Order => 10;
-
         [Fact]
         public void ShouldInvokeHandleLogMethod()
         {
-            var service = new MockServiceBuilder().Build();
+            var logHandler = new Mock<ILogHandler>();
 
-            var launchScheduler = new LaunchReporterBuilder(service.Object);
-            var launchReporter = launchScheduler.Build(1, 1, 1);
-
-            launchReporter.Sync();
-
+            Shared.Extensibility.ExtensionManager.Instance.LogHandlers.Add(logHandler.Object);
             Log.Info("message from test domain");
+            Shared.Extensibility.ExtensionManager.Instance.LogHandlers.Remove(logHandler.Object);
 
-            Assert.True(Invoked);
+            logHandler.Verify(lh => lh.Handle(null, It.IsAny<CreateLogItemRequest>()), Times.Once);
         }
-
-        public bool Handle(AddLogItemRequest logRequest)
-        {
-            Invoked = true;
-            return false;
-        }
-
-        private static bool Invoked { get; set; }
     }
 }

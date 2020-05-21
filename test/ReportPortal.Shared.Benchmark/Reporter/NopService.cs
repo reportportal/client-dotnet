@@ -1,55 +1,170 @@
-﻿using ReportPortal.Client;
-using ReportPortal.Client.Models;
-using ReportPortal.Client.Requests;
+﻿using ReportPortal.Client.Abstractions;
+using ReportPortal.Client.Abstractions.Filtering;
+using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Client.Abstractions.Resources;
+using ReportPortal.Client.Abstractions.Responses;
 using System;
-using System.Net;
-using System.Net.Http;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ReportPortal.Shared.Benchmark.Reporter
 {
-    public class NopService : Service
+    public class NopService : IClientService
     {
-        public NopService(Uri uri, string project, string password)
-            : base(uri, project, password)
-        {
+        public ILaunchResource Launch => new NopLaunchResource();
 
+        public ITestItemResource TestItem => new NopTestItemResource();
+
+        public ILogItemResource LogItem => new NopLogItemResourse();
+
+        public IUserResource User => throw new NotImplementedException();
+
+        public IUserFilterResource UserFilter => throw new NotImplementedException();
+
+        public IProjectResource Project => throw new NotImplementedException();
+    }
+
+    public class NopLaunchResource : ILaunchResource
+    {
+        public Task<MessageResponse> AnalyzeAsync(AnalyzeLaunchRequest model)
+        {
+            throw new NotImplementedException();
         }
 
-        public NopService(Uri uri, string project, string password, IWebProxy proxy)
-            : base(uri, project, password, proxy)
+        public Task<MessageResponse> DeleteAsync(long id)
         {
-
+            throw new NotImplementedException();
         }
 
-        public override async Task<Launch> StartLaunchAsync(StartLaunchRequest model)
+        public async Task<LaunchFinishedResponse> FinishAsync(string uuid, FinishLaunchRequest model)
         {
-            return await Task.FromResult(new Launch { Id = Guid.NewGuid().ToString() });
+            return await Task.FromResult(new LaunchFinishedResponse());
         }
 
-        public override async Task<Message> FinishLaunchAsync(string id, FinishLaunchRequest model, bool force = false)
+        public Task<LaunchResponse> GetAsync(long id)
         {
-            return await Task.FromResult(new Message());
+            throw new NotImplementedException();
         }
 
-        public override async Task<TestItem> StartTestItemAsync(StartTestItemRequest model)
+        public Task<LaunchResponse> GetAsync(string uuid)
         {
-            return await Task.FromResult(new TestItem { Id = Guid.NewGuid().ToString() });
+            throw new NotImplementedException();
         }
 
-        public override async Task<TestItem> StartTestItemAsync(string id, StartTestItemRequest model)
+        public Task<Content<LaunchResponse>> GetAsync(FilterOption filterOption = null)
         {
-            return await Task.FromResult(new TestItem { Id = Guid.NewGuid().ToString() });
+            throw new NotImplementedException();
         }
 
-        public override async Task<Message> FinishTestItemAsync(string id, FinishTestItemRequest model)
+        public Task<Content<LaunchResponse>> GetDebugAsync(FilterOption filterOption = null)
         {
-            return await Task.FromResult(new Message());
+            throw new NotImplementedException();
         }
 
-        public override async Task<LogItem> AddLogItemAsync(AddLogItemRequest model)
+        public Task<LaunchResponse> MergeAsync(MergeLaunchesRequest model)
         {
-            return await Task.FromResult(new LogItem());
+            throw new NotImplementedException();
+        }
+
+        public async Task<LaunchCreatedResponse> StartAsync(StartLaunchRequest request)
+        {
+            return await Task.FromResult(new LaunchCreatedResponse { Uuid = Guid.NewGuid().ToString() });
+        }
+
+        public Task<LaunchFinishedResponse> StopAsync(long id, FinishLaunchRequest model)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<MessageResponse> UpdateAsync(long id, UpdateLaunchRequest model)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class NopTestItemResource : ITestItemResource
+    {
+        public Task<IEnumerable<Issue>> AssignIssuesAsync(AssignTestItemIssuesRequest model)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<MessageResponse> DeleteAsync(long id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<MessageResponse> FinishAsync(string id, FinishTestItemRequest model)
+        {
+            return await Task.FromResult(new MessageResponse());
+        }
+
+        public Task<TestItemResponse> GetAsync(long id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<TestItemResponse> GetAsync(string uuid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Content<TestItemResponse>> GetAsync(FilterOption filterOption = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Content<TestItemHistoryContainer>> GetHistoryAsync(long testItemId, int depth)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<TestItemCreatedResponse> StartAsync(StartTestItemRequest model)
+        {
+            return await Task.FromResult(new TestItemCreatedResponse { Uuid = Guid.NewGuid().ToString() });
+        }
+
+        public async Task<TestItemCreatedResponse> StartAsync(string uuid, StartTestItemRequest model)
+        {
+            return await Task.FromResult(new TestItemCreatedResponse { Uuid = Guid.NewGuid().ToString() });
+        }
+
+        public Task<MessageResponse> UpdateAsync(long id, UpdateTestItemRequest model)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class NopLogItemResourse : ILogItemResource
+    {
+        public async Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest model)
+        {
+            return await Task.FromResult(new LogItemCreatedResponse());
+        }
+
+        public Task<MessageResponse> DeleteAsync(long id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<LogItemResponse> GetAsync(long id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<LogItemResponse> GetAsync(string uuid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Content<LogItemResponse>> GetAsync(FilterOption filterOption = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<byte[]> GetBinaryDataAsync(string id)
+        {
+            throw new NotImplementedException();
         }
     }
 }
