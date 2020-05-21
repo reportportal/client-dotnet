@@ -164,7 +164,7 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
             Assert.Equal(startTestItemRequest.Description, getTest.Description);
             Assert.Equal(parameters, getTest.Parameters);
             getTest.Attributes.Should().BeEquivalentTo(attributes);
-            
+
             var finishTestItemRequest = new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
@@ -209,6 +209,10 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
         [InlineData(Status.Failed)]
         [InlineData(Status.Passed)]
         [InlineData(Status.Skipped)]
+        [InlineData(Status.Interrupted)]
+        [InlineData(Status.Cancelled)]
+        [InlineData(Status.Info)]
+        [InlineData(Status.Warn)]
         public async Task VerifyStatusesOfTests(Status status)
         {
             var test = await Service.TestItem.StartAsync(new StartTestItemRequest
@@ -225,6 +229,8 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
                 Status = status
             });
             Assert.Contains("successfully", message.Info);
+
+            (await Service.TestItem.GetAsync(test.Uuid)).Status.Should().Be(status);
         }
 
         [Fact]
