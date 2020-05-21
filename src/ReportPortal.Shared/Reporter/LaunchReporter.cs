@@ -226,7 +226,7 @@ namespace ReportPortal.Shared.Reporter
                     // clean childs
                     // ChildTestReporters = null;
                 }
-            }).Unwrap();
+            }, TaskContinuationOptions.PreferFairness).Unwrap();
         }
 
         public IList<ITestReporter> ChildTestReporters { get; private set; }

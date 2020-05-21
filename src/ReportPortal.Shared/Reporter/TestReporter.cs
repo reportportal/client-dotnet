@@ -96,7 +96,7 @@ namespace ReportPortal.Shared.Reporter
                 }
 
                 TestInfo.StartTime = startTestItemRequest.StartTime;
-            }).Unwrap();
+            }, TaskContinuationOptions.PreferFairness).Unwrap();
         }
 
         public Task FinishTask { get; private set; }
@@ -198,7 +198,7 @@ namespace ReportPortal.Shared.Reporter
                     // clean up addition tasks
                     _additionalTasks = null;
                 }
-            }).Unwrap();
+            }, TaskContinuationOptions.PreferFairness).Unwrap();
         }
 
         private IList<Task> _additionalTasks;
@@ -276,7 +276,7 @@ namespace ReportPortal.Shared.Reporter
 
                             await _requestExecuter.ExecuteAsync(() => _service.LogItem.CreateAsync(request), null).ConfigureAwait(false);
                         }
-                    }).Unwrap();
+                    }, TaskContinuationOptions.PreferFairness).Unwrap();
 
                     _additionalTasks.Add(task);
                 }
