@@ -140,7 +140,7 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
         [Fact]
         public async Task StartFinishFullTest()
         {
-            var attributes = new List<ItemAttribute> { new ItemAttribute { Key = "a1", Value = "v1" }, new ItemAttribute { Key = "a2", Value = "v2" } };
+            var attributes = new List<ItemAttribute> { new ItemAttribute { Key = "a1", Value = "v1" }, new ItemAttribute { Key = "a2", Value = "v2" }, new ItemAttribute { Value = "v3" } };
             var parameters = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("a1", "v1") };
             var startTestItemRequest = new StartTestItemRequest
             {
@@ -177,6 +177,31 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
             getTest = await Service.TestItem.GetAsync(test.Uuid);
             Assert.Equal(finishTestItemRequest.Status, getTest.Status);
             Assert.Equal(finishTestItemRequest.EndTime, getTest.EndTime);
+        }
+
+        [Fact]
+        public async Task FinishTestWithAttributes()
+        {
+            var startTestItemRequest = new StartTestItemRequest
+            {
+                LaunchUuid = _fixture.LaunchUuid,
+                Name = "Test1",
+                StartTime = DateTime.UtcNow,
+                Type = TestItemType.Test
+            };
+
+            var test = await Service.TestItem.StartAsync(startTestItemRequest);
+
+            var finishTestRequest = new FinishTestItemRequest
+            {
+                EndTime = DateTime.UtcNow,
+                Attributes = new List<ItemAttribute> { new ItemAttribute { Value = "v" } }
+            };
+
+            await Service.TestItem.FinishAsync(test.Uuid, finishTestRequest);
+
+            var getTest = await Service.TestItem.GetAsync(test.Uuid);
+            getTest.Attributes.Should().NotBeEmpty();
         }
 
         [Theory]

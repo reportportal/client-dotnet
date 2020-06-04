@@ -62,6 +62,7 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// Sets attributes when finishing test item.
         /// </summary>
         /// <value>List of attributes.</value>
+        [DataMember(Name = "attributes")]
         public IList<ItemAttribute> Attributes { get; set; }
 
         /// <summary>
