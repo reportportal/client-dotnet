@@ -85,6 +85,8 @@ namespace ReportPortal.Shared.Reporter
         private string _rerunOfUuid = null;
         private bool _isRerun;
 
+        private IList<Task> _additionalTasks;
+
         public Task StartTask { get; private set; }
 
         public void Start(StartLaunchRequest request)
@@ -184,6 +186,12 @@ namespace ReportPortal.Shared.Reporter
             }
 
             var dependentTasks = new List<Task>();
+
+            if (_additionalTasks != null)
+            {
+                dependentTasks.AddRange(_additionalTasks);
+            }
+
             if (ChildTestReporters != null)
             {
                 var childTestReporterFinishTasks = ChildTestReporters.Select(tn => tn.FinishTask);
@@ -279,12 +287,59 @@ namespace ReportPortal.Shared.Reporter
                 ChildTestReporters.Add(newTestNode);
             }
 
-            LastTestNode = newTestNode;
-
             return newTestNode;
         }
 
-        public TestReporter LastTestNode { get; set; }
+        public void Log(CreateLogItemRequest createLogItemRequest)
+        {
+            if (StartTask == null)
+            {
+                var exp = new InsufficientExecutionStackException("The launch wasn't scheduled for starting to add log messages.");
+                TraceLogger.Error(exp.ToString());
+                throw (exp);
+            }
+
+            if (StartTask.IsFaulted || StartTask.IsCanceled)
+            {
+                return;
+            }
+
+            if (FinishTask == null)
+            {
+                lock (_lockObj)
+                {
+                    if (_additionalTasks == null)
+                    {
+                        lock (_lockObj)
+                        {
+                            _additionalTasks = new List<Task>();
+                        }
+                    }
+
+                    var task = StartTask.ContinueWith(async pt =>
+                    {
+                        if (!StartTask.IsFaulted || !StartTask.IsCanceled)
+                        {
+                            if (createLogItemRequest.Time < LaunchInfo.StartTime)
+                            {
+                                createLogItemRequest.Time = LaunchInfo.StartTime;
+                            }
+
+                            createLogItemRequest.LaunchUuid = LaunchInfo.Uuid;
+
+                            foreach (var formatter in _extensionManager.LogFormatters)
+                            {
+                                formatter.FormatLog(createLogItemRequest);
+                            }
+
+                            await _requestExecuter.ExecuteAsync(() => _service.LogItem.CreateAsync(createLogItemRequest), null).ConfigureAwait(false);
+                        }
+                    }, TaskContinuationOptions.PreferFairness).Unwrap();
+
+                    _additionalTasks.Add(task);
+                }
+            }
+        }
 
         public void Sync()
         {

@@ -148,6 +148,7 @@ namespace ReportPortal.Shared.Reporter
             {
                 dependentTasks.AddRange(_additionalTasks);
             }
+
             if (ChildTestReporters != null)
             {
                 var childTestReporterFinishTasks = ChildTestReporters.Select(tn => tn.FinishTask);
@@ -248,7 +249,6 @@ namespace ReportPortal.Shared.Reporter
                 }
                 ChildTestReporters.Add(newTestNode);
             }
-            (LaunchReporter as LaunchReporter).LastTestNode = newTestNode;
 
             return newTestNode;
         }

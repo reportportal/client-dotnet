@@ -15,7 +15,7 @@ namespace ReportPortal.Shared.Tests
     [Collection("Static")]
     public class ReportingTest
     {
-        private readonly Service _service = new Service(new Uri("https://alpha.reportportal.io/api/v1/"), "default_personal", "cd9c39d6-c9a2-45b0-8e48-c4f0151114d0");
+        private readonly Service _service = new Service(new Uri("https://beta.demo.reportportal.io/api/v1/"), "default_personal", "9a22543e-fc28-44f1-a171-b87192982078");
 
         //private readonly Service _service = new Service(new Uri("http://localhost:8080/api/v1/"), "default_personal", "26f171a9-8bb2-45e8-9e0b-cd75bb7de670");
 
