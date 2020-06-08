@@ -3,6 +3,7 @@ using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Extensibility;
+using ReportPortal.Shared.Extensibility.Analytics;
 using ReportPortal.Shared.Reporter;
 using ReportPortal.Shared.Tests.Helpers;
 using System;
@@ -22,7 +23,12 @@ namespace ReportPortal.Shared.Tests
         [Fact]
         public async Task BigAsyncRealTree()
         {
-            var launchScheduler = new LaunchReporterBuilder(_service);
+            var extManager = new ExtensionManager();
+            var ga = new AnalyticsReportEventsObserver();
+
+            extManager.ReportEventObservers.Add(ga);
+
+            var launchScheduler = new LaunchReporterBuilder(_service).With(extManager);
             var launchReporter = launchScheduler.Build(10, 3, 1);
 
             launchReporter.Sync();
