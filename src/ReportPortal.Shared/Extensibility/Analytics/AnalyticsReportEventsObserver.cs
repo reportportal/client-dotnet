@@ -12,14 +12,14 @@ namespace ReportPortal.Shared.Extensibility.Analytics
     /// </summary>
     public class AnalyticsReportEventsObserver : IReportEventsObserver, IDisposable
     {
-        private const string MEASUREMENT_ID = "UA-168688323-1";
+        private const string MEASUREMENT_ID = "UA-96321031-1";
         private const string BASE_URI = "https://www.google-analytics.com";
+        private const string CLIENT_NAME = "commons-dotnet";
 
         private static ITraceLogger TraceLogger => TraceLogManager.Instance.GetLogger<AnalyticsReportEventsObserver>();
 
         private readonly string _clientId;
 
-        private readonly string _clientName;
         private readonly string _clientVersion;
 
         private HttpClient _httpClient;
@@ -29,7 +29,6 @@ namespace ReportPortal.Shared.Extensibility.Analytics
             _clientId = Guid.NewGuid().ToString();
 
             // Client is this assembly
-            _clientName = "dotnet-shared";
             _clientVersion = typeof(AnalyticsReportEventsObserver).Assembly.GetName().Version.ToString(3);
 
             _httpClient = new HttpClient();
@@ -56,7 +55,7 @@ namespace ReportPortal.Shared.Extensibility.Analytics
             }
         }
 
-        public static string AgentName { get; private set; } = "Unknown";
+        public static string AgentName { get; private set; } = "Anonymous";
 
         private static string _agentVersion;
         public static string AgentVersion
@@ -75,6 +74,7 @@ namespace ReportPortal.Shared.Extensibility.Analytics
 
         IReportEventsSource _reportEventsSource;
 
+        /// <inheritdoc />
         public void Initialize(IReportEventsSource reportEventsSource)
         {
             _reportEventsSource = reportEventsSource;
@@ -85,7 +85,7 @@ namespace ReportPortal.Shared.Extensibility.Analytics
         {
             if (args.Configuration.GetValue("Analytics:Enabled", true))
             {
-                var category = $"Client name \"{_clientName}\", version \"{_clientVersion}\"";
+                var category = $"Client name \"{CLIENT_NAME}\", version \"{_clientVersion}\"";
                 var label = $"Agent name \"{AgentName}\", version \"{AgentVersion}\"";
 
                 var requestData = $"/collect?v=1&tid={MEASUREMENT_ID}&cid={_clientId}&t=event&ec={category}&ea=Start launch&el={label}";
@@ -106,6 +106,9 @@ namespace ReportPortal.Shared.Extensibility.Analytics
             }
         }
 
+        /// <summary>
+        /// Release HtpClient if needed.
+        /// </summary>
         public void Dispose()
         {
             if (_reportEventsSource != null)
