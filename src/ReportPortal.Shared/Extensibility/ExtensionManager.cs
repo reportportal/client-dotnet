@@ -62,25 +62,28 @@ namespace ReportPortal.Shared.Extensibility
                                 {
                                     foreach (var type in assembly.GetTypes().Where(t => t.IsClass))
                                     {
-                                        if (iLogHandlerExtensionInterfaceType.IsAssignableFrom(type))
+                                        if (!type.IsAbstract && type.GetConstructors().Any(ctor => ctor.GetParameters().Length == 0))
                                         {
-                                            var extension = Activator.CreateInstance(type);
-                                            logHandlers.Add((ILogHandler)extension);
-                                            TraceLogger.Info($"Registered '{type.FullName}' type as {nameof(ILogHandler)} extension.");
-                                        }
+                                            if (iLogHandlerExtensionInterfaceType.IsAssignableFrom(type))
+                                            {
+                                                var extension = Activator.CreateInstance(type);
+                                                logHandlers.Add((ILogHandler)extension);
+                                                TraceLogger.Info($"Registered '{type.FullName}' type as {nameof(ILogHandler)} extension.");
+                                            }
 
-                                        if (iLogFormatterExtensionInterfaceType.IsAssignableFrom(type))
-                                        {
-                                            var extension = Activator.CreateInstance(type);
-                                            logFormatters.Add((ILogFormatter)extension);
-                                            TraceLogger.Info($"Registered '{type.FullName}' type as {nameof(ILogFormatter)} extension.");
-                                        }
+                                            if (iLogFormatterExtensionInterfaceType.IsAssignableFrom(type))
+                                            {
+                                                var extension = Activator.CreateInstance(type);
+                                                logFormatters.Add((ILogFormatter)extension);
+                                                TraceLogger.Info($"Registered '{type.FullName}' type as {nameof(ILogFormatter)} extension.");
+                                            }
 
-                                        if (iReportEventObserseExtensionInterfaceType.IsAssignableFrom(type))
-                                        {
-                                            var extension = Activator.CreateInstance(type);
-                                            reportEventObservers.Add((IReportEventsObserver)extension);
-                                            TraceLogger.Info($"Registered '{type.FullName}' type as {nameof(IReportEventsObserver)} extension.");
+                                            if (iReportEventObserseExtensionInterfaceType.IsAssignableFrom(type))
+                                            {
+                                                var extension = Activator.CreateInstance(type);
+                                                reportEventObservers.Add((IReportEventsObserver)extension);
+                                                TraceLogger.Info($"Registered '{type.FullName}' type as {nameof(IReportEventsObserver)} extension.");
+                                            }
                                         }
                                     }
                                 }
