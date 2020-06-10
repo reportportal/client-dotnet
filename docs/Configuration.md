@@ -65,3 +65,10 @@ If you want to redirect agent to send test results into some another way, there 
 - `Launch:Id` (UUID of existing launch) - agent will append test results into provided Launch ID. Launch should be *IN_PROGRESS* state, agent will not finish it. It's your responsibility to start and finish launch. Usefull for distributed test execution, where tests are running on different machines and you want to see consolidated report.
 - `Launch:Rerun` (true/false/yes/no) - agent will try to add new tests into existing launch (compared by name) or adds new attempt/retry for existing tests.
 - `Launch:RerunOf` (UUID of existing launch) - agent will try to add new tests into existing launch (by ID) or adds new attempt/retry for existing tests.
+
+
+# Analytics
+
+Each time when new launch is posted to RP server, reporting engine sends this fact to google analytics service. It doesn't collect sensetive information, just name and version of used engine/agent.
+
+This behavior can be turned off through `Analytics:Enabled` configuration property.

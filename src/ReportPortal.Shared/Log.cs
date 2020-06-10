@@ -1,4 +1,5 @@
-﻿using ReportPortal.Client.Abstractions.Requests;
+﻿using System;
+using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Logging;
 
 namespace ReportPortal.Shared
@@ -42,6 +43,7 @@ namespace ReportPortal.Shared
         /// Sends log message to current test context.
         /// </summary>
         /// <param name="logRequest">Full model object for message</param>
+        [Obsolete("This method will removed. If you want to construct CreateLogItemRequest by yourself, please use Log.ActiveScope.Message() method.")]
         public static void Message(CreateLogItemRequest logRequest)
         {
             _logScopeManager.ActiveScope.Message(logRequest);

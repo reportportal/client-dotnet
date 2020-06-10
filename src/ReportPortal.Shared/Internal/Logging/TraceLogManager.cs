@@ -75,7 +75,7 @@ namespace ReportPortal.Shared.Internal.Logging
 
                     SourceLevels traceLevel;
 
-                    if (!Enum.TryParse(envTraceLevelValue, out traceLevel))
+                    if (!Enum.TryParse(envTraceLevelValue, ignoreCase: true, out traceLevel))
                     {
                         traceLevel = SourceLevels.Error;
                     }
@@ -83,7 +83,7 @@ namespace ReportPortal.Shared.Internal.Logging
                     var traceSource = new TraceSource(type.Name);
 
                     traceSource.Switch = new SourceSwitch("ReportPortal_TraceSwitch", traceLevel.ToString());
-                    
+
                     var logFileName = $"{type.Assembly.GetName().Name}.{Process.GetCurrentProcess().Id}.log";
 
                     logFileName = Path.Combine(_baseDir, logFileName);

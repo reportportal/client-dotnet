@@ -9,5 +9,7 @@ namespace ReportPortal.Shared.Extensibility
         IList<ILogFormatter> LogFormatters { get; }
 
         IList<ILogHandler> LogHandlers { get; }
+
+        IList<IReportEventsObserver> ReportEventObservers { get; }
     }
 }

@@ -6,6 +6,7 @@ using ReportPortal.Client.Abstractions;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Extensibility;
+using ReportPortal.Shared.Extensibility.ReportEvents.EventArgs;
 using ReportPortal.Shared.Internal.Delegating;
 
 namespace ReportPortal.Shared.Reporter
@@ -21,6 +22,8 @@ namespace ReportPortal.Shared.Reporter
         private readonly IRequestExecuter _requestExecuter;
 
         private readonly IExtensionManager _extensionManager;
+
+        private readonly ReportEventsSource _reportEventsSource;
 
         private readonly object _lockObj = new object();
 
@@ -41,6 +44,22 @@ namespace ReportPortal.Shared.Reporter
             _requestExecuter = requestExecuter ?? new RequestExecuterFactory(_configuration).Create();
 
             _extensionManager = extensionManager ?? throw new ArgumentNullException(nameof(extensionManager));
+
+            _reportEventsSource = new ReportEventsSource();
+            if (extensionManager.ReportEventObservers != null)
+            {
+                foreach (var reportEventObserver in extensionManager.ReportEventObservers)
+                {
+                    try
+                    {
+                        reportEventObserver.Initialize(_reportEventsSource);
+                    }
+                    catch (Exception initExp)
+                    {
+                        TraceLogger.Error($"Unhandled exception while initializing of {reportEventObserver.GetType().FullName}: {initExp}");
+                    }
+                }
+            }
 
             // identify whether launch is already started by any external system
             var externalLaunchUuid = _configuration.GetValue<string>("Launch:Id", null);
@@ -66,6 +85,8 @@ namespace ReportPortal.Shared.Reporter
         private string _rerunOfUuid = null;
         private bool _isRerun;
 
+        private IList<Task> _additionalTasks;
+
         public Task StartTask { get; private set; }
 
         public void Start(StartLaunchRequest request)
@@ -88,6 +109,8 @@ namespace ReportPortal.Shared.Reporter
                 // start rerun launch item
                 StartTask = Task.Run(async () =>
                 {
+                    NotifyStarting(request);
+
                     var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.StartAsync(request), null).ConfigureAwait(false);
 
                     LaunchInfo = new LaunchInfo
@@ -96,6 +119,8 @@ namespace ReportPortal.Shared.Reporter
                         Name = request.Name,
                         StartTime = request.StartTime
                     };
+
+                    NotifyStarted();
                 });
             }
             else if (!_isExternalLaunchId)
@@ -108,6 +133,8 @@ namespace ReportPortal.Shared.Reporter
                 // start new launch item
                 StartTask = Task.Run(async () =>
                 {
+                    NotifyStarting(request);
+
                     var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.StartAsync(request), null).ConfigureAwait(false);
 
                     LaunchInfo = new LaunchInfo
@@ -116,6 +143,8 @@ namespace ReportPortal.Shared.Reporter
                         Name = request.Name,
                         StartTime = request.StartTime
                     };
+
+                    NotifyStarted();
                 });
             }
             else
@@ -157,6 +186,12 @@ namespace ReportPortal.Shared.Reporter
             }
 
             var dependentTasks = new List<Task>();
+
+            if (_additionalTasks != null)
+            {
+                dependentTasks.AddRange(_additionalTasks);
+            }
+
             if (ChildTestReporters != null)
             {
                 var childTestReporterFinishTasks = ChildTestReporters.Select(tn => tn.FinishTask);
@@ -218,7 +253,11 @@ namespace ReportPortal.Shared.Reporter
 
                     if (!_isExternalLaunchId && _rerunOfUuid == null)
                     {
+                        NotifyFinishing(request);
+
                         await _requestExecuter.ExecuteAsync(() => _service.Launch.FinishAsync(LaunchInfo.Uuid, request), null).ConfigureAwait(false);
+
+                        NotifyFinished();
                     }
                 }
                 finally
@@ -226,14 +265,14 @@ namespace ReportPortal.Shared.Reporter
                     // clean childs
                     // ChildTestReporters = null;
                 }
-            }).Unwrap();
+            }, TaskContinuationOptions.PreferFairness).Unwrap();
         }
 
         public IList<ITestReporter> ChildTestReporters { get; private set; }
 
         public ITestReporter StartChildTestReporter(StartTestItemRequest request)
         {
-            var newTestNode = new TestReporter(_service, this, null, _requestExecuter, _extensionManager);
+            var newTestNode = new TestReporter(_service, _configuration, this, null, _requestExecuter, _extensionManager, _reportEventsSource);
             newTestNode.Start(request);
 
             lock (_lockObj)
@@ -248,18 +287,105 @@ namespace ReportPortal.Shared.Reporter
                 ChildTestReporters.Add(newTestNode);
             }
 
-            LastTestNode = newTestNode;
-
             return newTestNode;
         }
 
-        public TestReporter LastTestNode { get; set; }
+        public void Log(CreateLogItemRequest createLogItemRequest)
+        {
+            if (StartTask == null)
+            {
+                var exp = new InsufficientExecutionStackException("The launch wasn't scheduled for starting to add log messages.");
+                TraceLogger.Error(exp.ToString());
+                throw (exp);
+            }
+
+            if (StartTask.IsFaulted || StartTask.IsCanceled)
+            {
+                return;
+            }
+
+            if (FinishTask == null)
+            {
+                lock (_lockObj)
+                {
+                    if (_additionalTasks == null)
+                    {
+                        lock (_lockObj)
+                        {
+                            _additionalTasks = new List<Task>();
+                        }
+                    }
+
+                    var task = StartTask.ContinueWith(async pt =>
+                    {
+                        if (!StartTask.IsFaulted || !StartTask.IsCanceled)
+                        {
+                            if (createLogItemRequest.Time < LaunchInfo.StartTime)
+                            {
+                                createLogItemRequest.Time = LaunchInfo.StartTime;
+                            }
+
+                            createLogItemRequest.LaunchUuid = LaunchInfo.Uuid;
+
+                            foreach (var formatter in _extensionManager.LogFormatters)
+                            {
+                                formatter.FormatLog(createLogItemRequest);
+                            }
+
+                            await _requestExecuter.ExecuteAsync(() => _service.LogItem.CreateAsync(createLogItemRequest), null).ConfigureAwait(false);
+                        }
+                    }, TaskContinuationOptions.PreferFairness).Unwrap();
+
+                    _additionalTasks.Add(task);
+                }
+            }
+        }
 
         public void Sync()
         {
             StartTask?.GetAwaiter().GetResult();
 
             FinishTask?.GetAwaiter().GetResult();
+        }
+
+        private BeforeLaunchStartingEventArgs NotifyStarting(StartLaunchRequest request)
+        {
+            var args = new BeforeLaunchStartingEventArgs(_service, _configuration, request);
+            Notify(() => ReportEventsSource.RaiseBeforeLaunchStarting(_reportEventsSource, this, args));
+            return args;
+        }
+
+        private AfterLaunchStartedEventArgs NotifyStarted()
+        {
+            var args = new AfterLaunchStartedEventArgs(_service, _configuration);
+            Notify(() => ReportEventsSource.RaiseAfterLaunchStarted(_reportEventsSource, this, args));
+            return args;
+        }
+
+        private BeforeLaunchFinishingEventArgs NotifyFinishing(FinishLaunchRequest request)
+        {
+            var args = new BeforeLaunchFinishingEventArgs(_service, _configuration, request);
+            Notify(() => ReportEventsSource.RaiseBeforeLaunchFinishing(_reportEventsSource, this, args));
+            return args;
+        }
+
+        private AfterLaunchFinishedEventArgs NotifyFinished()
+        {
+            var args = new AfterLaunchFinishedEventArgs(_service, _configuration);
+            Notify(() => ReportEventsSource.RaiseAfterLaunchFinished(_reportEventsSource, this, args));
+            return args;
+        }
+
+        private void Notify(Action act)
+        {
+            try
+            {
+                act.Invoke();
+            }
+            catch (Exception exp)
+            {
+                TraceLogger.Error($"Unhandled error while notifying launch event observers: {exp}");
+            }
         }
     }
 }

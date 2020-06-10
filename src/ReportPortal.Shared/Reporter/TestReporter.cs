@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using ReportPortal.Client.Abstractions;
 using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Extensibility;
+using ReportPortal.Shared.Extensibility.ReportEvents.EventArgs;
 using ReportPortal.Shared.Internal.Delegating;
 using ReportPortal.Shared.Internal.Logging;
 
@@ -13,18 +15,23 @@ namespace ReportPortal.Shared.Reporter
     public class TestReporter : ITestReporter
     {
         private readonly IClientService _service;
+        private readonly IConfiguration _configuration;
         private readonly IRequestExecuter _requestExecuter;
         private readonly IExtensionManager _extensionManager;
+
+        private readonly ReportEventsSource _reportEventsSource;
 
         private static ITraceLogger TraceLogger { get; } = TraceLogManager.Instance.GetLogger<TestReporter>();
 
         private readonly object _lockObj = new object();
 
-        public TestReporter(IClientService service, ILaunchReporter launchReporter, ITestReporter parentTestReporter, IRequestExecuter requestExecuter, IExtensionManager extensionManager)
+        public TestReporter(IClientService service, IConfiguration configuration, ILaunchReporter launchReporter, ITestReporter parentTestReporter, IRequestExecuter requestExecuter, IExtensionManager extensionManager, ReportEventsSource reportEventNotifier)
         {
             _service = service;
+            _configuration = configuration;
             _requestExecuter = requestExecuter;
             _extensionManager = extensionManager;
+            _reportEventsSource = reportEventNotifier;
             LaunchReporter = launchReporter;
             ParentTestReporter = parentTestReporter;
         }
@@ -73,12 +80,18 @@ namespace ReportPortal.Shared.Reporter
                         startTestItemRequest.StartTime = LaunchReporter.LaunchInfo.StartTime;
                     }
 
+                    NotifyStarting(startTestItemRequest);
+
                     var testModel = await _requestExecuter.ExecuteAsync(() => _service.TestItem.StartAsync(startTestItemRequest), null).ConfigureAwait(false);
 
                     TestInfo = new TestInfo
                     {
-                        Uuid = testModel.Uuid
+                        Uuid = testModel.Uuid,
+                        Name = startTestItemRequest.Name,
+                        StartTime = startTestItemRequest.StartTime
                     };
+
+                    NotifyStarted();
                 }
                 else
                 {
@@ -87,16 +100,22 @@ namespace ReportPortal.Shared.Reporter
                         startTestItemRequest.StartTime = ParentTestReporter.TestInfo.StartTime;
                     }
 
+                    NotifyStarting(startTestItemRequest);
+
                     var testModel = await _requestExecuter.ExecuteAsync(() => _service.TestItem.StartAsync(ParentTestReporter.TestInfo.Uuid, startTestItemRequest), null).ConfigureAwait(false);
 
                     TestInfo = new TestInfo
                     {
-                        Uuid = testModel.Uuid
+                        Uuid = testModel.Uuid,
+                        Name = startTestItemRequest.Name,
+                        StartTime = startTestItemRequest.StartTime
                     };
+
+                    NotifyStarted();
                 }
 
                 TestInfo.StartTime = startTestItemRequest.StartTime;
-            }).Unwrap();
+            }, TaskContinuationOptions.PreferFairness).Unwrap();
         }
 
         public Task FinishTask { get; private set; }
@@ -129,6 +148,7 @@ namespace ReportPortal.Shared.Reporter
             {
                 dependentTasks.AddRange(_additionalTasks);
             }
+
             if (ChildTestReporters != null)
             {
                 var childTestReporterFinishTasks = ChildTestReporters.Select(tn => tn.FinishTask);
@@ -188,7 +208,11 @@ namespace ReportPortal.Shared.Reporter
                         request.EndTime = TestInfo.StartTime;
                     }
 
+                    NotifyFinishing(request);
+
                     await _requestExecuter.ExecuteAsync(() => _service.TestItem.FinishAsync(TestInfo.Uuid, request), null).ConfigureAwait(false);
+
+                    NotifyFinished();
                 }
                 finally
                 {
@@ -198,7 +222,7 @@ namespace ReportPortal.Shared.Reporter
                     // clean up addition tasks
                     _additionalTasks = null;
                 }
-            }).Unwrap();
+            }, TaskContinuationOptions.PreferFairness).Unwrap();
         }
 
         private IList<Task> _additionalTasks;
@@ -211,7 +235,7 @@ namespace ReportPortal.Shared.Reporter
 
             TraceLogger.Verbose($"Scheduling request to start new '{request.Name}' test item in {GetHashCode()} proxy instance");
 
-            var newTestNode = new TestReporter(_service, LaunchReporter, this, _requestExecuter, _extensionManager);
+            var newTestNode = new TestReporter(_service, _configuration, LaunchReporter, this, _requestExecuter, _extensionManager, _reportEventsSource);
             newTestNode.Start(request);
 
             lock (_lockObj)
@@ -225,7 +249,6 @@ namespace ReportPortal.Shared.Reporter
                 }
                 ChildTestReporters.Add(newTestNode);
             }
-            (LaunchReporter as LaunchReporter).LastTestNode = newTestNode;
 
             return newTestNode;
         }
@@ -276,7 +299,7 @@ namespace ReportPortal.Shared.Reporter
 
                             await _requestExecuter.ExecuteAsync(() => _service.LogItem.CreateAsync(request), null).ConfigureAwait(false);
                         }
-                    }).Unwrap();
+                    }, TaskContinuationOptions.PreferFairness).Unwrap();
 
                     _additionalTasks.Add(task);
                 }
@@ -288,6 +311,46 @@ namespace ReportPortal.Shared.Reporter
             StartTask?.GetAwaiter().GetResult();
 
             FinishTask?.GetAwaiter().GetResult();
+        }
+
+        private BeforeTestStartingEventArgs NotifyStarting(StartTestItemRequest request)
+        {
+            var args = new BeforeTestStartingEventArgs(_service, _configuration, request);
+            Notify(() => ReportEventsSource.RaiseBeforeTestStarting(_reportEventsSource, this, args));
+            return args;
+        }
+
+        private AfterTestStartedEventArgs NotifyStarted()
+        {
+            var args = new AfterTestStartedEventArgs(_service, _configuration);
+            Notify(() => ReportEventsSource.RaiseAfterTestStarted(_reportEventsSource, this, args));
+            return args;
+        }
+
+        private BeforeTestFinishingEventArgs NotifyFinishing(FinishTestItemRequest request)
+        {
+            var args = new BeforeTestFinishingEventArgs(_service, _configuration, request);
+            Notify(() => ReportEventsSource.RaiseBeforeTestFinishing(_reportEventsSource, this, args));
+            return args;
+        }
+
+        private AfterTestFinishedEventArgs NotifyFinished()
+        {
+            var args = new AfterTestFinishedEventArgs(_service, _configuration);
+            Notify(() => ReportEventsSource.RaiseAfterTestFinished(_reportEventsSource, this, args));
+            return args;
+        }
+
+        private void Notify(Action act)
+        {
+            try
+            {
+                act.Invoke();
+            }
+            catch (Exception exp)
+            {
+                TraceLogger.Error($"Unhandled error while notifying test event observers: {exp}");
+            }
         }
     }
 

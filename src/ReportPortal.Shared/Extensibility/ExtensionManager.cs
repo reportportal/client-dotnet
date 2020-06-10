@@ -36,6 +36,7 @@ namespace ReportPortal.Shared.Extensibility
                     {
                         var logFormatters = new List<ILogFormatter>();
                         var logHandlers = new List<ILogHandler>();
+                        var reportEventObservers = new List<IReportEventsObserver>();
 
                         var currentDirectory = new DirectoryInfo(path);
 
@@ -49,6 +50,7 @@ namespace ReportPortal.Shared.Extensibility
 
                         var iLogFormatterExtensionInterfaceType = typeof(ILogFormatter);
                         var iLogHandlerExtensionInterfaceType = typeof(ILogHandler);
+                        var iReportEventObserseExtensionInterfaceType = typeof(IReportEventsObserver);
 
                         foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies().Where(a => a.GetName().Name.Contains("ReportPortal")))
                         {
@@ -60,18 +62,28 @@ namespace ReportPortal.Shared.Extensibility
                                 {
                                     foreach (var type in assembly.GetTypes().Where(t => t.IsClass))
                                     {
-                                        if (iLogHandlerExtensionInterfaceType.IsAssignableFrom(type))
+                                        if (!type.IsAbstract && type.GetConstructors().Any(ctor => ctor.GetParameters().Length == 0))
                                         {
-                                            var extension = Activator.CreateInstance(type);
-                                            logHandlers.Add((ILogHandler)extension);
-                                            TraceLogger.Info($"Registered '{type.FullName}' type as {nameof(ILogHandler)} extension.");
-                                        }
+                                            if (iLogHandlerExtensionInterfaceType.IsAssignableFrom(type))
+                                            {
+                                                var extension = Activator.CreateInstance(type);
+                                                logHandlers.Add((ILogHandler)extension);
+                                                TraceLogger.Info($"Registered '{type.FullName}' type as {nameof(ILogHandler)} extension.");
+                                            }
 
-                                        if (iLogFormatterExtensionInterfaceType.IsAssignableFrom(type))
-                                        {
-                                            var extension = Activator.CreateInstance(type);
-                                            logFormatters.Add((ILogFormatter)extension);
-                                            TraceLogger.Info($"Registered '{type.FullName}' type as {nameof(ILogFormatter)} extension.");
+                                            if (iLogFormatterExtensionInterfaceType.IsAssignableFrom(type))
+                                            {
+                                                var extension = Activator.CreateInstance(type);
+                                                logFormatters.Add((ILogFormatter)extension);
+                                                TraceLogger.Info($"Registered '{type.FullName}' type as {nameof(ILogFormatter)} extension.");
+                                            }
+
+                                            if (iReportEventObserseExtensionInterfaceType.IsAssignableFrom(type))
+                                            {
+                                                var extension = Activator.CreateInstance(type);
+                                                reportEventObservers.Add((IReportEventsObserver)extension);
+                                                TraceLogger.Info($"Registered '{type.FullName}' type as {nameof(IReportEventsObserver)} extension.");
+                                            }
                                         }
                                     }
                                 }
@@ -88,6 +100,7 @@ namespace ReportPortal.Shared.Extensibility
 
                         logFormatters.OrderBy(ext => ext.Order).ToList().ForEach(lf => LogFormatters.Add(lf));
                         logHandlers.OrderBy(ext => ext.Order).ToList().ForEach(lh => LogHandlers.Add(lh));
+                        reportEventObservers.ToList().ForEach(reo => ReportEventObservers.Add(reo));
 
                         _exploredPaths.Add(path);
                     }
@@ -99,6 +112,6 @@ namespace ReportPortal.Shared.Extensibility
 
         public IList<ILogHandler> LogHandlers { get; } = new List<ILogHandler>();
 
-
+        public IList<IReportEventsObserver> ReportEventObservers { get; } = new List<IReportEventsObserver>();
     }
 }
