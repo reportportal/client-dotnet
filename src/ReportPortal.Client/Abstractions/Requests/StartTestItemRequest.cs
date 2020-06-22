@@ -36,7 +36,7 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// Date time when new test item is created.
         /// </summary>
         [DataMember(Name = "startTime")]
-        public string StartTimeString { get; set; }
+        public string StartTimeString { get; set; } = DateTimeConverter.ConvertFrom(DateTime.UtcNow);
 
         public DateTime StartTime
         {
@@ -56,7 +56,7 @@ namespace ReportPortal.Client.Abstractions.Requests
         [DataMember(Name = "type")]
         public string TypeString { get { return EnumConverter.ConvertFrom(Type); } set { Type = EnumConverter.ConvertTo<TestItemType>(value); } }
 
-        public TestItemType Type = TestItemType.Test;
+        public TestItemType Type { get; set; } = TestItemType.Test;
 
         /// <summary>
         /// A list of tags.

@@ -14,7 +14,7 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// Date time when launch execution is finished.
         /// </summary>
         [DataMember(Name = "endTime")]
-        public string EndTimeString { get; set; }
+        public string EndTimeString { get; set; } = DateTimeConverter.ConvertFrom(DateTime.UtcNow);
 
         public DateTime EndTime
         {

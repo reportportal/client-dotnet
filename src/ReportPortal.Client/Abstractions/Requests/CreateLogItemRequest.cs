@@ -28,7 +28,7 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// Date time of log item.
         /// </summary>
         [DataMember(Name = "time")]
-        public string TimeString { get; set; }
+        public string TimeString { get; set; } = DateTimeConverter.ConvertFrom(DateTime.UtcNow);
 
         public DateTime Time
         {
@@ -48,7 +48,7 @@ namespace ReportPortal.Client.Abstractions.Requests
         [DataMember(Name = "level")]
         public string LevelString { get { return EnumConverter.ConvertFrom(Level); } set { Level = EnumConverter.ConvertTo<LogLevel>(value); } }
 
-        public LogLevel Level = LogLevel.Info;
+        public LogLevel Level { get; set; } = LogLevel.Info;
 
         /// <summary>
         /// Message of log item.

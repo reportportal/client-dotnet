@@ -1,4 +1,5 @@
-﻿using ReportPortal.Client.Abstractions.Filtering;
+﻿using FluentAssertions;
+using ReportPortal.Client.Abstractions.Filtering;
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Responses;
@@ -103,6 +104,23 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
 
             Assert.Equal(_fixture.LaunchId, getLog.LaunchId);
             Assert.Equal(0, getLog.TestItemId);
+        }
+
+        [Fact]
+        public async Task CreateLogWithDefaultStartTime()
+        {
+            var utcNow = DateTime.UtcNow;
+
+            var log = await Service.LogItem.CreateAsync(new CreateLogItemRequest
+            {
+                TestItemUuid = _fixture.TestUuid,
+                Text = "TestLog",
+                Level = LogLevel.Info
+            });
+
+            var getLog = await Service.LogItem.GetAsync(log.Uuid);
+
+            getLog.Time.Should().BeCloseTo(utcNow);
         }
 
         [Fact]

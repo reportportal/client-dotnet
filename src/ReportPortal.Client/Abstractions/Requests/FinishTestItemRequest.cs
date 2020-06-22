@@ -22,8 +22,8 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// <summary>
         /// Date time when test item is finished.
         /// </summary>
-        [DataMember(Name = "end_time")]
-        public string EndTimeString { get; set; }
+        [DataMember(Name = "endTime")]
+        public string EndTimeString { get; set; } = DateTimeConverter.ConvertFrom(DateTime.UtcNow);
 
         public DateTime EndTime
         {
@@ -43,7 +43,7 @@ namespace ReportPortal.Client.Abstractions.Requests
         [DataMember(Name = "status")]
         public string StatusString { get { return EnumConverter.ConvertFrom(Status); } set { Status = EnumConverter.ConvertTo<Status>(value); } }
 
-        public Status Status = Status.Passed;
+        public Status Status { get; set; } = Status.Passed;
 
         /// <summary>
         /// A issue of test item if execution was proceeded with error.
