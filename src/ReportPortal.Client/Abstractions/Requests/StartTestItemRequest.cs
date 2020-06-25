@@ -90,6 +90,12 @@ namespace ReportPortal.Client.Abstractions.Requests
         public string TestCaseId { get; set; }
 
         /// <summary>
+        /// Code reference for test. Example: namespace + classname + methodname
+        /// </summary>
+        [DataMember(Name = "codeRef")]
+        public string CodeReference { get; set; }
+
+        /// <summary>
         /// Define if test item has stats. If false - considered as nested step.
         /// </summary>
         [DataMember(Name = "hasStats")]

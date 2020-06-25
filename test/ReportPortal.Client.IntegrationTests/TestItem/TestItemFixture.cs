@@ -150,7 +150,8 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
                 Type = TestItemType.Test,
                 Description = "Desc for test",
                 Attributes = attributes,
-                Parameters = parameters
+                Parameters = parameters,
+                CodeReference = "SomeNamespace.SomeClassname.SomeMethodname"
             };
 
             var test = await Service.TestItem.StartAsync(startTestItemRequest);
@@ -163,6 +164,7 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
             Assert.Equal(startTestItemRequest.Type, getTest.Type);
             Assert.Equal(startTestItemRequest.Description, getTest.Description);
             Assert.Equal(parameters, getTest.Parameters);
+            Assert.Equal("SomeNamespace.SomeClassname.SomeMethodname", getTest.CodeReference);
             getTest.Attributes.Should().BeEquivalentTo(attributes);
 
             var finishTestItemRequest = new FinishTestItemRequest
