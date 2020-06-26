@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Moq;
+using ReportPortal.Shared.Execution.Log;
 using ReportPortal.Shared.Extensibility;
-using ReportPortal.Shared.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -56,7 +56,7 @@ namespace ReportPortal.Shared.Tests
                 scope.Name.Should().Be("q");
                 Log.ActiveScope.Should().BeSameAs(scope);
 
-                using (var scope2 = scope.BeginScope("q"))
+                using (var scope2 = scope.BeginScope("w"))
                 {
                     Log.ActiveScope.Should().BeSameAs(scope2);
                     scope2.Parent.Should().Be(scope);

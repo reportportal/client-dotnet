@@ -1,5 +1,5 @@
 ﻿using ReportPortal.Client.Abstractions.Requests;
-using ReportPortal.Shared.Logging;
+using ReportPortal.Shared.Execution.Log;
 
 namespace ReportPortal.Shared.Extensibility
 {
