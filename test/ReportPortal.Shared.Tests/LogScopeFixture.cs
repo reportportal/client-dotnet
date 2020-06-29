@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using Moq;
-using ReportPortal.Shared.Execution.Log;
+using ReportPortal.Shared.Execution.Logging;
 using ReportPortal.Shared.Extensibility;
 using System;
 using System.Collections.Generic;

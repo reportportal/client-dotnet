@@ -1,60 +1,66 @@
-﻿using System;
-using ReportPortal.Client.Abstractions.Requests;
-using ReportPortal.Shared.Execution.Logging;
+﻿using ReportPortal.Client.Abstractions.Requests;
+using System;
 
-namespace ReportPortal.Shared
+namespace ReportPortal.Shared.Execution.Logging
 {
     /// <summary>
-    /// Attach artifacts to current test context like textual messages or binary files.
+    /// Sends log messages to active logging scope.
     /// </summary>
-    /// <example>
-    /// Usage:
-    /// - sends simple message
-    /// <code>Log.Info("simple message")</code>
-    /// - send image to report
-    /// <code>Log.Debug("my screenshot", "image/png", File.ReadAllBytes(file_path))</code>
-    /// </example>
-    public static class Log
+    public interface ILogScope : IDisposable
     {
         /// <summary>
-        /// Begins new logged scope aka nested step.
+        /// Unique ID of current logging scope.
         /// </summary>
-        /// <param name="name">Logical operation name.</param>
+        string Id { get; }
+
+        /// <summary>
+        /// Parent logging scope.
+        /// </summary>
+        ILogScope Parent { get; }
+
+        /// <summary>
+        /// Root logging scope.
+        /// </summary>
+        ILogScope Root { get; }
+
+        /// <summary>
+        /// Logical login scope name.
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
+        /// Time when loging scope began.
+        /// </summary>
+        DateTime BeginTime { get; }
+
+        /// <summary>
+        /// Time when logging scope ended.
+        /// </summary>
+        DateTime? EndTime { get; }
+
+        /// <summary>
+        /// Logging scope status.
+        /// </summary>
+        LogScopeStatus Status { get; set; }
+
+        /// <summary>
+        /// Starts new logging scope beginning from active scope.
+        /// </summary>
+        /// <param name="name">A name of the scope.</param>
         /// <returns></returns>
-        public static ILogScope BeginScope(string name)
-        {
-            return Context.Current.Log.BeginScope(name);
-        }
-
-        /// <summary>
-        /// Returns an instance of rooted scope which you can use to log massages, instead of active scope.
-        /// </summary>
-        public static ILogScope RootScope => Context.Current.Log.Root;
-
-        /// <summary>
-        /// Returns an instance of active scope where your code is running.
-        /// This scope is used by all methods by default like <see cref="Info(string)"/> or <see cref="Debug(string, string, byte[])"/>.
-        /// </summary>
-        public static ILogScope ActiveScope => Context.Current.Log;
+        ILogScope BeginScope(string name);
 
         /// <summary>
         /// Sends log message to current test context.
         /// </summary>
         /// <param name="logRequest">Full model object for message</param>
-        [Obsolete("This method will removed. If you want to construct CreateLogItemRequest by yourself, please use Log.ActiveScope.Message() method.")]
-        public static void Message(CreateLogItemRequest logRequest)
-        {
-            ActiveScope.Message(logRequest);
-        }
+        void Message(CreateLogItemRequest logRequest);
 
         /// <summary>
         /// Sends log message with "Info" level to current test context.
         /// </summary>
         /// <param name="message">Text of the message</param>
-        public static void Info(string message)
-        {
-            ActiveScope.Info(message);
-        }
+        void Info(string message);
 
         /// <summary>
         /// Sends binary content to current test context.
@@ -62,19 +68,13 @@ namespace ReportPortal.Shared
         /// <param name="message">Text of the message</param>
         /// <param name="mimeType">Mime type of content</param>
         /// <param name="content">Array of bytes</param>
-        public static void Info(string message, string mimeType, byte[] content)
-        {
-            ActiveScope.Info(message, mimeType, content);
-        }
+        void Info(string message, string mimeType, byte[] content);
 
         /// <summary>
         /// Sends log message with "Debug" level to current test context.
         /// </summary>
         /// <param name="message">Text of the message</param>
-        public static void Debug(string message)
-        {
-            ActiveScope.Debug(message);
-        }
+        void Debug(string message);
 
         /// <summary>
         /// Sends binary content to current test context.
@@ -82,19 +82,13 @@ namespace ReportPortal.Shared
         /// <param name="message">Text of the message</param>
         /// <param name="mimeType">Mime type of content</param>
         /// <param name="content">Array of bytes</param>
-        public static void Debug(string message, string mimeType, byte[] content)
-        {
-            ActiveScope.Debug(message, mimeType, content);
-        }
+        void Debug(string message, string mimeType, byte[] content);
 
         /// <summary>
         /// Sends log message with "Trace" level to current test context.
         /// </summary>
         /// <param name="message">Text of the message</param>
-        public static void Trace(string message)
-        {
-            ActiveScope.Trace(message);
-        }
+        void Trace(string message);
 
         /// <summary>
         /// Sends binary content to current test context.
@@ -102,19 +96,13 @@ namespace ReportPortal.Shared
         /// <param name="message">Text of the message</param>
         /// <param name="mimeType">Mime type of content</param>
         /// <param name="content">Array of bytes</param>
-        public static void Trace(string message, string mimeType, byte[] content)
-        {
-            ActiveScope.Trace(message, mimeType, content);
-        }
+        void Trace(string message, string mimeType, byte[] content);
 
         /// <summary>
         /// Sends log message with "Error" level to current test context.
         /// </summary>
         /// <param name="message">Text of the message</param>
-        public static void Error(string message)
-        {
-            ActiveScope.Error(message);
-        }
+        void Error(string message);
 
         /// <summary>
         /// Sends binary content to current test context.
@@ -122,19 +110,13 @@ namespace ReportPortal.Shared
         /// <param name="message">Text of the message</param>
         /// <param name="mimeType">Mime type of content</param>
         /// <param name="content">Array of bytes</param>
-        public static void Error(string message, string mimeType, byte[] content)
-        {
-            ActiveScope.Error(message, mimeType, content);
-        }
+        void Error(string message, string mimeType, byte[] content);
 
         /// <summary>
         /// Sends log message with "Fatal" level to current test context.
         /// </summary>
         /// <param name="message">Text of the message</param>
-        public static void Fatal(string message)
-        {
-            ActiveScope.Fatal(message);
-        }
+        void Fatal(string message);
 
         /// <summary>
         /// Sends binary content to current test context.
@@ -142,19 +124,13 @@ namespace ReportPortal.Shared
         /// <param name="message">Text of the message</param>
         /// <param name="mimeType">Mime type of content</param>
         /// <param name="content">Array of bytes</param>
-        public static void Fatal(string message, string mimeType, byte[] content)
-        {
-            ActiveScope.Fatal(message, mimeType, content);
-        }
+        void Fatal(string message, string mimeType, byte[] content);
 
         /// <summary>
         /// Sends log message with "Warn" level to current test context.
         /// </summary>
         /// <param name="message">Text of the message</param>
-        public static void Warn(string message)
-        {
-            ActiveScope.Warn(message);
-        }
+        void Warn(string message);
 
         /// <summary>
         /// Sends binary content to current test context.
@@ -162,9 +138,6 @@ namespace ReportPortal.Shared
         /// <param name="message">Text of the message</param>
         /// <param name="mimeType">Mime type of content</param>
         /// <param name="content">Array of bytes</param>
-        public static void Warn(string message, string mimeType, byte[] content)
-        {
-            ActiveScope.Warn(message, mimeType, content);
-        }
+        void Warn(string message, string mimeType, byte[] content);
     }
 }

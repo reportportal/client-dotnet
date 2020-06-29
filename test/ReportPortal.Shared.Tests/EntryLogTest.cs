@@ -2,7 +2,7 @@
 using Moq;
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
-using ReportPortal.Shared.Execution.Log;
+using ReportPortal.Shared.Execution.Logging;
 using ReportPortal.Shared.Extensibility;
 using System;
 using Xunit;

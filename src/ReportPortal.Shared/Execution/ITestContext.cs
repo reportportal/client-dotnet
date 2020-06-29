@@ -1,4 +1,4 @@
-﻿using ReportPortal.Shared.Execution.Log;
+﻿using ReportPortal.Shared.Execution.Logging;
 
 namespace ReportPortal.Shared.Execution
 {
