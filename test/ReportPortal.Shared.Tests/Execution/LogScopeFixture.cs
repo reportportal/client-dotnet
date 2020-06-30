@@ -11,7 +11,7 @@ using Xunit;
 
 namespace ReportPortal.Shared.Tests.Execution
 {
-    public class LogFixture
+    public class LogScopeFixture
     {
         [Fact]
         public void ShouldRaiseBeginNewScope()
