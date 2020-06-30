@@ -1,7 +1,7 @@
 ﻿using ReportPortal.Shared.Execution.Logging;
 using ReportPortal.Shared.Extensibility;
+using ReportPortal.Shared.Extensibility.Commands;
 using System;
-using System.Collections.Generic;
 #if NET45
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Messaging;
@@ -11,13 +11,21 @@ using System.Threading;
 
 namespace ReportPortal.Shared.Execution
 {
-    class TestContext : ITestContext
+    public class TestContext : ITestContext
     {
         private IExtensionManager _extensionManager;
 
-        public TestContext(IExtensionManager extensionManager)
+        private CommandsSource _commadsSource;
+
+        public TestContext(IExtensionManager extensionManager, CommandsSource commandsSource)
         {
             _extensionManager = extensionManager;
+            _commadsSource = commandsSource;
+
+            foreach (var commandListener in extensionManager.CommandsListeners)
+            {
+                commandListener.Initialize(commandsSource);
+            }
         }
 
 #if !NET45
@@ -52,7 +60,7 @@ namespace ReportPortal.Shared.Execution
                 if (_rootLogScope.Value == null)
                 {
                     //TraceLogger.Info($"New log context identified, activating {typeof(RootLogScope).Name}");
-                    RootScope = new RootLogScope(this, _extensionManager);
+                    RootScope = new RootLogScope(this, _extensionManager, _commadsSource);
                 }
 
                 return _rootLogScope.Value;
@@ -107,7 +115,7 @@ namespace ReportPortal.Shared.Execution
 
                     if (rootScope == null)
                     {
-                        rootScope = new RootLogScope(this, _extensionManager);
+                        rootScope = new RootLogScope(this, _extensionManager, _commadsSource);
 
                         RootScope = rootScope;
                     }

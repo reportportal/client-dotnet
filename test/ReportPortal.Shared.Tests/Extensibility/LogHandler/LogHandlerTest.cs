@@ -14,10 +14,11 @@ namespace ReportPortal.Shared.Tests.Extensibility.LogHandler
             var logHandler = new Mock<ILogHandler>();
 
             Shared.Extensibility.ExtensionManager.Instance.LogHandlers.Add(logHandler.Object);
+            Context.Current.Log.Info("message from test domain");
             Log.Info("message from test domain");
             Shared.Extensibility.ExtensionManager.Instance.LogHandlers.Remove(logHandler.Object);
 
-            logHandler.Verify(lh => lh.Handle(null, It.IsAny<CreateLogItemRequest>()), Times.Once);
+            logHandler.Verify(lh => lh.Handle(null, It.IsAny<CreateLogItemRequest>()), Times.Exactly(2));
         }
     }
 }

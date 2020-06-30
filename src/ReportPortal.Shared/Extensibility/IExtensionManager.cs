@@ -11,5 +11,7 @@ namespace ReportPortal.Shared.Extensibility
         IList<ILogHandler> LogHandlers { get; }
 
         IList<IReportEventsObserver> ReportEventObservers { get; }
+
+        IList<ICommandsListener> CommandsListeners { get; }
     }
 }

@@ -1,11 +1,12 @@
 ﻿using ReportPortal.Shared.Extensibility;
+using ReportPortal.Shared.Extensibility.Commands;
 using System;
 
 namespace ReportPortal.Shared.Execution.Logging
 {
     class LogScope : BaseLogScope
     {
-        public LogScope(ITestContext testContext, IExtensionManager extensionManager, ILogScope root, ILogScope parent, string name) : base(testContext, extensionManager)
+        public LogScope(ITestContext testContext, IExtensionManager extensionManager, CommandsSource commandsSource, ILogScope root, ILogScope parent, string name) : base(testContext, extensionManager, commandsSource)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -15,6 +16,8 @@ namespace ReportPortal.Shared.Execution.Logging
             Root = root;
             Parent = parent;
             Name = name;
+
+            CommandsSource.RaiseOnBeginScopeCommand(commandsSource, testContext, this);
 
             foreach (var logHandler in _extensionManager.LogHandlers)
             {
@@ -29,6 +32,8 @@ namespace ReportPortal.Shared.Execution.Logging
         public override void Dispose()
         {
             base.Dispose();
+
+            CommandsSource.RaiseOnEndScopeCommand(_commandsSource, _testContext, this);
 
             foreach (var logHandler in _extensionManager.LogHandlers)
             {
