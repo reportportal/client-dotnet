@@ -65,7 +65,7 @@ namespace ReportPortal.Shared.Tests
                 Log.ActiveScope.Should().BeSameAs(scope);
             }
 
-            Log.ActiveScope.Should().BeSameAs(rootScope);
+            Log.ActiveScope.Should().Be(rootScope);
         }
 
         [Fact]

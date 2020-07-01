@@ -1,6 +1,5 @@
 ﻿using ReportPortal.Shared.Execution.Logging;
 using ReportPortal.Shared.Extensibility;
-using ReportPortal.Shared.Extensibility.Commands;
 using System;
 #if NET45
 using System.Runtime.Remoting;
@@ -11,13 +10,13 @@ using System.Threading;
 
 namespace ReportPortal.Shared.Execution
 {
-    public class TestContext : ITestContext
+    public class LaunchContext : ILaunchContext
     {
         private IExtensionManager _extensionManager;
 
         private CommandsSource _commadsSource;
 
-        public TestContext(IExtensionManager extensionManager, CommandsSource commandsSource)
+        public LaunchContext(IExtensionManager extensionManager, CommandsSource commandsSource)
         {
             _extensionManager = extensionManager;
             _commadsSource = commandsSource;

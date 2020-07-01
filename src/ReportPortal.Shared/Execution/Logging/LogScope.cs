@@ -6,7 +6,7 @@ namespace ReportPortal.Shared.Execution.Logging
 {
     class LogScope : BaseLogScope
     {
-        public LogScope(ITestContext testContext, IExtensionManager extensionManager, CommandsSource commandsSource, ILogScope root, ILogScope parent, string name) : base(testContext, extensionManager, commandsSource)
+        public LogScope(ILogContext logContext, IExtensionManager extensionManager, CommandsSource commandsSource, ILogScope root, ILogScope parent, string name) : base(logContext, extensionManager, commandsSource)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -17,7 +17,7 @@ namespace ReportPortal.Shared.Execution.Logging
             Parent = parent;
             Name = name;
 
-            CommandsSource.RaiseOnBeginScopeCommand(commandsSource, testContext, this);
+            CommandsSource.RaiseOnBeginScopeCommand(commandsSource, logContext, this);
 
             foreach (var logHandler in _extensionManager.LogHandlers)
             {
@@ -33,14 +33,14 @@ namespace ReportPortal.Shared.Execution.Logging
         {
             base.Dispose();
 
-            CommandsSource.RaiseOnEndScopeCommand(_commandsSource, _testContext, this);
+            CommandsSource.RaiseOnEndScopeCommand(_commandsSource, Context, this);
 
             foreach (var logHandler in _extensionManager.LogHandlers)
             {
                 logHandler.EndScope(this);
             }
 
-            _testContext.Log = Parent;
+            Context.Log = Parent;
         }
     }
 }

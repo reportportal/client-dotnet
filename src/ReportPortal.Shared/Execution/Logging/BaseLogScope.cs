@@ -8,15 +8,13 @@ namespace ReportPortal.Shared.Execution.Logging
 {
     abstract class BaseLogScope : ILogScope
     {
-        protected ITestContext _testContext;
-
         protected IExtensionManager _extensionManager;
 
         protected CommandsSource _commandsSource;
 
-        public BaseLogScope(ITestContext testContext, IExtensionManager extensionManager, CommandsSource commandsSource)
+        public BaseLogScope(ILogContext logContext, IExtensionManager extensionManager, CommandsSource commandsSource)
         {
-            _testContext = testContext;
+            Context = logContext;
             _extensionManager = extensionManager;
             _commandsSource = commandsSource;
 
@@ -29,6 +27,8 @@ namespace ReportPortal.Shared.Execution.Logging
 
         public virtual ILogScope Root { get; protected set; }
 
+        public virtual ILogContext Context { get; }
+
         public virtual string Name { get; }
 
         public virtual DateTime BeginTime { get; }
@@ -39,9 +39,9 @@ namespace ReportPortal.Shared.Execution.Logging
 
         public virtual ILogScope BeginScope(string name)
         {
-            var logScope = new LogScope(_testContext, _extensionManager, _commandsSource, Root, this, name);
+            var logScope = new LogScope(Context, _extensionManager, _commandsSource, Root, this, name);
 
-            _testContext.Log = logScope;
+            Context.Log = logScope;
 
             return logScope;
         }
@@ -138,7 +138,7 @@ namespace ReportPortal.Shared.Execution.Logging
 
         public virtual void Message(CreateLogItemRequest logRequest)
         {
-            CommandsSource.RaiseOnLogMessageCommand(_commandsSource, _testContext, new Extensibility.Commands.CommandArgs.LogMessageCommandArgs(this, logRequest));
+            CommandsSource.RaiseOnLogMessageCommand(_commandsSource, Context, new Extensibility.Commands.CommandArgs.LogMessageCommandArgs(this, logRequest));
 
             foreach (var handler in _extensionManager.LogHandlers)
             {

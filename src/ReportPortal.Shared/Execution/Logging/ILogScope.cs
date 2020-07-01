@@ -24,6 +24,11 @@ namespace ReportPortal.Shared.Execution.Logging
         ILogScope Root { get; }
 
         /// <summary>
+        /// Context which current logging scope belong to.
+        /// </summary>
+        ILogContext Context { get; }
+
+        /// <summary>
         /// Logical login scope name.
         /// </summary>
         string Name { get; }

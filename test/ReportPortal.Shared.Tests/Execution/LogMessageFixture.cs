@@ -5,6 +5,7 @@ using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Execution;
 using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Extensibility.Commands;
+using System.Collections.Generic;
 using Xunit;
 
 namespace ReportPortal.Shared.Tests.Execution
@@ -32,7 +33,7 @@ namespace ReportPortal.Shared.Tests.Execution
             var extensionManager = new ExtensionManager();
             extensionManager.CommandsListeners.Add(listener);
 
-            testContext = new TestContext(extensionManager, Mock.Of<CommandsSource>());
+            testContext = new TestContext(extensionManager, new CommandsSource(new List<ICommandsListener> { mockListener.Object }));
         }
 
         [Fact]

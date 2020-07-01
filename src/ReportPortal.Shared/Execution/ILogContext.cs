@@ -2,8 +2,8 @@
 
 namespace ReportPortal.Shared.Execution
 {
-    public interface ITestContext : ILogContext
+    public interface ILogContext
     {
-
+        ILogScope Log { get; set; }
     }
 }
