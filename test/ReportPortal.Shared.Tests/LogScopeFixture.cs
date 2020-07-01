@@ -72,6 +72,7 @@ namespace ReportPortal.Shared.Tests
         public async Task ShouldAlwaysHaveActiveAsyncScopedLog()
         {
             Log.ActiveScope.Should().BeSameAs(Log.ActiveScope);
+            Log.ActiveScope.Parent.Should().BeNull();
             Log.ActiveScope.Id.Should().Be(Log.ActiveScope.Id);
             var rootScope = Log.ActiveScope;
             Log.ActiveScope.Should().NotBeNull();

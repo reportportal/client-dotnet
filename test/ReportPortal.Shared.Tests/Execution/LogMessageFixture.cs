@@ -12,13 +12,13 @@ namespace ReportPortal.Shared.Tests.Execution
 {
     public class LogFixture
     {
-        private string text = "text";
-        private string mimeType = "image/png";
-        private byte[] data = new byte[] { 1 };
+        private readonly string text = "text";
+        private readonly string mimeType = "image/png";
+        private readonly byte[] data = new byte[] { 1 };
 
         CreateLogItemRequest logRequest;
-        ICommandsListener listener;
-        ITestContext testContext;
+        readonly ICommandsListener listener;
+        readonly ITestContext testContext;
 
         public LogFixture()
         {
@@ -32,7 +32,7 @@ namespace ReportPortal.Shared.Tests.Execution
 
             var extensionManager = new ExtensionManager();
             extensionManager.CommandsListeners.Add(listener);
-
+            
             testContext = new TestContext(extensionManager, new CommandsSource(new List<ICommandsListener> { mockListener.Object }));
         }
 

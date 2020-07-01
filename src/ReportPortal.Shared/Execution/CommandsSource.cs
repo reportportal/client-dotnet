@@ -23,6 +23,8 @@ namespace ReportPortal.Shared.Execution
             }
         }
 
+        public ITestCommandsSource TestCommandsSource { get; } = new TestCommandsSource();
+
         public event LogCommandHandler<ILogScope> OnBeginLogScopeCommand;
 
         public event LogCommandHandler<ILogScope> OnEndLogScopeCommand;
@@ -42,6 +44,30 @@ namespace ReportPortal.Shared.Execution
         public static void RaiseOnLogMessageCommand(CommandsSource commandsSource, ILogContext logContext, LogMessageCommandArgs args)
         {
             commandsSource.OnLogMessageCommand?.Invoke(logContext, args);
+        }
+    }
+
+    public class TestCommandsSource : ITestCommandsSource
+    {
+        public event TestCommandHandler<TestAttributesCommandArgs> OnGetTestAttributes;
+
+        public event TestCommandHandler<TestAttributesCommandArgs> OnAddTestAttributes;
+
+        public event TestCommandHandler<TestAttributesCommandArgs> OnRemoveTestAttributes;
+
+        public static void RaiseOnGetTestAttributes(TestCommandsSource commandsSource, ITestContext testContext, TestAttributesCommandArgs args)
+        {
+            commandsSource.OnGetTestAttributes?.Invoke(testContext, args);
+        }
+
+        public static void RaiseOnAddTestAttributes(TestCommandsSource commandsSource, ITestContext testContext, TestAttributesCommandArgs args)
+        {
+            commandsSource.OnAddTestAttributes?.Invoke(testContext, args);
+        }
+
+        public static void RaiseOnRemoveTestAttributes(TestCommandsSource commandsSource, ITestContext testContext, TestAttributesCommandArgs args)
+        {
+            commandsSource.OnRemoveTestAttributes?.Invoke(testContext, args);
         }
     }
 }

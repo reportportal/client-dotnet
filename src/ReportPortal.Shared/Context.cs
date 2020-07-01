@@ -16,7 +16,7 @@ namespace ReportPortal.Shared
         private static readonly Lazy<ILaunchContext> _launch = new Lazy<ILaunchContext>(() => new LaunchContext(Extensibility.ExtensionManager.Instance, _commandsSource.Value));
 
         /// <summary>
-        /// Returns context to amend current test metainfo.
+        /// Returns context to amend current test metadata or add log messages.
         /// </summary>
         public static ITestContext Current
         {
@@ -27,7 +27,7 @@ namespace ReportPortal.Shared
         }
 
         /// <summary>
-        /// Returns context to amend current launch metainfo.
+        /// Returns context to amend current launch metadata or add log messages.
         /// </summary>
         public static ILaunchContext Launch
         {

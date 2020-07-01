@@ -11,6 +11,8 @@ namespace ReportPortal.Shared.Extensibility.Commands
         event LogCommandHandler<ILogScope> OnEndLogScopeCommand;
 
         event LogCommandHandler<LogMessageCommandArgs> OnLogMessageCommand;
+
+        ITestCommandsSource TestCommandsSource { get; }
     }
 
     public delegate void LogCommandHandler<TCommandArgs>(ILogContext logContext, TCommandArgs args);

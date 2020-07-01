@@ -1,6 +1,6 @@
 ﻿using ReportPortal.Shared.Execution.Logging;
+using ReportPortal.Shared.Execution.Metadata;
 using ReportPortal.Shared.Extensibility;
-using ReportPortal.Shared.Extensibility.Commands;
 using System;
 #if NET45
 using System.Runtime.Remoting;
@@ -21,6 +21,7 @@ namespace ReportPortal.Shared.Execution
         {
             _extensionManager = extensionManager;
             _commadsSource = commandsSource;
+            Metadata = new TestMetadataEmitter(this, _commadsSource.TestCommandsSource as TestCommandsSource);
         }
 
 #if !NET45
@@ -65,6 +66,8 @@ namespace ReportPortal.Shared.Execution
                 _rootLogScope.Value = value;
             }
         }
+
+
 #else
         private readonly string _logicalActiveDataKey = "__AsyncLocalLogScope_Active__" + Guid.NewGuid().ToString("D");
 
@@ -124,5 +127,7 @@ namespace ReportPortal.Shared.Execution
             }
         }
 #endif
+
+        public ITestMetadataEmitter Metadata { get; private set; }
     }
 }

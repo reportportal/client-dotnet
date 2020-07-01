@@ -1,8 +1,10 @@
 ﻿using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Execution.Logging;
+using System;
 
 namespace ReportPortal.Shared.Extensibility
 {
+    [Obsolete("Use ICommandsListener which more unified way to handle reporting events from test assembly.")]
     /// <summary>
     /// Handle all incoming log messages to <see cref="Log.Message(CreateLogItemRequest)"/>. Usually from log frameworks.
     /// </summary>
