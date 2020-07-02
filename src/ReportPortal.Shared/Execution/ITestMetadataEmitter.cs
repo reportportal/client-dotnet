@@ -8,6 +8,6 @@ namespace ReportPortal.Shared.Execution
     /// </summary>
     public interface ITestMetadataEmitter
     {
-        ICollection<MetaAttribute> Attributes { get; }
+        IMetaAttributesCollection Attributes { get; }
     }
 }
