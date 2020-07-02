@@ -1,5 +1,5 @@
 ﻿using ReportPortal.Shared.Extensibility;
-using ReportPortal.Shared.Extensibility.Commands;
+using ReportPortal.Shared.Extensibility.Commands.CommandArgs;
 using System;
 
 namespace ReportPortal.Shared.Execution.Logging
@@ -17,7 +17,7 @@ namespace ReportPortal.Shared.Execution.Logging
             Parent = parent;
             Name = name;
 
-            CommandsSource.RaiseOnBeginScopeCommand(commandsSource, logContext, this);
+            CommandsSource.RaiseOnBeginScopeCommand(commandsSource, logContext, new LogScopeCommandArgs(this));
 
             foreach (var logHandler in _extensionManager.LogHandlers)
             {
@@ -33,7 +33,7 @@ namespace ReportPortal.Shared.Execution.Logging
         {
             base.Dispose();
 
-            CommandsSource.RaiseOnEndScopeCommand(_commandsSource, Context, this);
+            CommandsSource.RaiseOnEndScopeCommand(_commandsSource, Context, new LogScopeCommandArgs(this));
 
             foreach (var logHandler in _extensionManager.LogHandlers)
             {

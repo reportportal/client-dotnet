@@ -23,7 +23,7 @@ namespace ReportPortal.Shared.Tests.Execution
             var listener = new Mock<ICommandsListener>();
             listener.Setup(o => o.Initialize(It.IsAny<ICommandsSource>())).Callback<ICommandsSource>(s =>
             {
-                s.OnBeginLogScopeCommand += (a, b) => { tc = a; logScope = b; };
+                s.OnBeginLogScopeCommand += (a, b) => { tc = a; logScope = b.LogScope; };
             });
 
             var extensionManager = new ExtensionManager();
@@ -47,7 +47,7 @@ namespace ReportPortal.Shared.Tests.Execution
             var listener = new Mock<ICommandsListener>();
             listener.Setup(o => o.Initialize(It.IsAny<ICommandsSource>())).Callback<ICommandsSource>(s =>
             {
-                s.OnEndLogScopeCommand += (a, b) => { tc = a; logScope = b; };
+                s.OnEndLogScopeCommand += (a, b) => { tc = a; logScope = b.LogScope; };
             });
 
             var extensionManager = new ExtensionManager();
@@ -122,7 +122,7 @@ namespace ReportPortal.Shared.Tests.Execution
             var listener = new Mock<ICommandsListener>();
             listener.Setup(o => o.Initialize(It.IsAny<ICommandsSource>())).Callback<ICommandsSource>(s =>
             {
-                s.OnBeginLogScopeCommand += (a, b) => { lc = a; logScope = b; };
+                s.OnBeginLogScopeCommand += (a, b) => { lc = a; logScope = b.LogScope; };
             });
 
             var extensionManager = new ExtensionManager();
@@ -146,7 +146,7 @@ namespace ReportPortal.Shared.Tests.Execution
             var listener = new Mock<ICommandsListener>();
             listener.Setup(o => o.Initialize(It.IsAny<ICommandsSource>())).Callback<ICommandsSource>(s =>
             {
-                s.OnEndLogScopeCommand += (a, b) => { lc = a; logScope = b; };
+                s.OnEndLogScopeCommand += (a, b) => { lc = a; logScope = b.LogScope; };
             });
 
             var extensionManager = new ExtensionManager();

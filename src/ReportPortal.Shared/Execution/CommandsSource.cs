@@ -25,20 +25,20 @@ namespace ReportPortal.Shared.Execution
 
         public ITestCommandsSource TestCommandsSource { get; } = new TestCommandsSource();
 
-        public event LogCommandHandler<ILogScope> OnBeginLogScopeCommand;
+        public event LogCommandHandler<LogScopeCommandArgs> OnBeginLogScopeCommand;
 
-        public event LogCommandHandler<ILogScope> OnEndLogScopeCommand;
+        public event LogCommandHandler<LogScopeCommandArgs> OnEndLogScopeCommand;
 
         public event LogCommandHandler<LogMessageCommandArgs> OnLogMessageCommand;
 
-        public static void RaiseOnBeginScopeCommand(CommandsSource commandsSource, ILogContext logContext, ILogScope logScope)
+        public static void RaiseOnBeginScopeCommand(CommandsSource commandsSource, ILogContext logContext, LogScopeCommandArgs args)
         {
-            commandsSource.OnBeginLogScopeCommand?.Invoke(logContext, logScope);
+            commandsSource.OnBeginLogScopeCommand?.Invoke(logContext, args);
         }
 
-        public static void RaiseOnEndScopeCommand(CommandsSource commandsSource, ILogContext logContext, ILogScope logScope)
+        public static void RaiseOnEndScopeCommand(CommandsSource commandsSource, ILogContext logContext, LogScopeCommandArgs args)
         {
-            commandsSource.OnEndLogScopeCommand?.Invoke(logContext, logScope);
+            commandsSource.OnEndLogScopeCommand?.Invoke(logContext, args);
         }
 
         public static void RaiseOnLogMessageCommand(CommandsSource commandsSource, ILogContext logContext, LogMessageCommandArgs args)
