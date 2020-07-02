@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Moq;
-using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Shared.Execution;
+using ReportPortal.Shared.Execution.Metadata;
 using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Extensibility.Commands;
 using System.Collections.Generic;
@@ -26,7 +26,7 @@ namespace ReportPortal.Shared.Tests.Execution
             mockListener.Setup(o => o.Initialize(It.IsAny<ICommandsSource>())).Callback<ICommandsSource>(s =>
             {
                 s.TestCommandsSource.OnGetTestAttributes += (ctx, args) =>
-                    args.Attributes.Add(new ItemAttribute());
+                    args.Attributes.Add(new MetaAttribute("a", "b"));
             });
 
             var listener = mockListener.Object;
@@ -44,7 +44,7 @@ namespace ReportPortal.Shared.Tests.Execution
         [Fact]
         public void ShouldRaiseOnAddAttributes()
         {
-            ICollection<ItemAttribute> attributesToAdd = null;
+            ICollection<MetaAttribute> attributesToAdd = null;
 
             var mockListener = new Mock<ICommandsListener>();
             mockListener.Setup(o => o.Initialize(It.IsAny<ICommandsSource>())).Callback<ICommandsSource>(s =>
@@ -59,7 +59,7 @@ namespace ReportPortal.Shared.Tests.Execution
 
             var testContext = new TestContext(extensionManager, new CommandsSource(new List<ICommandsListener> { mockListener.Object }));
 
-            testContext.Metadata.Attributes.Add(new ItemAttribute());
+            testContext.Metadata.Attributes.Add(new MetaAttribute("a", "b"));
             attributesToAdd.Should().HaveCount(1);
             testContext.Metadata.Attributes.Should().BeEquivalentTo(attributesToAdd);
         }
@@ -67,7 +67,7 @@ namespace ReportPortal.Shared.Tests.Execution
         [Fact]
         public void ShouldRaiseOnRemoveAttributes()
         {
-            ICollection<ItemAttribute> attributesToRemove = null;
+            ICollection<MetaAttribute> attributesToRemove = null;
 
             var mockListener = new Mock<ICommandsListener>();
             mockListener.Setup(o => o.Initialize(It.IsAny<ICommandsSource>())).Callback<ICommandsSource>(s =>
@@ -82,7 +82,7 @@ namespace ReportPortal.Shared.Tests.Execution
 
             var testContext = new TestContext(extensionManager, new CommandsSource(new List<ICommandsListener> { mockListener.Object }));
 
-            var attr = new ItemAttribute();
+            var attr = new MetaAttribute("a", "b");
             testContext.Metadata.Attributes.Add(attr);
             testContext.Metadata.Attributes.Remove(attr);
             attributesToRemove.Should().HaveCount(1);

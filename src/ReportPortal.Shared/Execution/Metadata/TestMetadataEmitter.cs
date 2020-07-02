@@ -1,5 +1,4 @@
-﻿using ReportPortal.Client.Abstractions.Models;
-using ReportPortal.Shared.Extensibility.Commands.CommandArgs;
+﻿using ReportPortal.Shared.Extensibility.Commands.CommandArgs;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -10,7 +9,7 @@ namespace ReportPortal.Shared.Execution.Metadata
         private TestCommandsSource _commandsSource;
         private ITestContext _testContext;
 
-        private ObservableCollection<ItemAttribute> _attributes;
+        private ObservableCollection<MetaAttribute> _attributes;
 
         public TestMetadataEmitter(ITestContext testContext, TestCommandsSource commandsSource)
         {
@@ -18,7 +17,7 @@ namespace ReportPortal.Shared.Execution.Metadata
             _commandsSource = commandsSource;
         }
 
-        public ICollection<ItemAttribute> Attributes
+        public ICollection<MetaAttribute> Attributes
         {
             get
             {
@@ -28,7 +27,7 @@ namespace ReportPortal.Shared.Execution.Metadata
 
                     TestCommandsSource.RaiseOnGetTestAttributes(_commandsSource, _testContext, commandArgs);
 
-                    _attributes = new ObservableCollection<ItemAttribute>(commandArgs.Attributes);
+                    _attributes = new ObservableCollection<MetaAttribute>(commandArgs.Attributes);
 
                     _attributes.CollectionChanged += _attributes_CollectionChanged;
                 }
@@ -41,8 +40,8 @@ namespace ReportPortal.Shared.Execution.Metadata
         {
             if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
             {
-                var attributes = new Collection<ItemAttribute>();
-                foreach (ItemAttribute attribute in e.NewItems)
+                var attributes = new Collection<MetaAttribute>();
+                foreach (MetaAttribute attribute in e.NewItems)
                 {
                     attributes.Add(attribute);
                 }
@@ -53,8 +52,8 @@ namespace ReportPortal.Shared.Execution.Metadata
             }
             else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
             {
-                var attributes = new Collection<ItemAttribute>();
-                foreach (ItemAttribute attribute in e.OldItems)
+                var attributes = new Collection<MetaAttribute>();
+                foreach (MetaAttribute attribute in e.OldItems)
                 {
                     attributes.Add(attribute);
                 }

@@ -1,4 +1,4 @@
-﻿using ReportPortal.Client.Abstractions.Models;
+﻿using ReportPortal.Shared.Execution.Metadata;
 using System.Collections.Generic;
 
 namespace ReportPortal.Shared.Execution
@@ -8,6 +8,6 @@ namespace ReportPortal.Shared.Execution
     /// </summary>
     public interface ITestMetadataEmitter
     {
-        ICollection<ItemAttribute> Attributes { get; }
+        ICollection<MetaAttribute> Attributes { get; }
     }
 }

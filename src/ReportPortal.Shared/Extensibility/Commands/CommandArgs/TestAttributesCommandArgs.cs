@@ -1,15 +1,15 @@
-﻿using ReportPortal.Client.Abstractions.Models;
+﻿using ReportPortal.Shared.Execution.Metadata;
 using System.Collections.Generic;
 
 namespace ReportPortal.Shared.Extensibility.Commands.CommandArgs
 {
     public class TestAttributesCommandArgs
     {
-        public TestAttributesCommandArgs(ICollection<ItemAttribute> attributes)
+        public TestAttributesCommandArgs(ICollection<MetaAttribute> attributes)
         {
-            Attributes = attributes ?? new List<ItemAttribute>();
+            Attributes = attributes ?? new List<MetaAttribute>();
         }
 
-        public ICollection<ItemAttribute> Attributes { get; }
+        public ICollection<MetaAttribute> Attributes { get; }
     }
 }
