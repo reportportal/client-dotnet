@@ -55,7 +55,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
                 Text = "Log1",
                 Time = DateTime.UtcNow,
                 Level = LogLevel.Info,
-                Attach = new Attach("file1", "application/octet-stream", data)
+                Attach = new Attach("application/octet-stream", data)
             });
             Assert.NotNull(log.Uuid);
             var getLog = await Service.LogItem.GetAsync(log.Uuid);
@@ -77,7 +77,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
                 Text = "Log1",
                 Time = DateTime.UtcNow,
                 Level = LogLevel.Info,
-                Attach = new Attach("file1", "application/json", data)
+                Attach = new Attach("application/json", data)
             });
             Assert.NotNull(log.Uuid);
             var getLog = await Service.LogItem.GetAsync(log.Uuid);
@@ -87,6 +87,41 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
 
             var logData = await Service.LogItem.GetBinaryDataAsync(binaryId);
             Assert.Equal(data, logData);
+        }
+
+        [Fact]
+        public async Task CreateSeveralLogsWithAttach()
+        {
+            var requests = new List<CreateLogItemRequest>();
+
+            for (int i = 0; i < 10; i++)
+            {
+                requests.Add(new CreateLogItemRequest
+                {
+                    TestItemUuid = _fixture.TestUuid,
+                    Text = $"Log{i}",
+                    Time = DateTime.UtcNow,
+                    Level = LogLevel.Info,
+                    Attach = new Attach("application/json", new byte[] { (byte)i })
+                });
+            }
+
+            var logs = await Service.LogItem.CreateAsync(requests.ToArray());
+
+            logs.LogItems.Should().HaveCount(10);
+
+            for (int i = 0; i < 10; i++)
+            {
+                var log = logs.LogItems[i];
+                log.Uuid.Should().NotBeNullOrEmpty();
+
+                var getLog = await Service.LogItem.GetAsync(log.Uuid);
+                Assert.Equal($"Log{i}", getLog.Text);
+
+                var binaryId = getLog.Content.Id;
+                var logData = await Service.LogItem.GetBinaryDataAsync(binaryId);
+                logData.Should().BeEquivalentTo(new byte[] { (byte)i });
+            }
         }
 
         [Fact]
@@ -203,14 +238,14 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
             });
 
             var tempTest = await Service.TestItem.GetAsync(newTestUuid);
-            var logs = (await Service.LogItem.GetAsync(new FilterOption
+            var gotlogs = (await Service.LogItem.GetAsync(new FilterOption
             {
                 Filters = new List<Filter>
                         {
                             new Filter(FilterOperation.Equals, "item", tempTest.Id)
                         }
             })).Items;
-            Assert.True(logs.Count() > 0);
+            Assert.True(gotlogs.Count() > 0);
 
             var tempLogItem = await Service.LogItem.GetAsync(log.Uuid);
             var message = (await Service.LogItem.DeleteAsync(tempLogItem.Id)).Info;

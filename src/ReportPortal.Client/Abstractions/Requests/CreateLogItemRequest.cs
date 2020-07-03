@@ -59,7 +59,7 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// <summary>
         /// Specify an attachment of log item.
         /// </summary>
-        [DataMember(Name = "file")]
+        [DataMember(Name = "file", EmitDefaultValue = false)]
         public Attach Attach { get; set; }
     }
 }

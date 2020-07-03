@@ -68,15 +68,14 @@ namespace ReportPortal.Client.Abstractions.Responses
 
         }
 
-        public Attach(string name, string mimeType, byte[] data)
+        public Attach(string mimeType, byte[] data)
         {
-            Name = name;
             MimeType = mimeType;
             Data = data;
         }
 
         [DataMember(Name = "name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = Guid.NewGuid().ToString();
 
         [IgnoreDataMember]
         public byte[] Data { get; set; }
