@@ -24,7 +24,7 @@ namespace ReportPortal.Shared.Extensibility.LogFormatter
                     var mimeType = match.Groups[1].Value;
                     var bytes = Convert.FromBase64String(match.Groups[2].Value);
 
-                    logRequest.Attach = new Client.Abstractions.Responses.Attach("file", mimeType, bytes);
+                    logRequest.Attach = new Client.Abstractions.Responses.Attach(mimeType, bytes);
 
                     return true;
                 }

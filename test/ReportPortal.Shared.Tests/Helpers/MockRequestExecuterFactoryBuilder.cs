@@ -15,6 +15,7 @@ namespace ReportPortal.Shared.Tests.Helpers
             requestExecuter.Setup(re => re.ExecuteAsync(It.IsAny<Func<Task<LaunchCreatedResponse>>>(), It.IsAny<Action<Exception>>())).Returns<Func<Task<LaunchCreatedResponse>>, Action>((f, c) => f.Invoke());
             requestExecuter.Setup(re => re.ExecuteAsync(It.IsAny<Func<Task<TestItemCreatedResponse>>>(), It.IsAny<Action<Exception>>())).Returns<Func<Task<TestItemCreatedResponse>>, Action>((f, c) => f.Invoke());
             requestExecuter.Setup(re => re.ExecuteAsync(It.IsAny<Func<Task<LogItemCreatedResponse>>>(), It.IsAny<Action<Exception>>())).Returns<Func<Task<LogItemCreatedResponse>>, Action>((f, c) => f.Invoke());
+            requestExecuter.Setup(re => re.ExecuteAsync(It.IsAny<Func<Task<LogItemsCreatedResponse>>>(), It.IsAny<Action<Exception>>())).Returns<Func<Task<LogItemsCreatedResponse>>, Action>((f, c) => f.Invoke());
             requestExecuter.Setup(re => re.ExecuteAsync(It.IsAny<Func<Task<MessageResponse>>>(), It.IsAny<Action<Exception>>())).Returns<Func<Task<MessageResponse>>, Action>((f, c) => f.Invoke());
             requestExecuter.Setup(re => re.ExecuteAsync(It.IsAny<Func<Task<LaunchFinishedResponse>>>(), It.IsAny<Action<Exception>>())).Returns<Func<Task<LaunchFinishedResponse>>, Action>((f, c) => f.Invoke());
 

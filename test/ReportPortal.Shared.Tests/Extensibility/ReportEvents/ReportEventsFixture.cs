@@ -189,7 +189,7 @@ namespace ReportPortal.Shared.Tests.Extensibility.ReportEvents
             var launch = new LaunchReporterBuilder(client).With(extManager).Build(1, 0, 0);
             launch.Sync();
 
-            launch.LaunchInfo.Name.Should().Be("NewName");
+            launch.Info.Name.Should().Be("NewName");
         }
 
         [Fact]
@@ -208,7 +208,7 @@ namespace ReportPortal.Shared.Tests.Extensibility.ReportEvents
             var launch = new LaunchReporterBuilder(client).With(extManager).Build(1, 0, 0);
             launch.Sync();
 
-            launch.ChildTestReporters[0].TestInfo.Name.Should().Be("NewName");
+            launch.ChildTestReporters[0].Info.Name.Should().Be("NewName");
         }
 
     }
