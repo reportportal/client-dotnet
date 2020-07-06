@@ -153,7 +153,7 @@ namespace ReportPortal.Shared.Logging
 
         protected Attach GetAttachFromContent(string mimeType, byte[] content)
         {
-            return new Attach("attachment_name", mimeType, content);
+            return new Attach(mimeType, content);
         }
 
         public virtual void Dispose()

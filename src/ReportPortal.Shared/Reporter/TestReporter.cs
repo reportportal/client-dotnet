@@ -19,6 +19,8 @@ namespace ReportPortal.Shared.Reporter
         private readonly IRequestExecuter _requestExecuter;
         private readonly IExtensionManager _extensionManager;
 
+        private LogsReporter _logsReporter;
+
         private readonly ReportEventsSource _reportEventsSource;
 
         private static ITraceLogger TraceLogger { get; } = TraceLogManager.Instance.GetLogger<TestReporter>();
@@ -36,7 +38,8 @@ namespace ReportPortal.Shared.Reporter
             ParentTestReporter = parentTestReporter;
         }
 
-        public TestInfo TestInfo { get; private set; }
+        private TestInfo _testInfo;
+        public IReporterInfo Info => _testInfo;
 
         public ILaunchReporter LaunchReporter { get; }
 
@@ -72,19 +75,19 @@ namespace ReportPortal.Shared.Reporter
                     throw exp;
                 }
 
-                startTestItemRequest.LaunchUuid = LaunchReporter.LaunchInfo.Uuid;
+                startTestItemRequest.LaunchUuid = LaunchReporter.Info.Uuid;
                 if (ParentTestReporter == null)
                 {
-                    if (startTestItemRequest.StartTime < LaunchReporter.LaunchInfo.StartTime)
+                    if (startTestItemRequest.StartTime < LaunchReporter.Info.StartTime)
                     {
-                        startTestItemRequest.StartTime = LaunchReporter.LaunchInfo.StartTime;
+                        startTestItemRequest.StartTime = LaunchReporter.Info.StartTime;
                     }
 
                     NotifyStarting(startTestItemRequest);
 
                     var testModel = await _requestExecuter.ExecuteAsync(() => _service.TestItem.StartAsync(startTestItemRequest), null).ConfigureAwait(false);
 
-                    TestInfo = new TestInfo
+                    _testInfo = new TestInfo
                     {
                         Uuid = testModel.Uuid,
                         Name = startTestItemRequest.Name,
@@ -95,16 +98,16 @@ namespace ReportPortal.Shared.Reporter
                 }
                 else
                 {
-                    if (startTestItemRequest.StartTime < ParentTestReporter.TestInfo.StartTime)
+                    if (startTestItemRequest.StartTime < ParentTestReporter.Info.StartTime)
                     {
-                        startTestItemRequest.StartTime = ParentTestReporter.TestInfo.StartTime;
+                        startTestItemRequest.StartTime = ParentTestReporter.Info.StartTime;
                     }
 
                     NotifyStarting(startTestItemRequest);
 
-                    var testModel = await _requestExecuter.ExecuteAsync(() => _service.TestItem.StartAsync(ParentTestReporter.TestInfo.Uuid, startTestItemRequest), null).ConfigureAwait(false);
+                    var testModel = await _requestExecuter.ExecuteAsync(() => _service.TestItem.StartAsync(ParentTestReporter.Info.Uuid, startTestItemRequest), null).ConfigureAwait(false);
 
-                    TestInfo = new TestInfo
+                    _testInfo = new TestInfo
                     {
                         Uuid = testModel.Uuid,
                         Name = startTestItemRequest.Name,
@@ -114,7 +117,7 @@ namespace ReportPortal.Shared.Reporter
                     NotifyStarted();
                 }
 
-                TestInfo.StartTime = startTestItemRequest.StartTime;
+                _testInfo.StartTime = startTestItemRequest.StartTime;
             }, TaskContinuationOptions.PreferFairness).Unwrap();
         }
 
@@ -143,6 +146,11 @@ namespace ReportPortal.Shared.Reporter
             var dependentTasks = new List<Task>();
 
             dependentTasks.Add(StartTask);
+
+            if (_logsReporter != null)
+            {
+                dependentTasks.Add(_logsReporter.ProcessingTask);
+            }
 
             if (_additionalTasks != null)
             {
@@ -200,17 +208,17 @@ namespace ReportPortal.Shared.Reporter
                         }
                     }
 
-                    TestInfo.EndTime = request.EndTime;
-                    TestInfo.Status = request.Status;
+                    _testInfo.FinishTime = request.EndTime;
+                    _testInfo.Status = request.Status;
 
-                    if (request.EndTime < TestInfo.StartTime)
+                    if (request.EndTime < Info.StartTime)
                     {
-                        request.EndTime = TestInfo.StartTime;
+                        request.EndTime = Info.StartTime;
                     }
 
                     NotifyFinishing(request);
 
-                    await _requestExecuter.ExecuteAsync(() => _service.TestItem.FinishAsync(TestInfo.Uuid, request), null).ConfigureAwait(false);
+                    await _requestExecuter.ExecuteAsync(() => _service.TestItem.FinishAsync(Info.Uuid, request), null).ConfigureAwait(false);
 
                     NotifyFinished();
                 }
@@ -271,38 +279,14 @@ namespace ReportPortal.Shared.Reporter
             {
                 lock (_lockObj)
                 {
-                    if (_additionalTasks == null)
+                    if (_logsReporter == null)
                     {
-                        lock (_lockObj)
-                        {
-                            _additionalTasks = new List<Task>();
-                        }
+                        var logRequestAmender = new TestLogRequestAmender(this);
+                        _logsReporter = new LogsReporter(this, _service, _extensionManager, _requestExecuter, logRequestAmender);
                     }
-
-                    var parentTask = _additionalTasks.LastOrDefault() ?? StartTask;
-
-                    var task = parentTask.ContinueWith(async pt =>
-                    {
-                        if (!StartTask.IsFaulted || !StartTask.IsCanceled)
-                        {
-                            if (request.Time < TestInfo.StartTime)
-                            {
-                                request.Time = TestInfo.StartTime;
-                            }
-
-                            request.TestItemUuid = TestInfo.Uuid;
-
-                            foreach (var formatter in _extensionManager.LogFormatters)
-                            {
-                                formatter.FormatLog(request);
-                            }
-
-                            await _requestExecuter.ExecuteAsync(() => _service.LogItem.CreateAsync(request), null).ConfigureAwait(false);
-                        }
-                    }, TaskContinuationOptions.PreferFairness).Unwrap();
-
-                    _additionalTasks.Add(task);
                 }
+
+                _logsReporter.Log(request);
             }
         }
 

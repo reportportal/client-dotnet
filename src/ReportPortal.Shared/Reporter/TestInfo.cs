@@ -3,7 +3,7 @@ using System;
 
 namespace ReportPortal.Shared.Reporter
 {
-    public class TestInfo
+    public class TestInfo : IReporterInfo
     {
         public string Uuid { get; set; }
 
@@ -11,7 +11,7 @@ namespace ReportPortal.Shared.Reporter
 
         public DateTime StartTime { get; set; }
 
-        public DateTime EndTime { get; set; }
+        public DateTime? FinishTime { get; set; }
 
         public Status Status { get; set; }
     }

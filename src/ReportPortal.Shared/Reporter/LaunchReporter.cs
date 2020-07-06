@@ -16,14 +16,12 @@ namespace ReportPortal.Shared.Reporter
         private Internal.Logging.ITraceLogger TraceLogger { get; } = Internal.Logging.TraceLogManager.Instance.GetLogger<LaunchReporter>();
 
         private readonly IConfiguration _configuration;
-
         private readonly IClientService _service;
-
         private readonly IRequestExecuter _requestExecuter;
-
         private readonly IExtensionManager _extensionManager;
-
         private readonly ReportEventsSource _reportEventsSource;
+
+        private LogsReporter _logsReporter;
 
         private readonly object _lockObj = new object();
 
@@ -67,7 +65,7 @@ namespace ReportPortal.Shared.Reporter
             {
                 _isExternalLaunchId = true;
 
-                LaunchInfo = new LaunchInfo
+                _launchInfo = new LaunchInfo
                 {
                     Uuid = externalLaunchUuid
                 };
@@ -79,7 +77,8 @@ namespace ReportPortal.Shared.Reporter
             _isRerun = _configuration.GetValue("Launch:Rerun", false);
         }
 
-        public LaunchInfo LaunchInfo { get; private set; }
+        private LaunchInfo _launchInfo;
+        public IReporterInfo Info => _launchInfo;
 
         private bool _isExternalLaunchId = false;
         private string _rerunOfUuid = null;
@@ -113,7 +112,7 @@ namespace ReportPortal.Shared.Reporter
 
                     var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.StartAsync(request), null).ConfigureAwait(false);
 
-                    LaunchInfo = new LaunchInfo
+                    _launchInfo = new LaunchInfo
                     {
                         Uuid = launch.Uuid,
                         Name = request.Name,
@@ -137,7 +136,7 @@ namespace ReportPortal.Shared.Reporter
 
                     var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.StartAsync(request), null).ConfigureAwait(false);
 
-                    LaunchInfo = new LaunchInfo
+                    _launchInfo = new LaunchInfo
                     {
                         Uuid = launch.Uuid,
                         Name = request.Name,
@@ -152,9 +151,9 @@ namespace ReportPortal.Shared.Reporter
                 // get launch info
                 StartTask = Task.Run(async () =>
                 {
-                    var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.GetAsync(LaunchInfo.Uuid), null).ConfigureAwait(false);
+                    var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.GetAsync(Info.Uuid), null).ConfigureAwait(false);
 
-                    LaunchInfo = new LaunchInfo
+                    _launchInfo = new LaunchInfo
                     {
                         Uuid = launch.Uuid,
                         Name = launch.Name,
@@ -187,6 +186,13 @@ namespace ReportPortal.Shared.Reporter
 
             var dependentTasks = new List<Task>();
 
+            dependentTasks.Add(StartTask);
+
+            if (_logsReporter != null)
+            {
+                dependentTasks.Add(_logsReporter.ProcessingTask);
+            }
+
             if (_additionalTasks != null)
             {
                 dependentTasks.AddRange(_additionalTasks);
@@ -201,8 +207,6 @@ namespace ReportPortal.Shared.Reporter
                 }
                 dependentTasks.AddRange(childTestReporterFinishTasks);
             }
-
-            dependentTasks.Add(StartTask);
 
             FinishTask = Task.Factory.ContinueWhenAll(dependentTasks.ToArray(), async (dts) =>
             {
@@ -245,17 +249,17 @@ namespace ReportPortal.Shared.Reporter
                         }
                     }
 
-                    if (request.EndTime < LaunchInfo.StartTime)
+                    if (request.EndTime < _launchInfo.StartTime)
                     {
-                        request.EndTime = LaunchInfo.StartTime;
-                        LaunchInfo.EndTime = request.EndTime;
+                        request.EndTime = _launchInfo.StartTime;
+                        _launchInfo.FinishTime = request.EndTime;
                     }
 
                     if (!_isExternalLaunchId && _rerunOfUuid == null)
                     {
                         NotifyFinishing(request);
 
-                        await _requestExecuter.ExecuteAsync(() => _service.Launch.FinishAsync(LaunchInfo.Uuid, request), null).ConfigureAwait(false);
+                        await _requestExecuter.ExecuteAsync(() => _service.Launch.FinishAsync(Info.Uuid, request), null).ConfigureAwait(false);
 
                         NotifyFinished();
                     }
@@ -308,36 +312,14 @@ namespace ReportPortal.Shared.Reporter
             {
                 lock (_lockObj)
                 {
-                    if (_additionalTasks == null)
+                    if (_logsReporter == null)
                     {
-                        lock (_lockObj)
-                        {
-                            _additionalTasks = new List<Task>();
-                        }
+                        var logRequestAmender = new LaunchLogRequestAmender(this);
+                        _logsReporter = new LogsReporter(this, _service, _extensionManager, _requestExecuter, logRequestAmender);
                     }
-
-                    var task = StartTask.ContinueWith(async pt =>
-                    {
-                        if (!StartTask.IsFaulted || !StartTask.IsCanceled)
-                        {
-                            if (createLogItemRequest.Time < LaunchInfo.StartTime)
-                            {
-                                createLogItemRequest.Time = LaunchInfo.StartTime;
-                            }
-
-                            createLogItemRequest.LaunchUuid = LaunchInfo.Uuid;
-
-                            foreach (var formatter in _extensionManager.LogFormatters)
-                            {
-                                formatter.FormatLog(createLogItemRequest);
-                            }
-
-                            await _requestExecuter.ExecuteAsync(() => _service.LogItem.CreateAsync(createLogItemRequest), null).ConfigureAwait(false);
-                        }
-                    }, TaskContinuationOptions.PreferFairness).Unwrap();
-
-                    _additionalTasks.Add(task);
                 }
+
+                _logsReporter.Log(createLogItemRequest);
             }
         }
 

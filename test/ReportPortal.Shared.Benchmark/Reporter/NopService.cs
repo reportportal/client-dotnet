@@ -142,6 +142,11 @@ namespace ReportPortal.Shared.Benchmark.Reporter
             return await Task.FromResult(new LogItemCreatedResponse());
         }
 
+        public async Task<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] models)
+        {
+            return await Task.FromResult(new LogItemsCreatedResponse());
+        }
+
         public Task<MessageResponse> DeleteAsync(long id)
         {
             throw new NotImplementedException();
