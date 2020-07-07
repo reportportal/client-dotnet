@@ -6,7 +6,7 @@ namespace ReportPortal.Shared.Execution.Logging
 {
     public static class LogMessageExtensions
     {
-        public static CreateLogItemRequest ConvertToRequest(ILogMessage logMessage)
+        public static CreateLogItemRequest ConvertToRequest(this ILogMessage logMessage)
         {
             if (logMessage == null) throw new ArgumentNullException("Cannot convert nullable log message object.", nameof(logMessage));
 
