@@ -1,8 +1,7 @@
 ﻿using FluentAssertions;
 using Moq;
-using ReportPortal.Client.Abstractions.Models;
-using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Execution;
+using ReportPortal.Shared.Execution.Logging;
 using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Extensibility.Commands;
 using System.Collections.Generic;
@@ -16,7 +15,7 @@ namespace ReportPortal.Shared.Tests.Execution
         private readonly string mimeType = "image/png";
         private readonly byte[] data = new byte[] { 1 };
 
-        CreateLogItemRequest logRequest;
+        ILogMessage logMessage;
         readonly ICommandsListener listener;
         readonly ITestContext testContext;
 
@@ -25,7 +24,7 @@ namespace ReportPortal.Shared.Tests.Execution
             var mockListener = new Mock<ICommandsListener>();
             mockListener.Setup(o => o.Initialize(It.IsAny<ICommandsSource>())).Callback<ICommandsSource>(s =>
             {
-                s.OnLogMessageCommand += (a, b) => logRequest = b.LogItemRequest;
+                s.OnLogMessageCommand += (a, b) => logMessage = b.LogMessage;
             });
 
             listener = mockListener.Object;
@@ -41,11 +40,11 @@ namespace ReportPortal.Shared.Tests.Execution
         {
             testContext.Log.Debug(text);
 
-            VerifyLogMessage(logRequest, LogLevel.Debug);
+            VerifyLogMessage(logMessage, LogMessageLevel.Debug);
 
             testContext.Log.Debug(text, mimeType, data);
 
-            VerifyLogMessageWithAttach(logRequest, LogLevel.Debug);
+            VerifyLogMessageWithAttach(logMessage, LogMessageLevel.Debug);
         }
 
         [Fact]
@@ -53,11 +52,11 @@ namespace ReportPortal.Shared.Tests.Execution
         {
             testContext.Log.Error(text);
 
-            VerifyLogMessage(logRequest, LogLevel.Error);
+            VerifyLogMessage(logMessage, LogMessageLevel.Error);
 
             testContext.Log.Error(text, mimeType, data);
 
-            VerifyLogMessageWithAttach(logRequest, LogLevel.Error);
+            VerifyLogMessageWithAttach(logMessage, LogMessageLevel.Error);
         }
 
         [Fact]
@@ -65,11 +64,11 @@ namespace ReportPortal.Shared.Tests.Execution
         {
             testContext.Log.Fatal(text);
 
-            VerifyLogMessage(logRequest, LogLevel.Fatal);
+            VerifyLogMessage(logMessage, LogMessageLevel.Fatal);
 
             testContext.Log.Fatal(text, mimeType, data);
 
-            VerifyLogMessageWithAttach(logRequest, LogLevel.Fatal);
+            VerifyLogMessageWithAttach(logMessage, LogMessageLevel.Fatal);
         }
 
         [Fact]
@@ -77,11 +76,11 @@ namespace ReportPortal.Shared.Tests.Execution
         {
             testContext.Log.Info(text);
 
-            VerifyLogMessage(logRequest, LogLevel.Info);
+            VerifyLogMessage(logMessage, LogMessageLevel.Info);
 
             testContext.Log.Info(text, mimeType, data);
 
-            VerifyLogMessageWithAttach(logRequest, LogLevel.Info);
+            VerifyLogMessageWithAttach(logMessage, LogMessageLevel.Info);
         }
 
         [Fact]
@@ -89,11 +88,11 @@ namespace ReportPortal.Shared.Tests.Execution
         {
             testContext.Log.Trace(text);
 
-            VerifyLogMessage(logRequest, LogLevel.Trace);
+            VerifyLogMessage(logMessage, LogMessageLevel.Trace);
 
             testContext.Log.Trace(text, mimeType, data);
 
-            VerifyLogMessageWithAttach(logRequest, LogLevel.Trace);
+            VerifyLogMessageWithAttach(logMessage, LogMessageLevel.Trace);
         }
 
         [Fact]
@@ -101,26 +100,26 @@ namespace ReportPortal.Shared.Tests.Execution
         {
             testContext.Log.Warn(text);
 
-            VerifyLogMessage(logRequest, LogLevel.Warning);
+            VerifyLogMessage(logMessage, LogMessageLevel.Warning);
 
             testContext.Log.Warn(text, mimeType, data);
 
-            VerifyLogMessageWithAttach(logRequest, LogLevel.Warning);
+            VerifyLogMessageWithAttach(logMessage, LogMessageLevel.Warning);
         }
 
-        private void VerifyLogMessage(CreateLogItemRequest logRequest, LogLevel level)
+        private void VerifyLogMessage(ILogMessage logMessage, LogMessageLevel level)
         {
-            logRequest.Level.Should().Be(level);
-            logRequest.Text.Should().Be(text);
+            logMessage.Level.Should().Be(level);
+            logMessage.Message.Should().Be(text);
         }
 
-        private void VerifyLogMessageWithAttach(CreateLogItemRequest logRequest, LogLevel level)
+        private void VerifyLogMessageWithAttach(ILogMessage logMessage, LogMessageLevel level)
         {
-            logRequest.Level.Should().Be(level);
-            logRequest.Text.Should().Be(text);
-            logRequest.Attach.Should().NotBeNull();
-            logRequest.Attach.MimeType.Should().Be(mimeType);
-            logRequest.Attach.Data.Should().BeEquivalentTo(data);
+            logMessage.Level.Should().Be(level);
+            logMessage.Message.Should().Be(text);
+            logMessage.Attachment.Should().NotBeNull();
+            logMessage.Attachment.MimeType.Should().Be(mimeType);
+            logMessage.Attachment.Data.Should().BeEquivalentTo(data);
         }
     }
 }

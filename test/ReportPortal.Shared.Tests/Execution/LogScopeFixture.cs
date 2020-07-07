@@ -67,12 +67,12 @@ namespace ReportPortal.Shared.Tests.Execution
         public void ShouldRaiseTestLogMessageForRootedScope()
         {
             ILogContext tc = null;
-            LogMessageCommandArgs logMessage = null;
+            LogMessageCommandArgs logMessageArg = null;
 
             var listener = new Mock<ICommandsListener>();
             listener.Setup(o => o.Initialize(It.IsAny<ICommandsSource>())).Callback<ICommandsSource>(s =>
             {
-                s.OnLogMessageCommand += (a, b) => { tc = a; logMessage = b; };
+                s.OnLogMessageCommand += (a, b) => { tc = a; logMessageArg = b; };
             });
 
             var extensionManager = new ExtensionManager();
@@ -83,21 +83,21 @@ namespace ReportPortal.Shared.Tests.Execution
             testContext.Log.Info("qwe");
 
             tc.Should().Be(testContext);
-            logMessage.LogItemRequest.Text.Should().Be("qwe");
-            logMessage.LogItemRequest.Level.Should().Be(LogLevel.Info);
-            logMessage.LogScope.Should().BeNull();
+            logMessageArg.LogMessage.Message.Should().Be("qwe");
+            logMessageArg.LogMessage.Level.Should().Be(LogMessageLevel.Info);
+            logMessageArg.LogScope.Should().BeNull();
         }
 
         [Fact]
         public void ShouldRaiseTestLogMessageForInnerScope()
         {
             ILogContext tc = null;
-            LogMessageCommandArgs logMessage = null;
+            LogMessageCommandArgs logMessageArg = null;
 
             var listener = new Mock<ICommandsListener>();
             listener.Setup(o => o.Initialize(It.IsAny<ICommandsSource>())).Callback<ICommandsSource>(s =>
             {
-                s.OnLogMessageCommand += (a, b) => { tc = a; logMessage = b; };
+                s.OnLogMessageCommand += (a, b) => { tc = a; logMessageArg = b; };
             });
 
             var extensionManager = new ExtensionManager();
@@ -109,8 +109,8 @@ namespace ReportPortal.Shared.Tests.Execution
             testContext.Log.Info("asd");
 
             tc.Should().Be(testContext);
-            logMessage.LogItemRequest.Text.Should().Be("asd");
-            logMessage.LogScope.Should().Be(testContext.Log);
+            logMessageArg.LogMessage.Message.Should().Be("asd");
+            logMessageArg.LogScope.Should().Be(testContext.Log);
         }
 
         [Fact]
@@ -166,12 +166,12 @@ namespace ReportPortal.Shared.Tests.Execution
         public void ShouldRaiseLaunchLogMessageForRootedScope()
         {
             ILogContext lc = null;
-            LogMessageCommandArgs logMessage = null;
+            LogMessageCommandArgs logMessageArg = null;
 
             var listener = new Mock<ICommandsListener>();
             listener.Setup(o => o.Initialize(It.IsAny<ICommandsSource>())).Callback<ICommandsSource>(s =>
             {
-                s.OnLogMessageCommand += (a, b) => { lc = a; logMessage = b; };
+                s.OnLogMessageCommand += (a, b) => { lc = a; logMessageArg = b; };
             });
 
             var extensionManager = new ExtensionManager();
@@ -182,21 +182,21 @@ namespace ReportPortal.Shared.Tests.Execution
             launchContext.Log.Info("qwe");
 
             lc.Should().Be(launchContext);
-            logMessage.LogItemRequest.Text.Should().Be("qwe");
-            logMessage.LogItemRequest.Level.Should().Be(LogLevel.Info);
-            logMessage.LogScope.Should().BeNull();
+            logMessageArg.LogMessage.Message.Should().Be("qwe");
+            logMessageArg.LogMessage.Level.Should().Be(LogMessageLevel.Info);
+            logMessageArg.LogScope.Should().BeNull();
         }
 
         [Fact]
         public void ShouldRaiseLaunchLogMessageForInnerScope()
         {
             ILogContext lc = null;
-            LogMessageCommandArgs logMessage = null;
+            LogMessageCommandArgs logMessageArg = null;
 
             var listener = new Mock<ICommandsListener>();
             listener.Setup(o => o.Initialize(It.IsAny<ICommandsSource>())).Callback<ICommandsSource>(s =>
             {
-                s.OnLogMessageCommand += (a, b) => { lc = a; logMessage = b; };
+                s.OnLogMessageCommand += (a, b) => { lc = a; logMessageArg = b; };
             });
 
             var extensionManager = new ExtensionManager();
@@ -208,8 +208,8 @@ namespace ReportPortal.Shared.Tests.Execution
             launchContext.Log.Info("asd");
 
             lc.Should().Be(launchContext);
-            logMessage.LogItemRequest.Text.Should().Be("asd");
-            logMessage.LogScope.Should().Be(launchContext.Log);
+            logMessageArg.LogMessage.Message.Should().Be("asd");
+            logMessageArg.LogScope.Should().Be(launchContext.Log);
         }
     }
 }

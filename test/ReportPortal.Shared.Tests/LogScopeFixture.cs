@@ -175,8 +175,8 @@ namespace ReportPortal.Shared.Tests
                 }
             }
 
-            handler.Verify(h => h.Handle(null, It.IsAny<Client.Abstractions.Requests.CreateLogItemRequest>()), Times.Exactly(5));
-            handler.Verify(h => h.Handle(It.Is<ILogScope>(ls => ls != null), It.IsAny<Client.Abstractions.Requests.CreateLogItemRequest>()), Times.Exactly(5));
+            handler.Verify(h => h.Handle(null, It.IsAny<ILogMessage>()), Times.Exactly(5));
+            handler.Verify(h => h.Handle(It.Is<ILogScope>(ls => ls != null), It.IsAny<ILogMessage>()), Times.Exactly(5));
             handler.Verify(h => h.BeginScope(It.IsAny<ILogScope>()), Times.Exactly(5));
             handler.Verify(h => h.EndScope(It.IsAny<ILogScope>()), Times.Exactly(5));
 

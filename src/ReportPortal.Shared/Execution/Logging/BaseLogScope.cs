@@ -1,7 +1,4 @@
-﻿using ReportPortal.Client.Abstractions.Models;
-using ReportPortal.Client.Abstractions.Requests;
-using ReportPortal.Client.Abstractions.Responses;
-using ReportPortal.Shared.Extensibility;
+﻿using ReportPortal.Shared.Extensibility;
 using System;
 
 namespace ReportPortal.Shared.Execution.Logging
@@ -48,120 +45,116 @@ namespace ReportPortal.Shared.Execution.Logging
 
         public void Debug(string message)
         {
-            var logRequest = GetDefaultLogRequest(message);
-            logRequest.Level = LogLevel.Debug;
-            Message(logRequest);
+            var logMessage = GetDefaultLogRequest(message);
+            logMessage.Level = LogMessageLevel.Debug;
+            Message(logMessage);
         }
 
         public void Debug(string message, string mimeType, byte[] content)
         {
-            var logRequest = GetDefaultLogRequest(message);
-            logRequest.Level = LogLevel.Debug;
-            logRequest.Attach = GetAttachFromContent(mimeType, content);
-            Message(logRequest);
+            var logMessage = GetDefaultLogRequest(message);
+            logMessage.Level = LogMessageLevel.Debug;
+            logMessage.Attachment = GetAttachFromContent(mimeType, content);
+            Message(logMessage);
         }
 
         public void Error(string message)
         {
-            var logRequest = GetDefaultLogRequest(message);
-            logRequest.Level = LogLevel.Error;
-            Message(logRequest);
+            var logMessage = GetDefaultLogRequest(message);
+            logMessage.Level = LogMessageLevel.Error;
+            Message(logMessage);
         }
 
         public void Error(string message, string mimeType, byte[] content)
         {
-            var logRequest = GetDefaultLogRequest(message);
-            logRequest.Level = LogLevel.Error;
-            logRequest.Attach = GetAttachFromContent(mimeType, content);
-            Message(logRequest);
+            var logMessage = GetDefaultLogRequest(message);
+            logMessage.Level = LogMessageLevel.Error;
+            logMessage.Attachment = GetAttachFromContent(mimeType, content);
+            Message(logMessage);
         }
 
         public void Fatal(string message)
         {
-            var logRequest = GetDefaultLogRequest(message);
-            logRequest.Level = LogLevel.Fatal;
-            Message(logRequest);
+            var logMessage = GetDefaultLogRequest(message);
+            logMessage.Level = LogMessageLevel.Fatal;
+            Message(logMessage);
         }
 
         public void Fatal(string message, string mimeType, byte[] content)
         {
-            var logRequest = GetDefaultLogRequest(message);
-            logRequest.Level = LogLevel.Fatal;
-            logRequest.Attach = GetAttachFromContent(mimeType, content);
-            Message(logRequest);
+            var logMessage = GetDefaultLogRequest(message);
+            logMessage.Level = LogMessageLevel.Fatal;
+            logMessage.Attachment = GetAttachFromContent(mimeType, content);
+            Message(logMessage);
         }
 
         public void Info(string message)
         {
-            var logRequest = GetDefaultLogRequest(message);
-            logRequest.Level = LogLevel.Info;
-            Message(logRequest);
+            var logMessage = GetDefaultLogRequest(message);
+            logMessage.Level = LogMessageLevel.Info;
+            Message(logMessage);
         }
 
         public void Info(string message, string mimeType, byte[] content)
         {
-            var logRequest = GetDefaultLogRequest(message);
-            logRequest.Level = LogLevel.Info;
-            logRequest.Attach = GetAttachFromContent(mimeType, content);
-            Message(logRequest);
+            var logMessage = GetDefaultLogRequest(message);
+            logMessage.Level = LogMessageLevel.Info;
+            logMessage.Attachment = GetAttachFromContent(mimeType, content);
+            Message(logMessage);
         }
 
         public void Trace(string message)
         {
-            var logRequest = GetDefaultLogRequest(message);
-            logRequest.Level = LogLevel.Trace;
-            Message(logRequest);
+            var logMessage = GetDefaultLogRequest(message);
+            logMessage.Level = LogMessageLevel.Trace;
+            Message(logMessage);
         }
 
         public void Trace(string message, string mimeType, byte[] content)
         {
-            var logRequest = GetDefaultLogRequest(message);
-            logRequest.Level = LogLevel.Trace;
-            logRequest.Attach = GetAttachFromContent(mimeType, content);
-            Message(logRequest);
+            var logMessage = GetDefaultLogRequest(message);
+            logMessage.Level = LogMessageLevel.Trace;
+            logMessage.Attachment = GetAttachFromContent(mimeType, content);
+            Message(logMessage);
         }
 
         public void Warn(string message)
         {
-            var logRequest = GetDefaultLogRequest(message);
-            logRequest.Level = LogLevel.Warning;
-            Message(logRequest);
+            var logMessage = GetDefaultLogRequest(message);
+            logMessage.Level = LogMessageLevel.Warning;
+            Message(logMessage);
         }
 
         public void Warn(string message, string mimeType, byte[] content)
         {
-            var logRequest = GetDefaultLogRequest(message);
-            logRequest.Level = LogLevel.Warning;
-            logRequest.Attach = GetAttachFromContent(mimeType, content);
-            Message(logRequest);
+            var logMessage = GetDefaultLogRequest(message);
+            logMessage.Level = LogMessageLevel.Warning;
+            logMessage.Attachment = GetAttachFromContent(mimeType, content);
+            Message(logMessage);
         }
 
-        public virtual void Message(CreateLogItemRequest logRequest)
+        public virtual void Message(ILogMessage log)
         {
-            CommandsSource.RaiseOnLogMessageCommand(_commandsSource, Context, new Extensibility.Commands.CommandArgs.LogMessageCommandArgs(this, logRequest));
+            CommandsSource.RaiseOnLogMessageCommand(_commandsSource, Context, new Extensibility.Commands.CommandArgs.LogMessageCommandArgs(this, log));
 
             foreach (var handler in _extensionManager.LogHandlers)
             {
-                var isHandled = handler.Handle(this, logRequest);
+                var isHandled = handler.Handle(this, log);
 
                 if (isHandled) break;
             }
         }
 
-        protected CreateLogItemRequest GetDefaultLogRequest(string text)
+        protected ILogMessage GetDefaultLogRequest(string text)
         {
-            var logRequest = new CreateLogItemRequest
-            {
-                Time = DateTime.UtcNow,
-                Text = text
-            };
+            var logMessage = new LogMessage(text);
 
-            return logRequest;
+            return logMessage;
         }
 
-        protected Attach GetAttachFromContent(string mimeType, byte[] content)
+        protected ILogMessageAttachment GetAttachFromContent(string mimeType, byte[] content)
         {
-            return new Attach(mimeType, content);
+            return new LogMessageAttachment(mimeType, content);
         }
 
         public virtual void Dispose()

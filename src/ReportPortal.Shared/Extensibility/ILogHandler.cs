@@ -1,5 +1,4 @@
-﻿using ReportPortal.Client.Abstractions.Requests;
-using ReportPortal.Shared.Execution.Logging;
+﻿using ReportPortal.Shared.Execution.Logging;
 using System;
 
 namespace ReportPortal.Shared.Extensibility
@@ -19,9 +18,9 @@ namespace ReportPortal.Shared.Extensibility
         /// You are aware what to do with specific log message.
         /// </summary>
         /// <param name="logScope">Logging scope which log message belongs to.</param>
-        /// <param name="logRequest">Actual log message request.</param>
+        /// <param name="logMessage">Actual log message request.</param>
         /// <returns>True if you handled log message. Otherwise engine asks others extensions in the chain. Can be null if there is no active logging scope.</returns>
-        bool Handle(ILogScope logScope, CreateLogItemRequest logRequest);
+        bool Handle(ILogScope logScope, ILogMessage logMessage);
 
         /// <summary>
         /// Notifies whether new logging scope (aka nested step) should be started.

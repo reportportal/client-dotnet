@@ -1,18 +1,17 @@
-﻿using ReportPortal.Client.Abstractions.Requests;
-using ReportPortal.Shared.Execution.Logging;
+﻿using ReportPortal.Shared.Execution.Logging;
 
 namespace ReportPortal.Shared.Extensibility.Commands.CommandArgs
 {
     public class LogMessageCommandArgs
     {
-        public LogMessageCommandArgs(ILogScope logScope, CreateLogItemRequest createLogItemRequest)
+        public LogMessageCommandArgs(ILogScope logScope, ILogMessage logMessage)
         {
             LogScope = logScope;
-            LogItemRequest = createLogItemRequest;
+            LogMessage = logMessage;
         }
 
         public ILogScope LogScope { get; }
 
-        public CreateLogItemRequest LogItemRequest { get; }
+        public ILogMessage LogMessage { get; }
     }
 }

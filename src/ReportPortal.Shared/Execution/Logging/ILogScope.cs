@@ -1,5 +1,4 @@
-﻿using ReportPortal.Client.Abstractions.Requests;
-using System;
+﻿using System;
 
 namespace ReportPortal.Shared.Execution.Logging
 {
@@ -58,8 +57,8 @@ namespace ReportPortal.Shared.Execution.Logging
         /// <summary>
         /// Sends log message to current test context.
         /// </summary>
-        /// <param name="logRequest">Full model object for message</param>
-        void Message(CreateLogItemRequest logRequest);
+        /// <param name="log">Full model object for message</param>
+        void Message(ILogMessage log);
 
         /// <summary>
         /// Sends log message with "Info" level to current test context.

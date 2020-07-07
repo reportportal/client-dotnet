@@ -1,5 +1,5 @@
 ﻿using Moq;
-using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Shared.Execution.Logging;
 using ReportPortal.Shared.Extensibility;
 using Xunit;
 
@@ -18,7 +18,7 @@ namespace ReportPortal.Shared.Tests.Extensibility.LogHandler
             Log.Info("message from test domain");
             Shared.Extensibility.ExtensionManager.Instance.LogHandlers.Remove(logHandler.Object);
 
-            logHandler.Verify(lh => lh.Handle(null, It.IsAny<CreateLogItemRequest>()), Times.Exactly(2));
+            logHandler.Verify(lh => lh.Handle(null, It.IsAny<ILogMessage>()), Times.Exactly(2));
         }
     }
 }
