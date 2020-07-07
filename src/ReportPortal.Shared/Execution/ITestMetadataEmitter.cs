@@ -1,5 +1,4 @@
 ﻿using ReportPortal.Shared.Execution.Metadata;
-using System.Collections.Generic;
 
 namespace ReportPortal.Shared.Execution
 {
@@ -8,6 +7,10 @@ namespace ReportPortal.Shared.Execution
     /// </summary>
     public interface ITestMetadataEmitter
     {
+        /// <summary>
+        /// Collection of test meta attributes.
+        /// </summary>
+        /// <value>Returns a current collection of attributes.</value>
         IMetaAttributesCollection Attributes { get; }
     }
 }

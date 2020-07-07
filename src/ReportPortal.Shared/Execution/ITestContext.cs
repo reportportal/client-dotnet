@@ -1,7 +1,7 @@
 ﻿namespace ReportPortal.Shared.Execution
 {
     /// <summary>
-    /// Returns context to amend current test metadata or add log messages.
+    /// Context to amend current test metadata or add log messages.
     /// </summary>
     public interface ITestContext : ILogContext
     {

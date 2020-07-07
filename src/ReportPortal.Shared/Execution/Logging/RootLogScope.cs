@@ -14,13 +14,6 @@ namespace ReportPortal.Shared.Execution.Logging
         public override void Message(ILogMessage logMessage)
         {
             CommandsSource.RaiseOnLogMessageCommand(_commandsSource, Context, new Extensibility.Commands.CommandArgs.LogMessageCommandArgs(null, logMessage));
-
-            foreach (var handler in _extensionManager.LogHandlers)
-            {
-                var isHandled = handler.Handle(null, logMessage);
-
-                if (isHandled) break;
-            }
         }
 
         public override ILogScope BeginScope(string name)

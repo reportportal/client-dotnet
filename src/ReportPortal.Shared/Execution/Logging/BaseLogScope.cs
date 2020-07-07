@@ -136,13 +136,6 @@ namespace ReportPortal.Shared.Execution.Logging
         public virtual void Message(ILogMessage log)
         {
             CommandsSource.RaiseOnLogMessageCommand(_commandsSource, Context, new Extensibility.Commands.CommandArgs.LogMessageCommandArgs(this, log));
-
-            foreach (var handler in _extensionManager.LogHandlers)
-            {
-                var isHandled = handler.Handle(this, log);
-
-                if (isHandled) break;
-            }
         }
 
         protected ILogMessage GetDefaultLogRequest(string text)

@@ -1,5 +1,4 @@
-﻿using ReportPortal.Shared.Execution.Logging;
-using ReportPortal.Shared.Extensibility;
+﻿using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Extensibility.Commands;
 using ReportPortal.Shared.Extensibility.Commands.CommandArgs;
 using System.Collections.Generic;
