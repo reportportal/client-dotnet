@@ -2,6 +2,8 @@
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Internal.Delegating;
+using ReportPortal.Shared.Internal.Logging;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -15,6 +17,8 @@ namespace ReportPortal.Shared.Reporter
         private readonly IExtensionManager _extensionManager;
         private readonly IRequestExecuter _requestExecuter;
         private readonly ILogRequestAmender _logRequestAmender;
+
+        private static readonly ITraceLogger _traceLogger = TraceLogManager.Instance.GetLogger<LogsReporter>();
 
         public Task ProcessingTask { get; private set; }
 
@@ -37,25 +41,32 @@ namespace ReportPortal.Shared.Reporter
 
             ProcessingTask = dependentTask.ContinueWith(async (dt) =>
             {
-                // only if parent reporter is succesfull
-                if (!_reporter.StartTask.IsFaulted && !_reporter.StartTask.IsCanceled)
+                try
                 {
-                    var requests = GetBufferedLogRequests(batchCapacity: BatchCapacity);
-
-                    if (requests.Count != 0)
+                    // only if parent reporter is succesfull
+                    if (!_reporter.StartTask.IsFaulted && !_reporter.StartTask.IsCanceled)
                     {
-                        foreach (var logItemRequest in requests)
+                        var requests = GetBufferedLogRequests(batchCapacity: BatchCapacity);
+
+                        if (requests.Count != 0)
                         {
-                            _logRequestAmender.Amend(logItemRequest);
-
-                            foreach (var formatter in _extensionManager.LogFormatters)
+                            foreach (var logItemRequest in requests)
                             {
-                                formatter.FormatLog(logItemRequest);
-                            }
-                        }
+                                _logRequestAmender.Amend(logItemRequest);
 
-                        await _requestExecuter.ExecuteAsync(() => _service.LogItem.CreateAsync(requests.ToArray()), null).ConfigureAwait(false);
+                                foreach (var formatter in _extensionManager.LogFormatters)
+                                {
+                                    formatter.FormatLog(logItemRequest);
+                                }
+                            }
+
+                            await _requestExecuter.ExecuteAsync(() => _service.LogItem.CreateAsync(requests.ToArray()), null).ConfigureAwait(false);
+                        }
                     }
+                }
+                catch (Exception exp)
+                {
+                    _traceLogger.Error($"Unexpected error ossured while processing buffered log requests. {exp}");
                 }
             }, TaskContinuationOptions.PreferFairness).Unwrap();
         }
