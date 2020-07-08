@@ -6,6 +6,7 @@ using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Reporter;
 using ReportPortal.Shared.Tests.Helpers;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -285,20 +286,24 @@ namespace ReportPortal.Shared.Tests.Reporter
         [Fact]
         public void LogsReportingShouldBeOneByOne()
         {
-            var logDelay = TimeSpan.FromMilliseconds(10);
+            var requests = new ConcurrentBag<CreateLogItemRequest[]>();
 
             var service = new MockServiceBuilder().Build();
-            service.Setup(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>())).ReturnsAsync(new LogItemsCreatedResponse(), logDelay);
+            service.Setup(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>())).ReturnsAsync(new LogItemsCreatedResponse())
+                .Callback<CreateLogItemRequest[]>((arg) => requests.Add(arg));
 
             var launchScheduler = new LaunchReporterBuilder(service.Object);
             var launchReporter = launchScheduler.Build(1, 30, 30);
 
-            launchReporter.ExecutionTimeOf(l => l.Sync()).Should().BeGreaterOrEqualTo(TimeSpan.FromTicks(logDelay.Ticks * 10 / 10)); // logs buffer size
-
             launchReporter.Sync();
 
             service.Verify(s => s.Launch.FinishAsync(It.IsAny<string>(), It.IsAny<FinishLaunchRequest>()), Times.Once);
-            service.Verify(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>()), Times.Exactly(30 * 30 / 10)); // logs buffer size
+            service.Verify(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>()), Times.AtLeast(30 * 30 / 10)); // logs buffer size
+
+            foreach (var bufferedRequests in requests)
+            {
+                bufferedRequests.Select(r => r.Text).Should().BeInAscendingOrder();
+            }
         }
 
         [Fact]
