@@ -1,5 +1,4 @@
 ﻿using ReportPortal.Client.Abstractions.Models;
-using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Client.Converters;
 using System;
 using System.Runtime.Serialization;
@@ -60,6 +59,31 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// Specify an attachment of log item.
         /// </summary>
         [DataMember(Name = "file", EmitDefaultValue = false)]
-        public Attach Attach { get; set; }
+        public LogItemAttach Attach { get; set; }
+    }
+
+    [DataContract]
+    public class LogItemAttach
+    {
+        // empty ctor for json serialization
+        public LogItemAttach()
+        {
+
+        }
+
+        public LogItemAttach(string mimeType, byte[] data)
+        {
+            MimeType = mimeType;
+            Data = data;
+        }
+
+        [DataMember(Name = "name")]
+        public string Name { get; set; } = Guid.NewGuid().ToString();
+
+        [IgnoreDataMember]
+        public byte[] Data { get; set; }
+
+        [IgnoreDataMember]
+        public string MimeType { get; set; }
     }
 }

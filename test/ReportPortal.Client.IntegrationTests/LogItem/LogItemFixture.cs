@@ -55,7 +55,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
                 Text = "Log1",
                 Time = DateTime.UtcNow,
                 Level = LogLevel.Info,
-                Attach = new Attach("application/octet-stream", data)
+                Attach = new LogItemAttach("application/octet-stream", data)
             });
             Assert.NotNull(log.Uuid);
             var getLog = await Service.LogItem.GetAsync(log.Uuid);
@@ -77,7 +77,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
                 Text = "Log1",
                 Time = DateTime.UtcNow,
                 Level = LogLevel.Info,
-                Attach = new Attach("application/json", data)
+                Attach = new LogItemAttach("application/json", data)
             });
             Assert.NotNull(log.Uuid);
             var getLog = await Service.LogItem.GetAsync(log.Uuid);
@@ -102,7 +102,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
                     Text = $"Log{i}",
                     Time = DateTime.UtcNow,
                     Level = LogLevel.Info,
-                    Attach = new Attach("application/json", new byte[] { (byte)i })
+                    Attach = new LogItemAttach("application/json", new byte[] { (byte)i })
                 });
             }
 
