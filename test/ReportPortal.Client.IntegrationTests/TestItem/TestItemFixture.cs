@@ -626,7 +626,11 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
             var gotTest2 = await Service.TestItem.GetAsync(test2.Uuid);
 
             var histories = await Service.TestItem.GetHistoryAsync(gotTest2.Id, 5);
-            Assert.Equal(2, histories.Items.First().Resources.Count());
+
+            histories.Items.First().Resources.Should().HaveCount(2);
+            var element = histories.Items.First().Resources.First();
+            element.Name.Should().Be("ABC");
+            element.Status.Should().Be(Status.InProgress);
 
             var gotLaunch1 = await Service.Launch.GetAsync(launch1.Uuid);
             var gotLaunch2 = await Service.Launch.GetAsync(launch2.Uuid);

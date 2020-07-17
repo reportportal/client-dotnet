@@ -9,16 +9,28 @@ namespace ReportPortal.Client.Abstractions.Responses
     [DataContract]
     public class TestItemHistoryContainer
     {
-        [DataMember(Name = "testCaseHash")]
-        public string TestCaseHash { get; set; }
+        [DataMember(Name = "groupingField")]
+        public long GroupingField { get; set; }
 
         [DataMember(Name = "resources")]
-        public IEnumerable<TestItemHistoryResponse> Resources { get; set; }
+        public IEnumerable<TestItemHistoryElement> Resources { get; set; }
     }
 
     [DataContract]
-    public class TestItemHistoryResponse
+    public class TestItemHistoryElement
     {
+        [DataMember(Name = "name")]
+        public string Name { get; set; }
+
+        [DataMember(Name = "status")]
+        public string StatusString { get; set; }
+
+        public Status Status
+        {
+            get => EnumConverter.ConvertTo<Status>(StatusString);
+            set => StatusString = EnumConverter.ConvertFrom(value);
+        }
+
         [DataMember(Name = "launchNumber")]
         public long LaunchNumber { get; set; }
 
