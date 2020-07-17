@@ -238,6 +238,7 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
         [InlineData(Status.Skipped)]
         [InlineData(Status.Interrupted)]
         [InlineData(Status.Cancelled)]
+        [InlineData(Status.Stopped)]
         [InlineData(Status.Info)]
         [InlineData(Status.Warn)]
         public async Task VerifyStatusesOfTests(Status status)

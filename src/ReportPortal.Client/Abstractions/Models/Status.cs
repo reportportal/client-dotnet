@@ -19,6 +19,8 @@ namespace ReportPortal.Client.Abstractions.Models
         Interrupted,
         [DataMember(Name = "CANCELLED")]
         Cancelled,
+        [DataMember(Name = "STOPPED")]
+        Stopped,
         [DataMember(Name = "INFO")]
         Info,
         [DataMember(Name = "WARN")]
