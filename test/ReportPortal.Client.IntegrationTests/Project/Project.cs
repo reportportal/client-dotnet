@@ -1,4 +1,5 @@
-﻿using ReportPortal.Client.Abstractions.Filtering;
+﻿using FluentAssertions;
+using ReportPortal.Client.Abstractions.Filtering;
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Responses;
@@ -11,7 +12,7 @@ namespace ReportPortal.Client.IntegrationTests.Project
 {
     public class ProjectFixture : BaseFixture
     {
-        [Fact(Skip = "Temporary ignore this test to make it possible deploy beta version")]
+        [Fact]
         public async Task UpdatePreferences()
         {
             var condition = new Condition
@@ -40,12 +41,13 @@ namespace ReportPortal.Client.IntegrationTests.Project
             var userFilterCreatedReponse = await Service.UserFilter.CreateAsync(createUserFilterRequest);
 
             var message = await Service.Project.UpdatePreferencesAsync(Service.ProjectName, Username, userFilterCreatedReponse.Id);
-            //Assert.Equal(base.Service.ProjectName, message.ProjectRef);
+            message.Info.Should().Contain("successfully added");
 
             var allPreferences = await Service.Project.GetAllPreferences(Service.ProjectName, Username);
-            //Assert.True(allPreferences.FilterIds.Intersect(userFilters.Select(x => x.Id)).Any());
+            allPreferences.Filters.Should().ContainSingle(p => p.Id == userFilterCreatedReponse.Id);
 
-            await Service.UserFilter.DeleteAsync(userFilterCreatedReponse.Id);
+            var delMessage = await Service.UserFilter.DeleteAsync(userFilterCreatedReponse.Id);
+            delMessage.Info.Should().Contain("successfully deleted");
         }
     }
 }
