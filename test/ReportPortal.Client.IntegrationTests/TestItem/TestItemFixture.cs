@@ -89,6 +89,36 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
             Assert.Contains("successfully", message.Info);
         }
 
+        /// <summary>
+        /// Adding attributes when finishing test item.
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task StartWithAttributesAndFinishWithAttributes()
+        {
+            var test = await Service.TestItem.StartAsync(new StartTestItemRequest
+            {
+                LaunchUuid = _fixture.LaunchUuid,
+                Name = "Test1",
+                StartTime = DateTime.UtcNow,
+                Type = TestItemType.Test,
+                Attributes = new List<ItemAttribute> { new ItemAttribute { Key = "k1", Value = "v1" } }
+            });
+
+            await Service.TestItem.FinishAsync(test.Uuid, new FinishTestItemRequest
+            {
+                EndTime = DateTime.UtcNow,
+                Status = Status.Passed,
+                Attributes = new List<ItemAttribute> { new ItemAttribute { Key = "k2", Value = "v2" } }
+            });
+
+            var gotTest = await Service.TestItem.GetAsync(test.Uuid);
+
+            gotTest.Attributes.Should().BeEquivalentTo(new List<ItemAttribute> {
+                new ItemAttribute { Key = "k1", Value = "v1" },
+                new ItemAttribute { Key = "k2", Value = "v2" } });
+        }
+
         [Fact]
         public async Task StartFinishSeveralTests()
         {

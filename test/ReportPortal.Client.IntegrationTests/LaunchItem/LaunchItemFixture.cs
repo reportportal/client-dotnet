@@ -104,7 +104,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
             };
 
             var message = await Service.Launch.FinishAsync(launch.Uuid, finishLaunchRequest);
-            Assert.Equal(launch.Uuid, message.Id);
+            Assert.Equal(launch.Uuid, message.Uuid);
 
             var gotLaunch = await Service.Launch.GetAsync(launch.Uuid);
             Assert.Equal("StartFinishDeleteLaunch", gotLaunch.Name);
@@ -139,7 +139,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
             {
                 EndTime = DateTime.UtcNow
             });
-            Assert.Equal(launch.Uuid, message.Id);
+            Assert.Equal(launch.Uuid, message.Uuid);
 
             var gotLaunch = await Service.Launch.GetAsync(launch.Uuid);
             Assert.Equal("StartFinishDeleteLaunch", gotLaunch.Name);
@@ -171,7 +171,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
             {
                 EndTime = DateTime.UtcNow
             });
-            Assert.Equal(launch.Uuid, message.Id);
+            Assert.Equal(launch.Uuid, message.Uuid);
             var delMessage = await Service.Launch.DeleteAsync(getLaunch.Id);
             Assert.Contains("successfully", delMessage.Info);
         }
@@ -189,7 +189,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
             {
                 EndTime = DateTime.UtcNow
             });
-            Assert.Equal(launch1.Uuid, message.Id);
+            Assert.Equal(launch1.Uuid, message.Uuid);
 
             var launch2 = await Service.Launch.StartAsync(new StartLaunchRequest
             {
@@ -201,7 +201,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
             {
                 EndTime = DateTime.UtcNow
             });
-            Assert.Equal(launch2.Uuid, message.Id);
+            Assert.Equal(launch2.Uuid, message.Uuid);
 
             var getLaunch1 = await Service.Launch.GetAsync(launch1.Uuid);
             var getLaunch2 = await Service.Launch.GetAsync(launch2.Uuid);
@@ -236,7 +236,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
             {
                 EndTime = DateTime.UtcNow
             });
-            Assert.Equal(launch.Uuid, message.Id);
+            Assert.Equal(launch.Uuid, message.Uuid);
 
             var gotLaunch = await Service.Launch.GetAsync(launch.Uuid);
             Assert.Equal("StartFinishDeleteLaunch", gotLaunch.Name);
@@ -270,7 +270,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
             {
                 EndTime = DateTime.UtcNow
             });
-            Assert.Contains(launch.Uuid, message.Id);
+            Assert.Contains(launch.Uuid, message.Uuid);
 
             var gotLaunch = await Service.Launch.GetAsync(launch.Uuid);
             Assert.Equal(launchName.Substring(0, 256), gotLaunch.Name);
