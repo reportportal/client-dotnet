@@ -676,7 +676,7 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
         public async Task TrimTestItemName()
         {
             var namePrefix = "TrimLaunch";
-            var testItemName = namePrefix + new string('_', 256 - namePrefix.Length + 1);
+            var testItemName = namePrefix + new string('_', 1024 - namePrefix.Length + 1);
 
             var test = await Service.TestItem.StartAsync(new StartTestItemRequest
             {
@@ -688,7 +688,7 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
             Assert.NotNull(test.Uuid);
 
             var gotTestItem = await Service.TestItem.GetAsync(test.Uuid);
-            Assert.Equal(testItemName.Substring(0, 256), gotTestItem.Name);
+            Assert.Equal(testItemName.Substring(0, 1024), gotTestItem.Name);
 
             var message = await Service.TestItem.FinishAsync(test.Uuid, new FinishTestItemRequest
             {

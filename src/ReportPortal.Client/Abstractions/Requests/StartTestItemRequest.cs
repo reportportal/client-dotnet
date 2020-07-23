@@ -24,7 +24,7 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// A short name of test item.
         /// </summary>
         [DataMember(Name = "name")]
-        public string Name { get { return _name; } set { _name = StringTrimmer.Trim(value, 256); } }
+        public string Name { get { return _name; } set { _name = StringTrimmer.Trim(value, 1024); } }
 
         /// <summary>
         /// A long description of test item.
