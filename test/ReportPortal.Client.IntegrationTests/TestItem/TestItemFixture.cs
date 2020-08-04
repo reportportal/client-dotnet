@@ -699,6 +699,24 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
         }
 
         [Fact]
+        public async Task TrimTestItemAttributeValue()
+        {
+            var test = await Service.TestItem.StartAsync(new StartTestItemRequest
+            {
+                LaunchUuid = _fixture.LaunchUuid,
+                Name = "TrimAttributeValue",
+                StartTime = DateTime.UtcNow,
+                Attributes = new List<ItemAttribute> { new ItemAttribute { Key = new string('K', ItemAttribute.MAX_KEY_SIZE + 1), Value = new string('V', ItemAttribute.MAX_VALUE_SIZE + 1) } }
+            });
+
+            var gotTestItem = await Service.TestItem.GetAsync(test.Uuid);
+
+            gotTestItem.Attributes.Should().HaveCount(1);
+            gotTestItem.Attributes.First().Key.Should().Be(new string('K', ItemAttribute.MAX_KEY_SIZE));
+            gotTestItem.Attributes.First().Value.Should().Be(new string('V', ItemAttribute.MAX_VALUE_SIZE));
+        }
+
+        [Fact]
         public async Task RetryTest()
         {
             var suite = await Service.TestItem.StartAsync(new StartTestItemRequest
