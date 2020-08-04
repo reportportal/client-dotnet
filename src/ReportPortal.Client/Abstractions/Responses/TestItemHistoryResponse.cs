@@ -10,7 +10,7 @@ namespace ReportPortal.Client.Abstractions.Responses
     public class TestItemHistoryContainer
     {
         [DataMember(Name = "groupingField")]
-        public long GroupingField { get; set; }
+        public string GroupingField { get; set; }
 
         [DataMember(Name = "resources")]
         public IEnumerable<TestItemHistoryElement> Resources { get; set; }
