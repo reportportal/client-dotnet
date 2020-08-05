@@ -12,7 +12,7 @@ namespace ReportPortal.Shared.Extensibility.Analytics
     /// </summary>
     public class AnalyticsReportEventsObserver : IReportEventsObserver, IDisposable
     {
-        private const string MEASUREMENT_ID = "UA-96321031-1";
+        private const string MEASUREMENT_ID = "UA-173456809-1";
         private const string BASE_URI = "https://www.google-analytics.com";
         private const string CLIENT_NAME = "commons-dotnet";
 
