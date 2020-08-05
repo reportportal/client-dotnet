@@ -34,7 +34,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
                 })).Uuid;
 
                 TestId = (await Service.TestItem.GetAsync(TestUuid)).Id;
-            }).Wait();
+            }).GetAwaiter().GetResult();
         }
 
         public void Dispose()
@@ -43,7 +43,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
             {
                 await Service.Launch.FinishAsync(LaunchUuid, new FinishLaunchRequest { EndTime = DateTime.UtcNow });
                 await Service.Launch.DeleteAsync(LaunchId);
-            }).Wait();
+            }).GetAwaiter().GetResult();
         }
     }
 }

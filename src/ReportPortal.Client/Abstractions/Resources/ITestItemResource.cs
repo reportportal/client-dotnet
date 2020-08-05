@@ -28,10 +28,10 @@ namespace ReportPortal.Client.Abstractions.Resources
         /// <summary>
         /// Finishes specified test item.
         /// </summary>
-        /// <param name="id">ID of specified test item.</param>
+        /// <param name="uuid">ID of specified test item.</param>
         /// <param name="request">Information about representation of test item to finish.</param>
         /// <returns>A message from service.</returns>
-        Task<MessageResponse> FinishAsync(string id, FinishTestItemRequest request);
+        Task<MessageResponse> FinishAsync(string uuid, FinishTestItemRequest request);
 
         /// <summary>
         /// Returns specified test item by ID.

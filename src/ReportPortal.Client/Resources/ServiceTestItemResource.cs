@@ -50,10 +50,10 @@ namespace ReportPortal.Client.Resources
                 request);
         }
 
-        public async Task<MessageResponse> FinishAsync(string id, FinishTestItemRequest request)
+        public async Task<MessageResponse> FinishAsync(string uuid, FinishTestItemRequest request)
         {
             return await PutAsJsonAsync<MessageResponse, FinishTestItemRequest>(
-                $"{ProjectName}/item/{id}",
+                $"{ProjectName}/item/{uuid}",
                 request);
         }
 

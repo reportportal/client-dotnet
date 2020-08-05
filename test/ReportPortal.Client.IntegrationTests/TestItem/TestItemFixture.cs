@@ -89,6 +89,36 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
             Assert.Contains("successfully", message.Info);
         }
 
+        /// <summary>
+        /// Adding attributes when finishing test item.
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task StartWithAttributesAndFinishWithAttributes()
+        {
+            var test = await Service.TestItem.StartAsync(new StartTestItemRequest
+            {
+                LaunchUuid = _fixture.LaunchUuid,
+                Name = "Test1",
+                StartTime = DateTime.UtcNow,
+                Type = TestItemType.Test,
+                Attributes = new List<ItemAttribute> { new ItemAttribute { Key = "k1", Value = "v1" } }
+            });
+
+            await Service.TestItem.FinishAsync(test.Uuid, new FinishTestItemRequest
+            {
+                EndTime = DateTime.UtcNow,
+                Status = Status.Passed,
+                Attributes = new List<ItemAttribute> { new ItemAttribute { Key = "k2", Value = "v2" } }
+            });
+
+            var gotTest = await Service.TestItem.GetAsync(test.Uuid);
+
+            gotTest.Attributes.Should().BeEquivalentTo(new List<ItemAttribute> {
+                new ItemAttribute { Key = "k1", Value = "v1" },
+                new ItemAttribute { Key = "k2", Value = "v2" } });
+        }
+
         [Fact]
         public async Task StartFinishSeveralTests()
         {
@@ -150,7 +180,8 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
                 Type = TestItemType.Test,
                 Description = "Desc for test",
                 Attributes = attributes,
-                Parameters = parameters
+                Parameters = parameters,
+                CodeReference = "SomeNamespace.SomeClassname.SomeMethodname"
             };
 
             var test = await Service.TestItem.StartAsync(startTestItemRequest);
@@ -163,6 +194,7 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
             Assert.Equal(startTestItemRequest.Type, getTest.Type);
             Assert.Equal(startTestItemRequest.Description, getTest.Description);
             Assert.Equal(parameters, getTest.Parameters);
+            Assert.Equal("SomeNamespace.SomeClassname.SomeMethodname", getTest.CodeReference);
             getTest.Attributes.Should().BeEquivalentTo(attributes);
 
             var finishTestItemRequest = new FinishTestItemRequest
@@ -236,6 +268,7 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
         [InlineData(Status.Skipped)]
         [InlineData(Status.Interrupted)]
         [InlineData(Status.Cancelled)]
+        [InlineData(Status.Stopped)]
         [InlineData(Status.Info)]
         [InlineData(Status.Warn)]
         public async Task VerifyStatusesOfTests(Status status)
@@ -623,7 +656,11 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
             var gotTest2 = await Service.TestItem.GetAsync(test2.Uuid);
 
             var histories = await Service.TestItem.GetHistoryAsync(gotTest2.Id, 5);
-            Assert.Equal(2, histories.Items.First().Resources.Count());
+
+            histories.Items.First().Resources.Should().HaveCount(2);
+            var element = histories.Items.First().Resources.First();
+            element.Name.Should().Be("ABC");
+            element.Status.Should().Be(Status.InProgress);
 
             var gotLaunch1 = await Service.Launch.GetAsync(launch1.Uuid);
             var gotLaunch2 = await Service.Launch.GetAsync(launch2.Uuid);
@@ -639,7 +676,7 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
         public async Task TrimTestItemName()
         {
             var namePrefix = "TrimLaunch";
-            var testItemName = namePrefix + new string('_', 256 - namePrefix.Length + 1);
+            var testItemName = namePrefix + new string('_', 1024 - namePrefix.Length + 1);
 
             var test = await Service.TestItem.StartAsync(new StartTestItemRequest
             {
@@ -651,7 +688,7 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
             Assert.NotNull(test.Uuid);
 
             var gotTestItem = await Service.TestItem.GetAsync(test.Uuid);
-            Assert.Equal(testItemName.Substring(0, 256), gotTestItem.Name);
+            Assert.Equal(testItemName.Substring(0, 1024), gotTestItem.Name);
 
             var message = await Service.TestItem.FinishAsync(test.Uuid, new FinishTestItemRequest
             {
@@ -659,6 +696,24 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
                 Status = Status.Passed
             });
             Assert.Contains("successfully", message.Info);
+        }
+
+        [Fact]
+        public async Task TrimTestItemAttributeValue()
+        {
+            var test = await Service.TestItem.StartAsync(new StartTestItemRequest
+            {
+                LaunchUuid = _fixture.LaunchUuid,
+                Name = "TrimAttributeValue",
+                StartTime = DateTime.UtcNow,
+                Attributes = new List<ItemAttribute> { new ItemAttribute { Key = new string('K', ItemAttribute.MAX_KEY_SIZE + 1), Value = new string('V', ItemAttribute.MAX_VALUE_SIZE + 1) } }
+            });
+
+            var gotTestItem = await Service.TestItem.GetAsync(test.Uuid);
+
+            gotTestItem.Attributes.Should().HaveCount(1);
+            gotTestItem.Attributes.First().Key.Should().Be(new string('K', ItemAttribute.MAX_KEY_SIZE));
+            gotTestItem.Attributes.First().Value.Should().Be(new string('V', ItemAttribute.MAX_VALUE_SIZE));
         }
 
         [Fact]

@@ -1,6 +1,7 @@
 ﻿using ReportPortal.Client.Abstractions.Filtering;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Responses;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ReportPortal.Client.Abstractions.Resources
@@ -10,13 +11,23 @@ namespace ReportPortal.Client.Abstractions.Resources
     /// </summary>
     public interface ILogItemResource
     {
-
         /// <summary>
         /// Creates a new log item.
         /// </summary>
         /// <param name="request">Information about representation of log item.</param>
         /// <returns>Representation of just created log item.</returns>
+        //Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request);
+
         Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request);
+
+        /// <summary>
+        /// Creates a new log item.
+        /// </summary>
+        /// <param name="requests">Information about representation of log item.</param>
+        /// <returns>Representation of just created log item.</returns>
+        //Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request);
+
+        Task<LogItemsCreatedResponse> CreateAsync(params CreateLogItemRequest[] requests);
 
         /// <summary>
         /// Deletes specified log item.

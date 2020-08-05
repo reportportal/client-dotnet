@@ -3,8 +3,7 @@ using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Resources;
 using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Client.Converters;
-using ReportPortal.Client.Extentions;
-using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -55,29 +54,35 @@ namespace ReportPortal.Client.Resources
             }
             else
             {
-                var body = ModelSerializer.Serialize<List<CreateLogItemRequest>>(new List<CreateLogItemRequest> { request });
-                var multipartContent = new MultipartFormDataContent();
-
-                var jsonContent = new StringContent(body, Encoding.UTF8, "application/json");
-                multipartContent.Add(jsonContent, "json_request_part");
-
-                var byteArrayContent = new ByteArrayContent(request.Attach.Data, 0, request.Attach.Data.Length);
-                byteArrayContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(request.Attach.MimeType);
-                multipartContent.Add(byteArrayContent, "file", request.Attach.Name);
-
-                var response = await HttpClient.PostAsync(uri, multipartContent).ConfigureAwait(false);
-                response.VerifySuccessStatusCode();
-                var c = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                return ModelSerializer.Deserialize<Responses>(c).LogItems[0];
+                var results = await CreateAsync(new CreateLogItemRequest[] { request });
+                return results.LogItems.First();
             }
         }
 
-        [System.Runtime.Serialization.DataContract]
-        public class Responses
+        public async Task<LogItemsCreatedResponse> CreateAsync(params CreateLogItemRequest[] requests)
         {
-            [System.Runtime.Serialization.DataMember(Name = "responses")]
-            public List<LogItemCreatedResponse> LogItems { get; set; }
+            var uri = $"{ProjectName}/log";
+
+            var multipartContent = new MultipartFormDataContent();
+
+            var body = ModelSerializer.Serialize<CreateLogItemRequest[]>(requests);
+
+            var jsonContent = new StringContent(body, Encoding.UTF8, "application/json");
+            multipartContent.Add(jsonContent, "json_request_part");
+
+            foreach (var request in requests)
+            {
+                if (request.Attach != null)
+                {
+                    var byteArrayContent = new ByteArrayContent(request.Attach.Data, 0, request.Attach.Data.Length);
+                    byteArrayContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(request.Attach.MimeType);
+                    multipartContent.Add(byteArrayContent, "file", request.Attach.Name);
+                }
+            }
+
+            return await SendHttpRequestAsync<LogItemsCreatedResponse>(HttpMethod.Post, uri, multipartContent);
         }
+
 
         public async Task<MessageResponse> DeleteAsync(long id)
         {

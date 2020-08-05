@@ -24,7 +24,7 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// A short name of test item.
         /// </summary>
         [DataMember(Name = "name")]
-        public string Name { get { return _name; } set { _name = StringTrimmer.Trim(value, 256); } }
+        public string Name { get { return _name; } set { _name = StringTrimmer.Trim(value, 1024); } }
 
         /// <summary>
         /// A long description of test item.
@@ -36,7 +36,7 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// Date time when new test item is created.
         /// </summary>
         [DataMember(Name = "startTime")]
-        public string StartTimeString { get; set; }
+        public string StartTimeString { get; set; } = DateTimeConverter.ConvertFrom(DateTime.UtcNow);
 
         public DateTime StartTime
         {
@@ -56,7 +56,7 @@ namespace ReportPortal.Client.Abstractions.Requests
         [DataMember(Name = "type")]
         public string TypeString { get { return EnumConverter.ConvertFrom(Type); } set { Type = EnumConverter.ConvertTo<TestItemType>(value); } }
 
-        public TestItemType Type = TestItemType.Test;
+        public TestItemType Type { get; set; } = TestItemType.Test;
 
         /// <summary>
         /// A list of tags.
@@ -88,6 +88,12 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// </summary>
         [DataMember(Name = "testCaseId")]
         public string TestCaseId { get; set; }
+
+        /// <summary>
+        /// Code reference for test. Example: namespace + classname + methodname
+        /// </summary>
+        [DataMember(Name = "codeRef")]
+        public string CodeReference { get; set; }
 
         /// <summary>
         /// Define if test item has stats. If false - considered as nested step.

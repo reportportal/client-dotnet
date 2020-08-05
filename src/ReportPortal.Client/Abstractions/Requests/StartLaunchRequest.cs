@@ -32,13 +32,13 @@ namespace ReportPortal.Client.Abstractions.Requests
         [DataMember(Name = "mode")]
         public string ModeString { get { return EnumConverter.ConvertFrom(Mode); } set { Mode = EnumConverter.ConvertTo<LaunchMode>(value); } }
 
-        public LaunchMode Mode = LaunchMode.Default;
+        public LaunchMode Mode { get; set; } = LaunchMode.Default;
 
         /// <summary>
         /// Date time when the launch is executed.
         /// </summary>
         [DataMember(Name = "startTime")]
-        public string StartTimeString { get; set; }
+        public string StartTimeString { get; set; } = DateTimeConverter.ConvertFrom(DateTime.UtcNow);
 
         public DateTime StartTime
         {

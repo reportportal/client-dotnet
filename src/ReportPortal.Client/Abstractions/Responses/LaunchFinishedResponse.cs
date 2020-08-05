@@ -6,7 +6,7 @@ namespace ReportPortal.Client.Abstractions.Responses
     public class LaunchFinishedResponse
     {
         [DataMember(Name = "id")]
-        public string Id { get; set; }
+        public string Uuid { get; set; }
 
         [DataMember(Name = "link")]
         public string Link { get; set; }

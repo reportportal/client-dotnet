@@ -1,5 +1,4 @@
 ﻿using ReportPortal.Client.Abstractions.Models;
-using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Client.Converters;
 using System;
 using System.Runtime.Serialization;
@@ -28,7 +27,7 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// Date time of log item.
         /// </summary>
         [DataMember(Name = "time")]
-        public string TimeString { get; set; }
+        public string TimeString { get; set; } = DateTimeConverter.ConvertFrom(DateTime.UtcNow);
 
         public DateTime Time
         {
@@ -48,7 +47,7 @@ namespace ReportPortal.Client.Abstractions.Requests
         [DataMember(Name = "level")]
         public string LevelString { get { return EnumConverter.ConvertFrom(Level); } set { Level = EnumConverter.ConvertTo<LogLevel>(value); } }
 
-        public LogLevel Level = LogLevel.Info;
+        public LogLevel Level { get; set; } = LogLevel.Info;
 
         /// <summary>
         /// Message of log item.
@@ -59,7 +58,32 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// <summary>
         /// Specify an attachment of log item.
         /// </summary>
-        [DataMember(Name = "file")]
-        public Attach Attach { get; set; }
+        [DataMember(Name = "file", EmitDefaultValue = false)]
+        public LogItemAttach Attach { get; set; }
+    }
+
+    [DataContract]
+    public class LogItemAttach
+    {
+        // empty ctor for json serialization
+        public LogItemAttach()
+        {
+
+        }
+
+        public LogItemAttach(string mimeType, byte[] data)
+        {
+            MimeType = mimeType;
+            Data = data;
+        }
+
+        [DataMember(Name = "name")]
+        public string Name { get; set; } = Guid.NewGuid().ToString();
+
+        [IgnoreDataMember]
+        public byte[] Data { get; set; }
+
+        [IgnoreDataMember]
+        public string MimeType { get; set; }
     }
 }

@@ -51,6 +51,11 @@ namespace ReportPortal.Client.Resources
                 httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             }
 
+            return await SendHttpRequestAsync<TResponse>(httpMethod, uri, httpContent).ConfigureAwait(false);
+        }
+
+        protected async Task<TResponse> SendHttpRequestAsync<TResponse>(HttpMethod httpMethod, string uri, HttpContent httpContent)
+        {
             using (var httpRequest = new HttpRequestMessage(httpMethod, uri))
             {
                 using (httpContent)

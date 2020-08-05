@@ -82,6 +82,12 @@ namespace ReportPortal.Client.Abstractions.Responses
         public string UniqueId { get; set; }
 
         /// <summary>
+        /// Code reference for test. Example: namespace + classname + methodname
+        /// </summary>
+        [DataMember(Name = "codeRef")]
+        public string CodeReference { get; set; }
+
+        /// <summary>
         /// Test item attributes.
         /// </summary>
         [DataMember(Name = "attributes")]

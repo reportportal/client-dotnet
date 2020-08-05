@@ -59,29 +59,4 @@ namespace ReportPortal.Client.Abstractions.Responses
         [DataMember(Name = "thumbnailId")]
         public string ThumbnailId { get; set; }
     }
-
-    [DataContract]
-    public class Attach
-    {
-        public Attach()
-        {
-
-        }
-
-        public Attach(string name, string mimeType, byte[] data)
-        {
-            Name = name;
-            MimeType = mimeType;
-            Data = data;
-        }
-
-        [DataMember(Name = "name")]
-        public string Name { get; set; }
-
-        [IgnoreDataMember]
-        public byte[] Data { get; set; }
-
-        [IgnoreDataMember]
-        public string MimeType { get; set; }
-    }
 }
