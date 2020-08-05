@@ -45,7 +45,7 @@ namespace ReportPortal.Shared.Execution.Logging
 
             if (logMessage.Attachment != null)
             {
-                logRequest.Attach = new Client.Abstractions.Responses.Attach
+                logRequest.Attach = new LogItemAttach
                 {
                     MimeType = logMessage.Attachment.MimeType,
                     Data = logMessage.Attachment.Data

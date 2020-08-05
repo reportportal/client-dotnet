@@ -113,7 +113,7 @@ namespace ReportPortal.Shared.Tests.Reporter
                 {
                     Text = "a",
                     Time = DateTime.UtcNow,
-                    Attach = new Client.Abstractions.Responses.Attach()
+                    Attach = new LogItemAttach()
                 });
             }
 
@@ -138,7 +138,7 @@ namespace ReportPortal.Shared.Tests.Reporter
             {
                 Text = "a",
                 Time = DateTime.UtcNow,
-                Attach = new Client.Abstractions.Responses.Attach()
+                Attach = new LogItemAttach()
             };
 
             logsReporter.Log(withAttachment);

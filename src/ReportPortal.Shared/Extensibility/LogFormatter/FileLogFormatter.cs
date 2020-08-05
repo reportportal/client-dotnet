@@ -28,7 +28,7 @@ namespace ReportPortal.Shared.Extensibility.LogFormatter
                     {
                         var mimeType = MimeTypes.MimeTypeMap.GetMimeType(Path.GetExtension(filePath));
 
-                        logRequest.Attach = new Client.Abstractions.Responses.Attach(mimeType, File.ReadAllBytes(filePath));
+                        logRequest.Attach = new LogItemAttach(mimeType, File.ReadAllBytes(filePath));
 
                         return true;
                     }
