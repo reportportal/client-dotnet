@@ -50,7 +50,7 @@ namespace ReportPortal.Shared.Tests.Extensibility.LogFormatter
         }
 
         [Fact]
-        public void ShouldThrowFormatIncorrectBase64String()
+        public void ShouldThrowFormatIncorrectFilePathString()
         {
             var formatter = new FileLogFormatter();
 
@@ -58,7 +58,9 @@ namespace ReportPortal.Shared.Tests.Extensibility.LogFormatter
 
             var logRequest = new CreateLogItemRequest() { Text = $"{{rp#file#{incorrectFilePath}}}" };
 
-            formatter.Invoking(f => f.FormatLog(logRequest)).Should().Throw<Exception>();
+            formatter.FormatLog(logRequest);
+
+            logRequest.Text.Should().Contain("Cannot");
         }
     }
 }

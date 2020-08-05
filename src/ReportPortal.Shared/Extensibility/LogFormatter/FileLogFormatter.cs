@@ -1,6 +1,6 @@
 ﻿using ReportPortal.Client.Abstractions.Requests;
+using System;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace ReportPortal.Shared.Extensibility.LogFormatter
@@ -24,13 +24,17 @@ namespace ReportPortal.Shared.Extensibility.LogFormatter
 
                     var filePath = match.Groups[1].Value;
 
-                    if (!Path.GetInvalidPathChars().Any(i => filePath.Contains(i)))
+                    try
                     {
                         var mimeType = MimeTypes.MimeTypeMap.GetMimeType(Path.GetExtension(filePath));
 
-                        logRequest.Attach = new Client.Abstractions.Responses.Attach(Path.GetFileName(filePath), mimeType, File.ReadAllBytes(filePath));
+                        logRequest.Attach = new LogItemAttach(mimeType, File.ReadAllBytes(filePath));
 
                         return true;
+                    }
+                    catch (Exception exp)
+                    {
+                        logRequest.Text += $"{Environment.NewLine}{Environment.NewLine}Cannot fetch data by `{filePath}` path.{Environment.NewLine}{exp}";
                     }
                 }
             }

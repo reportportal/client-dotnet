@@ -3,7 +3,6 @@ using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Extensibility;
-using ReportPortal.Shared.Extensibility.Analytics;
 using ReportPortal.Shared.Reporter;
 using ReportPortal.Shared.Tests.Helpers;
 using System;
@@ -24,16 +23,13 @@ namespace ReportPortal.Shared.Tests
         public async Task BigAsyncRealTree()
         {
             var extManager = new ExtensionManager();
-            var ga = new AnalyticsReportEventsObserver();
-
-            extManager.ReportEventObservers.Add(ga);
 
             var launchScheduler = new LaunchReporterBuilder(_service).With(extManager);
-            var launchReporter = launchScheduler.Build(10, 3, 1);
+            var launchReporter = launchScheduler.Build(1, 20, 20);
 
             launchReporter.Sync();
 
-            var launch = await _service.Launch.GetAsync(launchReporter.LaunchInfo.Uuid);
+            var launch = await _service.Launch.GetAsync(launchReporter.Info.Uuid);
 
             await _service.Launch.DeleteAsync(launch.Id);
         }
@@ -46,7 +42,7 @@ namespace ReportPortal.Shared.Tests
 
             launchReporter.Sync();
 
-            var launch = await _service.Launch.GetAsync(launchReporter.LaunchInfo.Uuid);
+            var launch = await _service.Launch.GetAsync(launchReporter.Info.Uuid);
 
             await _service.Launch.DeleteAsync(launch.Id);
         }
@@ -79,8 +75,8 @@ namespace ReportPortal.Shared.Tests
 
             launchReporter.Sync();
 
-            Assert.Equal(launch.Uuid, launchReporter.LaunchInfo.Uuid);
-            Assert.Equal(launchDateTime.ToString(), launchReporter.LaunchInfo.StartTime.ToString());
+            Assert.Equal(launch.Uuid, launchReporter.Info.Uuid);
+            Assert.Equal(launchDateTime.ToString(), launchReporter.Info.StartTime.ToString());
 
             var reportedLaunch = await _service.Launch.GetAsync(launch.Uuid);
             Assert.Equal("UseExistingLaunchId", reportedLaunch.Name);
@@ -91,7 +87,7 @@ namespace ReportPortal.Shared.Tests
                 EndTime = DateTime.UtcNow
             });
 
-            var gotLaunch = await _service.Launch.GetAsync(launchReporter.LaunchInfo.Uuid);
+            var gotLaunch = await _service.Launch.GetAsync(launchReporter.Info.Uuid);
 
             await _service.Launch.DeleteAsync(gotLaunch.Id);
         }
@@ -307,11 +303,11 @@ namespace ReportPortal.Shared.Tests
 
             r_launch.Sync();
 
-            var reportedLaunch = await _service.Launch.GetAsync(r_launch.LaunchInfo.Uuid);
+            var reportedLaunch = await _service.Launch.GetAsync(r_launch.Info.Uuid);
             Assert.Equal(launchName, reportedLaunch.Name);
             Assert.Equal(launchDateTime.ToString(), reportedLaunch.StartTime.ToString());
 
-            var gotLaunch = await _service.Launch.GetAsync(r_launch.LaunchInfo.Uuid);
+            var gotLaunch = await _service.Launch.GetAsync(r_launch.Info.Uuid);
 
             await _service.Launch.DeleteAsync(gotLaunch.Id);
         }

@@ -1,4 +1,4 @@
-﻿namespace ReportPortal.Shared.Logging
+﻿namespace ReportPortal.Shared.Execution.Logging
 {
     /// <summary>
     /// Status of logging scope.

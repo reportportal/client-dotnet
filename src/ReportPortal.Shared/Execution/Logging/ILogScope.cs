@@ -1,7 +1,6 @@
-﻿using ReportPortal.Client.Abstractions.Requests;
-using System;
+﻿using System;
 
-namespace ReportPortal.Shared.Logging
+namespace ReportPortal.Shared.Execution.Logging
 {
     /// <summary>
     /// Sends log messages to active logging scope.
@@ -17,6 +16,16 @@ namespace ReportPortal.Shared.Logging
         /// Parent logging scope.
         /// </summary>
         ILogScope Parent { get; }
+
+        /// <summary>
+        /// Root logging scope.
+        /// </summary>
+        ILogScope Root { get; }
+
+        /// <summary>
+        /// Context which current logging scope belong to.
+        /// </summary>
+        ILogContext Context { get; }
 
         /// <summary>
         /// Logical login scope name.
@@ -48,8 +57,8 @@ namespace ReportPortal.Shared.Logging
         /// <summary>
         /// Sends log message to current test context.
         /// </summary>
-        /// <param name="logRequest">Full model object for message</param>
-        void Message(CreateLogItemRequest logRequest);
+        /// <param name="log">Full model object for message</param>
+        void Message(ILogMessage log);
 
         /// <summary>
         /// Sends log message with "Info" level to current test context.

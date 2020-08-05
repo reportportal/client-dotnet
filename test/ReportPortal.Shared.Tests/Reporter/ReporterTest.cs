@@ -6,6 +6,7 @@ using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Reporter;
 using ReportPortal.Shared.Tests.Helpers;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,10 +33,9 @@ namespace ReportPortal.Shared.Tests.Reporter
             service.Verify(s => s.TestItem.StartAsync(It.IsAny<StartTestItemRequest>()), Times.Exactly(suitesPerLaunch));
             service.Verify(s => s.TestItem.StartAsync(It.IsAny<string>(), It.IsAny<StartTestItemRequest>()), Times.Exactly(testsPerSuite * suitesPerLaunch));
             service.Verify(s => s.TestItem.FinishAsync(It.IsAny<string>(), It.IsAny<FinishTestItemRequest>()), Times.Exactly(testsPerSuite * suitesPerLaunch + suitesPerLaunch));
-            service.Verify(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest>()), Times.Exactly(suitesPerLaunch * testsPerSuite * logsPerTest));
 
-            launchReporter.ChildTestReporters.Select(s => s.TestInfo.Uuid).Should().OnlyHaveUniqueItems();
-            launchReporter.ChildTestReporters.SelectMany(s => s.ChildTestReporters).Select(t => t.TestInfo.Uuid).Should().OnlyHaveUniqueItems();
+            launchReporter.ChildTestReporters.Select(s => s.Info.Uuid).Should().OnlyHaveUniqueItems();
+            launchReporter.ChildTestReporters.SelectMany(s => s.ChildTestReporters).Select(t => t.Info.Uuid).Should().OnlyHaveUniqueItems();
         }
 
         [Fact]
@@ -69,8 +69,6 @@ namespace ReportPortal.Shared.Tests.Reporter
             launchReporter.Finish(new FinishLaunchRequest { EndTime = DateTime.UtcNow });
 
             launchReporter.Sync();
-
-            service.Verify(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest>()), Times.Exactly(20 * 10 + 10 * 2));
         }
 
         [Theory]
@@ -79,7 +77,7 @@ namespace ReportPortal.Shared.Tests.Reporter
         public void FailedLogsShouldNotAffectFinishingLaunch(int suitesPerLaunch, int testsPerSuite, int logsPerTest)
         {
             var service = new MockServiceBuilder().Build();
-            service.Setup(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest>())).Throws<Exception>();
+            service.Setup(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>())).Throws<Exception>();
 
             var requestExecuterFactory = new MockRequestExecuterFactoryBuilder().Build();
 
@@ -91,7 +89,6 @@ namespace ReportPortal.Shared.Tests.Reporter
             service.Verify(s => s.Launch.StartAsync(It.IsAny<StartLaunchRequest>()), Times.Exactly(1));
             service.Verify(s => s.TestItem.StartAsync(It.IsAny<StartTestItemRequest>()), Times.Exactly(suitesPerLaunch));
             service.Verify(s => s.TestItem.StartAsync(It.IsAny<string>(), It.IsAny<StartTestItemRequest>()), Times.Exactly(testsPerSuite * suitesPerLaunch));
-            service.Verify(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest>()), Times.Exactly(suitesPerLaunch * testsPerSuite * logsPerTest));
             service.Verify(s => s.TestItem.FinishAsync(It.IsAny<string>(), It.IsAny<FinishTestItemRequest>()), Times.Exactly(testsPerSuite * suitesPerLaunch + suitesPerLaunch));
             service.Verify(s => s.Launch.FinishAsync(It.IsAny<string>(), It.IsAny<FinishLaunchRequest>()), Times.Once);
         }
@@ -103,6 +100,7 @@ namespace ReportPortal.Shared.Tests.Reporter
         {
             var service = new MockServiceBuilder().Build();
             service.Setup(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest>())).Throws<TaskCanceledException>();
+            service.Setup(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>())).Throws<TaskCanceledException>();
 
             var requestExecuterFactory = new MockRequestExecuterFactoryBuilder().Build();
 
@@ -113,7 +111,6 @@ namespace ReportPortal.Shared.Tests.Reporter
 
             service.Verify(s => s.TestItem.StartAsync(It.IsAny<StartTestItemRequest>()), Times.Exactly(suitesPerLaunch));
             service.Verify(s => s.TestItem.StartAsync(It.IsAny<string>(), It.IsAny<StartTestItemRequest>()), Times.Exactly(testsPerSuite * suitesPerLaunch));
-            service.Verify(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest>()), Times.Exactly(suitesPerLaunch * testsPerSuite * logsPerTest));
             service.Verify(s => s.TestItem.FinishAsync(It.IsAny<string>(), It.IsAny<FinishTestItemRequest>()), Times.Exactly(testsPerSuite * suitesPerLaunch + suitesPerLaunch));
             service.Verify(s => s.Launch.FinishAsync(It.IsAny<string>(), It.IsAny<FinishLaunchRequest>()), Times.Once);
         }
@@ -236,7 +233,7 @@ namespace ReportPortal.Shared.Tests.Reporter
 
                 launchReporter.Object.Sync();
 
-                Assert.Equal($"ReportPortal Shared {i}", launchReporter.Object.LaunchInfo.Name);
+                Assert.Equal($"ReportPortal Shared {i}", launchReporter.Object.Info.Name);
             }
 
             service.Verify(s => s.Launch.StartAsync(It.IsAny<StartLaunchRequest>()), Times.Exactly(100));
@@ -289,20 +286,24 @@ namespace ReportPortal.Shared.Tests.Reporter
         [Fact]
         public void LogsReportingShouldBeOneByOne()
         {
-            var logDelay = TimeSpan.FromMilliseconds(10);
+            var requests = new ConcurrentBag<CreateLogItemRequest[]>();
 
             var service = new MockServiceBuilder().Build();
-            service.Setup(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest>())).ReturnsAsync(new LogItemCreatedResponse(), logDelay);
+            service.Setup(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>())).ReturnsAsync(new LogItemsCreatedResponse())
+                .Callback<CreateLogItemRequest[]>((arg) => requests.Add(arg));
 
             var launchScheduler = new LaunchReporterBuilder(service.Object);
             var launchReporter = launchScheduler.Build(1, 30, 30);
 
-            launchReporter.ExecutionTimeOf(l => l.Sync()).Should().BeGreaterOrEqualTo(TimeSpan.FromTicks(logDelay.Ticks * 10));
-
             launchReporter.Sync();
 
             service.Verify(s => s.Launch.FinishAsync(It.IsAny<string>(), It.IsAny<FinishLaunchRequest>()), Times.Once);
-            service.Verify(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest>()), Times.Exactly(30 * 30));
+            service.Verify(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>()), Times.AtLeast(30 * 30 / 10)); // logs buffer size
+
+            foreach (var bufferedRequests in requests)
+            {
+                bufferedRequests.Select(r => r.Text).Should().BeInAscendingOrder();
+            }
         }
 
         [Fact]
@@ -403,7 +404,7 @@ namespace ReportPortal.Shared.Tests.Reporter
             launch.Finish(new FinishLaunchRequest() { EndTime = launchStartTime.AddDays(-1) });
             launch.Sync();
 
-            launch.LaunchInfo.EndTime.Should().Be(launch.LaunchInfo.StartTime);
+            launch.Info.FinishTime.Should().Be(launch.Info.StartTime);
         }
 
         [Fact]
@@ -417,7 +418,7 @@ namespace ReportPortal.Shared.Tests.Reporter
             launch.Finish(new FinishLaunchRequest() { EndTime = DateTime.UtcNow });
             launch.Sync();
 
-            service.Verify(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest>()), Times.Once);
+            service.Verify(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>()), Times.Once);
         }
 
         [Fact]

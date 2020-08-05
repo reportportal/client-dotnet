@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Moq;
+using ReportPortal.Shared.Execution.Logging;
 using ReportPortal.Shared.Extensibility;
-using ReportPortal.Shared.Logging;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -18,7 +18,7 @@ namespace ReportPortal.Shared.Tests
         {
             Action action = () =>
             {
-                using (var s = Log.BeginScope(null))
+                using (var s = Context.Current.Log.BeginScope(null))
                 {
 
                 }
@@ -32,7 +32,7 @@ namespace ReportPortal.Shared.Tests
         {
             Action action = () =>
             {
-                using (var s = Log.BeginScope(""))
+                using (var s = Context.Current.Log.BeginScope(""))
                 {
 
                 }
@@ -44,54 +44,55 @@ namespace ReportPortal.Shared.Tests
         [Fact]
         public void ShouldAlwaysHaveActiveScopedLog()
         {
-            Log.ActiveScope.Should().BeSameAs(Log.ActiveScope);
-            var rootScope = Log.ActiveScope;
+            Context.Current.Log.Should().BeSameAs(Context.Current.Log);
+            var rootScope = Context.Current.Log;
             rootScope.Name.Should().BeNull();
-            Log.ActiveScope.Should().NotBeNull();
-            Log.ActiveScope.Parent.Should().BeNull();
+            Context.Current.Log.Should().NotBeNull();
+            Context.Current.Log.Parent.Should().BeNull();
 
-            using (var scope = Log.BeginScope("q"))
+            using (var scope = Context.Current.Log.BeginScope("q"))
             {
                 scope.Parent.Should().BeNull();
                 scope.Name.Should().Be("q");
-                Log.ActiveScope.Should().BeSameAs(scope);
+                Context.Current.Log.Should().BeSameAs(scope);
 
-                using (var scope2 = scope.BeginScope("q"))
+                using (var scope2 = scope.BeginScope("w"))
                 {
-                    Log.ActiveScope.Should().BeSameAs(scope2);
+                    Context.Current.Log.Should().BeSameAs(scope2);
                     scope2.Parent.Should().Be(scope);
                 }
 
-                Log.ActiveScope.Should().BeSameAs(scope);
+                Context.Current.Log.Should().BeSameAs(scope);
             }
 
-            Log.ActiveScope.Should().BeSameAs(rootScope);
+            Context.Current.Log.Should().Be(rootScope);
         }
 
         [Fact]
         public async Task ShouldAlwaysHaveActiveAsyncScopedLog()
         {
-            Log.ActiveScope.Should().BeSameAs(Log.ActiveScope);
-            Log.ActiveScope.Id.Should().Be(Log.ActiveScope.Id);
-            var rootScope = Log.ActiveScope;
-            Log.ActiveScope.Should().NotBeNull();
+            Context.Current.Log.Should().BeSameAs(Context.Current.Log);
+            Context.Current.Log.Parent.Should().BeNull();
+            Context.Current.Log.Id.Should().Be(Context.Current.Log.Id);
+            var rootScope = Context.Current.Log;
+            Context.Current.Log.Should().NotBeNull();
 
             await Task.Delay(1);
 
-            Log.ActiveScope.Should().BeSameAs(rootScope);
+            Context.Current.Log.Should().BeSameAs(rootScope);
 
-            using (var scope = Log.BeginScope("q"))
+            using (var scope = Context.Current.Log.BeginScope("q"))
             {
                 await Task.Delay(1);
 
-                Log.ActiveScope.Should().BeSameAs(scope);
-                Log.RootScope.Should().BeSameAs(rootScope);
+                Context.Current.Log.Should().BeSameAs(scope);
+                Context.Current.Log.Root.Should().BeSameAs(rootScope);
 
                 using (var scope2 = scope.BeginScope("q"))
                 {
                     await Task.Delay(1);
 
-                    Log.ActiveScope.Should().BeSameAs(scope2);
+                    Context.Current.Log.Should().BeSameAs(scope2);
 
                     var scopeFromOtherContext = await DoSomeWorkAsync(rootScope);
                     scopeFromOtherContext.Should().BeSameAs(scope2);
@@ -120,23 +121,23 @@ namespace ReportPortal.Shared.Tests
                     threads.ForEach(th => th.Join());
                 }
 
-                Log.ActiveScope.Should().BeSameAs(scope);
+                Context.Current.Log.Should().BeSameAs(scope);
             }
 
-            Log.ActiveScope.Should().BeSameAs(rootScope);
+            Context.Current.Log.Should().BeSameAs(rootScope);
         }
 
         private async Task<ILogScope> DoSomeWorkAsync(ILogScope expectedRootScope)
         {
             await Task.Delay(1);
 
-            using (var scope = Log.BeginScope("q"))
+            using (var scope = Context.Current.Log.BeginScope("q"))
             {
                 await Task.Delay(new Random().Next(20));
-                Log.RootScope.Should().BeSameAs(expectedRootScope);
+                Context.Current.Log.Root.Should().BeSameAs(expectedRootScope);
             }
 
-            return Log.ActiveScope;
+            return Context.Current.Log;
         }
 
         class WorkerState
@@ -150,42 +151,19 @@ namespace ReportPortal.Shared.Tests
 
             public void Do()
             {
-                using (var scope = Log.ActiveScope.BeginScope("q"))
+                using (var scope = Context.Current.Log.BeginScope("q"))
                 {
                     Thread.Sleep(new Random().Next(20));
                 }
 
-                Log.ActiveScope.Should().Be(ExpectedScope);
+                Context.Current.Log.Should().Be(ExpectedScope);
             }
-        }
-
-        [Fact]
-        public void ShouldNotifyLogHandlers()
-        {
-            var handler = new Mock<ILogHandler>();
-            ExtensionManager.Instance.LogHandlers.Add(handler.Object);
-
-            for (int i = 0; i < 5; i++)
-            {
-                using (var scope = Log.BeginScope("scope"))
-                {
-                    Log.ActiveScope.Info("abc");
-                    Log.RootScope.Info("abc");
-                }
-            }
-
-            handler.Verify(h => h.Handle(null, It.IsAny<Client.Abstractions.Requests.CreateLogItemRequest>()), Times.Exactly(5));
-            handler.Verify(h => h.Handle(It.Is<ILogScope>(ls => ls != null), It.IsAny<Client.Abstractions.Requests.CreateLogItemRequest>()), Times.Exactly(5));
-            handler.Verify(h => h.BeginScope(It.IsAny<ILogScope>()), Times.Exactly(5));
-            handler.Verify(h => h.EndScope(It.IsAny<ILogScope>()), Times.Exactly(5));
-
-            ExtensionManager.Instance.LogHandlers.Remove(handler.Object);
         }
 
         [Fact]
         public void ShouldImplicitlySetBeginAndEndTime()
         {
-            ILogScope scope = Log.BeginScope("q");
+            ILogScope scope = Context.Current.Log.BeginScope("q");
 
             scope.BeginTime.Should().BeCloseTo(DateTime.UtcNow);
             scope.EndTime.Should().BeNull();
@@ -198,7 +176,7 @@ namespace ReportPortal.Shared.Tests
         [Fact]
         public void StatusShouldBeInProgressByDefault()
         {
-            using (var scope = Log.BeginScope("a"))
+            using (var scope = Context.Current.Log.BeginScope("a"))
             {
                 scope.Status.Should().Be(LogScopeStatus.InProgress);
             }
@@ -207,15 +185,15 @@ namespace ReportPortal.Shared.Tests
         [Fact]
         public void StatusOfRootScopeShouldAlwaysBeInProgress()
         {
-            Log.RootScope.Status.Should().Be(LogScopeStatus.InProgress);
-            Log.RootScope.Status = LogScopeStatus.Passed;
-            Log.RootScope.Status.Should().Be(LogScopeStatus.InProgress);
+            Context.Current.Log.Status.Should().Be(LogScopeStatus.InProgress);
+            Context.Current.Log.Status = LogScopeStatus.Passed;
+            Context.Current.Log.Status.Should().Be(LogScopeStatus.InProgress);
         }
 
         [Fact]
         public void StatusShouldBeImplicitlyPassedForEndedScope()
         {
-            var scope = Log.BeginScope("a");
+            var scope = Context.Current.Log.BeginScope("a");
             scope.Status.Should().Be(LogScopeStatus.InProgress);
             scope.Dispose();
             scope.Status.Should().Be(LogScopeStatus.Passed);
@@ -227,7 +205,7 @@ namespace ReportPortal.Shared.Tests
         [InlineData(LogScopeStatus.Skipped)]
         public void ShouldBeAbleToChangeStatus(LogScopeStatus status)
         {
-            var scope = Log.BeginScope("a");
+            var scope = Context.Current.Log.BeginScope("a");
             scope.Status = status;
             scope.Status.Should().Be(status);
             scope.Dispose();
