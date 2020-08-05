@@ -89,7 +89,7 @@ namespace ReportPortal.Shared.Extensibility
                                 }
                                 catch (ReflectionTypeLoadException exp)
                                 {
-                                    TraceLogger.Error($"Couldn't load '{assembly.GetName().Name}' assembly into domain. \n {exp}");
+                                    TraceLogger.Warn($"Couldn't load '{assembly.GetName().Name}' assembly into domain. \n {exp}");
                                     foreach (var loaderException in exp.LoaderExceptions)
                                     {
                                         TraceLogger.Error(loaderException.ToString());
