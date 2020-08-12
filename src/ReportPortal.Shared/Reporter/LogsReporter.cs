@@ -66,7 +66,7 @@ namespace ReportPortal.Shared.Reporter
                 }
                 catch (Exception exp)
                 {
-                    _traceLogger.Error($"Unexpected error ossured while processing buffered log requests. {exp}");
+                    _traceLogger.Error($"Unexpected error occured while processing buffered log requests. {exp}");
                 }
             }, TaskContinuationOptions.PreferFairness).Unwrap();
         }
