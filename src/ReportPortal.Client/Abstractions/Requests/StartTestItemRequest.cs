@@ -72,6 +72,12 @@ namespace ReportPortal.Client.Abstractions.Requests
         public bool IsRetry { get; set; }
 
         /// <summary>
+        /// Test Item to be marked as retry.
+        /// </summary>
+        [DataMember(Name = "retryOf")]
+        public string RetryOf { get; set; }
+
+        /// <summary>
         /// A list of parameters.
         /// </summary>
         [DataMember(Name = "parameters")]
