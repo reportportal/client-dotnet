@@ -732,14 +732,12 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
                 LaunchUuid = _fixture.LaunchUuid,
                 Name = "RetryTest",
                 StartTime = DateTime.UtcNow,
-                Type = TestItemType.Step,
-                IsRetry = true // this is required to show test as retried
+                Type = TestItemType.Step
             });
 
             await Service.TestItem.FinishAsync(firstAttempt.Uuid, new FinishTestItemRequest
             {
-                EndTime = DateTime.UtcNow,
-                //IsRetry = true
+                EndTime = DateTime.UtcNow
             });
 
             var secondAttempt = await Service.TestItem.StartAsync(suite.Uuid, new StartTestItemRequest
@@ -748,7 +746,8 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
                 Name = "RetryTest",
                 StartTime = DateTime.UtcNow,
                 Type = TestItemType.Step,
-                IsRetry = true
+                IsRetry = true,
+                RetryOf = firstAttempt.Uuid
             });
 
             await Service.TestItem.FinishAsync(secondAttempt.Uuid, new FinishTestItemRequest
