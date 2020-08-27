@@ -52,7 +52,7 @@ namespace ReportPortal.Shared.Configuration.Providers
                     var key = candidate.Name.ToLowerInvariant().Replace($"{_prefix.ToLowerInvariant()}{_delimeter}", string.Empty).Replace(_delimeter, ConfigurationPath.KeyDelimeter);
                     var value = File.ReadAllText(candidate.FullName);
 
-                    properties[key] = value;
+                    properties[key] = value.Trim();
                 }
             }
             else

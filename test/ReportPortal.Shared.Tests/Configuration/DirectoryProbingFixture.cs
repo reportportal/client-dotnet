@@ -1,9 +1,7 @@
 ﻿using FluentAssertions;
 using ReportPortal.Shared.Configuration.Providers;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using Xunit;
 
 namespace ReportPortal.Shared.Tests.Configuration
@@ -15,6 +13,18 @@ namespace ReportPortal.Shared.Tests.Configuration
         {
             var dir = Directory.CreateDirectory(Path.GetRandomFileName());
             File.AppendAllText(Path.Combine(dir.FullName, "rp_a1"), "a1_value");
+
+            var dirProvider = new DirectoryProbingConfigurationProvider(dir.FullName, "rP", "_", false);
+            dirProvider.Load().Should().HaveCount(1).And.ContainKey("a1").WhichValue.Should().Be("a1_value");
+
+            dir.Delete(true);
+        }
+
+        [Fact]
+        public void ShouldTrimContent()
+        {
+            var dir = Directory.CreateDirectory(Path.GetRandomFileName());
+            File.AppendAllText(Path.Combine(dir.FullName, "rp_a1"), $" a1_value {Environment.NewLine}");
 
             var dirProvider = new DirectoryProbingConfigurationProvider(dir.FullName, "rP", "_", false);
             dirProvider.Load().Should().HaveCount(1).And.ContainKey("a1").WhichValue.Should().Be("a1_value");
