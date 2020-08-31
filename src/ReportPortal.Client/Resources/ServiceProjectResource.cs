@@ -12,16 +12,16 @@ namespace ReportPortal.Client.Resources
 
         }
 
-        public async Task<MessageResponse> UpdatePreferencesAsync(string projectName, string userName, long filterId)
+        public Task<MessageResponse> UpdatePreferencesAsync(string projectName, string userName, long filterId)
         {
-            return await PutAsJsonAsync<MessageResponse, object>(
+            return PutAsJsonAsync<MessageResponse, object>(
                 $"project/{projectName}/preference/{userName}/{filterId}",
                 string.Empty);
         }
 
-        public async Task<PreferenceResponse> GetAllPreferences(string projectName, string userName)
+        public Task<PreferenceResponse> GetAllPreferences(string projectName, string userName)
         {
-            return await GetAsJsonAsync<PreferenceResponse>($"project/{projectName}/preference/{userName}");
+            return GetAsJsonAsync<PreferenceResponse>($"project/{projectName}/preference/{userName}");
         }
     }
 }
