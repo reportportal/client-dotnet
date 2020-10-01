@@ -383,6 +383,13 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
                 Status = Status.Passed
             });
             Assert.Contains("successfully", messageSuite.Info);
+
+            var getSuite = await Service.TestItem.GetAsync(suite.Uuid);
+            var getTest = await Service.TestItem.GetAsync(test.Uuid);
+
+            getTest.PathNames.ItemPaths.Should().NotBeEmpty();
+            getTest.PathNames.ItemPaths[0].Id.Should().Be(getSuite.Id);
+            getTest.PathNames.ItemPaths[0].Name.Should().Be(getSuite.Name);
         }
 
         [Fact]
