@@ -15,7 +15,7 @@ namespace ReportPortal.Client.Resources
 
         }
 
-        public async Task<Content<TestItemResponse>> GetAsync(FilterOption filterOption = null)
+        public Task<Content<TestItemResponse>> GetAsync(FilterOption filterOption = null)
         {
             var uri = $"{ProjectName}/item";
             if (filterOption != null)
@@ -23,64 +23,64 @@ namespace ReportPortal.Client.Resources
                 uri += $"?{filterOption}";
             }
 
-            return await GetAsJsonAsync<Content<TestItemResponse>>(uri);
+            return GetAsJsonAsync<Content<TestItemResponse>>(uri);
         }
 
-        public async Task<TestItemResponse> GetAsync(long id)
+        public Task<TestItemResponse> GetAsync(long id)
         {
-            return await GetAsJsonAsync<TestItemResponse>($"{ProjectName}/item/{id}");
+            return GetAsJsonAsync<TestItemResponse>($"{ProjectName}/item/{id}");
         }
 
-        public async Task<TestItemResponse> GetAsync(string uuid)
+        public Task<TestItemResponse> GetAsync(string uuid)
         {
-            return await GetAsJsonAsync<TestItemResponse>($"{ProjectName}/item/uuid/{uuid}");
+            return GetAsJsonAsync<TestItemResponse>($"{ProjectName}/item/uuid/{uuid}");
         }
 
-        public async Task<TestItemCreatedResponse> StartAsync(StartTestItemRequest request)
+        public Task<TestItemCreatedResponse> StartAsync(StartTestItemRequest request)
         {
-            return await PostAsJsonAsync<TestItemCreatedResponse, StartTestItemRequest>(
+            return PostAsJsonAsync<TestItemCreatedResponse, StartTestItemRequest>(
                 $"{ProjectName}/item",
                 request);
         }
 
-        public async Task<TestItemCreatedResponse> StartAsync(string uuid, StartTestItemRequest request)
+        public Task<TestItemCreatedResponse> StartAsync(string uuid, StartTestItemRequest request)
         {
-            return await PostAsJsonAsync<TestItemCreatedResponse, StartTestItemRequest>(
+            return PostAsJsonAsync<TestItemCreatedResponse, StartTestItemRequest>(
                 $"{ProjectName}/item/{uuid}",
                 request);
         }
 
-        public async Task<MessageResponse> FinishAsync(string uuid, FinishTestItemRequest request)
+        public Task<MessageResponse> FinishAsync(string uuid, FinishTestItemRequest request)
         {
-            return await PutAsJsonAsync<MessageResponse, FinishTestItemRequest>(
+            return PutAsJsonAsync<MessageResponse, FinishTestItemRequest>(
                 $"{ProjectName}/item/{uuid}",
                 request);
         }
 
-        public async Task<MessageResponse> UpdateAsync(long id, UpdateTestItemRequest request)
+        public Task<MessageResponse> UpdateAsync(long id, UpdateTestItemRequest request)
         {
-            return await PutAsJsonAsync<MessageResponse, UpdateTestItemRequest>(
+            return PutAsJsonAsync<MessageResponse, UpdateTestItemRequest>(
                 $"{ProjectName}/item/{id}/update",
                 request);
         }
 
-        public async Task<MessageResponse> DeleteAsync(long id)
+        public Task<MessageResponse> DeleteAsync(long id)
         {
-            return await DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/item/{id}");
+            return DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/item/{id}");
         }
 
-        public async Task<IEnumerable<Issue>> AssignIssuesAsync(AssignTestItemIssuesRequest request)
+        public Task<IEnumerable<Issue>> AssignIssuesAsync(AssignTestItemIssuesRequest request)
         {
-            return await PutAsJsonAsync<IEnumerable<Issue>, AssignTestItemIssuesRequest>(
+            return PutAsJsonAsync<IEnumerable<Issue>, AssignTestItemIssuesRequest>(
                 $"{ProjectName}/item",
                 request);
         }
 
-        public async Task<Content<TestItemHistoryContainer>> GetHistoryAsync(long id, int depth)
+        public Task<Content<TestItemHistoryContainer>> GetHistoryAsync(long id, int depth)
         {
             var uri = $"{ProjectName}/item/history?filter.eq.id={id}&type=line&historyDepth={depth}";
 
-            return await GetAsJsonAsync<Content<TestItemHistoryContainer>>(uri);
+            return GetAsJsonAsync<Content<TestItemHistoryContainer>>(uri);
         }
     }
 }

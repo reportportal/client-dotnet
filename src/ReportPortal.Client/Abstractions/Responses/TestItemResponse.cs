@@ -100,12 +100,27 @@ namespace ReportPortal.Client.Abstractions.Responses
         [DataMember(Name = "launchPathName")]
         public LaunchPathNameModel LaunchPathName { get; set; }
 
+        [DataMember(Name = "itemPaths")]
+        public IList<ItemPathNameModel> ItemPaths { get; set; }
+
         [DataContract]
         public class LaunchPathNameModel
         {
+            [DataMember(Name = "name")]
             public string Name { get; set; }
 
+            [DataMember(Name = "number")]
             public long Number { get; set; }
+        }
+
+        [DataContract]
+        public class ItemPathNameModel
+        {
+            [DataMember(Name = "id")]
+            public long Id { get; set; }
+
+            [DataMember(Name = "name")]
+            public string Name { get; set; }
         }
     }
 
