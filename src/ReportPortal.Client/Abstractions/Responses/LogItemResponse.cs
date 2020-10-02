@@ -21,27 +21,17 @@ namespace ReportPortal.Client.Abstractions.Responses
         public long LaunchId { get; set; }
 
         [DataMember(Name = "time")]
-        public string TimeString { get; set; }
+        private string TimeString { get; set; }
 
-        public DateTime Time
-        {
-            get
-            {
-                return DateTimeConverter.ConvertTo(TimeString);
-            }
-            set
-            {
-                TimeString = DateTimeConverter.ConvertFrom(value);
-            }
-        }
+        public DateTime Time => DateTimeConverter.ConvertTo(TimeString);
 
         [DataMember(Name = "message")]
         public string Text { get; set; }
 
         [DataMember(Name = "level")]
-        public string LevelString { get; set; }
+        private string LevelString { get; set; }
 
-        public LogLevel Level { get { return EnumConverter.ConvertTo<LogLevel>(LevelString); } set { LevelString = EnumConverter.ConvertFrom(value); } }
+        public LogLevel Level => EnumConverter.ConvertTo<LogLevel>(LevelString);
 
         [DataMember(Name = "binaryContent")]
         public BinaryContent Content { get; set; }

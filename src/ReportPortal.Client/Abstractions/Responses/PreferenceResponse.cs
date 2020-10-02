@@ -10,7 +10,7 @@ namespace ReportPortal.Client.Abstractions.Responses
         /// List of filters in a preference.
         /// </summary>
         [DataMember(Name = "filters")]
-        public List<UserFilterResponse> Filters { get; set; }
+        public IList<UserFilterResponse> Filters { get; set; }
 
         [DataMember(Name = "projectId")]
         public long ProjectId { get; set; }
