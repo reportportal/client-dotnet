@@ -1,5 +1,6 @@
 ﻿using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Converters;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
@@ -14,8 +15,15 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// <summary>
         /// Update tags for launch.
         /// </summary>
+        [Obsolete("Use Attributes instead of Tags.")]
         [DataMember(Name = "tags", EmitDefaultValue = true)]
         public List<string> Tags { get; set; }
+
+        /// <summary>
+        /// Update attributes for launch.
+        /// </summary>
+        [DataMember(Name = "attributes", EmitDefaultValue = true)]
+        public List<ItemAttribute> Attributes { get; set; }
 
         /// <summary>
         /// Description of launch.
@@ -23,12 +31,22 @@ namespace ReportPortal.Client.Abstractions.Requests
         [DataMember(Name = "description")]
         public string Description { get; set; }
 
+        [DataMember(Name = "mode", EmitDefaultValue = true)]
+        private string _modeString;
+
         /// <summary>
         /// Specify whether the launch is executed under debugging.
         /// </summary>
-        [DataMember(Name = "mode", EmitDefaultValue = true)]
-        public string ModeString { get { return EnumConverter.ConvertFrom(Mode); } set { Mode = EnumConverter.ConvertTo<LaunchMode>(value); } }
-
-        public LaunchMode Mode { get; set; }
+        public LaunchMode? Mode
+        {
+            get
+            {
+                return EnumConverter.ConvertTo<LaunchMode>(_modeString);
+            }
+            set
+            {
+                _modeString = EnumConverter.ConvertFrom(value);
+            }
+        }
     }
 }

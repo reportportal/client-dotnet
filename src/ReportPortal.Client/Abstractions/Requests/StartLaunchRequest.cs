@@ -26,29 +26,39 @@ namespace ReportPortal.Client.Abstractions.Requests
         [DataMember(Name = "description")]
         public string Description { get; set; }
 
+        [DataMember(Name = "mode")]
+        private string _modeString { get; set; } = EnumConverter.ConvertFrom(LaunchMode.Default);
+
         /// <summary>
         /// Specify whether the launch is executed under debugging.
         /// </summary>
-        [DataMember(Name = "mode")]
-        public string ModeString { get { return EnumConverter.ConvertFrom(Mode); } set { Mode = EnumConverter.ConvertTo<LaunchMode>(value); } }
+        public LaunchMode Mode
+        {
+            get
+            {
+                return EnumConverter.ConvertTo<LaunchMode>(_modeString);
+            }
+            set
+            {
+                _modeString = EnumConverter.ConvertFrom(value);
+            }
+        }
 
-        public LaunchMode Mode { get; set; } = LaunchMode.Default;
+        [DataMember(Name = "startTime")]
+        private string _startTimeString { get; set; } = DateTimeConverter.ConvertFrom(DateTime.UtcNow);
 
         /// <summary>
         /// Date time when the launch is executed.
         /// </summary>
-        [DataMember(Name = "startTime")]
-        public string StartTimeString { get; set; } = DateTimeConverter.ConvertFrom(DateTime.UtcNow);
-
         public DateTime StartTime
         {
             get
             {
-                return DateTimeConverter.ConvertTo(StartTimeString);
+                return DateTimeConverter.ConvertTo(_startTimeString);
             }
             set
             {
-                StartTimeString = DateTimeConverter.ConvertFrom(value);
+                _startTimeString = DateTimeConverter.ConvertFrom(value);
             }
         }
 
