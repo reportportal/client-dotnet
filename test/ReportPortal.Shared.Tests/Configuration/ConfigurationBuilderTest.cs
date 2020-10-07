@@ -352,6 +352,19 @@ namespace ReportPortal.Shared.Tests.Configuration
         }
 
         [Fact]
+        public void ShouldGetTrimmedKeyValues()
+        {
+            var config = new ConfigurationBuilder().Build();
+            config.Properties["a"] = "k1:v1; k2 : v2 ";
+
+            config.GetKeyValues<string>("a").Should().BeEquivalentTo(
+                new List<KeyValuePair<string, string>>(){
+                    new KeyValuePair<string, string>("k1", "v1"),
+                    new KeyValuePair<string, string>("k2", "v2")
+                });
+        }
+
+        [Fact]
         public void ShouldGetKeyValues()
         {
             var config = new ConfigurationBuilder().Build();

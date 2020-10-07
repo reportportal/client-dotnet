@@ -124,7 +124,7 @@ namespace ReportPortal.Shared.Configuration
                     keyValue = value.Substring(key.Length + 1);
                 }
 
-                result.Add(new KeyValuePair<string, T>(key, (T)Convert.ChangeType(keyValue, typeof(T), CultureInfo.InvariantCulture)));
+                result.Add(new KeyValuePair<string, T>(key.Trim(), (T)Convert.ChangeType(keyValue.Trim(), typeof(T), CultureInfo.InvariantCulture)));
             }
 
             return result;
