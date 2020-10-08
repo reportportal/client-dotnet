@@ -1,7 +1,6 @@
 ﻿using ReportPortal.Client.Abstractions.Requests;
 using System;
 using System.Net.Http;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Xunit;
 

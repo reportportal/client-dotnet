@@ -23,13 +23,9 @@ namespace ReportPortal.Client.Abstractions.Responses
         public string Name { get; set; }
 
         [DataMember(Name = "status")]
-        public string StatusString { get; set; }
+        private string StatusString { get; set; }
 
-        public Status Status
-        {
-            get => EnumConverter.ConvertTo<Status>(StatusString);
-            set => StatusString = EnumConverter.ConvertFrom(value);
-        }
+        public Status Status => EnumConverter.ConvertTo<Status>(StatusString);
 
         [DataMember(Name = "launchNumber")]
         public long LaunchNumber { get; set; }
@@ -38,24 +34,14 @@ namespace ReportPortal.Client.Abstractions.Responses
         public string LaunchId { get; set; }
 
         [DataMember(Name = "startTime")]
-        public string StartTimeString { get; set; }
+        private string StartTimeString { get; set; }
 
-        public DateTime StartTime
-        {
-            get
-            {
-                return DateTimeConverter.ConvertTo(StartTimeString);
-            }
-            set
-            {
-                StartTimeString = DateTimeConverter.ConvertFrom(value);
-            }
-        }
+        public DateTime StartTime => DateTimeConverter.ConvertTo(StartTimeString);
 
         [DataMember(Name = "launchStatus")]
-        public string LaunchStatusString { get; set; }
+        private string LaunchStatusString { get; set; }
 
-        public Status LaunchStatus { get { return EnumConverter.ConvertTo<Status>(LaunchStatusString); } set { LaunchStatusString = EnumConverter.ConvertFrom(value); } }
+        public Status LaunchStatus => EnumConverter.ConvertTo<Status>(LaunchStatusString);
 
         [DataMember(Name = "resources")]
         public IEnumerable<TestItemResponse> Resources { get; set; }

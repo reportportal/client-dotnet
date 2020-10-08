@@ -49,17 +49,12 @@ namespace ReportPortal.Client.Abstractions.Responses
         /// filter type
         /// </summary>
         [DataMember(Name = "type")]
-        public string TypeStr { get; set; }
+        private string TypeString { get; set; }
 
         /// <summary>
         /// user filter type enum
         /// </summary>
-        public UserFilterType UserFilterType
-        {
-            get => EnumConverter.ConvertTo<UserFilterType>(TypeStr);
-            set => TypeStr = EnumConverter.ConvertFrom(UserFilterType);
-
-        }
+        public UserFilterType UserFilterType => EnumConverter.ConvertTo<UserFilterType>(TypeString);
 
         /// <summary>
         /// owner of user filter
@@ -75,12 +70,12 @@ namespace ReportPortal.Client.Abstractions.Responses
         /// Condition to filter with.
         /// </summary>
         [DataMember(Name = "condition")]
-        public string ConditionStr { get; set; }
+        private string ConditionString { get; set; }
 
         public FilterOperation UserFilterCondition
         {
-            get => EnumConverter.ConvertTo<FilterOperation>(ConditionStr);
-            set => ConditionStr = EnumConverter.ConvertFrom(value);
+            get => EnumConverter.ConvertTo<FilterOperation>(ConditionString);
+            set => ConditionString = EnumConverter.ConvertFrom(value);
         }
 
         /// <summary>

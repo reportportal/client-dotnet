@@ -449,38 +449,6 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
         }
 
         [Fact]
-        public async Task StartUpdateFinishTest()
-        {
-            var test = await Service.TestItem.StartAsync(new StartTestItemRequest
-            {
-                LaunchUuid = _fixture.LaunchUuid,
-                Name = "Test1",
-                StartTime = DateTime.UtcNow,
-                Type = TestItemType.Test
-            });
-            Assert.NotNull(test.Uuid);
-
-            var tempTest = await Service.TestItem.GetAsync(test.Uuid);
-            var updateMessage = await Service.TestItem.UpdateAsync(tempTest.Id, new UpdateTestItemRequest()
-            {
-                Description = "newDesc",
-                //Tags = new List<string> { "tag1", "tag2" }
-            });
-            Assert.Contains("successfully", updateMessage.Info);
-
-            var updatedTest = await Service.TestItem.GetAsync(test.Uuid);
-            Assert.Equal("newDesc", updatedTest.Description);
-            //Assert.Equal(new List<string> { "tag1", "tag2" }, updatedTest.Tags);
-
-            var message = await Service.TestItem.FinishAsync(test.Uuid, new FinishTestItemRequest
-            {
-                EndTime = DateTime.UtcNow,
-                Status = Status.Passed
-            });
-            Assert.Contains("successfully", message.Info);
-        }
-
-        [Fact]
         public async Task AssignTestItemIssuesTest()
         {
             var suite = await Service.TestItem.StartAsync(new StartTestItemRequest

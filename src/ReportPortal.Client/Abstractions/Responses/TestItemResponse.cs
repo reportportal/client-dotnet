@@ -25,43 +25,27 @@ namespace ReportPortal.Client.Abstractions.Responses
         public string Description { get; set; }
 
         [DataMember(Name = "startTime")]
-        public string StartTimeString { get; set; }
+        private string StartTimeString { get; set; }
 
-        public DateTime StartTime
-        {
-            get => DateTimeConverter.ConvertTo(StartTimeString);
-            set => StartTimeString = DateTimeConverter.ConvertFrom(value);
-        }
+        public DateTime StartTime => DateTimeConverter.ConvertTo(StartTimeString);
 
         [DataMember(Name = "endTime")]
-        public string EndTimeString { get; set; }
+        private string EndTimeString { get; set; }
 
-        public DateTime? EndTime
-        {
-            get => EndTimeString == null ? (DateTime?)null : DateTimeConverter.ConvertTo(EndTimeString);
-            set => EndTimeString = DateTimeConverter.ConvertFrom(value.GetValueOrDefault());
-        }
-
-        [DataMember(Name = "status")]
-        public string StatusString { get; set; }
+        public DateTime? EndTime => EndTimeString == null ? (DateTime?)null : DateTimeConverter.ConvertTo(EndTimeString);
 
         [DataMember(Name = "retry")]
         public bool IsRetry { get; set; }
 
-        public Status Status
-        {
-            get => EnumConverter.ConvertTo<Status>(StatusString);
-            set => StatusString = EnumConverter.ConvertFrom(value);
-        }
+        [DataMember(Name = "status")]
+        private string StatusString { get; set; }
+
+        public Status Status => EnumConverter.ConvertTo<Status>(StatusString);
 
         [DataMember(Name = "type")]
-        public string TypeString { get; set; }
+        private string TypeString { get; set; }
 
-        public TestItemType Type
-        {
-            get => EnumConverter.ConvertTo<TestItemType>(TypeString);
-            set => TypeString = EnumConverter.ConvertFrom(value);
-        }
+        public TestItemType Type => EnumConverter.ConvertTo<TestItemType>(TypeString);
 
         [DataMember(Name = "tags")]
         public List<string> Tags { get; set; }
@@ -147,13 +131,9 @@ namespace ReportPortal.Client.Abstractions.Responses
     public class ExternalSystemIssue
     {
         [DataMember(Name = "submitDate")]
-        public string SubmitDateString { get; set; }
+        private string SubmitDateString { get; set; }
 
-        public DateTime SubmitDate
-        {
-            get => DateTimeConverter.ConvertTo(SubmitDateString);
-            set => SubmitDateString = DateTimeConverter.ConvertFrom(value);
-        }
+        public DateTime SubmitDate => DateTimeConverter.ConvertTo(SubmitDateString);
 
         [DataMember(Name = "submitter")]
         public string Submitter { get; set; }
