@@ -31,8 +31,10 @@ namespace ReportPortal.Shared.Extensibility.Analytics
             // Client is this assembly
             _clientVersion = typeof(AnalyticsReportEventsObserver).Assembly.GetName().Version.ToString(3);
 
-            _httpClient = new HttpClient();
-            _httpClient.BaseAddress = new Uri(BASE_URI);
+            _httpClient = new HttpClient
+            {
+                BaseAddress = new Uri(BASE_URI)
+            };
         }
 
         /// <summary>
@@ -79,7 +81,10 @@ namespace ReportPortal.Shared.Extensibility.Analytics
         {
             _reportEventsSource = reportEventsSource;
             reportEventsSource.OnBeforeLaunchStarting += ReportEventsSource_OnBeforeLaunchStarting;
+            reportEventsSource.OnAfterLaunchFinished += ReportEventsSource_OnAfterLaunchFinished;
         }
+
+        private Task _sendGaUsageTask;
 
         private void ReportEventsSource_OnBeforeLaunchStarting(Reporter.ILaunchReporter launchReporter, ReportEvents.EventArgs.BeforeLaunchStartingEventArgs args)
         {
@@ -90,8 +95,8 @@ namespace ReportPortal.Shared.Extensibility.Analytics
 
                 var requestData = $"/collect?v=1&tid={MEASUREMENT_ID}&cid={_clientId}&t=event&ec={category}&ea=Start launch&el={label}";
 
-                // schedule tracking request and forget
-                Task.Run(async () =>
+                // schedule tracking request
+                _sendGaUsageTask = Task.Run(async () =>
                 {
                     try
                     {
@@ -106,6 +111,18 @@ namespace ReportPortal.Shared.Extensibility.Analytics
             }
         }
 
+        private void ReportEventsSource_OnAfterLaunchFinished(Reporter.ILaunchReporter launchReporter, ReportEvents.EventArgs.AfterLaunchFinishedEventArgs args)
+        {
+            if (_sendGaUsageTask != null)
+            {
+                try
+                {
+                    _sendGaUsageTask.GetAwaiter().GetResult();
+                }
+                catch (Exception) { }
+            }
+        }
+
         /// <summary>
         /// Release HtpClient if needed.
         /// </summary>
@@ -114,6 +131,7 @@ namespace ReportPortal.Shared.Extensibility.Analytics
             if (_reportEventsSource != null)
             {
                 _reportEventsSource.OnBeforeLaunchStarting -= ReportEventsSource_OnBeforeLaunchStarting;
+                _reportEventsSource.OnAfterLaunchFinished -= ReportEventsSource_OnAfterLaunchFinished;
             }
 
             if (_httpClient != null)
