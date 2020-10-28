@@ -1,10 +1,12 @@
-﻿using Moq;
+﻿using FluentAssertions;
+using Moq;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Internal.Delegating;
 using ReportPortal.Shared.Reporter;
 using ReportPortal.Shared.Tests.Helpers;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -151,5 +153,30 @@ namespace ReportPortal.Shared.Tests.Reporter
             service.Verify(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>()), Times.Exactly(2));
         }
 
+        [Fact]
+        public void ShouldBeThreadSafeWhenSchedulingLogRequests()
+        {
+            var logItemRequestTexts = new List<string>();
+
+            var service = new MockServiceBuilder().Build();
+            service.Setup(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>()))
+                .Callback<CreateLogItemRequest[]>(rqs => { foreach (var rq in rqs) logItemRequestTexts.Add(rq.Text); })
+                .Returns(() => Task.FromResult(new Client.Abstractions.Responses.LogItemsCreatedResponse()));
+
+            var logsReporter = new LogsReporter(_testReporter.Object, service.Object, _extensionManager, _requestExecuter, _logRequestAmender.Object);
+
+            Parallel.For(0, 1000, (i) => logsReporter.Log(new CreateLogItemRequest
+            {
+                Text = i.ToString(),
+                Time = DateTime.UtcNow
+            }));
+
+            logsReporter.Sync();
+
+            service.Verify(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>()), Times.Exactly(100));
+
+            logItemRequestTexts.Should().HaveCount(1000);
+            logItemRequestTexts.Should().OnlyHaveUniqueItems();
+        }
     }
 }

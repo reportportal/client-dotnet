@@ -31,44 +31,49 @@ namespace ReportPortal.Shared.Reporter
             _logRequestAmender = logRequestAmender;
         }
 
+        private object _syncObj = new object();
+
         public int BatchCapacity { get; set; } = 10;
 
         public void Log(CreateLogItemRequest logRequest)
         {
-            _buffer.Enqueue(logRequest);
-
-            var dependentTask = ProcessingTask ?? _reporter.StartTask;
-
-            ProcessingTask = dependentTask.ContinueWith(async (dt) =>
+            lock (_syncObj)
             {
-                try
+                _buffer.Enqueue(logRequest);
+
+                var dependentTask = ProcessingTask ?? _reporter.StartTask;
+
+                ProcessingTask = dependentTask.ContinueWith(async (dt) =>
                 {
-                    // only if parent reporter is succesfull
-                    if (!_reporter.StartTask.IsFaulted && !_reporter.StartTask.IsCanceled)
+                    try
                     {
-                        var requests = GetBufferedLogRequests(batchCapacity: BatchCapacity);
-
-                        if (requests.Count != 0)
+                        // only if parent reporter is succesfull
+                        if (!_reporter.StartTask.IsFaulted && !_reporter.StartTask.IsCanceled)
                         {
-                            foreach (var logItemRequest in requests)
+                            var requests = GetBufferedLogRequests(batchCapacity: BatchCapacity);
+
+                            if (requests.Count != 0)
                             {
-                                _logRequestAmender.Amend(logItemRequest);
-
-                                foreach (var formatter in _extensionManager.LogFormatters)
+                                foreach (var logItemRequest in requests)
                                 {
-                                    formatter.FormatLog(logItemRequest);
-                                }
-                            }
+                                    _logRequestAmender.Amend(logItemRequest);
 
-                            await _requestExecuter.ExecuteAsync(() => _service.LogItem.CreateAsync(requests.ToArray()), null).ConfigureAwait(false);
+                                    foreach (var formatter in _extensionManager.LogFormatters)
+                                    {
+                                        formatter.FormatLog(logItemRequest);
+                                    }
+                                }
+
+                                await _requestExecuter.ExecuteAsync(() => _service.LogItem.CreateAsync(requests.ToArray()), null).ConfigureAwait(false);
+                            }
                         }
                     }
-                }
-                catch (Exception exp)
-                {
-                    _traceLogger.Error($"Unexpected error occured while processing buffered log requests. {exp}");
-                }
-            }, TaskContinuationOptions.PreferFairness).Unwrap();
+                    catch (Exception exp)
+                    {
+                        _traceLogger.Error($"Unexpected error occurred while processing buffered log requests. {exp}");
+                    }
+                }, TaskContinuationOptions.PreferFairness).Unwrap();
+            }
         }
 
         public void Sync()
@@ -82,28 +87,31 @@ namespace ReportPortal.Shared.Reporter
 
             var batchContainsItemWithAttachment = false;
 
-            for (int i = 0; i < batchCapacity; i++)
+            lock (_syncObj)
             {
-                if (_buffer.Count > 0)
+                for (int i = 0; i < batchCapacity; i++)
                 {
-                    var logItemRequest = _buffer.Peek();
+                    if (_buffer.Count > 0)
+                    {
+                        var logItemRequest = _buffer.Peek();
 
-                    if (logItemRequest.Attach != null && batchContainsItemWithAttachment)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        if (logItemRequest.Attach != null)
+                        if (logItemRequest.Attach != null && batchContainsItemWithAttachment)
                         {
-                            batchContainsItemWithAttachment = true;
+                            break;
                         }
+                        else
+                        {
+                            if (logItemRequest.Attach != null)
+                            {
+                                batchContainsItemWithAttachment = true;
+                            }
 
-                        requests.Add(_buffer.Dequeue());
+                            requests.Add(_buffer.Dequeue());
+                        }
                     }
                 }
-            }
 
+            }
             return requests;
         }
     }
