@@ -33,6 +33,7 @@ namespace ReportPortal.Client
             _httpClient = httpClientFactory.Create();
 
 #if NET45
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
             ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
 #endif
 
