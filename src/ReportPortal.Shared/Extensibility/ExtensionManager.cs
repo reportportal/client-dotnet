@@ -13,8 +13,27 @@ namespace ReportPortal.Shared.Extensibility
         private static Lazy<IExtensionManager> _instance = new Lazy<IExtensionManager>(() =>
             {
                 var ext = new ExtensionManager();
-                ext.Explore(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+
+                var assemblyLocation = Assembly.GetExecutingAssembly().Location;
+                if (assemblyLocation != null)
+                {
+                    ext.Explore(Path.GetDirectoryName(assemblyLocation));
+                }
+                else
+                {
+                    // fallback to env executing args
+                    TraceLogger.Verbose("Location of executing assembly is not determined, falling back to get it from environment command args.");
+
+                    var assemblySingleFileLocation = Environment.GetCommandLineArgs().FirstOrDefault();
+
+                    if (assemblySingleFileLocation != null)
+                    {
+                        ext.Explore(Path.GetDirectoryName(assemblyLocation));
+                    }
+                }
+
                 ext.Explore(Environment.CurrentDirectory);
+
                 return ext;
             });
 
