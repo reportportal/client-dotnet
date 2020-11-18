@@ -15,7 +15,8 @@ namespace ReportPortal.Shared.Extensibility
                 var ext = new ExtensionManager();
 
                 var assemblyLocation = Assembly.GetExecutingAssembly().Location;
-                if (assemblyLocation != null)
+                TraceLogger.Verbose($"Executing assembly location: {assemblyLocation}");
+                if (!string.IsNullOrEmpty(assemblyLocation))
                 {
                     ext.Explore(Path.GetDirectoryName(assemblyLocation));
                 }
@@ -28,7 +29,7 @@ namespace ReportPortal.Shared.Extensibility
 
                     if (assemblySingleFileLocation != null)
                     {
-                        ext.Explore(Path.GetDirectoryName(assemblyLocation));
+                        ext.Explore(Path.GetDirectoryName(assemblySingleFileLocation));
                     }
                 }
 
