@@ -31,7 +31,14 @@ namespace ReportPortal.Shared.Extensibility.Analytics
             // Client is this assembly
             _clientVersion = typeof(AnalyticsReportEventsObserver).Assembly.GetName().Version.ToString(3);
 
-            _httpClient = new HttpClient
+            var clientHandler = new HttpClientHandler
+            {
+#if !NET45 && !NET46
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; }
+#endif
+            };
+
+            _httpClient = new HttpClient(clientHandler)
             {
                 BaseAddress = new Uri(BASE_URI)
             };
