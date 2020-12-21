@@ -13,12 +13,12 @@ namespace ReportPortal.Client.Resources
         {
         }
 
-        public async Task<UserFilterCreatedResponse> CreateAsync(CreateUserFilterRequest request)
+        public Task<UserFilterCreatedResponse> CreateAsync(CreateUserFilterRequest request)
         {
-            return await PostAsJsonAsync<UserFilterCreatedResponse, CreateUserFilterRequest>($"{ProjectName}/filter", request);
+            return PostAsJsonAsync<UserFilterCreatedResponse, CreateUserFilterRequest>($"{ProjectName}/filter", request);
         }
 
-        public async Task<Content<UserFilterResponse>> GetAsync(FilterOption filterOption = null)
+        public Task<Content<UserFilterResponse>> GetAsync(FilterOption filterOption = null)
         {
             var uri = $"{ProjectName}/filter";
             if (filterOption != null)
@@ -26,17 +26,22 @@ namespace ReportPortal.Client.Resources
                 uri += $"?{filterOption}";
             }
 
-            return await GetAsJsonAsync<Content<UserFilterResponse>>(uri);
+            return GetAsJsonAsync<Content<UserFilterResponse>>(uri);
         }
 
-        public async Task<UserFilterResponse> GetAsync(long id)
+        public Task<MessageResponse> UpdateAsync(long id, UpdateUserFilterRequest request)
         {
-            return await GetAsJsonAsync<UserFilterResponse>($"{ProjectName}/filter/{id}");
+            return PutAsJsonAsync<MessageResponse, UpdateUserFilterRequest>($"{ProjectName}/filter/{id}", request);
         }
 
-        public async Task<MessageResponse> DeleteAsync(long id)
+        public Task<UserFilterResponse> GetAsync(long id)
         {
-            return await DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/filter/{id}");
+            return GetAsJsonAsync<UserFilterResponse>($"{ProjectName}/filter/{id}");
+        }
+
+        public Task<MessageResponse> DeleteAsync(long id)
+        {
+            return DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/filter/{id}");
         }
     }
 }

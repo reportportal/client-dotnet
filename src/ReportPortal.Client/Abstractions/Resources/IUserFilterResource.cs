@@ -18,6 +18,14 @@ namespace ReportPortal.Client.Abstractions.Resources
         Task<UserFilterCreatedResponse> CreateAsync(CreateUserFilterRequest request);
 
         /// <summary>
+        /// Updates the specified user filter.
+        /// </summary>
+        /// <param name="id">ID of filter to update.</param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        Task<MessageResponse> UpdateAsync(long id, UpdateUserFilterRequest request);
+
+        /// <summary>
         /// Gets all user filters.
         /// </summary>
         /// <param name="filterOption"></param>
