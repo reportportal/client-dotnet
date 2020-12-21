@@ -14,7 +14,7 @@ namespace ReportPortal.Client.Resources
 
         }
 
-        public async Task<Content<LaunchResponse>> GetAsync(FilterOption filterOption = null)
+        public Task<Content<LaunchResponse>> GetAsync(FilterOption filterOption = null)
         {
             var uri = $"{ProjectName}/launch";
 
@@ -23,10 +23,10 @@ namespace ReportPortal.Client.Resources
                 uri += $"?{filterOption}";
             }
 
-            return await GetAsJsonAsync<Content<LaunchResponse>>(uri).ConfigureAwait(false);
+            return GetAsJsonAsync<Content<LaunchResponse>>(uri);
         }
 
-        public async Task<Content<LaunchResponse>> GetDebugAsync(FilterOption filterOption = null)
+        public Task<Content<LaunchResponse>> GetDebugAsync(FilterOption filterOption = null)
         {
             var uri = $"{ProjectName}/launch/mode";
 
@@ -35,52 +35,52 @@ namespace ReportPortal.Client.Resources
                 uri += $"?{filterOption}";
             }
 
-            return await GetAsJsonAsync<Content<LaunchResponse>>(uri);
+            return GetAsJsonAsync<Content<LaunchResponse>>(uri);
         }
 
-        public async Task<LaunchResponse> GetAsync(string uuid)
+        public Task<LaunchResponse> GetAsync(string uuid)
         {
-            return await GetAsJsonAsync<LaunchResponse>($"{ProjectName}/launch/uuid/{uuid}");
+            return GetAsJsonAsync<LaunchResponse>($"{ProjectName}/launch/uuid/{uuid}");
         }
 
-        public async Task<LaunchResponse> GetAsync(long id)
+        public Task<LaunchResponse> GetAsync(long id)
         {
-            return await GetAsJsonAsync<LaunchResponse>($"{ProjectName}/launch/{id}");
+            return GetAsJsonAsync<LaunchResponse>($"{ProjectName}/launch/{id}");
         }
 
-        public async Task<LaunchCreatedResponse> StartAsync(StartLaunchRequest request)
+        public Task<LaunchCreatedResponse> StartAsync(StartLaunchRequest request)
         {
-            return await PostAsJsonAsync<LaunchCreatedResponse, StartLaunchRequest>($"{ProjectName}/launch", request);
+            return PostAsJsonAsync<LaunchCreatedResponse, StartLaunchRequest>($"{ProjectName}/launch", request);
         }
 
-        public async Task<LaunchFinishedResponse> FinishAsync(string uuid, FinishLaunchRequest request)
+        public Task<LaunchFinishedResponse> FinishAsync(string uuid, FinishLaunchRequest request)
         {
-            return await PutAsJsonAsync<LaunchFinishedResponse, FinishLaunchRequest>($"{ProjectName}/launch/{uuid}/finish", request);
+            return PutAsJsonAsync<LaunchFinishedResponse, FinishLaunchRequest>($"{ProjectName}/launch/{uuid}/finish", request);
         }
 
-        public async Task<LaunchFinishedResponse> StopAsync(long id, FinishLaunchRequest request)
+        public Task<LaunchFinishedResponse> StopAsync(long id, FinishLaunchRequest request)
         {
-            return await PutAsJsonAsync<LaunchFinishedResponse, FinishLaunchRequest>($"{ProjectName}/launch/{id}/stop", request);
+            return PutAsJsonAsync<LaunchFinishedResponse, FinishLaunchRequest>($"{ProjectName}/launch/{id}/stop", request);
         }
 
-        public async Task<MessageResponse> DeleteAsync(long id)
+        public Task<MessageResponse> DeleteAsync(long id)
         {
-            return await DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/launch/{id}");
+            return DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/launch/{id}");
         }
 
-        public async Task<LaunchResponse> MergeAsync(MergeLaunchesRequest request)
+        public Task<LaunchResponse> MergeAsync(MergeLaunchesRequest request)
         {
-            return await PostAsJsonAsync<LaunchResponse, MergeLaunchesRequest>($"{ProjectName}/launch/merge", request);
+            return PostAsJsonAsync<LaunchResponse, MergeLaunchesRequest>($"{ProjectName}/launch/merge", request);
         }
 
-        public async Task<MessageResponse> UpdateAsync(long id, UpdateLaunchRequest request)
+        public Task<MessageResponse> UpdateAsync(long id, UpdateLaunchRequest request)
         {
-            return await PutAsJsonAsync<MessageResponse, UpdateLaunchRequest>($"{ProjectName}/launch/{id}/update", request);
+            return PutAsJsonAsync<MessageResponse, UpdateLaunchRequest>($"{ProjectName}/launch/{id}/update", request);
         }
 
-        public async Task<MessageResponse> AnalyzeAsync(AnalyzeLaunchRequest request)
+        public Task<MessageResponse> AnalyzeAsync(AnalyzeLaunchRequest request)
         {
-            return await PostAsJsonAsync<MessageResponse, AnalyzeLaunchRequest>($"{ProjectName}/launch/analyze", request);
+            return PostAsJsonAsync<MessageResponse, AnalyzeLaunchRequest>($"{ProjectName}/launch/analyze", request);
         }
     }
 }

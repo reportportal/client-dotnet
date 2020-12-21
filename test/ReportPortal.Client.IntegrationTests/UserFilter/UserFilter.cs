@@ -12,7 +12,7 @@ namespace ReportPortal.Client.IntegrationTests.UserFilter
     public class UserFilterFixture : BaseFixture
     {
         [Fact]
-        public async Task CreateGetUpdateDeleteUserFilter()
+        public async Task CreateGetDeleteUserFilter()
         {
             var condition = new Condition
             {
@@ -47,26 +47,57 @@ namespace ReportPortal.Client.IntegrationTests.UserFilter
             Assert.Equal(createUserFilterRequest.IsShared, userFilter.IsShared);
             Assert.Equal(createUserFilterRequest.UserFilterType, userFilter.UserFilterType);
 
-            var updateUserFilterRequest = new UpdateUserFilterRequest
+            var delMessage = await Service.UserFilter.DeleteAsync(userFilterCreatedReponse.Id);
+            Assert.Contains("success", delMessage.Info);
+        }
+
+        [Fact]
+        public async Task UpdateUserFilter()
+        {
+            var condition = new Condition
+            {
+                UserFilterCondition = FilterOperation.Contains,
+                FilteringField = "name",
+                Value = "test value updates"
+            };
+
+            var order = new FilterOrder
+            {
+                Asc = false,
+                SortingColumn = "name",
+            };
+
+            var createUserFilterRequest = new CreateUserFilterRequest
             {
                 Name = Guid.NewGuid().ToString(),
-                Description = "testDscr_updated",
+                Description = "testDscr_1",
                 IsShared = true,
                 UserFilterType = UserFilterType.Launch,
                 Conditions = new List<Condition> { condition },
                 Orders = new List<FilterOrder> { order }
             };
 
-            await Service.UserFilter.UpdateAsync(userFilter.Id, updateUserFilterRequest);
+            var userFilterCreatedReponse = await Service.UserFilter.CreateAsync(createUserFilterRequest);
 
-            var userFilterUpdated = await Service.UserFilter.GetAsync(userFilterCreatedReponse.Id);
+            var updateUserFilterRequest = new UpdateUserFilterRequest
+            {
+                Name = Guid.NewGuid().ToString(),
+                Description = "testDscr_Updated",
+                IsShared = true,
+                UserFilterType = UserFilterType.TestItem,
+                Conditions = new List<Condition> { condition },
+                Orders = new List<FilterOrder> { order }
+            };
 
-            Assert.NotEqual(0, userFilterUpdated.Id);
-            Assert.Equal(userFilter.Id, userFilterUpdated.Id);
-            Assert.Equal(updateUserFilterRequest.Name, userFilterUpdated.Name);
-            Assert.Equal(updateUserFilterRequest.Description, userFilterUpdated.Description);
-            Assert.Equal(updateUserFilterRequest.IsShared, userFilterUpdated.IsShared);
-            Assert.Equal(updateUserFilterRequest.UserFilterType, userFilterUpdated.UserFilterType);
+            await Service.UserFilter.UpdateAsync(userFilterCreatedReponse.Id, updateUserFilterRequest);
+
+            var updatedUserFilter = await Service.UserFilter.GetAsync(userFilterCreatedReponse.Id);
+
+            Assert.Equal(updatedUserFilter.Id, userFilterCreatedReponse.Id);
+            Assert.Equal(updateUserFilterRequest.Name, updatedUserFilter.Name);
+            Assert.Equal(updateUserFilterRequest.Description, updatedUserFilter.Description);
+            Assert.Equal(updateUserFilterRequest.IsShared, updatedUserFilter.IsShared);
+            Assert.Equal(updateUserFilterRequest.UserFilterType, updatedUserFilter.UserFilterType);
 
             var delMessage = await Service.UserFilter.DeleteAsync(userFilterCreatedReponse.Id);
             Assert.Contains("success", delMessage.Info);

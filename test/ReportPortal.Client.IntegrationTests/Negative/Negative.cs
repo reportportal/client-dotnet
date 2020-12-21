@@ -1,7 +1,6 @@
 ﻿using ReportPortal.Client.Abstractions.Requests;
 using System;
 using System.Net.Http;
-using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -20,7 +19,7 @@ namespace ReportPortal.Client.IntegrationTests.Negative
         public async Task IncorrectUrlInCorrectHost()
         {
             var service = new Service(new Uri("https://rp.epam.com/api/blabla/"), "p", "p");
-            await Assert.ThrowsAsync<SerializationException>(async () => await service.Launch.StartAsync(new StartLaunchRequest { Name = "abc" }));
+            await Assert.ThrowsAsync<ReportPortalException>(async () => await service.Launch.StartAsync(new StartLaunchRequest { Name = "abc" }));
         }
 
         [Fact]

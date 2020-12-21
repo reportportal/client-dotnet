@@ -20,7 +20,14 @@ namespace ReportPortal.Client.Converters
 
         public static string ConvertFrom(Enum enumValue)
         {
-            return enumValue.GetDescriptionAttribute();
+            string enumString = null;
+
+            if (enumValue != null)
+            {
+                enumString = enumValue.GetDescriptionAttribute();
+            }
+
+            return enumString;
         }
     }
 }

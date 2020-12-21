@@ -18,27 +18,27 @@ namespace ReportPortal.Client.Resources
 
         protected string ProjectName { get; }
 
-        protected async Task<TResponse> GetAsJsonAsync<TResponse>(string uri)
+        protected Task<TResponse> GetAsJsonAsync<TResponse>(string uri)
         {
-            return await SendAsJsonAsync<TResponse, object>(HttpMethod.Get, uri, null);
+            return SendAsJsonAsync<TResponse, object>(HttpMethod.Get, uri, null);
         }
 
-        protected async Task<TResponse> PostAsJsonAsync<TResponse, TRequest>(string uri, TRequest request)
+        protected Task<TResponse> PostAsJsonAsync<TResponse, TRequest>(string uri, TRequest request)
         {
-            return await SendAsJsonAsync<TResponse, TRequest>(HttpMethod.Post, uri, request);
+            return SendAsJsonAsync<TResponse, TRequest>(HttpMethod.Post, uri, request);
         }
 
-        protected async Task<TResponse> PutAsJsonAsync<TResponse, TRequest>(string uri, TRequest request)
+        protected Task<TResponse> PutAsJsonAsync<TResponse, TRequest>(string uri, TRequest request)
         {
-            return await SendAsJsonAsync<TResponse, TRequest>(HttpMethod.Put, uri, request);
+            return SendAsJsonAsync<TResponse, TRequest>(HttpMethod.Put, uri, request);
         }
 
-        protected async Task<TResponse> DeleteAsJsonAsync<TResponse>(string uri)
+        protected Task<TResponse> DeleteAsJsonAsync<TResponse>(string uri)
         {
-            return await SendAsJsonAsync<TResponse, object>(HttpMethod.Delete, uri, null);
+            return SendAsJsonAsync<TResponse, object>(HttpMethod.Delete, uri, null);
         }
 
-        private async Task<TResponse> SendAsJsonAsync<TResponse, TRequest>(HttpMethod httpMethod, string uri, TRequest request)
+        private Task<TResponse> SendAsJsonAsync<TResponse, TRequest>(HttpMethod httpMethod, string uri, TRequest request)
         {
             HttpContent httpContent = null;
 
@@ -51,7 +51,7 @@ namespace ReportPortal.Client.Resources
                 httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             }
 
-            return await SendHttpRequestAsync<TResponse>(httpMethod, uri, httpContent).ConfigureAwait(false);
+            return SendHttpRequestAsync<TResponse>(httpMethod, uri, httpContent);
         }
 
         protected async Task<TResponse> SendHttpRequestAsync<TResponse>(HttpMethod httpMethod, string uri, HttpContent httpContent)

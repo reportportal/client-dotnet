@@ -1,4 +1,5 @@
-﻿using ReportPortal.Client.Abstractions.Filtering;
+﻿using FluentAssertions;
+using ReportPortal.Client.Abstractions.Filtering;
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
 using System;
@@ -146,6 +147,77 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
 
             var delMessage = await Service.Launch.DeleteAsync(gotLaunch.Id);
             Assert.Contains("successfully", delMessage.Info);
+        }
+
+        [Fact]
+        public async Task UpdateLaunchDescription()
+        {
+            var originalLaunchRequest = new StartLaunchRequest
+            {
+                Name = "UpdateLaunchDescription",
+                StartTime = DateTime.UtcNow,
+                Mode = LaunchMode.Default
+            };
+
+            var launch = await Service.Launch.StartAsync(originalLaunchRequest);
+
+            var tempLaunch = await Service.Launch.GetAsync(launch.Uuid);
+
+            var updateMessage = await Service.Launch.UpdateAsync(tempLaunch.Id, new UpdateLaunchRequest()
+            {
+                Description = "New description"
+            });
+
+            updateMessage.Info.Should().Contain("successfully updated");
+
+            await Service.Launch.FinishAsync(launch.Uuid, new FinishLaunchRequest
+            {
+                EndTime = DateTime.UtcNow
+            });
+
+            var gotLaunch = await Service.Launch.GetAsync(launch.Uuid);
+            gotLaunch.Name.Should().Be(originalLaunchRequest.Name);
+            gotLaunch.Mode.Should().Be(originalLaunchRequest.Mode);
+            gotLaunch.Description.Should().Be("New description");
+
+            await Service.Launch.DeleteAsync(gotLaunch.Id);
+        }
+
+        [Fact]
+        public async Task UpdateLaunchAttributes()
+        {
+            var originalLaunchRequest = new StartLaunchRequest
+            {
+                Name = "UpdateLaunchAttributes",
+                StartTime = DateTime.UtcNow,
+                Mode = LaunchMode.Default
+            };
+
+            var launch = await Service.Launch.StartAsync(originalLaunchRequest);
+
+            var tempLaunch = await Service.Launch.GetAsync(launch.Uuid);
+
+            var updateRequest = new UpdateLaunchRequest()
+            {
+                Attributes = new List<ItemAttribute> { new ItemAttribute { Key = "k1", Value = "v1" } }
+            };
+
+            var updateMessage = await Service.Launch.UpdateAsync(tempLaunch.Id, updateRequest);
+
+            updateMessage.Info.Should().Contain("successfully updated");
+
+            await Service.Launch.FinishAsync(launch.Uuid, new FinishLaunchRequest
+            {
+                EndTime = DateTime.UtcNow
+            });
+
+            var gotLaunch = await Service.Launch.GetAsync(launch.Uuid);
+            gotLaunch.Name.Should().Be(originalLaunchRequest.Name);
+            gotLaunch.Mode.Should().Be(originalLaunchRequest.Mode);
+            gotLaunch.Description.Should().BeNull();
+            gotLaunch.Attributes.Should().BeEquivalentTo(updateRequest.Attributes);
+
+            await Service.Launch.DeleteAsync(gotLaunch.Id);
         }
 
         [Fact]

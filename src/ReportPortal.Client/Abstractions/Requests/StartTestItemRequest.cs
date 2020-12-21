@@ -32,31 +32,41 @@ namespace ReportPortal.Client.Abstractions.Requests
         [DataMember(Name = "description", EmitDefaultValue = true)]
         public string Description { get; set; }
 
+        [DataMember(Name = "startTime")]
+        private string _startTimeString = DateTimeConverter.ConvertFrom(DateTime.UtcNow);
+
         /// <summary>
         /// Date time when new test item is created.
         /// </summary>
-        [DataMember(Name = "startTime")]
-        public string StartTimeString { get; set; } = DateTimeConverter.ConvertFrom(DateTime.UtcNow);
-
         public DateTime StartTime
         {
             get
             {
-                return DateTimeConverter.ConvertTo(StartTimeString);
+                return DateTimeConverter.ConvertTo(_startTimeString);
             }
             set
             {
-                StartTimeString = DateTimeConverter.ConvertFrom(value);
+                _startTimeString = DateTimeConverter.ConvertFrom(value);
             }
         }
+
+        [DataMember(Name = "type")]
+        private string _typeString = EnumConverter.ConvertFrom(TestItemType.Test);
 
         /// <summary>
         /// A type of test item.
         /// </summary>
-        [DataMember(Name = "type")]
-        public string TypeString { get { return EnumConverter.ConvertFrom(Type); } set { Type = EnumConverter.ConvertTo<TestItemType>(value); } }
-
-        public TestItemType Type { get; set; } = TestItemType.Test;
+        public TestItemType Type
+        {
+            get
+            {
+                return EnumConverter.ConvertTo<TestItemType>(_typeString);
+            }
+            set
+            {
+                _typeString = EnumConverter.ConvertFrom(value);
+            }
+        }
 
         /// <summary>
         /// A list of tags.

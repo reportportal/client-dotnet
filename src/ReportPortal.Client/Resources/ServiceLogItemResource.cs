@@ -17,7 +17,7 @@ namespace ReportPortal.Client.Resources
 
         }
 
-        public async Task<Content<LogItemResponse>> GetAsync(FilterOption filterOption = null)
+        public Task<Content<LogItemResponse>> GetAsync(FilterOption filterOption = null)
         {
             var uri = $"{ProjectName}/log";
 
@@ -26,22 +26,22 @@ namespace ReportPortal.Client.Resources
                 uri += $"?{filterOption}";
             }
 
-            return await GetAsJsonAsync<Content<LogItemResponse>>(uri);
+            return GetAsJsonAsync<Content<LogItemResponse>>(uri);
         }
 
-        public async Task<LogItemResponse> GetAsync(string uuid)
+        public Task<LogItemResponse> GetAsync(string uuid)
         {
-            return await GetAsJsonAsync<LogItemResponse>($"{ProjectName}/log/uuid/{uuid}");
+            return GetAsJsonAsync<LogItemResponse>($"{ProjectName}/log/uuid/{uuid}");
         }
 
-        public async Task<LogItemResponse> GetAsync(long id)
+        public Task<LogItemResponse> GetAsync(long id)
         {
-            return await GetAsJsonAsync<LogItemResponse>($"{ProjectName}/log/{id}");
+            return GetAsJsonAsync<LogItemResponse>($"{ProjectName}/log/{id}");
         }
 
-        public async Task<byte[]> GetBinaryDataAsync(string id)
+        public Task<byte[]> GetBinaryDataAsync(string id)
         {
-            return await GetAsBytesAsync($"data/{ProjectName}/{id}");
+            return GetAsBytesAsync($"data/{ProjectName}/{id}");
         }
 
         public async Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request)
@@ -59,7 +59,7 @@ namespace ReportPortal.Client.Resources
             }
         }
 
-        public async Task<LogItemsCreatedResponse> CreateAsync(params CreateLogItemRequest[] requests)
+        public Task<LogItemsCreatedResponse> CreateAsync(params CreateLogItemRequest[] requests)
         {
             var uri = $"{ProjectName}/log";
 
@@ -80,13 +80,13 @@ namespace ReportPortal.Client.Resources
                 }
             }
 
-            return await SendHttpRequestAsync<LogItemsCreatedResponse>(HttpMethod.Post, uri, multipartContent);
+            return SendHttpRequestAsync<LogItemsCreatedResponse>(HttpMethod.Post, uri, multipartContent);
         }
 
 
-        public async Task<MessageResponse> DeleteAsync(long id)
+        public Task<MessageResponse> DeleteAsync(long id)
         {
-            return await DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/log/{id}");
+            return DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/log/{id}");
         }
     }
 }

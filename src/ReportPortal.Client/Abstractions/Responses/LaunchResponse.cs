@@ -25,31 +25,22 @@ namespace ReportPortal.Client.Abstractions.Responses
         public int Number { get; set; }
 
         [DataMember(Name = "mode")]
-        public string ModeString { get; set; }
+        private string ModeString { get; set; }
 
-        public LaunchMode Mode
-        {
-            get => EnumConverter.ConvertTo<LaunchMode>(ModeString);
-            set => ModeString = EnumConverter.ConvertFrom(value);
-        }
+        public LaunchMode Mode => EnumConverter.ConvertTo<LaunchMode>(ModeString);
 
         [DataMember(Name = "startTime")]
-        public string StartTimeString { get; set; }
+        private string StartTimeString { get; set; }
 
         public DateTime StartTime
         {
             get => DateTimeConverter.ConvertTo(StartTimeString);
-            set => StartTimeString = DateTimeConverter.ConvertFrom(value);
         }
 
         [DataMember(Name = "endTime")]
-        public string EndTimeString { get; set; }
+        private string EndTimeString { get; set; }
 
-        public DateTime? EndTime
-        {
-            get => EndTimeString == null ? (DateTime?)null : DateTimeConverter.ConvertTo(EndTimeString);
-            set => EndTimeString = DateTimeConverter.ConvertFrom(value.GetValueOrDefault());
-        }
+        public DateTime? EndTime => EndTimeString == null ? (DateTime?)null : DateTimeConverter.ConvertTo(EndTimeString);
 
         [DataMember(Name = "hasRetries")]
         public bool HasRetries { get; set; }
