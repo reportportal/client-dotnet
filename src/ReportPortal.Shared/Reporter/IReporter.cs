@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using ReportPortal.Shared.Reporter.Statistics;
+using System.Threading.Tasks;
 
 namespace ReportPortal.Shared.Reporter
 {
@@ -9,5 +10,7 @@ namespace ReportPortal.Shared.Reporter
         Task StartTask { get; }
 
         Task FinishTask { get; }
+
+        ILaunchStatisticsCounter StatisticsCounter { get; }
     }
 }

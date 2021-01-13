@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReportPortal.Shared.Reporter.Statistics;
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -7,11 +8,11 @@ namespace ReportPortal.Shared.Internal.Delegating
     /// <summary>
     /// Invokes given func with retry strategy and exponential delay between attempts.
     /// </summary>
-    public class ExponentialRetryRequestExecuter : IRequestExecuter
+    public class ExponentialRetryRequestExecuter : BaseRequestExecuter
     {
         private Logging.ITraceLogger TraceLogger { get; } = Logging.TraceLogManager.Instance.GetLogger<ExponentialRetryRequestExecuter>();
 
-        private IRequestExecutionThrottler _concurrentThrottler;
+        private readonly IRequestExecutionThrottler _concurrentThrottler;
 
         /// <summary>
         /// Initializes new instance of <see cref="ExponentialRetryRequestExecuter"/>.
@@ -57,11 +58,9 @@ namespace ReportPortal.Shared.Internal.Delegating
         public int BaseIndex { get; private set; }
 
         /// <inheritdoc/>
-        public async Task<T> ExecuteAsync<T>(Func<Task<T>> func, Action<Exception> beforeNextAttempt = null)
+        public override async Task<T> ExecuteAsync<T>(Func<Task<T>> func, Action<Exception> beforeNextAttempt = null, IStatisticsCounter statisticsCounter = null)
         {
-            if (func == null) throw new ArgumentNullException(nameof(func));
-
-            T result = default(T);
+            T result = default;
 
             for (int i = 0; i < MaxRetryAttemps; i++)
             {
@@ -73,7 +72,8 @@ namespace ReportPortal.Shared.Internal.Delegating
                     }
 
                     TraceLogger.Verbose($"Invoking {func.Method.Name} method... Current attempt: {i}");
-                    result = await func().ConfigureAwait(false);
+
+                    result = await base.ExecuteAsync(func, beforeNextAttempt, statisticsCounter).ConfigureAwait(false);
                     break;
                 }
                 catch (Exception exp) when (exp is TaskCanceledException || exp is HttpRequestException)
@@ -81,7 +81,9 @@ namespace ReportPortal.Shared.Internal.Delegating
                     if (i < MaxRetryAttemps - 1)
                     {
                         var delay = (int)Math.Pow(BaseIndex, i + MaxRetryAttemps);
+
                         TraceLogger.Error($"Error while invoking '{func.Method.Name}' method. Current attempt: {i}. Waiting {delay} seconds and retrying it.\n{exp}");
+
                         await Task.Delay(delay * 1000).ConfigureAwait(false);
 
                         beforeNextAttempt?.Invoke(exp);

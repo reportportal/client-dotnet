@@ -8,7 +8,7 @@ namespace ReportPortal.Shared.Internal.Delegating
     {
         private const int MAX_CONCURRENT_REQUESTS = 10;
 
-        private IConfiguration _configuration;
+        private readonly IConfiguration _configuration;
 
         /// <summary>
         /// Initialize an instance with incoming configuration.

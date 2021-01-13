@@ -13,7 +13,7 @@ namespace ReportPortal.Shared.Tests.Internal.Logging
     {
         private readonly ITestOutputHelper _out;
 
-        private string _defaultLogFilePath = $"ReportPortal.Shared.Tests.{Process.GetCurrentProcess().Id}.log";
+        private readonly string _defaultLogFilePath = $"ReportPortal.Shared.Tests.{Process.GetCurrentProcess().Id}.log";
 
         public LoggerTest(ITestOutputHelper output)
         {

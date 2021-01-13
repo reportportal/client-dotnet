@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace ReportPortal.Shared.Tests
 {
@@ -18,6 +19,13 @@ namespace ReportPortal.Shared.Tests
         private readonly Service _service = new Service(new Uri("https://beta.demo.reportportal.io/api/v1/"), "default_personal", "5c356bea-c2fb-4988-9a82-e63424859381");
 
         //private readonly Service _service = new Service(new Uri("http://localhost:8080/api/v1/"), "default_personal", "26f171a9-8bb2-45e8-9e0b-cd75bb7de670");
+
+        private ITestOutputHelper _output;
+
+        public ReportingTest(ITestOutputHelper output)
+        {
+            _output = output;
+        }
 
         [Fact]
         public async Task BigAsyncRealTree()
@@ -32,6 +40,8 @@ namespace ReportPortal.Shared.Tests
             var launch = await _service.Launch.GetAsync(launchReporter.Info.Uuid);
 
             await _service.Launch.DeleteAsync(launch.Id);
+
+            _output.WriteLine(launchReporter.StatisticsCounter.ToString());
         }
 
         [Fact]

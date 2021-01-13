@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Moq;
 using ReportPortal.Shared.Internal.Delegating;
+using ReportPortal.Shared.Reporter.Statistics;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -77,7 +78,7 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
             var throttler = new Mock<IRequestExecutionThrottler>();
 
             var executer = new LinearRetryRequestExecuter(5, 0, throttler.Object);
-            
+
             var action = new Mock<Func<Task<string>>>();
             action.Setup(a => a()).Throws<TaskCanceledException>();
 
@@ -100,6 +101,21 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
             executer.Awaiting(e => e.ExecuteAsync(action.Object, (exp) => invokedTimes++)).Should().Throw<TaskCanceledException>();
 
             invokedTimes.Should().Be(4);
+        }
+
+        [Fact]
+        public async Task ShouldMeasureRequestsStatistics()
+        {
+            var counter = new Mock<IStatisticsCounter>();
+
+            var executer = new LinearRetryRequestExecuter(1, 0);
+
+            var action = new Mock<Func<Task<string>>>();
+            action.Setup(a => a()).ReturnsAsync("a");
+
+            await executer.ExecuteAsync(action.Object, null, counter.Object);
+
+            counter.Verify(c => c.Measure(It.IsAny<TimeSpan>()), Times.Once);
         }
     }
 }
