@@ -1,5 +1,8 @@
 ﻿using ReportPortal.Client.Extentions;
 using System;
+#if NET45
+using System.Net;
+#endif
 using System.Net.Http;
 using System.Net.Http.Headers;
 
@@ -24,6 +27,9 @@ namespace ReportPortal.Client
 
 #if !NET45
                 httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
+#else
+                ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
 #endif
 
                 var httpClient = new HttpClient(httpClientHandler);
