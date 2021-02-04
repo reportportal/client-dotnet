@@ -1,6 +1,5 @@
 ﻿using ReportPortal.Client.Abstractions.Requests;
 using System;
-using System.Threading.Tasks;
 
 namespace ReportPortal.Client.IntegrationTests
 {
@@ -11,24 +10,19 @@ namespace ReportPortal.Client.IntegrationTests
 
         public LaunchFixtureBase()
         {
-            Task.Run(async () =>
+            LaunchUuid = Service.Launch.StartAsync(new StartLaunchRequest
             {
-                LaunchUuid = (await Service.Launch.StartAsync(new StartLaunchRequest
-                {
-                    Name = "StartFinishDeleteLaunch",
-                    StartTime = DateTime.UtcNow
-                })).Uuid;
-                LaunchId = (await Service.Launch.GetAsync(LaunchUuid)).Id;
-            }).Wait();
+                Name = "StartFinishDeleteLaunch",
+                StartTime = DateTime.UtcNow
+            }).GetAwaiter().GetResult().Uuid;
+
+            LaunchId = Service.Launch.GetAsync(LaunchUuid).GetAwaiter().GetResult().Id;
         }
 
         public void Dispose()
         {
-            Task.Run(async () =>
-            {
-                await Service.Launch.StopAsync(LaunchId, new FinishLaunchRequest { EndTime = DateTime.UtcNow });
-                await Service.Launch.DeleteAsync(LaunchId);
-            }).Wait();
+            Service.Launch.StopAsync(LaunchId, new FinishLaunchRequest { EndTime = DateTime.UtcNow }).GetAwaiter().GetResult();
+            Service.Launch.DeleteAsync(LaunchId).GetAwaiter().GetResult();
         }
     }
 }
