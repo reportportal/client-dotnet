@@ -2,9 +2,6 @@
 using ReportPortal.Client.Abstractions.Resources;
 using ReportPortal.Client.Resources;
 using System;
-#if NET45
-using System.Net;
-#endif
 using System.Net.Http;
 
 namespace ReportPortal.Client
@@ -31,11 +28,6 @@ namespace ReportPortal.Client
             }
 
             _httpClient = httpClientFactory.Create();
-
-#if NET45
-            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
-            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
-#endif
 
             Launch = new ServiceLaunchResource(_httpClient, ProjectName);
             TestItem = new ServiceTestItemResource(_httpClient, ProjectName);

@@ -29,6 +29,11 @@ namespace ReportPortal.Client.Resources
             return GetAsJsonAsync<Content<UserFilterResponse>>(uri);
         }
 
+        public Task<MessageResponse> UpdateAsync(long id, UpdateUserFilterRequest request)
+        {
+            return PutAsJsonAsync<MessageResponse, UpdateUserFilterRequest>($"{ProjectName}/filter/{id}", request);
+        }
+
         public Task<UserFilterResponse> GetAsync(long id)
         {
             return GetAsJsonAsync<UserFilterResponse>($"{ProjectName}/filter/{id}");
