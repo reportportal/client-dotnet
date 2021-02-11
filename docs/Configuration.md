@@ -33,6 +33,10 @@ It's easier to define some property in any textual file. Agent finds all these f
 ## Environment variables
 Sometimes it's useful to specify configuration properties via environment variables. To specify `Section1:PropertyAbc` property just set environment variable with `ReportPortal_Section1_PropertyAbc` name. Variable names should start from `ReportPortal_` prefix, and `_` symbol is used as delimeter of nested variables.
 
+# HTTP
+## Proxy
+`Server:Proxy:Url` - url to proxy server to be used for http requests like `http://myproxy.corp:8080`.
+`Server:Proxy:Username`, `Server:Proxy:Domain` and `Server:Proxy:Password` to specify credentials for proxy servers which require authoorization.
 
 # HTTP requests retry
 During tests execution agent sends test results as http requests to server. In case of fast test execution, or parallel tests execution, agent produces many requests to server. These requests are being sent in background and in parallel. Some requests might be failed due any reason e.g. short-term service unavailability, or network bandwith. To negotiate this issue several methodics can be applied.

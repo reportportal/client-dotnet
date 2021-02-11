@@ -159,7 +159,7 @@ namespace ReportPortal.Shared.Tests.Execution
 
             lc.Should().Be(launchContext);
             logScope.Name.Should().Be("qwe");
-            logScope.EndTime.Should().BeCloseTo(DateTime.UtcNow);
+            logScope.EndTime.Should().BeCloseTo(DateTime.UtcNow, 30);
         }
 
         [Fact]
