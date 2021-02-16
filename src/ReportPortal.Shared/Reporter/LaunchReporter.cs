@@ -8,6 +8,7 @@ using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Extensibility.ReportEvents.EventArgs;
 using ReportPortal.Shared.Internal.Delegating;
+using ReportPortal.Shared.Reporter.Statistics;
 
 namespace ReportPortal.Shared.Reporter
 {
@@ -25,7 +26,8 @@ namespace ReportPortal.Shared.Reporter
 
         private readonly object _lockObj = new object();
 
-        public LaunchReporter(IClientService service, IConfiguration configuration, IRequestExecuter requestExecuter, IExtensionManager extensionManager)
+        public LaunchReporter(IClientService service, IConfiguration configuration, IRequestExecuter requestExecuter,
+                              IExtensionManager extensionManager)
         {
             _service = service;
 
@@ -35,8 +37,8 @@ namespace ReportPortal.Shared.Reporter
             }
             else
             {
-                var jsonPath = System.IO.Path.GetDirectoryName(new Uri(typeof(LaunchReporter).Assembly.CodeBase).LocalPath) + "/ReportPortal.config.json";
-                _configuration = new ConfigurationBuilder().AddJsonFile(jsonPath).AddEnvironmentVariables().Build();
+                var configurationDirectory = System.IO.Path.GetDirectoryName(new Uri(typeof(LaunchReporter).Assembly.CodeBase).LocalPath);
+                _configuration = new ConfigurationBuilder().AddDefaults(configurationDirectory).Build();
             }
 
             _requestExecuter = requestExecuter ?? new RequestExecuterFactory(_configuration).Create();
@@ -80,11 +82,13 @@ namespace ReportPortal.Shared.Reporter
         private LaunchInfo _launchInfo;
         public IReporterInfo Info => _launchInfo;
 
-        private bool _isExternalLaunchId = false;
-        private string _rerunOfUuid = null;
-        private bool _isRerun;
+        public ILaunchStatisticsCounter StatisticsCounter { get; } = new LaunchStatisticsCounter();
 
-        private IList<Task> _additionalTasks;
+        private readonly bool _isExternalLaunchId = false;
+        private readonly string _rerunOfUuid = null;
+        private readonly bool _isRerun;
+
+        private readonly IList<Task> _additionalTasks;
 
         public Task StartTask { get; private set; }
 
@@ -110,7 +114,7 @@ namespace ReportPortal.Shared.Reporter
                 {
                     NotifyStarting(request);
 
-                    var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.StartAsync(request), null).ConfigureAwait(false);
+                    var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.StartAsync(request), null, null).ConfigureAwait(false);
 
                     _launchInfo = new LaunchInfo
                     {
@@ -134,7 +138,7 @@ namespace ReportPortal.Shared.Reporter
                 {
                     NotifyStarting(request);
 
-                    var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.StartAsync(request), null).ConfigureAwait(false);
+                    var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.StartAsync(request), null, null).ConfigureAwait(false);
 
                     _launchInfo = new LaunchInfo
                     {
@@ -151,7 +155,7 @@ namespace ReportPortal.Shared.Reporter
                 // get launch info
                 StartTask = Task.Run(async () =>
                 {
-                    var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.GetAsync(Info.Uuid), null).ConfigureAwait(false);
+                    var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.GetAsync(Info.Uuid), null, null).ConfigureAwait(false);
 
                     _launchInfo = new LaunchInfo
                     {
@@ -184,9 +188,10 @@ namespace ReportPortal.Shared.Reporter
                 throw exp;
             }
 
-            var dependentTasks = new List<Task>();
-
-            dependentTasks.Add(StartTask);
+            var dependentTasks = new List<Task>
+            {
+                StartTask
+            };
 
             if (_logsReporter != null)
             {
@@ -259,7 +264,7 @@ namespace ReportPortal.Shared.Reporter
                     {
                         NotifyFinishing(request);
 
-                        await _requestExecuter.ExecuteAsync(() => _service.Launch.FinishAsync(Info.Uuid, request), null).ConfigureAwait(false);
+                        await _requestExecuter.ExecuteAsync(() => _service.Launch.FinishAsync(Info.Uuid, request), null, null).ConfigureAwait(false);
 
                         NotifyFinished();
                     }

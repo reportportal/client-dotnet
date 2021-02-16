@@ -31,7 +31,7 @@ namespace ReportPortal.Shared.Reporter
             _logRequestAmender = logRequestAmender;
         }
 
-        private object _syncObj = new object();
+        private readonly object _syncObj = new object();
 
         public int BatchCapacity { get; set; } = 10;
 
@@ -64,7 +64,7 @@ namespace ReportPortal.Shared.Reporter
                                     }
                                 }
 
-                                await _requestExecuter.ExecuteAsync(() => _service.LogItem.CreateAsync(requests.ToArray()), null).ConfigureAwait(false);
+                                await _requestExecuter.ExecuteAsync(() => _service.LogItem.CreateAsync(requests.ToArray()), null, _reporter.StatisticsCounter.LogItemStatisticsCounter).ConfigureAwait(false);
                             }
                         }
                     }
@@ -112,6 +112,7 @@ namespace ReportPortal.Shared.Reporter
                 }
 
             }
+
             return requests;
         }
     }

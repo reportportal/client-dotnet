@@ -4,6 +4,7 @@ using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Internal.Delegating;
 using ReportPortal.Shared.Reporter;
+using ReportPortal.Shared.Reporter.Statistics;
 using ReportPortal.Shared.Tests.Helpers;
 using System;
 using System.Collections.Generic;
@@ -14,14 +15,15 @@ namespace ReportPortal.Shared.Tests.Reporter
 {
     public class LogsReporterFixture
     {
-        Mock<ITestReporter> _testReporter;
-        IRequestExecuter _requestExecuter;
-        IExtensionManager _extensionManager;
-        Mock<ILogRequestAmender> _logRequestAmender;
+        readonly Mock<ITestReporter> _testReporter;
+        readonly IRequestExecuter _requestExecuter;
+        readonly IExtensionManager _extensionManager;
+        readonly Mock<ILogRequestAmender> _logRequestAmender;
 
         public LogsReporterFixture()
         {
             _testReporter = new Mock<ITestReporter>();
+            _testReporter.SetupGet(r => r.StatisticsCounter).Returns(() => new LaunchStatisticsCounter());
             _testReporter.SetupGet(r => r.StartTask).Returns(() => Task.FromResult(0));
             _testReporter.SetupGet(r => r.Info).Returns(() => new TestInfo { });
 
@@ -37,8 +39,10 @@ namespace ReportPortal.Shared.Tests.Reporter
         {
             var service = new MockServiceBuilder().Build();
 
-            var logsReporter = new LogsReporter(_testReporter.Object, service.Object, _extensionManager, _requestExecuter, _logRequestAmender.Object);
-            logsReporter.BatchCapacity = 1;
+            var logsReporter = new LogsReporter(_testReporter.Object, service.Object, _extensionManager, _requestExecuter, _logRequestAmender.Object)
+            {
+                BatchCapacity = 1
+            };
 
             for (int i = 0; i < 50; i++)
             {
@@ -72,7 +76,8 @@ namespace ReportPortal.Shared.Tests.Reporter
 
             logsReporter.Sync();
 
-            service.Verify(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>()), Times.Exactly(5));
+            // sometimes on slow machines it's not exact 5 invocations
+            service.Verify(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>()), Times.Between(5, 6, Moq.Range.Inclusive));
         }
 
         [Fact]
@@ -81,8 +86,10 @@ namespace ReportPortal.Shared.Tests.Reporter
             var service = new MockServiceBuilder().Build();
             service.Setup(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>())).Throws<Exception>();
 
-            var logsReporter = new LogsReporter(_testReporter.Object, service.Object, _extensionManager, _requestExecuter, _logRequestAmender.Object);
-            logsReporter.BatchCapacity = 1;
+            var logsReporter = new LogsReporter(_testReporter.Object, service.Object, _extensionManager, _requestExecuter, _logRequestAmender.Object)
+            {
+                BatchCapacity = 1
+            };
 
             for (int i = 0; i < 2; i++)
             {

@@ -1,4 +1,5 @@
 ﻿using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Shared.Reporter.Statistics;
 using System.Collections.Generic;
 
 namespace ReportPortal.Shared.Reporter

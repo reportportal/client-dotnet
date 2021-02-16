@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
 using Moq;
 using ReportPortal.Shared.Internal.Delegating;
+using ReportPortal.Shared.Reporter.Statistics;
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -62,6 +62,21 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
             executer.Awaiting(e => e.ExecuteAsync(action.Object, (exp) => invokedTimes++)).Should().Throw<TaskCanceledException>();
 
             invokedTimes.Should().Be(0);
+        }
+
+        [Fact]
+        public async Task ShouldMeasureRequestsStatistics()
+        {
+            var counter = new Mock<IStatisticsCounter>();
+
+            var executer = new NoneRetryRequestExecuter(null);
+
+            var action = new Mock<Func<Task<string>>>();
+            action.Setup(a => a()).ReturnsAsync("a");
+
+            await executer.ExecuteAsync(action.Object, null, counter.Object);
+
+            counter.Verify(c => c.Measure(It.IsAny<TimeSpan>()), Times.Once);
         }
     }
 }

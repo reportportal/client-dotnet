@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ReportPortal.Shared.Reporter.Statistics;
+using System;
 using System.Threading.Tasks;
 
 namespace ReportPortal.Shared.Internal.Delegating
@@ -6,11 +7,11 @@ namespace ReportPortal.Shared.Internal.Delegating
     /// <summary>
     /// Invokes given func.
     /// </summary>
-    public class NoneRetryRequestExecuter : IRequestExecuter
+    public class NoneRetryRequestExecuter : BaseRequestExecuter
     {
         private Logging.ITraceLogger TraceLogger { get; } = Logging.TraceLogManager.Instance.GetLogger<NoneRetryRequestExecuter>();
 
-        private IRequestExecutionThrottler _concurrentThrottler;
+        private readonly IRequestExecutionThrottler _concurrentThrottler;
 
         /// <summary>
         /// Initializes new instance of <see cref="NoneRetryRequestExecuter"/>.
@@ -22,11 +23,9 @@ namespace ReportPortal.Shared.Internal.Delegating
         }
 
         /// <inheritdoc/>
-        public async Task<T> ExecuteAsync<T>(Func<Task<T>> func, Action<Exception> beforeNextAttempt = null)
+        public override async Task<T> ExecuteAsync<T>(Func<Task<T>> func, Action<Exception> beforeNextAttempt = null, IStatisticsCounter statisticsCounter = null)
         {
-            if (func == null) throw new ArgumentNullException(nameof(func));
-
-            T result = default(T);
+            T result = default;
 
             try
             {
@@ -34,8 +33,10 @@ namespace ReportPortal.Shared.Internal.Delegating
                 {
                     await _concurrentThrottler.ReserveAsync().ConfigureAwait(false);
                 }
+
                 TraceLogger.Verbose($"Invoking {func.Method.Name} method...");
-                result = await func().ConfigureAwait(false);
+
+                result = await base.ExecuteAsync(func, beforeNextAttempt, statisticsCounter).ConfigureAwait(false);
             }
             catch (Exception exp)
             {

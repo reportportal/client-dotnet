@@ -1,7 +1,5 @@
 ﻿using FluentAssertions;
-using Moq;
 using ReportPortal.Shared.Execution.Logging;
-using ReportPortal.Shared.Extensibility;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -13,6 +11,13 @@ namespace ReportPortal.Shared.Tests
     [Collection("Static")]
     public class LogScopeFixture
     {
+        [Fact]
+        public void LaunchContextShouldBeTheSame()
+        {
+            Context.Launch.Should().NotBeNull();
+            Context.Launch.Should().BeSameAs(Context.Launch);
+        }
+
         [Fact]
         public void ShouldThrowExceptionIfScopeNameIsNull()
         {

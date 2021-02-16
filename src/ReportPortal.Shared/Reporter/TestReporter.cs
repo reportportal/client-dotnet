@@ -9,6 +9,7 @@ using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Extensibility.ReportEvents.EventArgs;
 using ReportPortal.Shared.Internal.Delegating;
 using ReportPortal.Shared.Internal.Logging;
+using ReportPortal.Shared.Reporter.Statistics;
 
 namespace ReportPortal.Shared.Reporter
 {
@@ -27,7 +28,9 @@ namespace ReportPortal.Shared.Reporter
 
         private readonly object _lockObj = new object();
 
-        public TestReporter(IClientService service, IConfiguration configuration, ILaunchReporter launchReporter, ITestReporter parentTestReporter, IRequestExecuter requestExecuter, IExtensionManager extensionManager, ReportEventsSource reportEventNotifier)
+        public TestReporter(IClientService service, IConfiguration configuration, ILaunchReporter launchReporter,
+                            ITestReporter parentTestReporter, IRequestExecuter requestExecuter,
+                            IExtensionManager extensionManager, ReportEventsSource reportEventNotifier)
         {
             _service = service;
             _configuration = configuration;
@@ -85,7 +88,7 @@ namespace ReportPortal.Shared.Reporter
 
                     NotifyStarting(startTestItemRequest);
 
-                    var testModel = await _requestExecuter.ExecuteAsync(() => _service.TestItem.StartAsync(startTestItemRequest), null).ConfigureAwait(false);
+                    var testModel = await _requestExecuter.ExecuteAsync(() => _service.TestItem.StartAsync(startTestItemRequest), null, LaunchReporter.StatisticsCounter.StartTestItemStatisticsCounter).ConfigureAwait(false);
 
                     _testInfo = new TestInfo
                     {
@@ -105,7 +108,7 @@ namespace ReportPortal.Shared.Reporter
 
                     NotifyStarting(startTestItemRequest);
 
-                    var testModel = await _requestExecuter.ExecuteAsync(() => _service.TestItem.StartAsync(ParentTestReporter.Info.Uuid, startTestItemRequest), null).ConfigureAwait(false);
+                    var testModel = await _requestExecuter.ExecuteAsync(() => _service.TestItem.StartAsync(ParentTestReporter.Info.Uuid, startTestItemRequest), null, LaunchReporter.StatisticsCounter.StartTestItemStatisticsCounter).ConfigureAwait(false);
 
                     _testInfo = new TestInfo
                     {
@@ -143,9 +146,10 @@ namespace ReportPortal.Shared.Reporter
                 throw exp;
             }
 
-            var dependentTasks = new List<Task>();
-
-            dependentTasks.Add(StartTask);
+            var dependentTasks = new List<Task>
+            {
+                StartTask
+            };
 
             if (_logsReporter != null)
             {
@@ -218,7 +222,7 @@ namespace ReportPortal.Shared.Reporter
 
                     NotifyFinishing(request);
 
-                    await _requestExecuter.ExecuteAsync(() => _service.TestItem.FinishAsync(Info.Uuid, request), null).ConfigureAwait(false);
+                    await _requestExecuter.ExecuteAsync(() => _service.TestItem.FinishAsync(Info.Uuid, request), null, LaunchReporter.StatisticsCounter.FinishTestItemStatisticsCounter).ConfigureAwait(false);
 
                     NotifyFinished();
                 }
@@ -236,6 +240,8 @@ namespace ReportPortal.Shared.Reporter
         private IList<Task> _additionalTasks;
 
         public IList<ITestReporter> ChildTestReporters { get; private set; }
+
+        public ILaunchStatisticsCounter StatisticsCounter => LaunchReporter.StatisticsCounter;
 
         public ITestReporter StartChildTestReporter(StartTestItemRequest request)
         {

@@ -9,7 +9,7 @@ namespace ReportPortal.Shared.Internal.Delegating
     {
         private Logging.ITraceLogger TraceLogger { get; } = Logging.TraceLogManager.Instance.GetLogger<RequestExecutionThrottler>();
 
-        private SemaphoreSlim _concurrentAwaiter;
+        private readonly SemaphoreSlim _concurrentAwaiter;
 
         private int _maximumConcurrentCountRequested;
 
