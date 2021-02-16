@@ -188,7 +188,7 @@ namespace ReportPortal.Shared.Tests.Configuration
 
             File.WriteAllText(tempFile.ToLowerInvariant(), "{ \"a\": true }");
 
-            var config = new ConfigurationBuilder().AddJsonFile(tempFile.ToUpperInvariant()).Build();
+            var config = new ConfigurationBuilder().AddJsonFile(Path.Combine(Path.GetDirectoryName(tempFile), Path.GetFileName(tempFile).ToUpperInvariant())).Build();
             config.GetValue<bool>("a").Should().BeTrue();
         }
 

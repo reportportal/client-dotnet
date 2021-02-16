@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Xml;
@@ -34,9 +35,17 @@ namespace ReportPortal.Shared.Configuration.Providers
         {
             var properties = new Dictionary<string, string>();
 
-            if (File.Exists(_filePath))
+            var directory = Path.GetDirectoryName(_filePath);
+
+            if (string.IsNullOrEmpty(directory)) directory = Directory.GetCurrentDirectory();
+
+            var files = Directory.GetFiles(directory);
+
+            var filePath = files.FirstOrDefault(f => f.ToUpperInvariant() == _filePath.ToUpperInvariant());
+
+            if (filePath != null)
             {
-                var json = File.ReadAllText(_filePath);
+                var json = File.ReadAllText(filePath);
 
                 var flattenProperties = GetFlattenProperties(json);
 
