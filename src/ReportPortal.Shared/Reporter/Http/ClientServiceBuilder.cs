@@ -10,7 +10,7 @@ namespace ReportPortal.Shared.Reporter.Http
     /// </summary>
     public class ClientServiceBuilder
     {
-        private readonly IConfiguration _configuraion;
+        private readonly IConfiguration _configuration;
 
         private HttpClientHandlerFactory _httpClientHandlerFactory;
 
@@ -24,7 +24,7 @@ namespace ReportPortal.Shared.Reporter.Http
         {
             if (configuration is null) throw new ArgumentNullException(nameof(configuration));
 
-            _configuraion = configuration;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -57,20 +57,20 @@ namespace ReportPortal.Shared.Reporter.Http
         /// <returns>Client to interact with Web API.</returns>
         public IClientService Build()
         {
-            var url = _configuraion.GetValue<string>(ConfigurationPath.ServerUrl);
+            var url = _configuration.GetValue<string>(ConfigurationPath.ServerUrl);
 
-            var project = _configuraion.GetValue<string>(ConfigurationPath.ServerProject);
+            var project = _configuration.GetValue<string>(ConfigurationPath.ServerProject);
 
-            var token = _configuraion.GetValue<string>(ConfigurationPath.ServerAuthenticationUuid);
+            var token = _configuration.GetValue<string>(ConfigurationPath.ServerAuthenticationUuid);
 
             if (_httpClientHandlerFactory is null)
             {
-                _httpClientHandlerFactory = new HttpClientHandlerFactory(_configuraion);
+                _httpClientHandlerFactory = new HttpClientHandlerFactory(_configuration);
             }
 
             if (_httpClientFactory is null)
             {
-                _httpClientFactory = new HttpClientFactory(_configuraion, _httpClientHandlerFactory.Create());
+                _httpClientFactory = new HttpClientFactory(_configuration, _httpClientHandlerFactory.Create());
             }
 
             IClientService service = new Service(new Uri(url), project, token, _httpClientFactory);

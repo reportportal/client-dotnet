@@ -19,8 +19,6 @@ namespace ReportPortal.Shared.Tests
     {
         private readonly IClientService _service;
 
-        //private readonly Service _service = new Service(new Uri("https://beta.demo.reportportal.io/api/v1/"), "default_personal", "5c356bea-c2fb-4988-9a82-e63424859381");
-
         //private readonly Service _service = new Service(new Uri("http://localhost:8080/api/v1/"), "default_personal", "26f171a9-8bb2-45e8-9e0b-cd75bb7de670");
 
         private readonly ITestOutputHelper _output;
@@ -33,7 +31,7 @@ namespace ReportPortal.Shared.Tests
             {
                 {ConfigurationPath.ServerUrl, "https://demo.reportportal.io/api/v1" },
                 {ConfigurationPath.ServerProject, "default_personal" },
-                {ConfigurationPath.ServerAuthenticationUuid, "5439c9e2-3289-4607-b342-8509b61d4b3c" }
+                {ConfigurationPath.ServerAuthenticationUuid, "d95717a4-d150-498a-9a15-6cee15e50133" }
             });
 
             _service = new ClientServiceBuilder(config).Build();

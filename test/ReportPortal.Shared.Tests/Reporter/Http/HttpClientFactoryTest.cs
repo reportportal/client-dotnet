@@ -67,5 +67,19 @@ namespace ReportPortal.Shared.Tests.Reporter.Http
 
             ctor2.Should().ThrowExactly<ArgumentNullException>().And.Message.Should().Contain("httpClientHandler");
         }
+
+        [Fact]
+        public void ShouldUseTimeout()
+        {
+            var configuration = new ConfigurationBuilder().Build();
+            configuration.Properties["server:url"] = "http://abc.com";
+            configuration.Properties["server:authentication:uuid"] = "123";
+            configuration.Properties["server:timeout"] = 0.1;
+
+            var factory = new HttpClientFactory(configuration, _handler);
+            var httpClient = factory.Create();
+
+            httpClient.Timeout.Should().Be(TimeSpan.FromSeconds(0.1));
+        }
     }
 }

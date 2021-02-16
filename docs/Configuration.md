@@ -36,7 +36,10 @@ Sometimes it's useful to specify configuration properties via environment variab
 # HTTP
 ## Proxy
 `Server:Proxy:Url` - url to proxy server to be used for http requests like `http://myproxy.corp:8080`.
-`Server:Proxy:Username`, `Server:Proxy:Domain` and `Server:Proxy:Password` to specify credentials for proxy servers which require authoorization.
+`Server:Proxy:Username`, `Server:Proxy:Domain` and `Server:Proxy:Password` to specify credentials for proxy server which require authorization.
+
+## Timeout
+`Server:Timeout` - how many seconds to wait when awaiting response from server.
 
 # HTTP requests retry
 During tests execution agent sends test results as http requests to server. In case of fast test execution, or parallel tests execution, agent produces many requests to server. These requests are being sent in background and in parallel. Some requests might be failed due any reason e.g. short-term service unavailability, or network bandwith. To negotiate this issue several methodics can be applied.

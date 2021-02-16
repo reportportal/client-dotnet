@@ -56,7 +56,31 @@ namespace ReportPortal.Shared.Reporter.Http
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
             httpClient.DefaultRequestHeaders.Add("User-Agent", ".NET Reporter");
 
+            var timeout = GetTimeout();
+            if (timeout.HasValue)
+            {
+                httpClient.Timeout = timeout.Value;
+            }
+
             return httpClient;
+        }
+
+        /// <summary>
+        /// Parses timeout in configuration (in seconds).
+        /// </summary>
+        /// <returns></returns>
+        protected virtual TimeSpan? GetTimeout()
+        {
+            TimeSpan? timeout = null;
+
+            var seconds = Configuration.GetValue("Server:Timeout", double.NaN);
+
+            if (!double.IsNaN(seconds))
+            {
+                timeout = TimeSpan.FromSeconds(seconds);
+            }
+
+            return timeout;
         }
     }
 }
