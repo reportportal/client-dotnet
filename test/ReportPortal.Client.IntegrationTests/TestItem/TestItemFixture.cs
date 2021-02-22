@@ -236,6 +236,32 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
             getTest.Attributes.Should().NotBeEmpty();
         }
 
+        [Fact]
+        public async Task StartTestWithAttributeWithNullableKey()
+        {
+            var startTestItemRequest = new StartTestItemRequest
+            {
+                LaunchUuid = _fixture.LaunchUuid,
+                Name = "Test1",
+                StartTime = DateTime.UtcNow,
+                Type = TestItemType.Test,
+                Attributes = new List<ItemAttribute> { new ItemAttribute { Value = "v" } }
+            };
+
+            var test = await Service.TestItem.StartAsync(startTestItemRequest);
+
+            var finishTestRequest = new FinishTestItemRequest
+            {
+                EndTime = DateTime.UtcNow
+            };
+
+            await Service.TestItem.FinishAsync(test.Uuid, finishTestRequest);
+
+            var getTest = await Service.TestItem.GetAsync(test.Uuid);
+            getTest.Attributes.Should().NotBeEmpty();
+            getTest.Attributes.First().Key.Should().BeNull();
+        }
+
         [Theory]
         [InlineData(TestItemType.BeforeClass)]
         [InlineData(TestItemType.BeforeMethod)]
