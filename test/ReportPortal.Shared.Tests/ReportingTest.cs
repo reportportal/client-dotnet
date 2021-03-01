@@ -15,7 +15,8 @@ using Xunit.Abstractions;
 namespace ReportPortal.Shared.Tests
 {
     [Collection("Static")]
-    public class ReportingTest
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "xUnit1000:Test classes must be public", Justification = "Skip test fixture")]
+    class ReportingTest
     {
         private readonly IClientService _service;
 
