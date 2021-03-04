@@ -15,7 +15,8 @@ using Xunit.Abstractions;
 namespace ReportPortal.Shared.Tests
 {
     [Collection("Static")]
-    public class ReportingTest
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "xUnit1000:Test classes must be public", Justification = "Skip test fixture")]
+    class ReportingTest
     {
         private readonly IClientService _service;
 
@@ -31,7 +32,7 @@ namespace ReportPortal.Shared.Tests
             {
                 {ConfigurationPath.ServerUrl, "https://demo.reportportal.io/api/v1" },
                 {ConfigurationPath.ServerProject, "default_personal" },
-                {ConfigurationPath.ServerAuthenticationUuid, "d95717a4-d150-498a-9a15-6cee15e50133" }
+                {ConfigurationPath.ServerAuthenticationUuid, "c626da9a-c3e7-4355-bc8e-e30986756b88" }
             });
 
             _service = new ClientServiceBuilder(config).Build();
