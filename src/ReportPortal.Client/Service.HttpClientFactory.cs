@@ -26,9 +26,19 @@ namespace ReportPortal.Client
                 var httpClientHandler = new HttpClientHandler();
 
 #if !NET45
-                httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
+                httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) =>
+                {
+                    errors = System.Net.Security.SslPolicyErrors.None;
+
+                    return true;
+                };
 #else
-                ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+                ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) =>
+                {
+                    sslPolicyErrors = System.Net.Security.SslPolicyErrors.None;
+
+                    return true;
+                };;
                 ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
 #endif
 
