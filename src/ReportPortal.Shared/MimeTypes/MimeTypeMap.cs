@@ -167,6 +167,7 @@ namespace ReportPortal.Shared.MimeTypes
                 {".gtar", "application/x-gtar"},
                 {".gz", "application/x-gzip"},
                 {".h", "text/plain"},
+                {".har", "application/har+json"},
                 {".hdf", "application/x-hdf"},
                 {".hdml", "text/x-hdml"},
                 {".hhc", "application/x-oleobject"},
