@@ -86,5 +86,11 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// </summary>
         [DataMember(Name = "attributes")]
         public IList<ItemAttribute> Attributes { get; set; }
+        
+        /// <summary>
+        /// Set specific launch UUID.
+        /// </summary>
+        [DataMember(Name = "uuid")]
+        public string Uuid { get; set; }
     }
 }
