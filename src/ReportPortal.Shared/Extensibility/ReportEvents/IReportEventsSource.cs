@@ -5,6 +5,8 @@ namespace ReportPortal.Shared.Extensibility.ReportEvents
 {
     public interface IReportEventsSource
     {
+        event LaunchEventHandler<LaunchInitializingEventArgs> OnLaunchInitializing;
+
         event LaunchEventHandler<BeforeLaunchStartingEventArgs> OnBeforeLaunchStarting;
 
         event LaunchEventHandler<AfterLaunchStartedEventArgs> OnAfterLaunchStarted;

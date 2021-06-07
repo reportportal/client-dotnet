@@ -59,6 +59,8 @@ namespace ReportPortal.Shared.Reporter
                         TraceLogger.Error($"Unhandled exception while initializing of {reportEventObserver.GetType().FullName}: {initExp}");
                     }
                 }
+
+                NotifyInitializing();
             }
 
             // identify whether launch is already started by any external system
@@ -260,7 +262,7 @@ namespace ReportPortal.Shared.Reporter
                         _launchInfo.FinishTime = request.EndTime;
                     }
 
-                    if (!_isExternalLaunchId && _rerunOfUuid == null)
+                    if (!_isExternalLaunchId)
                     {
                         NotifyFinishing(request);
 
@@ -333,6 +335,13 @@ namespace ReportPortal.Shared.Reporter
             StartTask?.GetAwaiter().GetResult();
 
             FinishTask?.GetAwaiter().GetResult();
+        }
+
+        private LaunchInitializingEventArgs NotifyInitializing()
+        {
+            var args = new LaunchInitializingEventArgs(_service, _configuration);
+            Notify(() => ReportEventsSource.RaiseLaunchInitializing(_reportEventsSource, this, args));
+            return args;
         }
 
         private BeforeLaunchStartingEventArgs NotifyStarting(StartLaunchRequest request)

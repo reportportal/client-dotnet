@@ -13,7 +13,7 @@ namespace ReportPortal.Shared.Tests.Extensibility.ReportEvents
     public class ReportEventsFixture
     {
         [Fact]
-        public void ShouldNotBreakReportingIfInitializtionThrowsException()
+        public void ShouldNotBreakReportingIfInitializationThrowsException()
         {
             var observer = new Mock<IReportEventsObserver>();
             observer.Setup(o => o.Initialize(It.IsAny<IReportEventsSource>())).Throws<Exception>();
@@ -33,6 +33,8 @@ namespace ReportPortal.Shared.Tests.Extensibility.ReportEvents
             var observer = new Mock<IReportEventsObserver>();
             observer.Setup(o => o.Initialize(It.IsAny<IReportEventsSource>())).Callback<IReportEventsSource>(s =>
             {
+                s.OnLaunchInitializing += (a, b) => throw new Exception();
+
                 s.OnBeforeLaunchStarting += (a, b) => throw new Exception();
                 s.OnAfterLaunchStarted += (a, b) => throw new Exception();
                 s.OnBeforeLaunchFinishing += (a, b) => throw new Exception();
@@ -142,6 +144,30 @@ namespace ReportPortal.Shared.Tests.Extensibility.ReportEvents
             beforeTestFinishingEventArgs.ClientService.Should().BeSameAs(client);
             t.Should().BeSameAs(launch.ChildTestReporters[0]);
             beforeTestFinishingEventArgs.FinishTestItemRequest.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void ShouldNotifyOnLaunchInitializing()
+        {
+            ILaunchReporter l = null;
+
+            LaunchInitializingEventArgs launchInitializingEventArgs = null;
+
+            var observer = new Mock<IReportEventsObserver>();
+            observer.Setup(o => o.Initialize(It.IsAny<IReportEventsSource>())).Callback<IReportEventsSource>(s =>
+            {
+                s.OnLaunchInitializing += (a, b) => { l = a; launchInitializingEventArgs = b; };
+            });
+
+            var extManager = new Shared.Extensibility.ExtensionManager();
+            extManager.ReportEventObservers.Add(observer.Object);
+
+            var client = new MockServiceBuilder().Build().Object;
+            var launch = new LaunchReporterBuilder(client).With(extManager).Build(1, 0, 0);
+
+            launchInitializingEventArgs.ClientService.Should().BeSameAs(client);
+            launchInitializingEventArgs.Configuration.Should().NotBeNull();
+            l.Should().BeSameAs(launch);
         }
 
         [Fact]

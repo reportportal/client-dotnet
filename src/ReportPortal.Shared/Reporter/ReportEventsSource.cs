@@ -5,6 +5,8 @@ namespace ReportPortal.Shared.Reporter
 {
     public class ReportEventsSource : IReportEventsSource
     {
+        public event LaunchEventHandler<LaunchInitializingEventArgs> OnLaunchInitializing;
+
         public event LaunchEventHandler<BeforeLaunchStartingEventArgs> OnBeforeLaunchStarting;
         public event LaunchEventHandler<AfterLaunchStartedEventArgs> OnAfterLaunchStarted;
         public event LaunchEventHandler<BeforeLaunchFinishingEventArgs> OnBeforeLaunchFinishing;
@@ -14,6 +16,11 @@ namespace ReportPortal.Shared.Reporter
         public event TestEventHandler<AfterTestStartedEventArgs> OnAfterTestStarted;
         public event TestEventHandler<BeforeTestFinishingEventArgs> OnBeforeTestFinishing;
         public event TestEventHandler<AfterTestFinishedEventArgs> OnAfterTestFinished;
+
+        public static void RaiseLaunchInitializing(ReportEventsSource source, ILaunchReporter launchReporter, LaunchInitializingEventArgs args)
+        {
+            source.OnLaunchInitializing?.Invoke(launchReporter, args);
+        }
 
         public static void RaiseBeforeLaunchStarting(ReportEventsSource source, ILaunchReporter launchReporter, BeforeLaunchStartingEventArgs args)
         {
