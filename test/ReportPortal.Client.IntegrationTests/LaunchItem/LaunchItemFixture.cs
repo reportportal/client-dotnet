@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using ReportPortal.Client.Abstractions.Filtering;
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
 using System;
@@ -56,8 +55,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
             var updateMessage = await Service.Launch.UpdateAsync(tempLaunch.Id, new UpdateLaunchRequest()
             {
                 Description = "New description",
-                Mode = LaunchMode.Debug,
-                Tags = null
+                Mode = LaunchMode.Debug
             });
 
             Assert.NotNull(launch.Uuid);
@@ -149,6 +147,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
         [Fact]
         public async Task StartFinishDeleteFullLaunch()
         {
+            var uuid = Guid.NewGuid().ToString();
             var now = DateTime.UtcNow;
             var attributes = new List<ItemAttribute> { new ItemAttribute { Key = "a1", Value = "v1" }, new ItemAttribute { Key = "a2", Value = "v2" }, new ItemAttribute { Key = "", Value = "v3" }, new ItemAttribute { Key = null, Value = "v4" } };
             var launch = await Service.Launch.StartAsync(new StartLaunchRequest
@@ -156,9 +155,11 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
                 Name = "StartFinishDeleteFullLaunch",
                 Description = "Desc",
                 StartTime = now,
-                Attributes = attributes
+                Attributes = attributes,
+                Uuid = uuid
             });
             Assert.NotNull(launch.Uuid);
+            Assert.Equal(uuid, launch.Uuid);
             var getLaunch = await Service.Launch.GetAsync(launch.Uuid);
             Assert.Equal("StartFinishDeleteFullLaunch", getLaunch.Name);
             Assert.Equal("Desc", getLaunch.Description);
