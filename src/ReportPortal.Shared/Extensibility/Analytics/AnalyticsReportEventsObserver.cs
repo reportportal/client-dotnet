@@ -3,6 +3,8 @@ using ReportPortal.Shared.Internal.Logging;
 using System;
 using System.Net.Http;
 using System.Reflection;
+using System.Runtime.Versioning;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ReportPortal.Shared.Extensibility.Analytics
@@ -15,6 +17,7 @@ namespace ReportPortal.Shared.Extensibility.Analytics
         private const string MEASUREMENT_ID = "UA-173456809-1";
         private const string BASE_URI = "https://www.google-analytics.com";
         private const string CLIENT_NAME = "commons-dotnet";
+        private const string PLATFORM_VERSION_PATTERN = @"^(\d+\.\d+)";
 
         private static ITraceLogger TraceLogger => TraceLogManager.Instance.GetLogger<AnalyticsReportEventsObserver>();
 
@@ -22,23 +25,33 @@ namespace ReportPortal.Shared.Extensibility.Analytics
 
         private readonly string _clientVersion;
 
+        private readonly string _platformVersion;
+
         private HttpClient _httpClient;
 
-        public AnalyticsReportEventsObserver()
+        public AnalyticsReportEventsObserver() : this(new HttpClientHandler
+        {
+#if !NET45 && !NET46
+            ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; }
+#endif
+        })
+        {
+        }
+
+        public AnalyticsReportEventsObserver(HttpMessageHandler httpHandler)
         {
             _clientId = Guid.NewGuid().ToString();
 
             // Client is this assembly
             _clientVersion = typeof(AnalyticsReportEventsObserver).Assembly.GetName().Version.ToString(3);
 
-            var clientHandler = new HttpClientHandler
-            {
-#if !NET45 && !NET46
-                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; }
+#if NETSTANDARD
+            _platformVersion = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
+#else
+            _platformVersion = AppDomain.CurrentDomain.SetupInformation.TargetFrameworkName;
 #endif
-            };
 
-            _httpClient = new HttpClient(clientHandler)
+            _httpClient = new HttpClient(httpHandler)
             {
                 BaseAddress = new Uri(BASE_URI)
             };
@@ -97,7 +110,7 @@ namespace ReportPortal.Shared.Extensibility.Analytics
         {
             if (args.Configuration.GetValue("Analytics:Enabled", true))
             {
-                var category = $"Client name \"{CLIENT_NAME}\", version \"{_clientVersion}\"";
+                var category = $"Client name \"{CLIENT_NAME}\", version \"{_clientVersion}\", interpreter \"{_platformVersion}\"";
                 var label = $"Agent name \"{AgentName}\", version \"{AgentVersion}\"";
 
                 var requestData = $"/collect?v=1&tid={MEASUREMENT_ID}&cid={_clientId}&t=event&ec={category}&ea=Start launch&el={label}";
