@@ -20,7 +20,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="ReportPortal.Client" Version="3.0.4">
+    <PackageReference Include="ReportPortal.Client" Version="3.0.5">
       <PrivateAssets>contentfiles;analyzers;</PrivateAssets>
     </PackageReference>
   </ItemGroup>
