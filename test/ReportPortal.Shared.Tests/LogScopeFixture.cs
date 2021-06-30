@@ -208,6 +208,8 @@ namespace ReportPortal.Shared.Tests
         [InlineData(LogScopeStatus.Passed)]
         [InlineData(LogScopeStatus.Failed)]
         [InlineData(LogScopeStatus.Skipped)]
+        [InlineData(LogScopeStatus.Warn)]
+        [InlineData(LogScopeStatus.Info)]
         public void ShouldBeAbleToChangeStatus(LogScopeStatus status)
         {
             var scope = Context.Current.Log.BeginScope("a");

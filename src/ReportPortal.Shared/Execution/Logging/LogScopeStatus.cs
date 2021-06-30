@@ -8,6 +8,8 @@
         InProgress,
         Passed,
         Failed,
-        Skipped
+        Skipped,
+        Warn,
+        Info
     }
 }
