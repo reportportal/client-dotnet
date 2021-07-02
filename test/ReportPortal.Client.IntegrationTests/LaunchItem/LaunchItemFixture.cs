@@ -166,11 +166,12 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
             Assert.Equal(now.ToString(), getLaunch.StartTime.ToString());
 
             Assert.Equal(attributes.OrderBy(a => a.Key).Select(a => new { a.Key, a.Value }).ToList(), getLaunch.Attributes.OrderBy(a => a.Key).Select(a => new { a.Key, a.Value }).ToList());
-            var message = await Service.Launch.FinishAsync(launch.Uuid, new FinishLaunchRequest
+            var launchFinishedResponse = await Service.Launch.FinishAsync(launch.Uuid, new FinishLaunchRequest
             {
                 EndTime = DateTime.UtcNow
             });
-            Assert.Equal(launch.Uuid, message.Uuid);
+            Assert.Equal(launch.Uuid, launchFinishedResponse.Uuid);
+            Assert.NotEmpty(launchFinishedResponse.Link);
             var delMessage = await Service.Launch.DeleteAsync(getLaunch.Id);
             Assert.Contains("successfully", delMessage.Info);
         }
