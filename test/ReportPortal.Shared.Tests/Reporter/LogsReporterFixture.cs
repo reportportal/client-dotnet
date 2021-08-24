@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Moq;
 using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Internal.Delegating;
 using ReportPortal.Shared.Reporter;
@@ -16,9 +17,11 @@ namespace ReportPortal.Shared.Tests.Reporter
     public class LogsReporterFixture
     {
         readonly Mock<ITestReporter> _testReporter;
+        readonly IConfiguration _configuration;
         readonly IRequestExecuter _requestExecuter;
         readonly IExtensionManager _extensionManager;
         readonly Mock<ILogRequestAmender> _logRequestAmender;
+        readonly ReportEventsSource _reportEventsSource;
 
         public LogsReporterFixture()
         {
@@ -27,7 +30,9 @@ namespace ReportPortal.Shared.Tests.Reporter
             _testReporter.SetupGet(r => r.StartTask).Returns(() => Task.FromResult(0));
             _testReporter.SetupGet(r => r.Info).Returns(() => new TestInfo { });
 
+            _configuration = new ConfigurationBuilder().Build();
             _requestExecuter = new NoneRetryRequestExecuter(null);
+            _reportEventsSource = new ReportEventsSource();
 
             _extensionManager = new ExtensionManager();
 
@@ -39,7 +44,7 @@ namespace ReportPortal.Shared.Tests.Reporter
         {
             var service = new MockServiceBuilder().Build();
 
-            var logsReporter = new LogsReporter(_testReporter.Object, service.Object, _extensionManager, _requestExecuter, _logRequestAmender.Object)
+            var logsReporter = new LogsReporter(_testReporter.Object, service.Object, _configuration, _extensionManager, _requestExecuter, _logRequestAmender.Object, _reportEventsSource)
             {
                 BatchCapacity = 1
             };
@@ -63,7 +68,7 @@ namespace ReportPortal.Shared.Tests.Reporter
         {
             var service = new MockServiceBuilder().Build();
 
-            var logsReporter = new LogsReporter(_testReporter.Object, service.Object, _extensionManager, _requestExecuter, _logRequestAmender.Object);
+            var logsReporter = new LogsReporter(_testReporter.Object, service.Object, _configuration, _extensionManager, _requestExecuter, _logRequestAmender.Object, _reportEventsSource);
 
             for (int i = 0; i < 50; i++)
             {
@@ -86,7 +91,7 @@ namespace ReportPortal.Shared.Tests.Reporter
             var service = new MockServiceBuilder().Build();
             service.Setup(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>())).Throws<Exception>();
 
-            var logsReporter = new LogsReporter(_testReporter.Object, service.Object, _extensionManager, _requestExecuter, _logRequestAmender.Object)
+            var logsReporter = new LogsReporter(_testReporter.Object, service.Object, _configuration, _extensionManager, _requestExecuter, _logRequestAmender.Object, _reportEventsSource)
             {
                 BatchCapacity = 1
             };
@@ -114,7 +119,7 @@ namespace ReportPortal.Shared.Tests.Reporter
         {
             var service = new MockServiceBuilder().Build();
 
-            var logsReporter = new LogsReporter(_testReporter.Object, service.Object, _extensionManager, _requestExecuter, _logRequestAmender.Object);
+            var logsReporter = new LogsReporter(_testReporter.Object, service.Object, _configuration, _extensionManager, _requestExecuter, _logRequestAmender.Object, _reportEventsSource);
 
             for (int i = 0; i < 2; i++)
             {
@@ -136,7 +141,7 @@ namespace ReportPortal.Shared.Tests.Reporter
         {
             var service = new MockServiceBuilder().Build();
 
-            var logsReporter = new LogsReporter(_testReporter.Object, service.Object, _extensionManager, _requestExecuter, _logRequestAmender.Object);
+            var logsReporter = new LogsReporter(_testReporter.Object, service.Object, _configuration, _extensionManager, _requestExecuter, _logRequestAmender.Object, _reportEventsSource);
 
             var withoutAttachment = new CreateLogItemRequest
             {
@@ -170,7 +175,7 @@ namespace ReportPortal.Shared.Tests.Reporter
                 .Callback<CreateLogItemRequest[]>(rqs => { foreach (var rq in rqs) logItemRequestTexts.Add(rq.Text); })
                 .Returns(() => Task.FromResult(new Client.Abstractions.Responses.LogItemsCreatedResponse()));
 
-            var logsReporter = new LogsReporter(_testReporter.Object, service.Object, _extensionManager, _requestExecuter, _logRequestAmender.Object);
+            var logsReporter = new LogsReporter(_testReporter.Object, service.Object, _configuration, _extensionManager, _requestExecuter, _logRequestAmender.Object, _reportEventsSource);
 
             Parallel.For(0, 1000, (i) => logsReporter.Log(new CreateLogItemRequest
             {

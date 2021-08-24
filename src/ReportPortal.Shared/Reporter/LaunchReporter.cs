@@ -322,7 +322,7 @@ namespace ReportPortal.Shared.Reporter
                     if (_logsReporter == null)
                     {
                         var logRequestAmender = new LaunchLogRequestAmender(this);
-                        _logsReporter = new LogsReporter(this, _service, _extensionManager, _requestExecuter, logRequestAmender);
+                        _logsReporter = new LogsReporter(this, _service, _configuration, _extensionManager, _requestExecuter, logRequestAmender, _reportEventsSource);
                     }
                 }
 

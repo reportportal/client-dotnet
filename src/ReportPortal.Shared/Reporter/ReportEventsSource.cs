@@ -17,6 +17,8 @@ namespace ReportPortal.Shared.Reporter
         public event TestEventHandler<BeforeTestFinishingEventArgs> OnBeforeTestFinishing;
         public event TestEventHandler<AfterTestFinishedEventArgs> OnAfterTestFinished;
 
+        public event LogsEventHandler<BeforeLogsSendingEventArgs> OnBeforeLogsSending;
+
         public static void RaiseLaunchInitializing(ReportEventsSource source, ILaunchReporter launchReporter, LaunchInitializingEventArgs args)
         {
             source.OnLaunchInitializing?.Invoke(launchReporter, args);
@@ -60,6 +62,11 @@ namespace ReportPortal.Shared.Reporter
         public static void RaiseAfterTestFinished(ReportEventsSource source, ITestReporter testReporter, AfterTestFinishedEventArgs args)
         {
             source.OnAfterTestFinished?.Invoke(testReporter, args);
+        }
+
+        public static void RaiseBeforeLogsSending(ReportEventsSource source, ILogsReporter logsReporter, BeforeLogsSendingEventArgs args)
+        {
+            source.OnBeforeLogsSending?.Invoke(logsReporter, args);
         }
     }
 }

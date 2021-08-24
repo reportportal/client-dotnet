@@ -23,9 +23,14 @@ namespace ReportPortal.Shared.Extensibility.ReportEvents
         event TestEventHandler<BeforeTestFinishingEventArgs> OnBeforeTestFinishing;
 
         event TestEventHandler<AfterTestFinishedEventArgs> OnAfterTestFinished;
+
+
+        event LogsEventHandler<BeforeLogsSendingEventArgs> OnBeforeLogsSending;
     }
 
     public delegate void LaunchEventHandler<TEventArgs>(ILaunchReporter launchReporter, TEventArgs args);
 
     public delegate void TestEventHandler<TEventAgrs>(ITestReporter testReporter, TEventAgrs args);
+
+    public delegate void LogsEventHandler<TEventAgrs>(ILogsReporter logsReporter, TEventAgrs args);
 }

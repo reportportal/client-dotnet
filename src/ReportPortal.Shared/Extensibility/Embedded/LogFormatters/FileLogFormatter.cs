@@ -1,18 +1,33 @@
 ﻿using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Shared.Extensibility.ReportEvents;
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace ReportPortal.Shared.Extensibility.LogFormatter
+namespace ReportPortal.Shared.Extensibility.Embedded.LogFormatters
 {
     /// <inheritdoc/>
-    public class FileLogFormatter : ILogFormatter
+    public class FileLogFormatter : IReportEventsObserver
     {
         /// <inheritdoc/>
-        public int Order => 10;
+        public void Initialize(IReportEventsSource reportEventsSource)
+        {
+            reportEventsSource.OnBeforeLogsSending += ReportEventsSource_OnBeforeLogsSending;
+        }
+
+        private void ReportEventsSource_OnBeforeLogsSending(Reporter.ILogsReporter logsReporter, ReportEvents.EventArgs.BeforeLogsSendingEventArgs args)
+        {
+            if (args.CreateLogItemRequests != null)
+            {
+                foreach (var logRequest in args.CreateLogItemRequests)
+                {
+                    FormatLog(logRequest);
+                }
+            }
+        }
 
         /// <inheritdoc/>
-        public bool FormatLog(CreateLogItemRequest logRequest)
+        private void FormatLog(CreateLogItemRequest logRequest)
         {
             if (logRequest.Text != null)
             {
@@ -29,8 +44,6 @@ namespace ReportPortal.Shared.Extensibility.LogFormatter
                         var mimeType = MimeTypes.MimeTypeMap.GetMimeType(Path.GetExtension(filePath));
 
                         logRequest.Attach = new LogItemAttach(mimeType, File.ReadAllBytes(filePath));
-
-                        return true;
                     }
                     catch (Exception exp)
                     {
@@ -38,7 +51,6 @@ namespace ReportPortal.Shared.Extensibility.LogFormatter
                     }
                 }
             }
-            return false;
         }
     }
 }

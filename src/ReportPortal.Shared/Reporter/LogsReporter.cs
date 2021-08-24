@@ -1,6 +1,8 @@
 ﻿using ReportPortal.Client.Abstractions;
 using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Extensibility;
+using ReportPortal.Shared.Extensibility.ReportEvents.EventArgs;
 using ReportPortal.Shared.Internal.Delegating;
 using ReportPortal.Shared.Internal.Logging;
 using System;
@@ -11,24 +13,35 @@ namespace ReportPortal.Shared.Reporter
 {
     public class LogsReporter : ILogsReporter
     {
+        private static ITraceLogger TraceLogger { get; } = TraceLogManager.Instance.GetLogger<LogsReporter>();
+
         private readonly Queue<CreateLogItemRequest> _buffer = new Queue<CreateLogItemRequest>();
         private readonly IReporter _reporter;
         private readonly IClientService _service;
+        private readonly IConfiguration _configuration;
         private readonly IExtensionManager _extensionManager;
         private readonly IRequestExecuter _requestExecuter;
         private readonly ILogRequestAmender _logRequestAmender;
 
-        private static readonly ITraceLogger _traceLogger = TraceLogManager.Instance.GetLogger<LogsReporter>();
+        private readonly ReportEventsSource _reportEventsSource;
 
         public Task ProcessingTask { get; private set; }
 
-        public LogsReporter(IReporter testReporter, IClientService service, IExtensionManager extensionManager, IRequestExecuter requestExecuter, ILogRequestAmender logRequestAmender)
+        public LogsReporter(IReporter testReporter,
+                            IClientService service,
+                            IConfiguration configuration,
+                            IExtensionManager extensionManager,
+                            IRequestExecuter requestExecuter,
+                            ILogRequestAmender logRequestAmender,
+                            ReportEventsSource reportEventsSource)
         {
             _reporter = testReporter;
             _service = service;
+            _configuration = configuration;
             _extensionManager = extensionManager;
             _requestExecuter = requestExecuter;
             _logRequestAmender = logRequestAmender;
+            _reportEventsSource = reportEventsSource;
         }
 
         private readonly object _syncObj = new object();
@@ -47,7 +60,7 @@ namespace ReportPortal.Shared.Reporter
                 {
                     try
                     {
-                        // only if parent reporter is succesfull
+                        // only if parent reporter is successful
                         if (!_reporter.StartTask.IsFaulted && !_reporter.StartTask.IsCanceled)
                         {
                             var requests = GetBufferedLogRequests(batchCapacity: BatchCapacity);
@@ -64,13 +77,15 @@ namespace ReportPortal.Shared.Reporter
                                     }
                                 }
 
+                                NotifySending(requests);
+
                                 await _requestExecuter.ExecuteAsync(() => _service.LogItem.CreateAsync(requests.ToArray()), null, _reporter.StatisticsCounter.LogItemStatisticsCounter).ConfigureAwait(false);
                             }
                         }
                     }
                     catch (Exception exp)
                     {
-                        _traceLogger.Error($"Unexpected error occurred while processing buffered log requests. {exp}");
+                        TraceLogger.Error($"Unexpected error occurred while processing buffered log requests. {exp}");
                     }
                 }, TaskContinuationOptions.PreferFairness).Unwrap();
             }
@@ -114,6 +129,25 @@ namespace ReportPortal.Shared.Reporter
             }
 
             return requests;
+        }
+
+        private BeforeLogsSendingEventArgs NotifySending(IList<CreateLogItemRequest> requests)
+        {
+            var args = new BeforeLogsSendingEventArgs(_service, _configuration, requests);
+            Notify(() => ReportEventsSource.RaiseBeforeLogsSending(_reportEventsSource, this, args));
+            return args;
+        }
+
+        private void Notify(Action act)
+        {
+            try
+            {
+                act.Invoke();
+            }
+            catch (Exception exp)
+            {
+                TraceLogger.Error($"Unhandled error while notifying logs event observers: {exp}");
+            }
         }
     }
 }

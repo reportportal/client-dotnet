@@ -1,11 +1,13 @@
 ﻿using FluentAssertions;
 using Moq;
+using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Extensibility.ReportEvents;
 using ReportPortal.Shared.Extensibility.ReportEvents.EventArgs;
 using ReportPortal.Shared.Reporter;
 using ReportPortal.Shared.Tests.Helpers;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace ReportPortal.Shared.Tests.Extensibility.ReportEvents
@@ -237,5 +239,48 @@ namespace ReportPortal.Shared.Tests.Extensibility.ReportEvents
             launch.ChildTestReporters[0].Info.Name.Should().Be("NewName");
         }
 
+        [Fact]
+        public void ShouldNotifyBeforeLogsSending()
+        {
+            IList<CreateLogItemRequest> logRequests = null;
+
+            var observer = new Mock<IReportEventsObserver>();
+            observer.Setup(o => o.Initialize(It.IsAny<IReportEventsSource>())).Callback<IReportEventsSource>(s =>
+            {
+                s.OnBeforeLogsSending += (a, b) => logRequests = b.CreateLogItemRequests;
+            });
+
+            var extManager = new Shared.Extensibility.ExtensionManager();
+            extManager.ReportEventObservers.Add(observer.Object);
+
+            var client = new MockServiceBuilder().Build().Object;
+            var launch = new LaunchReporterBuilder(client).With(extManager).Build(1, 1, 1);
+            launch.Sync();
+
+            logRequests.Should().HaveCount(1);
+        }
+
+        [Fact]
+        public void ShouldBeAbleToModifyRequestsBeforeLogsSending()
+        {
+            var observer = new Mock<IReportEventsObserver>();
+            observer.Setup(o => o.Initialize(It.IsAny<IReportEventsSource>())).Callback<IReportEventsSource>(s =>
+            {
+                s.OnBeforeLogsSending += (a, b) => b.CreateLogItemRequests.RemoveAt(0);
+            });
+
+            var extManager = new Shared.Extensibility.ExtensionManager();
+            extManager.ReportEventObservers.Add(observer.Object);
+
+            CreateLogItemRequest[] sentClientLogs = null;
+
+            var clientMock = new MockServiceBuilder().Build();
+            clientMock.Setup(c => c.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>())).Callback<CreateLogItemRequest[]>(lgs => sentClientLogs = lgs);
+            var client = clientMock.Object;
+            var launch = new LaunchReporterBuilder(client).With(extManager).Build(1, 1, 3);
+            launch.Sync();
+
+            sentClientLogs.Should().HaveCount(2);
+        }
     }
 }

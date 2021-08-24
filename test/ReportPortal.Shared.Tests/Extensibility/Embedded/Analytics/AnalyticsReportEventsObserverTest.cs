@@ -1,4 +1,4 @@
-﻿using ReportPortal.Shared.Extensibility.Analytics;
+﻿using ReportPortal.Shared.Extensibility.Embedded.Analytics;
 using ReportPortal.Shared.Tests.Helpers;
 using RichardSzalay.MockHttp;
 using RichardSzalay.MockHttp.Matchers;
@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using Xunit;
 
-namespace ReportPortal.Shared.Tests.Extensibility.Analytics
+namespace ReportPortal.Shared.Tests.Extensibility.Embedded.Analytics
 {
     public class AnalyticsReportEventsObserverTest
     {
