@@ -6,7 +6,7 @@ using System.Net.Http;
 
 namespace ReportPortal.Client
 {
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IClientService"/>
     public partial class Service : IClientService, IDisposable
     {
         private readonly HttpClient _httpClient;
@@ -38,28 +38,29 @@ namespace ReportPortal.Client
         }
 
         /// <summary>
-        /// Get or set project name to interact with.
+        /// Gets current project name to interact with.
         /// </summary>
         public string ProjectName { get; }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="ILaunchResource"/>
         public ILaunchResource Launch { get; }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="ITestItemResource"/>
         public ITestItemResource TestItem { get; }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="ILogItemResource"/>
         public ILogItemResource LogItem { get; }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IUserResource"/>
         public IUserResource User { get; }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IUserFilterResource"/>
         public IUserFilterResource UserFilter { get; }
 
-        /// <inheritdoc/>
+        /// <inheritdoc cref="IProjectResource"/>
         public IProjectResource Project { get; }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             _httpClient.Dispose();
