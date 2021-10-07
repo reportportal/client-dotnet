@@ -22,7 +22,7 @@ namespace ReportPortal.Shared.Tests.Helpers
 
             service.Setup(s => s.TestItem.FinishAsync(It.IsAny<string>(), It.IsAny<FinishTestItemRequest>())).Returns(() => Task.FromResult(new MessageResponse()));
 
-            service.Setup(s => s.Launch.FinishAsync(It.IsAny<string>(), It.IsAny<FinishLaunchRequest>())).Returns(() => Task.FromResult(new LaunchFinishedResponse()));
+            service.Setup(s => s.Launch.FinishAsync(It.IsAny<string>(), It.IsAny<FinishLaunchRequest>())).Returns(() => Task.FromResult(new LaunchFinishedResponse { Link = "http://server:80/path/to/launch"}));
 
             return service;
         }

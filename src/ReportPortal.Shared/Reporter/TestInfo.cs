@@ -3,7 +3,7 @@ using System;
 
 namespace ReportPortal.Shared.Reporter
 {
-    public class TestInfo : IReporterInfo
+    public class TestInfo : ITestReporterInfo
     {
         public string Uuid { get; set; }
 

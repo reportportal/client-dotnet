@@ -82,7 +82,7 @@ namespace ReportPortal.Shared.Reporter
         }
 
         private LaunchInfo _launchInfo;
-        public IReporterInfo Info => _launchInfo;
+        public ILaunchReporterInfo Info => _launchInfo;
 
         public ILaunchStatisticsCounter StatisticsCounter { get; } = new LaunchStatisticsCounter();
 
@@ -266,7 +266,9 @@ namespace ReportPortal.Shared.Reporter
                     {
                         NotifyFinishing(request);
 
-                        await _requestExecuter.ExecuteAsync(() => _service.Launch.FinishAsync(Info.Uuid, request), null, null).ConfigureAwait(false);
+                        var launchFinishedResponse = await _requestExecuter.ExecuteAsync(() => _service.Launch.FinishAsync(Info.Uuid, request), null, null).ConfigureAwait(false);
+
+                        _launchInfo.Url = launchFinishedResponse.Link;
 
                         NotifyFinished();
                     }

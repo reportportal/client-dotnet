@@ -2,7 +2,7 @@
 
 namespace ReportPortal.Shared.Reporter
 {
-    public class LaunchInfo : IReporterInfo
+    public class LaunchInfo : ILaunchReporterInfo
     {
         public string Uuid { get; set; }
 
@@ -11,5 +11,7 @@ namespace ReportPortal.Shared.Reporter
         public DateTime StartTime { get; set; }
 
         public DateTime? FinishTime { get; set; }
+
+        public string Url { get; set; }
     }
 }

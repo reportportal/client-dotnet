@@ -39,6 +39,22 @@ namespace ReportPortal.Shared.Tests.Reporter
         }
 
         [Fact]
+        public void ShouldFulfillLaunchInfo()
+        {
+            var service = new MockServiceBuilder().Build();
+
+            var launchScheduler = new LaunchReporterBuilder(service.Object);
+            var launchReporter = launchScheduler.Build(0, 0, 0);
+
+            launchReporter.Sync();
+
+            Assert.NotNull(launchReporter.Info);
+            Assert.NotNull(launchReporter.Info.Uuid);
+            Assert.NotNull(launchReporter.Info.Name);
+            Assert.NotNull(launchReporter.Info.Url);
+        }
+
+        [Fact]
         public void MixingTestsAndLogs()
         {
             var service = new MockServiceBuilder().Build();

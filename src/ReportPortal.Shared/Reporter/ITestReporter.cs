@@ -5,6 +5,8 @@ namespace ReportPortal.Shared.Reporter
 {
     public interface ITestReporter : IReporter
     {
+        ITestReporterInfo Info { get; }
+
         ITestReporter ParentTestReporter { get; }
 
         ILaunchReporter LaunchReporter { get; }

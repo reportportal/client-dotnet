@@ -42,7 +42,7 @@ namespace ReportPortal.Shared.Reporter
         }
 
         private TestInfo _testInfo;
-        public IReporterInfo Info => _testInfo;
+        public ITestReporterInfo Info => _testInfo;
 
         public ILaunchReporter LaunchReporter { get; }
 
