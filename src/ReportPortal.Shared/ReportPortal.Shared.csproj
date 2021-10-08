@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <None Include="Build\**\*.targets" Pack="true" PackagePath="build\" />
+    <None Include="Build\**\*.props" Pack="true" PackagePath="build\" />
     
     <None Include="..\..\Logo.png" Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>
