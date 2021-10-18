@@ -3,8 +3,6 @@ using ReportPortal.Shared.Internal.Logging;
 using System;
 using System.Net.Http;
 using System.Reflection;
-using System.Runtime.Versioning;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ReportPortal.Shared.Extensibility.Embedded.Analytics
@@ -17,7 +15,6 @@ namespace ReportPortal.Shared.Extensibility.Embedded.Analytics
         private const string MEASUREMENT_ID = "UA-173456809-1";
         private const string BASE_URI = "https://www.google-analytics.com";
         private const string CLIENT_NAME = "commons-dotnet";
-        private const string PLATFORM_VERSION_PATTERN = @"^(\d+\.\d+)";
 
         private static ITraceLogger TraceLogger => TraceLogManager.Instance.GetLogger<AnalyticsReportEventsObserver>();
 
