@@ -16,6 +16,9 @@ namespace ReportPortal.Shared.Tests.Configuration
         [InlineData("REPORTPORTAL_ABC", "ABC", "test")]
         [InlineData("REPORTPORTAL_ABC", "abc", "test")]
         [InlineData("REPORTPORTAL_A_B", "a:b", "test")]
+        [InlineData("RP_ABC", "ABC", "test")]
+        [InlineData("RP_ABC", "abc", "test")]
+        [InlineData("RP_A_B", "a:b", "test")]
         public void ShouldGetEnvironmentVariable(string paramFullName, string paramName, string paramValue)
         {
             Environment.SetEnvironmentVariable(paramFullName, paramValue);

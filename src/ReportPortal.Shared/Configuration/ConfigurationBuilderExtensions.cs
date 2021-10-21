@@ -33,6 +33,16 @@ namespace ReportPortal.Shared.Configuration
             return builder.Add(new JsonFileConfigurationProvider(ConfigurationPath.KeyDelimeter, filePath, optional));
         }
 
+        public static IConfigurationBuilder AddEnvironmentVariables(this IConfigurationBuilder builder)
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+
+            builder.AddEnvironmentVariables("RP_");
+            builder.AddEnvironmentVariables("REPORTPORTAL_");
+
+            return builder;
+        }
+
         public static IConfigurationBuilder AddEnvironmentVariables(this IConfigurationBuilder builder, string prefix = "REPORTPORTAL_", string delimeter = "_")
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
