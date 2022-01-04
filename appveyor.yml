@@ -1,24 +1,20 @@
 ﻿image: Visual Studio 2019
 
 install:
-  - gitversion /l console /output buildserver
   - dotnet tool install -g codecov.tool
 
 configuration:
   - Release
 
-dotnet_csproj:
-  patch: true
-  version: '$(GitVersion_SemVer)'
-
 build_script:
   - dotnet pack
-
-after_build:
-  - appveyor PushArtifact src\ReportPortal.Client\bin\%configuration%\ReportPortal.Client.%GitVersion_SemVer%.nupkg
 
 test_script:
   - dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=OpenCover /p:CoverletOutput=./Coverage.xml
 
 after_test:
   - codecov -f test\ReportPortal.Client.IntegrationTests\Coverage.*.xml
+
+artifacts:
+  - path: '**\*.nupkg'
+  - path: '**\*.html'
