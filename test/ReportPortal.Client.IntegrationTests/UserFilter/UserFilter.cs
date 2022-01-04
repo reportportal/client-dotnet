@@ -31,10 +31,11 @@ namespace ReportPortal.Client.IntegrationTests.UserFilter
             {
                 Name = Guid.NewGuid().ToString(),
                 Description = "testDscr_1",
-                IsShared = true,
+                IsShared = false,
                 UserFilterType = UserFilterType.Launch,
                 Conditions = new List<Condition> { condition },
-                Orders = new List<FilterOrder> { order }
+                Orders = new List<FilterOrder> { order },
+                Owner = "default"
             };
 
             var userFilterCreatedReponse = await Service.UserFilter.CreateAsync(createUserFilterRequest);
@@ -71,7 +72,7 @@ namespace ReportPortal.Client.IntegrationTests.UserFilter
             {
                 Name = Guid.NewGuid().ToString(),
                 Description = "testDscr_1",
-                IsShared = true,
+                IsShared = false,
                 UserFilterType = UserFilterType.Launch,
                 Conditions = new List<Condition> { condition },
                 Orders = new List<FilterOrder> { order }
@@ -123,10 +124,11 @@ namespace ReportPortal.Client.IntegrationTests.UserFilter
             {
                 Name = Guid.NewGuid().ToString(),
                 Description = "testDscr_1",
-                IsShared = true,
+                IsShared = false,
                 UserFilterType = UserFilterType.Launch,
                 Conditions = new List<Condition> { condition },
-                Orders = new List<FilterOrder> { order }
+                Orders = new List<FilterOrder> { order },
+                Owner = "default"
             };
 
             var userFilterCreatedResponse = await Service.UserFilter.CreateAsync(createUserFilterRequest);

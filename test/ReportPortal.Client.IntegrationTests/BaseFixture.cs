@@ -4,13 +4,12 @@ namespace ReportPortal.Client.IntegrationTests
 {
     public class BaseFixture
     {
-        //protected static readonly string Username = "ci_check_net_client";
-        //protected readonly Service Service = new Service(new Uri("https://rp.epam.com/api/v1"), "ci-agents-checks", "ba7eb7c8-7b33-42f6-8cf0-e9cd26e717f4");
-
         protected static readonly string Username = "default";
-        protected readonly Service Service = new Service(new Uri("https://demo.reportportal.io/api/v1"), "default_personal", "6475bbef-a343-4f6a-add2-3dfc5e4af7bc");
+        protected static readonly string ProjectName = "default_personal";
+        protected readonly Service Service = new Service(new Uri("https://demo.reportportal.io/api/v1"), ProjectName, "3372f701-dbe2-419e-8404-1aa4c3096830");
 
-        //protected static readonly string Username = "ci_check_net_client";
-        //protected readonly Service Service = new Service(new Uri("https://alpha.reportportal.io/api/v1"), "default_personal", "cd9c39d6-c9a2-45b0-8e48-c4f0151114d0");
+        //protected static readonly string Username = "default";
+        //protected static readonly string ProjectName = "default_personal";
+        //protected readonly Service Service = new Service(new Uri("http://localhost:8080/api/v1"), ProjectName, "694b1c68-a3dd-4fd5-a752-8cd233cb2733");
     }
 }

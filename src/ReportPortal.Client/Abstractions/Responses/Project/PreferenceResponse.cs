@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace ReportPortal.Client.Abstractions.Responses
+namespace ReportPortal.Client.Abstractions.Responses.Project
 {
     [DataContract]
     public class PreferenceResponse

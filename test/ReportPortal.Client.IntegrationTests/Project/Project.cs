@@ -3,6 +3,7 @@ using ReportPortal.Client.Abstractions.Filtering;
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Responses;
+using ReportPortal.Client.Abstractions.Responses.Project;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,6 +13,45 @@ namespace ReportPortal.Client.IntegrationTests.Project
 {
     public class ProjectFixture : BaseFixture
     {
+        [Fact]
+        public async Task GetProjectInfo()
+        {
+            var projectInfo = await Service.Project.GetAsync();
+
+            projectInfo.Name.Should().Be(ProjectName);
+            projectInfo.Id.Should().NotBeNull();
+
+            projectInfo.Configuration.Should().NotBeNull();
+            projectInfo.Configuration.DefectSubTypes.Should().NotBeNull();
+
+            VerifyDefectTypesModel(projectInfo.Configuration.DefectSubTypes.ProductBugTypes);
+            VerifyDefectTypesModel(projectInfo.Configuration.DefectSubTypes.AutomationBugTypes);
+            VerifyDefectTypesModel(projectInfo.Configuration.DefectSubTypes.SystemIssueTypes);
+            VerifyDefectTypesModel(projectInfo.Configuration.DefectSubTypes.ToInvestigateTypes);
+            VerifyDefectTypesModel(projectInfo.Configuration.DefectSubTypes.NoDefectTypes);
+        }
+
+        private void VerifyDefectTypesModel(IList<ProjectDefectSubType> defectTypes)
+        {
+            defectTypes.Should().NotBeEmpty();
+            foreach (var defectType in defectTypes)
+            {
+                defectType.Id.Should().BeGreaterThan(0);
+                defectType.Color.Should().NotBeNullOrEmpty();
+                defectType.Locator.Should().NotBeNullOrEmpty();
+                defectType.LongName.Should().NotBeNullOrEmpty();
+                defectType.ShortName.Should().NotBeNullOrEmpty();
+            }
+        }
+
+        [Fact]
+        public async Task GetProjectInfoByName()
+        {
+            var projectInfo = await Service.Project.GetAsync(ProjectName);
+
+            projectInfo.Name.Should().Be(ProjectName);
+        }
+
         [Fact]
         public async Task UpdatePreferences()
         {
@@ -32,10 +72,11 @@ namespace ReportPortal.Client.IntegrationTests.Project
             {
                 Name = Guid.NewGuid().ToString(),
                 Description = "testDscr_1",
-                IsShared = true,
+                IsShared = false,
                 UserFilterType = UserFilterType.Launch,
                 Conditions = new List<Condition> { condition },
-                Orders = new List<FilterOrder> { order }
+                Orders = new List<FilterOrder> { order },
+                Owner = "default"
             };
 
             var userFilterCreatedReponse = await Service.UserFilter.CreateAsync(createUserFilterRequest);
@@ -43,7 +84,7 @@ namespace ReportPortal.Client.IntegrationTests.Project
             var message = await Service.Project.UpdatePreferencesAsync(Service.ProjectName, Username, userFilterCreatedReponse.Id);
             message.Info.Should().Contain("successfully added");
 
-            var allPreferences = await Service.Project.GetAllPreferences(Service.ProjectName, Username);
+            var allPreferences = await Service.Project.GetAllPreferencesAsync(Service.ProjectName, Username);
             allPreferences.Filters.Should().ContainSingle(p => p.Id == userFilterCreatedReponse.Id);
 
             var delMessage = await Service.UserFilter.DeleteAsync(userFilterCreatedReponse.Id);

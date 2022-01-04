@@ -31,25 +31,31 @@ namespace ReportPortal.Client.Abstractions.Requests
         public IEnumerable<Condition> Conditions { get; set; }
 
         /// <summary>
-        /// list of parameters of selection
+        /// List of parameters of selection.
         /// </summary>
         [DataMember(Name = "orders")]
         public IEnumerable<FilterOrder> Orders { get; set; }
 
         /// <summary>
-        /// is filter shared
+        /// Indicates if filter is shared.
         /// </summary>
         [DataMember(Name = "share")]
         public bool IsShared { get; set; }
 
         /// <summary>
-        /// filter type
+        /// Filter type.
         /// </summary>
         [DataMember(Name = "type")]
         public string TypeStr { get; set; }
 
         /// <summary>
-        /// user filter type enum
+        /// Owner of the filter.
+        /// </summary>
+        [DataMember(Name = "owner")]
+        public string Owner { get; set; }
+
+        /// <summary>
+        /// User filter type enum.
         /// </summary>
         public UserFilterType UserFilterType
         {
