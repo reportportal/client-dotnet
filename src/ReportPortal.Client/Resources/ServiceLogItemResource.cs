@@ -29,19 +29,19 @@ namespace ReportPortal.Client.Resources
             return GetAsJsonAsync<Content<LogItemResponse>>(uri);
         }
 
-        public Task<LogItemResponse> GetAsync(string uuid)
+        public async Task<LogItemResponse> GetAsync(string uuid)
         {
-            return GetAsJsonAsync<LogItemResponse>($"{ProjectName}/log/uuid/{uuid}");
+            return await GetAsJsonAsync<LogItemResponse>($"{ProjectName}/log/uuid/{uuid}");
         }
 
-        public Task<LogItemResponse> GetAsync(long id)
+        public async Task<LogItemResponse> GetAsync(long id)
         {
-            return GetAsJsonAsync<LogItemResponse>($"{ProjectName}/log/{id}");
+            return await GetAsJsonAsync<LogItemResponse>($"{ProjectName}/log/{id}");
         }
 
-        public Task<byte[]> GetBinaryDataAsync(string id)
+        public async Task<byte[]> GetBinaryDataAsync(string id)
         {
-            return GetAsBytesAsync($"data/{ProjectName}/{id}");
+            return await GetAsBytesAsync($"data/{ProjectName}/{id}");
         }
 
         public async Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request)
@@ -59,7 +59,7 @@ namespace ReportPortal.Client.Resources
             }
         }
 
-        public Task<LogItemsCreatedResponse> CreateAsync(params CreateLogItemRequest[] requests)
+        public async Task<LogItemsCreatedResponse> CreateAsync(params CreateLogItemRequest[] requests)
         {
             var uri = $"{ProjectName}/log";
 
@@ -80,13 +80,12 @@ namespace ReportPortal.Client.Resources
                 }
             }
 
-            return SendHttpRequestAsync<LogItemsCreatedResponse>(HttpMethod.Post, uri, multipartContent);
+            return await SendHttpRequestAsync<LogItemsCreatedResponse>(HttpMethod.Post, uri, multipartContent);
         }
 
-
-        public Task<MessageResponse> DeleteAsync(long id)
+        public async Task<MessageResponse> DeleteAsync(long id)
         {
-            return DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/log/{id}");
+            return await DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/log/{id}");
         }
     }
 }
