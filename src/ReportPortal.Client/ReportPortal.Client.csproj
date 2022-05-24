@@ -12,7 +12,8 @@
     <RepositoryType>GitHub</RepositoryType>
     <RepositoryUrl>https://github.com/reportportal/client-net</RepositoryUrl>
     <PackageTags>report reportportal api client testing</PackageTags>
-
+	<PackageReadmeFile>README.md</PackageReadmeFile>
+	  
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
@@ -25,6 +26,7 @@
     <None Include="Build\**\*.targets" Pack="true" PackagePath="build\" />
     
     <None Include="..\..\Logo.png" Pack="true" PackagePath="\" Visible="false" />
+	<None Include="..\..\README.md" Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>
 
   <ItemGroup>
