@@ -20,22 +20,22 @@ namespace ReportPortal.Client.Resources
 
         protected async Task<TResponse> GetAsJsonAsync<TResponse>(string uri)
         {
-            return await SendAsJsonAsync<TResponse, object>(HttpMethod.Get, uri, null);
+            return await SendAsJsonAsync<TResponse, object>(HttpMethod.Get, uri, null).ConfigureAwait(false);
         }
 
         protected async Task<TResponse> PostAsJsonAsync<TResponse, TRequest>(string uri, TRequest request)
         {
-            return await SendAsJsonAsync<TResponse, TRequest>(HttpMethod.Post, uri, request);
+            return await SendAsJsonAsync<TResponse, TRequest>(HttpMethod.Post, uri, request).ConfigureAwait(false);
         }
 
         protected async Task<TResponse> PutAsJsonAsync<TResponse, TRequest>(string uri, TRequest request)
         {
-            return await SendAsJsonAsync<TResponse, TRequest>(HttpMethod.Put, uri, request);
+            return await SendAsJsonAsync<TResponse, TRequest>(HttpMethod.Put, uri, request).ConfigureAwait(false);
         }
 
         protected async Task<TResponse> DeleteAsJsonAsync<TResponse>(string uri)
         {
-            return await SendAsJsonAsync<TResponse, object>(HttpMethod.Delete, uri, null);
+            return await SendAsJsonAsync<TResponse, object>(HttpMethod.Delete, uri, null).ConfigureAwait(false);
         }
 
         private async Task<TResponse> SendAsJsonAsync<TResponse, TRequest>(HttpMethod httpMethod, string uri, TRequest request)
@@ -51,7 +51,7 @@ namespace ReportPortal.Client.Resources
                 httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             }
 
-            return await SendHttpRequestAsync<TResponse>(httpMethod, uri, httpContent);
+            return await SendHttpRequestAsync<TResponse>(httpMethod, uri, httpContent).ConfigureAwait(false);
         }
 
         protected async Task<TResponse> SendHttpRequestAsync<TResponse>(HttpMethod httpMethod, string uri, HttpContent httpContent)
