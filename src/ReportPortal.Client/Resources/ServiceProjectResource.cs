@@ -13,26 +13,26 @@ namespace ReportPortal.Client.Resources
 
         }
 
-        public Task<ProjectResponse> GetAsync()
+        public async Task<ProjectResponse> GetAsync()
         {
-            return GetAsJsonAsync<ProjectResponse>($"project/{this.ProjectName}");
+            return await GetAsJsonAsync<ProjectResponse>($"project/{this.ProjectName}").ConfigureAwait(false);
         }
 
-        public Task<ProjectResponse> GetAsync(string projectName)
+        public async Task<ProjectResponse> GetAsync(string projectName)
         {
-            return GetAsJsonAsync<ProjectResponse>($"project/{projectName}");
+            return await GetAsJsonAsync<ProjectResponse>($"project/{projectName}").ConfigureAwait(false);
         }
 
-        public Task<MessageResponse> UpdatePreferencesAsync(string projectName, string userName, long filterId)
+        public async Task<MessageResponse> UpdatePreferencesAsync(string projectName, string userName, long filterId)
         {
-            return PutAsJsonAsync<MessageResponse, object>(
+            return await PutAsJsonAsync<MessageResponse, object>(
                 $"project/{projectName}/preference/{userName}/{filterId}",
-                string.Empty);
+                string.Empty).ConfigureAwait(false);
         }
 
-        public Task<PreferenceResponse> GetAllPreferencesAsync(string projectName, string userName)
+        public async Task<PreferenceResponse> GetAllPreferencesAsync(string projectName, string userName)
         {
-            return GetAsJsonAsync<PreferenceResponse>($"project/{projectName}/preference/{userName}");
+            return await GetAsJsonAsync<PreferenceResponse>($"project/{projectName}/preference/{userName}").ConfigureAwait(false);
         }
     }
 }

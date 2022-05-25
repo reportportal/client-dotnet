@@ -17,7 +17,7 @@ namespace ReportPortal.Client.Resources
 
         }
 
-        public Task<Content<LogItemResponse>> GetAsync(FilterOption filterOption = null)
+        public async Task<Content<LogItemResponse>> GetAsync(FilterOption filterOption = null)
         {
             var uri = $"{ProjectName}/log";
 
@@ -26,22 +26,22 @@ namespace ReportPortal.Client.Resources
                 uri += $"?{filterOption}";
             }
 
-            return GetAsJsonAsync<Content<LogItemResponse>>(uri);
+            return await GetAsJsonAsync<Content<LogItemResponse>>(uri).ConfigureAwait(false);
         }
 
-        public Task<LogItemResponse> GetAsync(string uuid)
+        public async Task<LogItemResponse> GetAsync(string uuid)
         {
-            return GetAsJsonAsync<LogItemResponse>($"{ProjectName}/log/uuid/{uuid}");
+            return await GetAsJsonAsync<LogItemResponse>($"{ProjectName}/log/uuid/{uuid}").ConfigureAwait(false);
         }
 
-        public Task<LogItemResponse> GetAsync(long id)
+        public async Task<LogItemResponse> GetAsync(long id)
         {
-            return GetAsJsonAsync<LogItemResponse>($"{ProjectName}/log/{id}");
+            return await GetAsJsonAsync<LogItemResponse>($"{ProjectName}/log/{id}").ConfigureAwait(false);
         }
 
-        public Task<byte[]> GetBinaryDataAsync(string id)
+        public async Task<byte[]> GetBinaryDataAsync(string id)
         {
-            return GetAsBytesAsync($"data/{ProjectName}/{id}");
+            return await GetAsBytesAsync($"data/{ProjectName}/{id}").ConfigureAwait(false);
         }
 
         public async Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request)
@@ -50,16 +50,16 @@ namespace ReportPortal.Client.Resources
 
             if (request.Attach == null)
             {
-                return await PostAsJsonAsync<LogItemCreatedResponse, CreateLogItemRequest>(uri, request);
+                return await PostAsJsonAsync<LogItemCreatedResponse, CreateLogItemRequest>(uri, request).ConfigureAwait(false);
             }
             else
             {
-                var results = await CreateAsync(new CreateLogItemRequest[] { request });
+                var results = await CreateAsync(new CreateLogItemRequest[] { request }).ConfigureAwait(false);
                 return results.LogItems.First();
             }
         }
 
-        public Task<LogItemsCreatedResponse> CreateAsync(params CreateLogItemRequest[] requests)
+        public async Task<LogItemsCreatedResponse> CreateAsync(params CreateLogItemRequest[] requests)
         {
             var uri = $"{ProjectName}/log";
 
@@ -80,13 +80,12 @@ namespace ReportPortal.Client.Resources
                 }
             }
 
-            return SendHttpRequestAsync<LogItemsCreatedResponse>(HttpMethod.Post, uri, multipartContent);
+            return await SendHttpRequestAsync<LogItemsCreatedResponse>(HttpMethod.Post, uri, multipartContent).ConfigureAwait(false);
         }
 
-
-        public Task<MessageResponse> DeleteAsync(long id)
+        public async Task<MessageResponse> DeleteAsync(long id)
         {
-            return DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/log/{id}");
+            return await DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/log/{id}").ConfigureAwait(false);
         }
     }
 }

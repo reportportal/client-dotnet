@@ -12,9 +12,9 @@ namespace ReportPortal.Client.Resources
 
         }
 
-        public Task<UserResponse> GetAsync()
+        public async Task<UserResponse> GetAsync()
         {
-            return GetAsJsonAsync<UserResponse>("user");
+            return await GetAsJsonAsync<UserResponse>("user").ConfigureAwait(false);
         }
     }
 }

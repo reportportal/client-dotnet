@@ -13,12 +13,12 @@ namespace ReportPortal.Client.Resources
         {
         }
 
-        public Task<UserFilterCreatedResponse> CreateAsync(CreateUserFilterRequest request)
+        public async Task<UserFilterCreatedResponse> CreateAsync(CreateUserFilterRequest request)
         {
-            return PostAsJsonAsync<UserFilterCreatedResponse, CreateUserFilterRequest>($"{ProjectName}/filter", request);
+            return await PostAsJsonAsync<UserFilterCreatedResponse, CreateUserFilterRequest>($"{ProjectName}/filter", request).ConfigureAwait(false);
         }
 
-        public Task<Content<UserFilterResponse>> GetAsync(FilterOption filterOption = null)
+        public async Task<Content<UserFilterResponse>> GetAsync(FilterOption filterOption = null)
         {
             var uri = $"{ProjectName}/filter";
             if (filterOption != null)
@@ -26,22 +26,22 @@ namespace ReportPortal.Client.Resources
                 uri += $"?{filterOption}";
             }
 
-            return GetAsJsonAsync<Content<UserFilterResponse>>(uri);
+            return await GetAsJsonAsync<Content<UserFilterResponse>>(uri).ConfigureAwait(false);
         }
 
-        public Task<MessageResponse> UpdateAsync(long id, UpdateUserFilterRequest request)
+        public async Task<MessageResponse> UpdateAsync(long id, UpdateUserFilterRequest request)
         {
-            return PutAsJsonAsync<MessageResponse, UpdateUserFilterRequest>($"{ProjectName}/filter/{id}", request);
+            return await PutAsJsonAsync<MessageResponse, UpdateUserFilterRequest>($"{ProjectName}/filter/{id}", request).ConfigureAwait(false);
         }
 
-        public Task<UserFilterResponse> GetAsync(long id)
+        public async Task<UserFilterResponse> GetAsync(long id)
         {
-            return GetAsJsonAsync<UserFilterResponse>($"{ProjectName}/filter/{id}");
+            return await GetAsJsonAsync<UserFilterResponse>($"{ProjectName}/filter/{id}").ConfigureAwait(false);
         }
 
-        public Task<MessageResponse> DeleteAsync(long id)
+        public async Task<MessageResponse> DeleteAsync(long id)
         {
-            return DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/filter/{id}");
+            return await DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/filter/{id}").ConfigureAwait(false);
         }
     }
 }
