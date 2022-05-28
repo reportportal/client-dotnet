@@ -6,6 +6,7 @@ using ReportPortal.Client.Converters;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ReportPortal.Client.Resources
@@ -17,7 +18,7 @@ namespace ReportPortal.Client.Resources
 
         }
 
-        public async Task<Content<LogItemResponse>> GetAsync(FilterOption filterOption = null)
+        public async Task<Content<LogItemResponse>> GetAsync(FilterOption filterOption = null, CancellationToken cancellationToken = default)
         {
             var uri = $"{ProjectName}/log";
 
@@ -26,40 +27,40 @@ namespace ReportPortal.Client.Resources
                 uri += $"?{filterOption}";
             }
 
-            return await GetAsJsonAsync<Content<LogItemResponse>>(uri).ConfigureAwait(false);
+            return await GetAsJsonAsync<Content<LogItemResponse>>(uri, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<LogItemResponse> GetAsync(string uuid)
+        public async Task<LogItemResponse> GetAsync(string uuid, CancellationToken cancellationToken = default)
         {
-            return await GetAsJsonAsync<LogItemResponse>($"{ProjectName}/log/uuid/{uuid}").ConfigureAwait(false);
+            return await GetAsJsonAsync<LogItemResponse>($"{ProjectName}/log/uuid/{uuid}", cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<LogItemResponse> GetAsync(long id)
+        public async Task<LogItemResponse> GetAsync(long id, CancellationToken cancellationToken = default)
         {
-            return await GetAsJsonAsync<LogItemResponse>($"{ProjectName}/log/{id}").ConfigureAwait(false);
+            return await GetAsJsonAsync<LogItemResponse>($"{ProjectName}/log/{id}", cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<byte[]> GetBinaryDataAsync(string id)
+        public async Task<byte[]> GetBinaryDataAsync(string id, CancellationToken cancellationToken = default)
         {
-            return await GetAsBytesAsync($"data/{ProjectName}/{id}").ConfigureAwait(false);
+            return await GetAsBytesAsync($"data/{ProjectName}/{id}", cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request)
+        public async Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request, CancellationToken cancellationToken = default)
         {
             var uri = $"{ProjectName}/log";
 
             if (request.Attach == null)
             {
-                return await PostAsJsonAsync<LogItemCreatedResponse, CreateLogItemRequest>(uri, request).ConfigureAwait(false);
+                return await PostAsJsonAsync<LogItemCreatedResponse, CreateLogItemRequest>(uri, request, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                var results = await CreateAsync(new CreateLogItemRequest[] { request }).ConfigureAwait(false);
+                var results = await CreateAsync(cancellationToken, new CreateLogItemRequest[] { request }).ConfigureAwait(false);
                 return results.LogItems.First();
             }
         }
 
-        public async Task<LogItemsCreatedResponse> CreateAsync(params CreateLogItemRequest[] requests)
+        public async Task<LogItemsCreatedResponse> CreateAsync(CancellationToken cancellationToken = default, params CreateLogItemRequest[] requests)
         {
             var uri = $"{ProjectName}/log";
 
@@ -80,12 +81,12 @@ namespace ReportPortal.Client.Resources
                 }
             }
 
-            return await SendHttpRequestAsync<LogItemsCreatedResponse>(HttpMethod.Post, uri, multipartContent).ConfigureAwait(false);
+            return await SendHttpRequestAsync<LogItemsCreatedResponse>(HttpMethod.Post, uri, multipartContent, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<MessageResponse> DeleteAsync(long id)
+        public async Task<MessageResponse> DeleteAsync(long id, CancellationToken cancellationToken = default)
         {
-            return await DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/log/{id}").ConfigureAwait(false);
+            return await DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/log/{id}", cancellationToken).ConfigureAwait(false);
         }
     }
 }
