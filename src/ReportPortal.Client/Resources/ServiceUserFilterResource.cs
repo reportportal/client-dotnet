@@ -14,13 +14,23 @@ namespace ReportPortal.Client.Resources
         {
         }
 
-        public async Task<UserFilterCreatedResponse> CreateAsync(CreateUserFilterRequest request, CancellationToken cancellationToken = default)
+        public async Task<UserFilterCreatedResponse> CreateAsync(CreateUserFilterRequest request)
+        {
+            return await CreateAsync(request, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        public async Task<UserFilterCreatedResponse> CreateAsync(CreateUserFilterRequest request, CancellationToken cancellationToken)
         {
             return await PostAsJsonAsync<UserFilterCreatedResponse, CreateUserFilterRequest>(
                 $"{ProjectName}/filter", request, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<Content<UserFilterResponse>> GetAsync(FilterOption filterOption = null, CancellationToken cancellationToken = default)
+        public async Task<Content<UserFilterResponse>> GetAsync(FilterOption filterOption = null)
+        {
+            return await GetAsync(CancellationToken.None, filterOption).ConfigureAwait(false);
+        }
+
+        public async Task<Content<UserFilterResponse>> GetAsync(CancellationToken cancellationToken, FilterOption filterOption = null)
         {
             var uri = $"{ProjectName}/filter";
             if (filterOption != null)
@@ -31,18 +41,33 @@ namespace ReportPortal.Client.Resources
             return await GetAsJsonAsync<Content<UserFilterResponse>>(uri, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<MessageResponse> UpdateAsync(long id, UpdateUserFilterRequest request, CancellationToken cancellationToken = default)
+        public async Task<MessageResponse> UpdateAsync(long id, UpdateUserFilterRequest request)
+        {
+            return await UpdateAsync(id, request, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        public async Task<MessageResponse> UpdateAsync(long id, UpdateUserFilterRequest request, CancellationToken cancellationToken)
         {
             return await PutAsJsonAsync<MessageResponse, UpdateUserFilterRequest>(
                 $"{ProjectName}/filter/{id}", request, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<UserFilterResponse> GetAsync(long id, CancellationToken cancellationToken = default)
+        public async Task<UserFilterResponse> GetAsync(long id)
+        {
+            return await GetAsync(id, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        public async Task<UserFilterResponse> GetAsync(long id, CancellationToken cancellationToken)
         {
             return await GetAsJsonAsync<UserFilterResponse>($"{ProjectName}/filter/{id}", cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<MessageResponse> DeleteAsync(long id, CancellationToken cancellationToken = default)
+        public async Task<MessageResponse> DeleteAsync(long id)
+        {
+            return await DeleteAsync(id, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        public async Task<MessageResponse> DeleteAsync(long id, CancellationToken cancellationToken)
         {
             return await DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/filter/{id}", cancellationToken).ConfigureAwait(false);
         }
