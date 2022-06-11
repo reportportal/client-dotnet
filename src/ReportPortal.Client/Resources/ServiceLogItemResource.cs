@@ -89,17 +89,17 @@ namespace ReportPortal.Client.Resources
             }
             else
             {
-                var results = await CreateAsync(cancellationToken, new CreateLogItemRequest[] { request }).ConfigureAwait(false);
+                var results = await CreateAsync(new CreateLogItemRequest[] { request }, cancellationToken).ConfigureAwait(false);
                 return results.LogItems.First();
             }
         }
 
-        public async Task<LogItemsCreatedResponse> CreateAsync(params CreateLogItemRequest[] requests)
+        public async Task<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests)
         {
-            return await CreateAsync(CancellationToken.None, requests).ConfigureAwait(false);
+            return await CreateAsync(requests, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<LogItemsCreatedResponse> CreateAsync(CancellationToken cancellationToken, params CreateLogItemRequest[] requests)
+        public async Task<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests, CancellationToken cancellationToken)
         {
             var uri = $"{ProjectName}/log";
 

@@ -106,7 +106,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
                 });
             }
 
-            var logs = await Service.LogItem.CreateAsync(CancellationToken.None, requests.ToArray());
+            var logs = await Service.LogItem.CreateAsync(requests.ToArray());
 
             logs.LogItems.Should().HaveCount(10);
 

@@ -29,11 +29,11 @@ namespace ReportPortal.Client.Abstractions.Resources
         /// <param name="requests">Information about representation of log item.</param>
         /// <returns>Representation of just created log item.</returns>
         //Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request);
-        Task<LogItemsCreatedResponse> CreateAsync(params CreateLogItemRequest[] requests);
+        Task<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests);
 
         /// <inheritdoc cref="CreateAsync(CreateLogItemRequest[])"/>
         /// <param name="cancellationToken">Cancellation token.</param>
-        Task<LogItemsCreatedResponse> CreateAsync(CancellationToken cancellationToken, params CreateLogItemRequest[] requests);
+        Task<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests, CancellationToken cancellationToken);
 
         /// <summary>
         /// Deletes specified log item.
@@ -82,7 +82,7 @@ namespace ReportPortal.Client.Abstractions.Resources
         /// <summary>
         /// Returns a list of log items for specified test item.
         /// </summary>
-        
+
         /// <returns>A list of log items.</returns>
         Task<Content<LogItemResponse>> GetAsync();
 
