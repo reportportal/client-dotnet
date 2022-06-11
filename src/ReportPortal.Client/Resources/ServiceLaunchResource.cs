@@ -110,12 +110,22 @@ namespace ReportPortal.Client.Resources
                 $"{ProjectName}/launch/analyze", request, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<Content<LaunchResponse>> GetAsync(FilterOption filterOption = null)
+        public async Task<Content<LaunchResponse>> GetAsync()
         {
-            return await GetAsync(CancellationToken.None, filterOption).ConfigureAwait(false);
+            return await GetAsync(filterOption: null, CancellationToken.None).ConfigureAwait(false);
+        }
+        
+        public async Task<Content<LaunchResponse>> GetAsync(FilterOption filterOption)
+        {
+            return await GetAsync(filterOption, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<Content<LaunchResponse>> GetAsync(CancellationToken cancellationToken, FilterOption filterOption = null)
+        public async Task<Content<LaunchResponse>> GetAsync(CancellationToken cancellationToken)
+        {
+            return await GetAsync(filterOption: null, cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<Content<LaunchResponse>> GetAsync(FilterOption filterOption, CancellationToken cancellationToken)
         {
             var uri = $"{ProjectName}/launch";
 
@@ -127,12 +137,22 @@ namespace ReportPortal.Client.Resources
             return await GetAsJsonAsync<Content<LaunchResponse>>(uri, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<Content<LaunchResponse>> GetDebugAsync(FilterOption filterOption = null)
+        public async Task<Content<LaunchResponse>> GetDebugAsync()
         {
-            return await GetDebugAsync(CancellationToken.None, filterOption).ConfigureAwait(false);
+            return await GetDebugAsync(filterOption: null, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<Content<LaunchResponse>> GetDebugAsync(CancellationToken cancellationToken, FilterOption filterOption = null)
+        public async Task<Content<LaunchResponse>> GetDebugAsync(FilterOption filterOption)
+        {
+            return await GetDebugAsync(filterOption, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        public async Task<Content<LaunchResponse>> GetDebugAsync(CancellationToken cancellationToken)
+        {
+            return await GetDebugAsync(filterOption: null, cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<Content<LaunchResponse>> GetDebugAsync(FilterOption filterOption, CancellationToken cancellationToken)
         {
             var uri = $"{ProjectName}/launch/mode";
 

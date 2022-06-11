@@ -13,11 +13,8 @@ namespace ReportPortal.Client.Abstractions.Resources
         /// <returns>Project info.</returns>
         Task<ProjectResponse> GetAsync();
 
-        /// <summary>
-        /// Returns information about current accosiated project.
-        /// </summary>
+        /// <inheritdoc cref="GetAsync()"/>
         /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Project info.</returns>
         Task<ProjectResponse> GetAsync(CancellationToken cancellationToken);
 
         /// <summary>
@@ -27,12 +24,8 @@ namespace ReportPortal.Client.Abstractions.Resources
         /// <returns>Project info.</returns>
         Task<ProjectResponse> GetAsync(string projectName);
 
-        /// <summary>
-        /// Returns information about project filtered by name.
-        /// </summary>
-        /// <param name="projectName">Name of specified project.</param>
+        /// <inheritdoc cref="GetAsync(string)"/>
         /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Project info.</returns>
         Task<ProjectResponse> GetAsync(string projectName, CancellationToken cancellationToken);
 
         /// <summary>
@@ -44,14 +37,8 @@ namespace ReportPortal.Client.Abstractions.Resources
         /// <returns>Message with info.</returns>
         Task<MessageResponse> UpdatePreferencesAsync(string projectName, string userName, long filterId);
 
-        /// <summary>
-        /// Updates the project preference for user.
-        /// </summary>
-        /// <param name="projectName">Name of specified project.</param>
-        /// <param name="userName">Name of user.</param>
-        /// <param name="filterId">Id of specified filter.</param>
+        /// <inheritdoc cref="UpdatePreferencesAsync(string, string, long)"/>
         /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Message with info.</returns>
         Task<MessageResponse> UpdatePreferencesAsync(string projectName, string userName, long filterId, CancellationToken cancellationToken);
 
         /// <summary>
@@ -62,13 +49,8 @@ namespace ReportPortal.Client.Abstractions.Resources
         /// <returns>Preference info.</returns>
         Task<PreferenceResponse> GetAllPreferencesAsync(string projectName, string userName);
 
-        /// <summary>
-        /// Gets all user preferences.
-        /// </summary>
-        /// <param name="projectName">Name of specified project.</param>
-        /// <param name="userName">Name of user.</param>
+        /// <inheritdoc cref="GetAllPreferencesAsync(string, string)"/>
         /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Preference info.</returns>
         Task<PreferenceResponse> GetAllPreferencesAsync(string projectName, string userName, CancellationToken cancellationToken);
     }
 }

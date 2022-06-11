@@ -14,6 +14,32 @@ namespace ReportPortal.Client.Resources
         {
         }
 
+        public async Task<Content<UserFilterResponse>> GetAsync()
+        {
+            return await GetAsync(filterOption: null, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        public async Task<Content<UserFilterResponse>> GetAsync(FilterOption filterOption)
+        {
+            return await GetAsync(filterOption, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        public async Task<Content<UserFilterResponse>> GetAsync(CancellationToken cancellationToken)
+        {
+            return await GetAsync(filterOption: null, cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<Content<UserFilterResponse>> GetAsync(FilterOption filterOption, CancellationToken cancellationToken)
+        {
+            var uri = $"{ProjectName}/filter";
+            if (filterOption != null)
+            {
+                uri += $"?{filterOption}";
+            }
+
+            return await GetAsJsonAsync<Content<UserFilterResponse>>(uri, cancellationToken).ConfigureAwait(false);
+        }
+
         public async Task<UserFilterCreatedResponse> CreateAsync(CreateUserFilterRequest request)
         {
             return await CreateAsync(request, CancellationToken.None).ConfigureAwait(false);
@@ -23,22 +49,6 @@ namespace ReportPortal.Client.Resources
         {
             return await PostAsJsonAsync<UserFilterCreatedResponse, CreateUserFilterRequest>(
                 $"{ProjectName}/filter", request, cancellationToken).ConfigureAwait(false);
-        }
-
-        public async Task<Content<UserFilterResponse>> GetAsync(FilterOption filterOption = null)
-        {
-            return await GetAsync(CancellationToken.None, filterOption).ConfigureAwait(false);
-        }
-
-        public async Task<Content<UserFilterResponse>> GetAsync(CancellationToken cancellationToken, FilterOption filterOption = null)
-        {
-            var uri = $"{ProjectName}/filter";
-            if (filterOption != null)
-            {
-                uri += $"?{filterOption}";
-            }
-
-            return await GetAsJsonAsync<Content<UserFilterResponse>>(uri, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<MessageResponse> UpdateAsync(long id, UpdateUserFilterRequest request)

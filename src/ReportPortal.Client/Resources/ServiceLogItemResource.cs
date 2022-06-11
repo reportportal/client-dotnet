@@ -17,12 +17,22 @@ namespace ReportPortal.Client.Resources
         {
         }
 
-        public async Task<Content<LogItemResponse>> GetAsync(FilterOption filterOption = null)
+        public async Task<Content<LogItemResponse>> GetAsync()
         {
-            return await GetAsync(CancellationToken.None, filterOption);
+            return await GetAsync(filterOption: null, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<Content<LogItemResponse>> GetAsync(CancellationToken cancellationToken, FilterOption filterOption = null)
+        public async Task<Content<LogItemResponse>> GetAsync(FilterOption filterOption)
+        {
+            return await GetAsync(filterOption, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        public async Task<Content<LogItemResponse>> GetAsync(CancellationToken cancellationToken)
+        {
+            return await GetAsync(filterOption: null, cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<Content<LogItemResponse>> GetAsync(FilterOption filterOption, CancellationToken cancellationToken)
         {
             var uri = $"{ProjectName}/log";
 
@@ -69,11 +79,6 @@ namespace ReportPortal.Client.Resources
             return await CreateAsync(request, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<LogItemsCreatedResponse> CreateAsync(params CreateLogItemRequest[] requests)
-        {
-            return await CreateAsync(CancellationToken.None, requests).ConfigureAwait(false);
-        }
-
         public async Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request, CancellationToken cancellationToken)
         {
             var uri = $"{ProjectName}/log";
@@ -89,7 +94,12 @@ namespace ReportPortal.Client.Resources
             }
         }
 
-        public async Task<LogItemsCreatedResponse> CreateAsync(CancellationToken cancellationToken = default, params CreateLogItemRequest[] requests)
+        public async Task<LogItemsCreatedResponse> CreateAsync(params CreateLogItemRequest[] requests)
+        {
+            return await CreateAsync(CancellationToken.None, requests).ConfigureAwait(false);
+        }
+
+        public async Task<LogItemsCreatedResponse> CreateAsync(CancellationToken cancellationToken, params CreateLogItemRequest[] requests)
         {
             var uri = $"{ProjectName}/log";
 

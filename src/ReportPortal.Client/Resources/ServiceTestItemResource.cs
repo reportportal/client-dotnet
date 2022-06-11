@@ -15,12 +15,22 @@ namespace ReportPortal.Client.Resources
         {
         }
 
-        public async Task<Content<TestItemResponse>> GetAsync(FilterOption filterOption = null)
+        public async Task<Content<TestItemResponse>> GetAsync()
         {
-            return await GetAsync(CancellationToken.None, filterOption).ConfigureAwait(false);
+            return await GetAsync(filterOption: null, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<Content<TestItemResponse>> GetAsync(CancellationToken cancellationToken, FilterOption filterOption = null)
+        public async Task<Content<TestItemResponse>> GetAsync(FilterOption filterOption)
+        {
+            return await GetAsync(filterOption, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        public async Task<Content<TestItemResponse>> GetAsync(CancellationToken cancellationToken)
+        {
+            return await GetAsync(filterOption: null, cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<Content<TestItemResponse>> GetAsync(FilterOption filterOption, CancellationToken cancellationToken)
         {
             var uri = $"{ProjectName}/item";
             if (filterOption != null)

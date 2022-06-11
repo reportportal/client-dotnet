@@ -18,12 +18,8 @@ namespace ReportPortal.Client.Abstractions.Resources
         /// <returns>Response with Id of created user filter.</returns>
         Task<UserFilterCreatedResponse> CreateAsync(CreateUserFilterRequest request);
 
-        /// <summary>
-        /// Creates the specified user filter.
-        /// </summary>
-        /// <param name="request">Request with user filter for create.</param>
+        /// <inheritdoc cref="CreateAsync(CreateUserFilterRequest)"/>
         /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Response with Id of created user filter.</returns>
         Task<UserFilterCreatedResponse> CreateAsync(CreateUserFilterRequest request, CancellationToken cancellationToken);
 
         /// <summary>
@@ -34,29 +30,27 @@ namespace ReportPortal.Client.Abstractions.Resources
         /// <returns>Response with info about status of updating user filter.</returns>
         Task<MessageResponse> UpdateAsync(long id, UpdateUserFilterRequest request);
 
-        /// <summary>
-        /// Updates the specified user filter.
-        /// </summary>
-        /// <param name="id">ID of filter to update.</param>
-        /// <param name="request">Request with user filter for update</param>
+        /// <inheritdoc cref="UpdateAsync(long, UpdateUserFilterRequest)"/>
         /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Response with info about status of updating user filter.</returns>
         Task<MessageResponse> UpdateAsync(long id, UpdateUserFilterRequest request, CancellationToken cancellationToken);
 
         /// <summary>
         /// Gets all user filters.
         /// </summary>
-        /// <param name="filterOption">Filter criteria for user filters.</param>
         /// <returns>Filtered user filters.</returns>
-        Task<Content<UserFilterResponse>> GetAsync(FilterOption filterOption = null);
+        Task<Content<UserFilterResponse>> GetAsync();
 
-        /// <summary>
-        /// Gets all user filters.
-        /// </summary>
+        /// <inheritdoc cref="GetAsync()"/>
         /// <param name="filterOption">Filter criteria for user filters.</param>
+        Task<Content<UserFilterResponse>> GetAsync(FilterOption filterOption);
+
+        /// <inheritdoc cref="GetAsync()"/>
         /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Filtered user filters.</returns>
-        Task<Content<UserFilterResponse>> GetAsync(CancellationToken cancellationToken, FilterOption filterOption = null);
+        Task<Content<UserFilterResponse>> GetAsync(CancellationToken cancellationToken);
+
+        /// <inheritdoc cref="GetAsync(FilterOption)"/>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        Task<Content<UserFilterResponse>> GetAsync(FilterOption filterOption, CancellationToken cancellationToken);
 
         /// <summary>
         /// Gets user filter by id.
@@ -65,12 +59,8 @@ namespace ReportPortal.Client.Abstractions.Resources
         /// <returns>User filter with specified id.</returns>
         Task<UserFilterResponse> GetAsync(long id);
 
-        /// <summary>
-        /// Gets user filter by id.
-        /// </summary>
-        /// <param name="id">Id of user filter.</param>
+        /// <inheritdoc cref="GetAsync(long)"/>
         /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>User filter with specified id.</returns>
         Task<UserFilterResponse> GetAsync(long id, CancellationToken cancellationToken);
 
         /// <summary>
@@ -80,12 +70,8 @@ namespace ReportPortal.Client.Abstractions.Resources
         /// <returns>Response with info about user filter deletion status.</returns>
         Task<MessageResponse> DeleteAsync(long id);
 
-        /// <summary>
-        /// Deletes the specified filter by id.
-        /// </summary>
-        /// <param name="id">Id of user filter</param>
+        /// <inheritdoc cref="DeleteAsync(long)"/>
         /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Response with info about user filter deletion status.</returns>
         Task<MessageResponse> DeleteAsync(long id, CancellationToken cancellationToken);
     }
 }
