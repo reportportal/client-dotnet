@@ -4,10 +4,10 @@
     <TargetFrameworks>netstandard2.0;net45;</TargetFrameworks>
     <PackageId>ReportPortal.Client</PackageId>
     <Version>1.0.0</Version>
-    <Description>API client for http://reportportal.io</Description>
+    <Description>API client for https://reportportal.io</Description>
     <Authors>Nikolay Borisenko, Report Portal Community</Authors>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageProjectUrl>http://reportportal.io</PackageProjectUrl>
+    <PackageProjectUrl>https://reportportal.io</PackageProjectUrl>
     <PackageIcon>Logo.png</PackageIcon>
     <RepositoryType>GitHub</RepositoryType>
     <RepositoryUrl>https://github.com/reportportal/client-net</RepositoryUrl>
