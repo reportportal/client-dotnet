@@ -16,7 +16,6 @@ namespace ReportPortal.Client.Abstractions.Resources
         /// </summary>
         /// <param name="request">Information about representation of log item.</param>
         /// <returns>Representation of just created log item.</returns>
-        //Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request);
         Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request);
 
         /// <inheritdoc cref="CreateAsync(CreateLogItemRequest)"/>
@@ -28,7 +27,6 @@ namespace ReportPortal.Client.Abstractions.Resources
         /// </summary>
         /// <param name="requests">Information about representation of log item.</param>
         /// <returns>Representation of just created log item.</returns>
-        //Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request);
         Task<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests);
 
         /// <inheritdoc cref="CreateAsync(CreateLogItemRequest[])"/>
