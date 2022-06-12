@@ -185,7 +185,9 @@ namespace ReportPortal.Shared.Tests.Reporter
 
             logsReporter.Sync();
 
-            service.Verify(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>()), Times.Exactly(100));
+            // we have scheduled 1000 log items which will be consumed by 10 items in loop in background (happy path)
+            // sometimes consumer iterates faster than producer
+            service.Verify(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>()), Times.Between(100, 200, Moq.Range.Inclusive));
 
             logItemRequestTexts.Should().HaveCount(1000);
             logItemRequestTexts.Should().OnlyHaveUniqueItems();
