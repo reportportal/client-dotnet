@@ -37,5 +37,32 @@ namespace ReportPortal.Shared.Tests.Execution.Metadata
             ia.Key.Should().Be("a");
             ia.Value.Should().Be("b");
         }
+
+        [Fact]
+        public void TwoMetaAttributesWithTheSameKeysAndValuesShouldBeEquals()
+        {
+            var firstAttribute = new MetaAttribute("a", "b");
+            var secondAttriute = new MetaAttribute("a", "b");
+
+            firstAttribute.Should().BeEquivalentTo(secondAttriute);
+        }
+
+        [Fact]
+        public void TwoMetaAttributesWithDifferentKeysShouldNotBeEquals()
+        {
+            var firstAttribute = new MetaAttribute("a", "b");
+            var secondAttriute = new MetaAttribute("c", "b");
+
+            firstAttribute.Should().NotBeEquivalentTo(secondAttriute);
+        }
+
+        [Fact]
+        public void TowMetaAttributesWithDifferentValuesShouldNotBeEquals()
+        {
+            var firstAttribute = new MetaAttribute("a", "b");
+            var secondAttriute = new MetaAttribute("a", "c");
+
+            firstAttribute.Should().NotBeEquivalentTo(secondAttriute);
+        }
     }
 }

@@ -20,6 +20,22 @@ namespace ReportPortal.Shared.Tests.Execution
         }
 
         [Fact]
+        public void ShouldNotContainDuplicateAttributes()
+        {
+            var testContext = new TestContext(new ExtensionManager(), new CommandsSource(null));
+            testContext.Metadata.Attributes.Add(new MetaAttribute("a", "b"));
+
+            var duplicate = new MetaAttribute("a", "b");
+
+            if (!testContext.Metadata.Attributes.Contains(duplicate))
+            {
+                testContext.Metadata.Attributes.Add(duplicate);
+            }
+
+            testContext.Metadata.Attributes.Count.Should().Be(1);
+        }
+
+        [Fact]
         public void ShouldRaiseOnGetAttributes()
         {
             var mockListener = new Mock<ICommandsListener>();

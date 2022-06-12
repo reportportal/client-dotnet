@@ -3,7 +3,7 @@ using System;
 
 namespace ReportPortal.Shared.Execution.Metadata
 {
-    public class MetaAttribute
+    public class MetaAttribute : IEquatable<MetaAttribute>
     {
         public MetaAttribute(string key, string value)
         {
@@ -48,6 +48,23 @@ namespace ReportPortal.Shared.Execution.Metadata
 
             return new MetaAttribute(metaKey, metaValue);
         }
+
+        public bool Equals(MetaAttribute other)
+        {
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            if (other is null || GetType() != other.GetType())
+            {
+                return false;
+            }
+
+            return string.Equals(Key, other.Key) && string.Equals(Value, other.Value);
+        }
+
+        public override bool Equals(object obj) => Equals(obj as MetaAttribute);
 
         public static implicit operator ItemAttribute(MetaAttribute a) => new ItemAttribute { Key = a.Key, Value = a.Value };
     }
