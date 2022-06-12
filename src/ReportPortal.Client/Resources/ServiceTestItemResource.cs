@@ -4,6 +4,7 @@ using ReportPortal.Client.Abstractions.Resources;
 using ReportPortal.Client.Abstractions.Responses;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ReportPortal.Client.Resources
@@ -12,10 +13,24 @@ namespace ReportPortal.Client.Resources
     {
         public ServiceTestItemResource(HttpClient httpClient, string project) : base(httpClient, project)
         {
-
         }
 
-        public async Task<Content<TestItemResponse>> GetAsync(FilterOption filterOption = null)
+        public async Task<Content<TestItemResponse>> GetAsync()
+        {
+            return await GetAsync(filterOption: null, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        public async Task<Content<TestItemResponse>> GetAsync(FilterOption filterOption)
+        {
+            return await GetAsync(filterOption, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        public async Task<Content<TestItemResponse>> GetAsync(CancellationToken cancellationToken)
+        {
+            return await GetAsync(filterOption: null, cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<Content<TestItemResponse>> GetAsync(FilterOption filterOption, CancellationToken cancellationToken)
         {
             var uri = $"{ProjectName}/item";
             if (filterOption != null)
@@ -23,64 +38,104 @@ namespace ReportPortal.Client.Resources
                 uri += $"?{filterOption}";
             }
 
-            return await GetAsJsonAsync<Content<TestItemResponse>>(uri).ConfigureAwait(false);
+            return await GetAsJsonAsync<Content<TestItemResponse>>(uri, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<TestItemResponse> GetAsync(long id)
         {
-            return await GetAsJsonAsync<TestItemResponse>($"{ProjectName}/item/{id}").ConfigureAwait(false);
+            return await GetAsync(id, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        public async Task<TestItemResponse> GetAsync(long id, CancellationToken cancellationToken)
+        {
+            return await GetAsJsonAsync<TestItemResponse>($"{ProjectName}/item/{id}", cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<TestItemResponse> GetAsync(string uuid)
         {
-            return await GetAsJsonAsync<TestItemResponse>($"{ProjectName}/item/uuid/{uuid}").ConfigureAwait(false);
+            return await GetAsync(uuid, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        public async Task<TestItemResponse> GetAsync(string uuid, CancellationToken cancellationToken)
+        {
+            return await GetAsJsonAsync<TestItemResponse>($"{ProjectName}/item/uuid/{uuid}", cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<TestItemCreatedResponse> StartAsync(StartTestItemRequest request)
         {
-            return await PostAsJsonAsync<TestItemCreatedResponse, StartTestItemRequest>(
-                $"{ProjectName}/item",
-                request).ConfigureAwait(false);
+            return await StartAsync(request, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<TestItemCreatedResponse> StartAsync(string uuid, StartTestItemRequest request)
+        public async Task<TestItemCreatedResponse> StartAsync(StartTestItemRequest request, CancellationToken cancellationToken)
         {
             return await PostAsJsonAsync<TestItemCreatedResponse, StartTestItemRequest>(
-                $"{ProjectName}/item/{uuid}",
-                request).ConfigureAwait(false);
+                $"{ProjectName}/item", request, cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<TestItemCreatedResponse> StartAsync(string uuid, StartTestItemRequest model)
+        {
+            return await StartAsync(uuid, model, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        public async Task<TestItemCreatedResponse> StartAsync(string uuid, StartTestItemRequest request, CancellationToken cancellationToken)
+        {
+            return await PostAsJsonAsync<TestItemCreatedResponse, StartTestItemRequest>(
+                $"{ProjectName}/item/{uuid}", request, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<MessageResponse> FinishAsync(string uuid, FinishTestItemRequest request)
         {
+            return await FinishAsync(uuid, request, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        public async Task<MessageResponse> FinishAsync(string uuid, FinishTestItemRequest request, CancellationToken cancellationToken)
+        {
             return await PutAsJsonAsync<MessageResponse, FinishTestItemRequest>(
-                $"{ProjectName}/item/{uuid}",
-                request).ConfigureAwait(false);
+                $"{ProjectName}/item/{uuid}", request, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<MessageResponse> UpdateAsync(long id, UpdateTestItemRequest request)
         {
+            return await UpdateAsync(id, request, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        public async Task<MessageResponse> UpdateAsync(long id, UpdateTestItemRequest request, CancellationToken cancellationToken)
+        {
             return await PutAsJsonAsync<MessageResponse, UpdateTestItemRequest>(
-                $"{ProjectName}/item/{id}/update",
-                request).ConfigureAwait(false);
+                $"{ProjectName}/item/{id}/update", request, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<MessageResponse> DeleteAsync(long id)
         {
-            return await DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/item/{id}").ConfigureAwait(false);
+            return await DeleteAsync(id, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        public async Task<MessageResponse> DeleteAsync(long id, CancellationToken cancellationToken)
+        {
+            return await DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/item/{id}", cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<IEnumerable<Issue>> AssignIssuesAsync(AssignTestItemIssuesRequest request)
         {
+            return await AssignIssuesAsync(request, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        public async Task<IEnumerable<Issue>> AssignIssuesAsync(AssignTestItemIssuesRequest request, CancellationToken cancellationToken)
+        {
             return await PutAsJsonAsync<IEnumerable<Issue>, AssignTestItemIssuesRequest>(
-                $"{ProjectName}/item",
-                request).ConfigureAwait(false);
+                $"{ProjectName}/item", request, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<Content<TestItemHistoryContainer>> GetHistoryAsync(long id, int depth)
         {
+            return await GetHistoryAsync(id, depth, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        public async Task<Content<TestItemHistoryContainer>> GetHistoryAsync(long id, int depth, CancellationToken cancellationToken)
+        {
             var uri = $"{ProjectName}/item/history?filter.eq.id={id}&type=line&historyDepth={depth}";
 
-            return await GetAsJsonAsync<Content<TestItemHistoryContainer>>(uri).ConfigureAwait(false);
+            return await GetAsJsonAsync<Content<TestItemHistoryContainer>>(uri, cancellationToken).ConfigureAwait(false);
         }
     }
 }

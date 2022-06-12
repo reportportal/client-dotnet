@@ -1,4 +1,5 @@
 ﻿using ReportPortal.Client.Abstractions.Responses;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ReportPortal.Client.Abstractions.Resources
@@ -13,5 +14,9 @@ namespace ReportPortal.Client.Abstractions.Resources
         /// </summary>
         /// <returns></returns>
         Task<UserResponse> GetAsync();
+
+        /// <inheritdoc cref="GetAsync"/>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        Task<UserResponse> GetAsync(CancellationToken cancellationToken);
     }
 }

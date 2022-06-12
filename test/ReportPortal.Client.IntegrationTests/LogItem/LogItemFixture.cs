@@ -2,11 +2,11 @@
 using ReportPortal.Client.Abstractions.Filtering;
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
-using ReportPortal.Client.Abstractions.Responses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 

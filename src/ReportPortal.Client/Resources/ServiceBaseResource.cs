@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ReportPortal.Client.Resources
@@ -18,27 +19,30 @@ namespace ReportPortal.Client.Resources
 
         protected string ProjectName { get; }
 
-        protected async Task<TResponse> GetAsJsonAsync<TResponse>(string uri)
+        protected async Task<TResponse> GetAsJsonAsync<TResponse>(string uri, CancellationToken cancellationToken)
         {
-            return await SendAsJsonAsync<TResponse, object>(HttpMethod.Get, uri, null).ConfigureAwait(false);
+            return await SendAsJsonAsync<TResponse, object>(HttpMethod.Get, uri, null, cancellationToken).ConfigureAwait(false);
         }
 
-        protected async Task<TResponse> PostAsJsonAsync<TResponse, TRequest>(string uri, TRequest request)
+        protected async Task<TResponse> PostAsJsonAsync<TResponse, TRequest>(
+            string uri, TRequest request, CancellationToken cancellationToken)
         {
-            return await SendAsJsonAsync<TResponse, TRequest>(HttpMethod.Post, uri, request).ConfigureAwait(false);
+            return await SendAsJsonAsync<TResponse, TRequest>(HttpMethod.Post, uri, request, cancellationToken).ConfigureAwait(false);
         }
 
-        protected async Task<TResponse> PutAsJsonAsync<TResponse, TRequest>(string uri, TRequest request)
+        protected async Task<TResponse> PutAsJsonAsync<TResponse, TRequest>(
+            string uri, TRequest request, CancellationToken cancellationToken)
         {
-            return await SendAsJsonAsync<TResponse, TRequest>(HttpMethod.Put, uri, request).ConfigureAwait(false);
+            return await SendAsJsonAsync<TResponse, TRequest>(HttpMethod.Put, uri, request, cancellationToken).ConfigureAwait(false);
         }
 
-        protected async Task<TResponse> DeleteAsJsonAsync<TResponse>(string uri)
+        protected async Task<TResponse> DeleteAsJsonAsync<TResponse>(string uri, CancellationToken cancellationToken)
         {
-            return await SendAsJsonAsync<TResponse, object>(HttpMethod.Delete, uri, null).ConfigureAwait(false);
+            return await SendAsJsonAsync<TResponse, object>(HttpMethod.Delete, uri, null, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<TResponse> SendAsJsonAsync<TResponse, TRequest>(HttpMethod httpMethod, string uri, TRequest request)
+        private async Task<TResponse> SendAsJsonAsync<TResponse, TRequest>(
+            HttpMethod httpMethod, string uri, TRequest request, CancellationToken cancellationToken)
         {
             HttpContent httpContent = null;
 
@@ -51,10 +55,11 @@ namespace ReportPortal.Client.Resources
                 httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             }
 
-            return await SendHttpRequestAsync<TResponse>(httpMethod, uri, httpContent).ConfigureAwait(false);
+            return await SendHttpRequestAsync<TResponse>(httpMethod, uri, httpContent, cancellationToken).ConfigureAwait(false);
         }
 
-        protected async Task<TResponse> SendHttpRequestAsync<TResponse>(HttpMethod httpMethod, string uri, HttpContent httpContent)
+        protected async Task<TResponse> SendHttpRequestAsync<TResponse>(
+            HttpMethod httpMethod, string uri, HttpContent httpContent, CancellationToken cancellationToken)
         {
             using (var httpRequest = new HttpRequestMessage(httpMethod, uri))
             {
@@ -62,7 +67,8 @@ namespace ReportPortal.Client.Resources
                 {
                     httpRequest.Content = httpContent;
 
-                    using (var response = await HttpClient.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false))
+                    using (var response = await HttpClient
+                        .SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
                     {
                         using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                         {
@@ -75,11 +81,12 @@ namespace ReportPortal.Client.Resources
             }
         }
 
-        protected async Task<byte[]> GetAsBytesAsync(string uri)
+        protected async Task<byte[]> GetAsBytesAsync(string uri, CancellationToken cancellationToken)
         {
             using (var httpRequest = new HttpRequestMessage(HttpMethod.Get, uri))
             {
-                using (var response = await HttpClient.SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false))
+                using (var response = await HttpClient
+                    .SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
                 {
                     using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                     {
