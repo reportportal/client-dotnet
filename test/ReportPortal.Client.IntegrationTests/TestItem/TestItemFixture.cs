@@ -582,10 +582,6 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
             {
                 Comment = "New Comment 2",
                 Type = "si001",
-                //ExternalSystemIssues = new List<ExternalSystemIssue>
-                //{
-                //    new ExternalSystemIssue { TicketId = "XXXXX-15", Url = "https://jira.epam.com/jira/browse/XXXXX-15" }
-                //}
             };
 
             var tempStep1 = await Service.TestItem.GetAsync(step1.Uuid);
@@ -611,17 +607,10 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
 
             Assert.Equal(issue1.Comment, assignedIssues.First().Comment);
             Assert.Equal(issue1.Type, assignedIssues.First().Type);
-            //Assert.Null(assignedIssues.First().ExternalSystemIssues);
 
             Assert.Equal(issue2.Comment, assignedIssues.ElementAt(1).Comment);
             Assert.Equal(issue2.Type, assignedIssues.ElementAt(1).Type);
             Assert.NotNull(assignedIssues.ElementAt(1).ExternalSystemIssues);
-
-            //Assert.Single(assignedIssues.ElementAt(1).ExternalSystemIssues);
-            //Assert.True(assignedIssues.ElementAt(1).ExternalSystemIssues.First().SubmitDate - DateTime.UtcNow < TimeSpan.FromMinutes(1));
-            //Assert.Equal(Username, assignedIssues.ElementAt(1).ExternalSystemIssues.First().Submitter);
-            //Assert.Equal(issue2.ExternalSystemIssues.First().TicketId, assignedIssues.ElementAt(1).ExternalSystemIssues.First().TicketId);
-            //Assert.Equal(issue2.ExternalSystemIssues.First().Url, assignedIssues.ElementAt(1).ExternalSystemIssues.First().Url);
 
             var stepInfo1 = await Service.TestItem.GetAsync(step1.Uuid);
             Assert.NotNull(stepInfo1.Issue);
@@ -631,17 +620,9 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
 
             Assert.Equal(issue1.Comment, stepInfo1.Issue.Comment);
             Assert.Equal(issue1.Type, stepInfo1.Issue.Type);
-            //Assert.Null(stepInfo1.Issue.ExternalSystemIssues);
 
             Assert.Equal(issue2.Comment, stepInfo2.Issue.Comment);
             Assert.Equal(issue2.Type, stepInfo2.Issue.Type);
-            //Assert.NotNull(stepInfo2.Issue.ExternalSystemIssues);
-
-            //Assert.Single(stepInfo2.Issue.ExternalSystemIssues);
-            //Assert.True(stepInfo2.Issue.ExternalSystemIssues.First().SubmitDate - DateTime.UtcNow < TimeSpan.FromMinutes(1));
-            //Assert.Equal(Username, stepInfo2.Issue.ExternalSystemIssues.First().Submitter);
-            //Assert.Equal(issue2.ExternalSystemIssues.First().TicketId, stepInfo2.Issue.ExternalSystemIssues.First().TicketId);
-            //Assert.Equal(issue2.ExternalSystemIssues.First().Url, stepInfo2.Issue.ExternalSystemIssues.First().Url);
         }
 
         [Fact]
