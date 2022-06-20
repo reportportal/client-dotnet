@@ -766,5 +766,62 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
 
             Assert.True(launch.HasRetries);
         }
+
+        [Fact]
+        public async Task IssueWithBtsProjectAndUrlShouldBeSavedOnServerSide()
+        {
+            var expectedExternalIssue = new ExternalSystemIssue
+            {
+                TicketId = "1",
+                BtsProject = "demo-rp-bts-project",
+                BtsUrl = "https://fake-demo-rp-bts.com/",
+                Url = "https://fake-demo-rp-bts.com/demo-rp-bts-project/issues/1",
+
+            };
+
+            var test = await Service.TestItem.StartAsync(new StartTestItemRequest
+            {
+                LaunchUuid = _fixture.LaunchUuid,
+                Name = "Test1",
+                StartTime = DateTime.UtcNow,
+                Type = TestItemType.Test
+            });
+
+            test.Uuid.Should().NotBeNull(
+                because: "UUID for test item should be assigned");
+
+            var message = await Service.TestItem.FinishAsync(test.Uuid, new FinishTestItemRequest
+            {
+                EndTime = DateTime.UtcNow,
+                Status = Status.Failed,
+                Issue = new Issue
+                {
+                    Type = WellKnownIssueType.ProductBug,
+                    ExternalSystemIssues = new List<ExternalSystemIssue> { expectedExternalIssue }
+                }
+            });
+
+            message.Should().NotBeNull(
+                because: "message from the server should not be a null");
+
+            message.Info.Should().Contain("successfully",
+                because: "test item with issue should be successfully finished");
+
+            var testItem = await Service.TestItem.GetAsync(test.Uuid);
+
+            testItem.Issue.Should().NotBeNull(
+                because: "issue should be saved on server side");
+
+            testItem.Status.Should().Be(Status.Failed,
+                because: "status of the test item should be 'Failed'");
+
+            testItem.Issue.ExternalSystemIssues.Should().ContainSingle(
+                because: "issue should consists of only from single external issue.");
+
+            testItem.Issue.ExternalSystemIssues.Single().Should().BeEquivalentTo(
+                expectedExternalIssue,
+                opt => opt.Excluding(issue => issue.SubmitDate),
+                because: "information about external issue should be stored on server side");
+        }
     }
 }
