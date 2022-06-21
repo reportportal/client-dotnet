@@ -146,5 +146,11 @@ namespace ReportPortal.Client.Abstractions.Responses
 
         [DataMember(Name = "url")]
         public string Url { get; set; }
+
+        [DataMember(Name = "btsProject")]
+        public string BtsProject { get; set; }
+
+        [DataMember(Name = "btsUrl")]
+        public string BtsUrl { get; set; }
     }
 }

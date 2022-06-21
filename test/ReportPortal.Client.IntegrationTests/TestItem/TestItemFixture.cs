@@ -582,10 +582,6 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
             {
                 Comment = "New Comment 2",
                 Type = "si001",
-                //ExternalSystemIssues = new List<ExternalSystemIssue>
-                //{
-                //    new ExternalSystemIssue { TicketId = "XXXXX-15", Url = "https://jira.epam.com/jira/browse/XXXXX-15" }
-                //}
             };
 
             var tempStep1 = await Service.TestItem.GetAsync(step1.Uuid);
@@ -611,17 +607,10 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
 
             Assert.Equal(issue1.Comment, assignedIssues.First().Comment);
             Assert.Equal(issue1.Type, assignedIssues.First().Type);
-            //Assert.Null(assignedIssues.First().ExternalSystemIssues);
 
             Assert.Equal(issue2.Comment, assignedIssues.ElementAt(1).Comment);
             Assert.Equal(issue2.Type, assignedIssues.ElementAt(1).Type);
             Assert.NotNull(assignedIssues.ElementAt(1).ExternalSystemIssues);
-
-            //Assert.Single(assignedIssues.ElementAt(1).ExternalSystemIssues);
-            //Assert.True(assignedIssues.ElementAt(1).ExternalSystemIssues.First().SubmitDate - DateTime.UtcNow < TimeSpan.FromMinutes(1));
-            //Assert.Equal(Username, assignedIssues.ElementAt(1).ExternalSystemIssues.First().Submitter);
-            //Assert.Equal(issue2.ExternalSystemIssues.First().TicketId, assignedIssues.ElementAt(1).ExternalSystemIssues.First().TicketId);
-            //Assert.Equal(issue2.ExternalSystemIssues.First().Url, assignedIssues.ElementAt(1).ExternalSystemIssues.First().Url);
 
             var stepInfo1 = await Service.TestItem.GetAsync(step1.Uuid);
             Assert.NotNull(stepInfo1.Issue);
@@ -631,17 +620,9 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
 
             Assert.Equal(issue1.Comment, stepInfo1.Issue.Comment);
             Assert.Equal(issue1.Type, stepInfo1.Issue.Type);
-            //Assert.Null(stepInfo1.Issue.ExternalSystemIssues);
 
             Assert.Equal(issue2.Comment, stepInfo2.Issue.Comment);
             Assert.Equal(issue2.Type, stepInfo2.Issue.Type);
-            //Assert.NotNull(stepInfo2.Issue.ExternalSystemIssues);
-
-            //Assert.Single(stepInfo2.Issue.ExternalSystemIssues);
-            //Assert.True(stepInfo2.Issue.ExternalSystemIssues.First().SubmitDate - DateTime.UtcNow < TimeSpan.FromMinutes(1));
-            //Assert.Equal(Username, stepInfo2.Issue.ExternalSystemIssues.First().Submitter);
-            //Assert.Equal(issue2.ExternalSystemIssues.First().TicketId, stepInfo2.Issue.ExternalSystemIssues.First().TicketId);
-            //Assert.Equal(issue2.ExternalSystemIssues.First().Url, stepInfo2.Issue.ExternalSystemIssues.First().Url);
         }
 
         [Fact]
@@ -765,6 +746,63 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
             var launch = await Service.Launch.GetAsync(_fixture.LaunchId);
 
             Assert.True(launch.HasRetries);
+        }
+
+        [Fact]
+        public async Task IssueWithBtsProjectAndUrlShouldBeSavedOnServerSide()
+        {
+            var expectedExternalIssue = new ExternalSystemIssue
+            {
+                TicketId = "1",
+                BtsProject = "demo-rp-bts-project",
+                BtsUrl = "https://fake-demo-rp-bts.com/",
+                Url = "https://fake-demo-rp-bts.com/demo-rp-bts-project/issues/1",
+
+            };
+
+            var test = await Service.TestItem.StartAsync(new StartTestItemRequest
+            {
+                LaunchUuid = _fixture.LaunchUuid,
+                Name = "Test1",
+                StartTime = DateTime.UtcNow,
+                Type = TestItemType.Test
+            });
+
+            test.Uuid.Should().NotBeNull(
+                because: "UUID for test item should be assigned");
+
+            var message = await Service.TestItem.FinishAsync(test.Uuid, new FinishTestItemRequest
+            {
+                EndTime = DateTime.UtcNow,
+                Status = Status.Failed,
+                Issue = new Issue
+                {
+                    Type = WellKnownIssueType.ProductBug,
+                    ExternalSystemIssues = new List<ExternalSystemIssue> { expectedExternalIssue }
+                }
+            });
+
+            message.Should().NotBeNull(
+                because: "message from the server should not be a null");
+
+            message.Info.Should().Contain("successfully",
+                because: "test item with issue should be successfully finished");
+
+            var testItem = await Service.TestItem.GetAsync(test.Uuid);
+
+            testItem.Issue.Should().NotBeNull(
+                because: "issue should be saved on server side");
+
+            testItem.Status.Should().Be(Status.Failed,
+                because: "status of the test item should be 'Failed'");
+
+            testItem.Issue.ExternalSystemIssues.Should().ContainSingle(
+                because: "issue should consists of only from single external issue.");
+
+            testItem.Issue.ExternalSystemIssues.Single().Should().BeEquivalentTo(
+                expectedExternalIssue,
+                opt => opt.Excluding(issue => issue.SubmitDate),
+                because: "information about external issue should be stored on server side");
         }
     }
 }
