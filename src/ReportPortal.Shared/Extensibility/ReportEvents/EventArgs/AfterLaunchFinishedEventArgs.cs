@@ -1,6 +1,5 @@
 ﻿using ReportPortal.Client.Abstractions;
 using ReportPortal.Shared.Configuration;
-using ReportPortal.Shared.Reporter;
 
 namespace ReportPortal.Shared.Extensibility.ReportEvents.EventArgs
 {

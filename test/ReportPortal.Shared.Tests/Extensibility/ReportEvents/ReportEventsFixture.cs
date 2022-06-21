@@ -282,5 +282,92 @@ namespace ReportPortal.Shared.Tests.Extensibility.ReportEvents
 
             sentClientLogs.Should().HaveCount(2);
         }
+
+        [Fact]
+        public void ShouldNotBreakNotificationIfOneHandlerThrowsException()
+        {
+            var badObserver = new Mock<IReportEventsObserver>();
+            badObserver.Setup(o => o.Initialize(It.IsAny<IReportEventsSource>())).Callback<IReportEventsSource>(s =>
+            {
+                s.OnLaunchInitializing += (l, args) => { throw new Exception(); };
+
+                s.OnBeforeLaunchStarting += (l, args) => { throw new Exception(); };
+                s.OnAfterLaunchStarted += (l, args) => { throw new Exception(); };
+
+                s.OnBeforeLaunchFinishing += (l, args) => { throw new Exception(); };
+                s.OnAfterLaunchFinished += (l, args) => { throw new Exception(); };
+
+                s.OnBeforeTestStarting += (l, args) => { throw new Exception(); };
+                s.OnAfterTestStarted += (l, args) => { throw new Exception(); };
+
+                s.OnBeforeTestFinishing += (l, args) => { throw new Exception(); };
+                s.OnAfterTestFinished += (l, args) => { throw new Exception(); };
+
+                s.OnBeforeLogsSending += (l, args) => { throw new Exception(); };
+            });
+
+            var goodObserver = new Mock<IReportEventsObserver>();
+
+            var onLaunchInitializing = false;
+
+            var onBeforeLaunchStarting = false;
+            var onAfterLaunchStarted = false;
+
+            var onBeforeLaunchFinishing = false;
+            var onAfterLaunchFinished = false;
+
+            var onBeforeTestStarting = false;
+            var onAfterTestStarted = false;
+
+            var onBeforeTestFinishing = false;
+            var onAfterTestFinished = false;
+
+            var onBeforeLogsSending = false;
+
+            goodObserver.Setup(o => o.Initialize(It.IsAny<IReportEventsSource>())).Callback<IReportEventsSource>(s =>
+            {
+                s.OnLaunchInitializing += (l, args) => { onLaunchInitializing = true; };
+
+                s.OnBeforeLaunchStarting += (l, args) => { onBeforeLaunchStarting = true; };
+                s.OnAfterLaunchStarted += (l, args) => { onAfterLaunchStarted = true; };
+
+                s.OnBeforeLaunchFinishing += (l, args) => { onBeforeLaunchFinishing = true; };
+                s.OnAfterLaunchFinished += (l, args) => { onAfterLaunchFinished = true; };
+
+                s.OnBeforeTestStarting += (l, args) => { onBeforeTestStarting = true; };
+                s.OnAfterTestStarted += (l, args) => { onAfterTestStarted = true; };
+
+                s.OnBeforeTestFinishing += (l, args) => { onBeforeTestFinishing = true; };
+                s.OnAfterTestFinished += (l, args) => { onAfterTestFinished = true; };
+
+                s.OnBeforeLogsSending += (l, args) => { onBeforeLogsSending = true; };
+            });
+
+            var extManager = new Shared.Extensibility.ExtensionManager();
+            extManager.ReportEventObservers.Add(badObserver.Object);
+            extManager.ReportEventObservers.Add(goodObserver.Object);
+
+            var clientMock = new MockServiceBuilder().Build();
+            var client = clientMock.Object;
+
+            var launch = new LaunchReporterBuilder(client).With(extManager).Build(1, 1, 1);
+            launch.Sync();
+
+            onLaunchInitializing.Should().BeTrue();
+
+            onBeforeLaunchStarting.Should().BeTrue();
+            onAfterLaunchStarted.Should().BeTrue();
+
+            onBeforeLaunchFinishing.Should().BeTrue();
+            onAfterLaunchFinished.Should().BeTrue();
+
+            onBeforeTestStarting.Should().BeTrue();
+            onAfterTestStarted.Should().BeTrue();
+
+            onBeforeTestFinishing.Should().BeTrue();
+            onAfterTestFinished.Should().BeTrue();
+
+            onBeforeLogsSending.Should().BeTrue();
+        }
     }
 }

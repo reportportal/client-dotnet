@@ -3,7 +3,7 @@ using ReportPortal.Shared.Configuration;
 
 namespace ReportPortal.Shared.Extensibility.ReportEvents.EventArgs
 {
-    public abstract class ReportEventBaseArgs
+    public abstract class ReportEventBaseArgs : System.EventArgs
     {
         public ReportEventBaseArgs(IClientService clientService, IConfiguration configuration)
         {
