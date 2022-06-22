@@ -26,10 +26,10 @@ Example for starting launch in Report Portal:
 ````C#
 //Create service object
 //Uuid value is specific for exact user, it could be found in Report Portal: User profile -> Access token
- protected readonly Service Service = new Service(new Uri("https://demo.reportportal.io/api/v1"), ProjectName, "uuid");
+ var service = new ReportPortal.Client.Service(new Uri("https://rp.epam.com/api/v1/"), "ProjectName", "uuid");
  
  //Start the launch
-var launch = await Service.Launch.StartAsync(new StartLaunchRequest
+var launch = await service.Launch.StartAsync(new StartLaunchRequest
 	{
 			Name = "LaunchName",
 			Description = "LaunchDescription",
