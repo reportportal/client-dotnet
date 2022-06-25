@@ -16,9 +16,13 @@ List the ready features here:
 - Create/update user filter;
 
 ## Setup
-Download using Nuget package console:
+Install **ReportPortal.Client** NuGet package.
 
-PM> Install-Package ReportPortal.Client
+[![NuGet version](https://badge.fury.io/nu/reportportal.client.svg)](https://badge.fury.io/nu/reportportal.client)
+
+```powershell
+PS> Install-Package ReportPortal.Client
+```
 
 ## Usage
 Example for starting launch in Report Portal:
@@ -26,22 +30,31 @@ Example for starting launch in Report Portal:
 ````C#
 //Create service object
 //Uuid value is specific for exact user, it could be found in Report Portal: User profile -> Access token
- var service = new ReportPortal.Client.Service(new Uri("https://rp.epam.com/api/v1/"), "ProjectName", "uuid");
+ var service = new ReportPortal.Client.Service(new Uri("https://demo.reportportal.com/api/v1"), "ProjectName", "uuid");
  
  //Start the launch
 var launch = await service.Launch.StartAsync(new StartLaunchRequest
-	{
-			Name = "LaunchName",
-			Description = "LaunchDescription",
-			StartTime = DateTime.UtcNow,
-	});
- 
+        {
+            Name = "LaunchName",
+            Description = "LaunchDescription",
+            StartTime = DateTime.UtcNow,
+        });
+
+//Start test item
+var test = await service.TestItem.StartAsync(new StartTestItemRequest
+        {
+            LaunchUuid = launch.Uuid,
+            Name = "Test1",
+            StartTime = DateTime.UtcNow,
+            Type = TestItemType.Test
+        });
+
+//Add log item
+var log = await service.LogItem.CreateAsync(new CreateLogItemRequest
+         {
+            TestItemUuid = test.Uuid,
+            Text = "My log",
+            Time = DateTime.UtcNow,
+            Level = LogLevel.Debug
+         }); 
 ````
-After running this code the launch should be reflected in the Report Portal UI with this information:
-
-**LaunchName #1
-User name (connected with the specified uuid)
-LaunchDescription**
-
-## Project Status
-Project is: _complete_
