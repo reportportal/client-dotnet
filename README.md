@@ -5,7 +5,7 @@
 API client for [Report Portal](https://reportportal.io)
 
 This is a library containing methods, which allow to send the calls directly to Report portal and uses the RP API.
-
+___
 Technologies:
 .NET Core, System.Net.Http
 
@@ -26,20 +26,25 @@ PS> Install-Package ReportPortal.Client
 ## Usage
 Example of using the library:
 
+The work with tests logging is based on the ReportPortal.Client.Service object. To create it we  need to pass the Report Portal URI, project name and user UUID. Uuid value is specific for exact user and it could be found in Report Portal: User profile -> Access token
+Creating a Service object:
+
 ````C#
-//Create service object
-//Uuid value is specific for exact user, it could be found in Report Portal: User profile -> Access token
- var service = new ReportPortal.Client.Service(new Uri("https://demo.reportportal.com/api/v1"), "ProjectName", "uuid");
+var service = new ReportPortal.Client.Service(
+new Uri("https://demo.reportportal.com/api/v1"), "ProjectName", "uuid");
+ ````
  
- //Start the launch
+Starting the launch:
+````C#
 var launch = await service.Launch.StartAsync(new StartLaunchRequest
         {
             Name = "LaunchName",
             Description = "LaunchDescription",
             StartTime = DateTime.UtcNow,
         });
-
-//Start test item
+````
+To start test item we need to use the LaunchUuid received from the Launch.StartAsync method:
+````C#
 var test = await service.TestItem.StartAsync(new StartTestItemRequest
         {
             LaunchUuid = launch.Uuid,
@@ -47,8 +52,9 @@ var test = await service.TestItem.StartAsync(new StartTestItemRequest
             StartTime = DateTime.UtcNow,
             Type = TestItemType.Test
         });
-
-//Add log item
+````
+To start log item the TestItemUuid is used which was received from the TestItem.StartAsync method:
+````C#
 var log = await service.LogItem.CreateAsync(new CreateLogItemRequest
          {
             TestItemUuid = test.Uuid,
@@ -56,4 +62,11 @@ var log = await service.LogItem.CreateAsync(new CreateLogItemRequest
             Time = DateTime.UtcNow,
             Level = LogLevel.Debug
          }); 
+````
+Finishing the launch:
+````C#
+await Service.Launch.FinishAsync(launch.Uuid, new FinishLaunchRequest
+        {
+            EndTime = DateTime.UtcNow
+        });
 ````
