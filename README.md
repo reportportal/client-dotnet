@@ -24,7 +24,6 @@ PS> Install-Package ReportPortal.Client
 ```
 
 ## Usage
-Example of using the library:
 
 The work with tests logging is based on the ReportPortal.Client.Service object. To create it we  need to pass the Report Portal URI, project name and user UUID. Uuid value is specific for exact user and it could be found in Report Portal: User profile -> Access token
 Creating a Service object:
