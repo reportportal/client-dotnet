@@ -18,23 +18,23 @@ PS> Install-Package ReportPortal.Client
 
 The main entry point to start interact with API is `ReportPortal.Client.Service` class. It requires uri, project name and uuid. Uuid value is specific for an user and it can be obtained on User Profile page.
 
-````C#
+```C#
 var service = new ReportPortal.Client.Service(
 new Uri("https://demo.reportportal.com"), "my_project", "my_uuid");
- ````
+ ```
  
 Starting new launch:
-````C#
+```C#
 var launch = await service.Launch.StartAsync(new StartLaunchRequest
     {
         Name = "LaunchName",
         Description = "LaunchDescription",
         StartTime = DateTime.UtcNow,
     });
-````
+```
 
 To start test item we need to use the `LaunchUuid` received from the previous step:
-````C#
+```C#
 var test = await service.TestItem.StartAsync(new StartTestItemRequest
     {
         LaunchUuid = launch.Uuid,
@@ -42,10 +42,10 @@ var test = await service.TestItem.StartAsync(new StartTestItemRequest
         StartTime = DateTime.UtcNow,
         Type = TestItemType.Test
     });
-````
+```
 
-To start log item the `TestItemUuid` is used which was received from the previous step:
-````C#
+To send log item the `TestItemUuid` is used which was received from the previous step:
+```C#
 var log = await service.LogItem.CreateAsync(new CreateLogItemRequest
     {
         TestItemUuid = test.Uuid,
@@ -53,12 +53,21 @@ var log = await service.LogItem.CreateAsync(new CreateLogItemRequest
         Time = DateTime.UtcNow,
         Level = LogLevel.Debug
     }); 
-````
+```
+
+Finishing the test:
+```C#
+await Service.TestItem.FinishAsync(test.Uuid, new FinishTestItemRequest
+    {
+        EndTime = DateTime.UtcNow,
+        Status = Status.Passed
+    });
+```
 
 Finishing the launch:
-````C#
+```C#
 await Service.Launch.FinishAsync(launch.Uuid, new FinishLaunchRequest
     {
         EndTime = DateTime.UtcNow
     });
-````
+```
