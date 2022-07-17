@@ -37,8 +37,11 @@ namespace ReportPortal.Shared.Configuration
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
 
-            builder.AddEnvironmentVariables("RP_");
-            builder.AddEnvironmentVariables("REPORTPORTAL_");
+            builder.AddEnvironmentVariables("RP_", "_");
+            builder.AddEnvironmentVariables("RP__", "__");
+
+            builder.AddEnvironmentVariables("REPORTPORTAL_", "_");
+            builder.AddEnvironmentVariables("REPORTPORTAL__", "__");
 
             return builder;
         }

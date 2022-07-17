@@ -16,6 +16,8 @@ namespace ReportPortal.Shared.Tests.Configuration
         [InlineData("REPORTPORTAL_ABC", "ABC", "test")]
         [InlineData("REPORTPORTAL_ABC", "abc", "test")]
         [InlineData("REPORTPORTAL_A_B", "a:b", "test")]
+        [InlineData("REPORTPORTAL__A__B__C", "a:b:c", "test")]
+        [InlineData("RP__A__B__C", "a:b:c", "test")]
         [InlineData("RP_ABC", "ABC", "test")]
         [InlineData("RP_ABC", "abc", "test")]
         [InlineData("RP_A_B", "a:b", "test")]
