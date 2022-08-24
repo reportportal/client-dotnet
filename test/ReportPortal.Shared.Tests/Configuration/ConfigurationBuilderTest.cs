@@ -238,6 +238,16 @@ namespace ReportPortal.Shared.Tests.Configuration
         }
 
         [Fact]
+        public void ShouldReturnNullAsDefaultIfVariableNotFound()
+        {
+            var config = new ConfigurationBuilder().Build();
+
+            var a = config.GetValue<string>("a", null);
+
+            a.Should().BeNull();
+        }
+
+        [Fact]
         public void ShouldRaiseExceptionIfListNotFound()
         {
             var config = new ConfigurationBuilder().Build();
@@ -254,6 +264,16 @@ namespace ReportPortal.Shared.Tests.Configuration
             var list = config.GetValues("a", new List<string> { "abc" });
 
             Assert.Equal(new List<string> { "abc" }, list);
+        }
+
+        [Fact]
+        public void ShouldReturNullAsDefaultIfListNotFound()
+        {
+            var config = new ConfigurationBuilder().Build();
+
+            var list = config.GetValues<string>("a", null);
+
+            list.Should().BeNull();
         }
 
         [Theory]
