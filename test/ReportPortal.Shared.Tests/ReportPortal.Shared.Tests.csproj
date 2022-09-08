@@ -27,4 +27,10 @@
     <ProjectReference Include="..\..\src\ReportPortal.Shared\ReportPortal.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Execution\data.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

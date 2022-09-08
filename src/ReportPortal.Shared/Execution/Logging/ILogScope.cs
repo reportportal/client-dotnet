@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace ReportPortal.Shared.Execution.Logging
 {
@@ -75,6 +76,13 @@ namespace ReportPortal.Shared.Execution.Logging
         void Info(string message, string mimeType, byte[] content);
 
         /// <summary>
+        /// Sends file to current test context.
+        /// </summary>
+        /// <param name="message">Text of the message</param>
+        /// <param name="file">File on the disk</param>
+        void Info(string message, FileInfo file);
+
+        /// <summary>
         /// Sends log message with "Debug" level to current test context.
         /// </summary>
         /// <param name="message">Text of the message</param>
@@ -87,6 +95,13 @@ namespace ReportPortal.Shared.Execution.Logging
         /// <param name="mimeType">Mime type of content</param>
         /// <param name="content">Array of bytes</param>
         void Debug(string message, string mimeType, byte[] content);
+
+        /// <summary>
+        /// Sends file to current test context.
+        /// </summary>
+        /// <param name="message">Text of the message</param>
+        /// <param name="file">File on the disk</param>
+        void Debug(string message, FileInfo file);
 
         /// <summary>
         /// Sends log message with "Trace" level to current test context.
@@ -103,6 +118,13 @@ namespace ReportPortal.Shared.Execution.Logging
         void Trace(string message, string mimeType, byte[] content);
 
         /// <summary>
+        /// Sends file to current test context.
+        /// </summary>
+        /// <param name="message">Text of the message</param>
+        /// <param name="file">File on the disk</param>
+        void Trace(string message, FileInfo file);
+
+        /// <summary>
         /// Sends log message with "Error" level to current test context.
         /// </summary>
         /// <param name="message">Text of the message</param>
@@ -115,6 +137,13 @@ namespace ReportPortal.Shared.Execution.Logging
         /// <param name="mimeType">Mime type of content</param>
         /// <param name="content">Array of bytes</param>
         void Error(string message, string mimeType, byte[] content);
+
+        /// <summary>
+        /// Sends file to current test context.
+        /// </summary>
+        /// <param name="message">Text of the message</param>
+        /// <param name="file">File on the disk</param>
+        void Error(string message, FileInfo file);
 
         /// <summary>
         /// Sends log message with "Fatal" level to current test context.
@@ -131,6 +160,13 @@ namespace ReportPortal.Shared.Execution.Logging
         void Fatal(string message, string mimeType, byte[] content);
 
         /// <summary>
+        /// Sends file to current test context.
+        /// </summary>
+        /// <param name="message">Text of the message</param>
+        /// <param name="file">File on the disk</param>
+        void Fatal(string message, FileInfo file);
+
+        /// <summary>
         /// Sends log message with "Warn" level to current test context.
         /// </summary>
         /// <param name="message">Text of the message</param>
@@ -143,5 +179,12 @@ namespace ReportPortal.Shared.Execution.Logging
         /// <param name="mimeType">Mime type of content</param>
         /// <param name="content">Array of bytes</param>
         void Warn(string message, string mimeType, byte[] content);
+
+        /// <summary>
+        /// Sends file to current test context.
+        /// </summary>
+        /// <param name="message">Text of the message</param>
+        /// <param name="file">File on the disk</param>
+        void Warn(string message, FileInfo file);
     }
 }
