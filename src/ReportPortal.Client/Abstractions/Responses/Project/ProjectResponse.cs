@@ -1,20 +1,18 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace ReportPortal.Client.Abstractions.Responses.Project
 {
     /// <summary>
     /// Information about project.
     /// </summary>
-    [DataContract]
     public class ProjectResponse
     {
-        [DataMember(Name = "projectId")]
-        public string Id { get; set; }
+        [JsonPropertyName("projectId")]
+        public long Id { get; set; }
 
-        [DataMember(Name = "projectName")]
+        [JsonPropertyName("projectName")]
         public string Name { get; set; }
 
-        [DataMember(Name = "configuration")]
         public ProjectConfiguration Configuration { get; set; }
     }
 }

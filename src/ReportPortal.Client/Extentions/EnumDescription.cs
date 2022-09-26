@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace ReportPortal.Client.Extentions
 {
@@ -9,7 +9,7 @@ namespace ReportPortal.Client.Extentions
         {
             var fi = source.GetType().GetRuntimeField(source.ToString());
 
-            var attributes = (DataMemberAttribute[])fi.GetCustomAttributes(typeof(DataMemberAttribute), false);
+            var attributes = (JsonPropertyNameAttribute[])fi.GetCustomAttributes(typeof(JsonPropertyNameAttribute), false);
 
             return attributes.Length > 0 ? attributes[0].Name : source.ToString();
         }

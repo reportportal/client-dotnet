@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+
+    <_ReportPortal_Client_Runtime_Path>$(MSBuildThisFileDirectory)..\..\lib\net462\ReportPortal.Client.dll</_ReportPortal_Client_Runtime_Path>
+    <_ReportPortal_Client_Symbols_Path>$(MSBuildThisFileDirectory)..\..\lib\net462\ReportPortal.Client.pdb</_ReportPortal_Client_Symbols_Path>
+
+  </PropertyGroup>
+
+</Project>

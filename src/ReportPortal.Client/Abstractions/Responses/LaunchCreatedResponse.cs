@@ -1,14 +1,12 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace ReportPortal.Client.Abstractions.Responses
 {
-    [DataContract]
     public class LaunchCreatedResponse
     {
-        [DataMember(Name = "id")]
+        [JsonPropertyName("id")]
         public string Uuid { get; set; }
 
-        [DataMember(Name = "number")]
         public long Number { get; set; }
     }
 }
