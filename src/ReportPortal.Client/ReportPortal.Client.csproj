@@ -12,10 +12,10 @@
     <RepositoryType>GitHub</RepositoryType>
     <RepositoryUrl>https://github.com/reportportal/client-net</RepositoryUrl>
     <PackageTags>report reportportal api client testing</PackageTags>
-	<PackageReadmeFile>README.md</PackageReadmeFile>
-	<GenerateDocumentationFile>true</GenerateDocumentationFile>
-	<IncludeSymbols>true</IncludeSymbols>
-	<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
@@ -24,8 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-	<None Include="..\..\Logo.png" Pack="true" PackagePath="\" Visible="false" />
-	<None Include="..\..\README.md" Pack="true" PackagePath="\" Visible="false" />
+    <None Include="..\..\Logo.png" Pack="true" PackagePath="\" Visible="false" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,8 +36,8 @@
   </ItemGroup>
 
   <Target Name="GeneratePackageReleaseNotes" DependsOnTargets="GetVersion" BeforeTargets="GenerateNuspec">
-	<PropertyGroup>
-	  <PackageReleaseNotes>Please see [here]($(RepositoryUrl)/releases/tag/$(GitVersion_FullSemVer)) what is new in this version.</PackageReleaseNotes>
-	</PropertyGroup>
+    <PropertyGroup>
+      <PackageReleaseNotes>Please see [here]($(RepositoryUrl)/releases/tag/$(GitVersion_FullSemVer)) what is new in this version.</PackageReleaseNotes>
+    </PropertyGroup>
   </Target>
 </Project>
