@@ -20,4 +20,5 @@ after_test:
 
 artifacts:
   - path: '**\*.nupkg'
+  - path: '**\*.snupkg'
   - path: '**\*.html'
