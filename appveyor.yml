@@ -1,4 +1,4 @@
-﻿image: Visual Studio 2019
+﻿image: Visual Studio 2022
 
 environment:
   IGNORE_NORMALISATION_GIT_HEAD_MOVE: 1
@@ -20,4 +20,5 @@ after_test:
 
 artifacts:
   - path: '**\*.nupkg'
+  - path: '**\*.snupkg'
   - path: '**\*.html'
