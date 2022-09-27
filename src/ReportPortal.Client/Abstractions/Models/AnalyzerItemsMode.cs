@@ -1,14 +1,14 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace ReportPortal.Client.Abstractions.Models
 {
     public enum AnalyzerItemsMode
     {
-        [DataMember(Name = "TO_INVESTIGATE")]
+        [JsonPropertyName("TO_INVESTIGATE")]
         ToInvestigate,
-        [DataMember(Name = "AUTO_ANALYZED")]
+        [JsonPropertyName("AUTO_ANALYZED")]
         AutoAnalyzed,
-        [DataMember(Name = "MANUALLY_ANALYZED")]
+        [JsonPropertyName("MANUALLY_ANALYZED")]
         ManuallyAnalyzed
     }
 }

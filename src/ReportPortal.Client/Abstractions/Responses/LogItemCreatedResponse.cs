@@ -1,19 +1,17 @@
 ﻿using System.Collections.Generic;
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace ReportPortal.Client.Abstractions.Responses
 {
-    [DataContract]
     public class LogItemsCreatedResponse
     {
-        [DataMember(Name = "responses")]
+        [JsonPropertyName("responses")]
         public IList<LogItemCreatedResponse> LogItems { get; set; }
     }
 
-    [DataContract]
     public class LogItemCreatedResponse
     {
-        [DataMember(Name = "id")]
+        [JsonPropertyName("id")]
         public string Uuid { get; set; }
     }
 }

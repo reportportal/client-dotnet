@@ -1,14 +1,14 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace ReportPortal.Client.Abstractions.Models
 {
     public enum UserFilterType
     {
-        [DataMember(Name = "launch")]
+        [JsonPropertyName("launch")]
         Launch,
-        [DataMember(Name = "testitem")]
+        [JsonPropertyName("testitem")]
         TestItem,
-        [DataMember(Name = "log")]
+        [JsonPropertyName("log")]
         Log
     }
 }

@@ -190,7 +190,7 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
             var getTest = await Service.TestItem.GetAsync(test.Uuid);
             Assert.Null(getTest.ParentId);
             Assert.Equal(startTestItemRequest.Name, getTest.Name);
-            Assert.Equal(startTestItemRequest.StartTime, getTest.StartTime);
+            getTest.StartTime.Should().BeCloseTo(startTestItemRequest.StartTime, precision: 1);
             Assert.Equal(startTestItemRequest.Type, getTest.Type);
             Assert.Equal(startTestItemRequest.Description, getTest.Description);
             Assert.Equal(parameters, getTest.Parameters);
@@ -208,7 +208,7 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
 
             getTest = await Service.TestItem.GetAsync(test.Uuid);
             Assert.Equal(finishTestItemRequest.Status, getTest.Status);
-            Assert.Equal(finishTestItemRequest.EndTime, getTest.EndTime);
+            getTest.EndTime.Should().BeCloseTo(finishTestItemRequest.EndTime, precision: 1);
         }
 
         [Fact]

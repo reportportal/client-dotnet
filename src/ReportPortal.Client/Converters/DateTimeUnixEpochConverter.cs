@@ -19,7 +19,7 @@ namespace ReportPortal.Client.Converters
         {
             var unixTime = Convert.ToInt64((value - UNIX_EPOCH).TotalMilliseconds);
 
-            writer.WriteStringValue(unixTime.ToString());
+            writer.WriteNumberValue(unixTime);
         }
     }
 }

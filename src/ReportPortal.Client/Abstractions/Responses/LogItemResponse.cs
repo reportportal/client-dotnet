@@ -2,51 +2,40 @@
 using ReportPortal.Client.Converters;
 using System;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace ReportPortal.Client.Abstractions.Responses
 {
-    [DataContract]
     public class LogItemResponse
     {
-        [DataMember(Name = "id")]
         public long Id { get; set; }
 
-        [DataMember(Name = "uuid")]
         public string Uuid { get; set; }
 
-        [DataMember(Name = "itemId")]
+        [JsonPropertyName("itemId")]
         public long TestItemId { get; set; }
 
-        [DataMember(Name = "launchId")]
         public long LaunchId { get; set; }
 
-        [DataMember(Name = "time")]
-        private string TimeString { get; set; }
+        [JsonConverter(typeof(DateTimeUnixEpochConverter))]
+        public DateTime Time { get; set; }
 
-        public DateTime Time => DateTimeConverter.ConvertTo(TimeString);
-
-        [DataMember(Name = "message")]
+        [JsonPropertyName("message")]
         public string Text { get; set; }
 
-        [DataMember(Name = "level")]
-        private string LevelString { get; set; }
+        [JsonConverter(typeof(JsonStringEnumConverterEx<LogLevel>))]
+        public LogLevel Level { get; set; }
 
-        public LogLevel Level => EnumConverter.ConvertTo<LogLevel>(LevelString);
-
-        [DataMember(Name = "binaryContent")]
+        [JsonPropertyName("binaryContent")]
         public BinaryContent Content { get; set; }
     }
 
-    [DataContract]
     public class BinaryContent
     {
-        [DataMember(Name = "contentType")]
         public string ContentType { get; set; }
 
-        [DataMember(Name = "id")]
         public string Id { get; set; }
 
-        [DataMember(Name = "thumbnailId")]
         public string ThumbnailId { get; set; }
     }
 }
