@@ -20,7 +20,7 @@ namespace ReportPortal.Shared.Tests.Extensibility.ExtensionManager
             manager.Explore(Environment.CurrentDirectory);
 
             manager.LogFormatters.Count.Should().Be(0, "there is no embedded LogFormatters");
-            manager.ReportEventObservers.Count.Should().Be(3, "google analytic event observer, File log formatter and Base64 log formatter");
+            manager.ReportEventObservers.Count.Should().Be(1, "google analytic event observer");
         }
     }
 }
