@@ -1,14 +1,9 @@
-﻿using System.Runtime.Serialization;
-
-namespace ReportPortal.Client.Abstractions.Models
+﻿namespace ReportPortal.Client.Abstractions.Models
 {
-    public enum AnalyzerItemsMode
+    public class AnalyzerItemsMode
     {
-        [DataMember(Name = "TO_INVESTIGATE")]
-        ToInvestigate,
-        [DataMember(Name = "AUTO_ANALYZED")]
-        AutoAnalyzed,
-        [DataMember(Name = "MANUALLY_ANALYZED")]
-        ManuallyAnalyzed
+        public const string ToInvestigate = "TO_INVESTIGATE";
+        public const string AutoAnalyzed = "AUTO_ANALYZED";
+        public const string ManuallyAnalyzed = "MANUALLY_ANALYZED";
     }
 }

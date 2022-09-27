@@ -1,4 +1,4 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace ReportPortal.Client.Abstractions.Models
 {
@@ -7,23 +7,23 @@ namespace ReportPortal.Client.Abstractions.Models
     /// </summary>
     public enum Status
     {
-        [DataMember(Name = "IN_PROGRESS")]
+        [JsonPropertyName("IN_PROGRESS")]
         InProgress,
-        [DataMember(Name = "PASSED")]
+        [JsonPropertyName("PASSED")]
         Passed,
-        [DataMember(Name = "FAILED")]
+        [JsonPropertyName("FAILED")]
         Failed,
-        [DataMember(Name = "SKIPPED")]
+        [JsonPropertyName("SKIPPED")]
         Skipped,
-        [DataMember(Name = "INTERRUPTED")]
+        [JsonPropertyName("INTERRUPTED")]
         Interrupted,
-        [DataMember(Name = "CANCELLED")]
+        [JsonPropertyName("CANCELLED")]
         Cancelled,
-        [DataMember(Name = "STOPPED")]
+        [JsonPropertyName("STOPPED")]
         Stopped,
-        [DataMember(Name = "INFO")]
+        [JsonPropertyName("INFO")]
         Info,
-        [DataMember(Name = "WARN")]
+        [JsonPropertyName("WARN")]
         Warn
     }
 }

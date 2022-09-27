@@ -1,7 +1,10 @@
-﻿using ReportPortal.Client.Abstractions.Responses;
+﻿using FluentAssertions;
+using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Client.Converters;
 using System;
-using System.Runtime.Serialization;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace ReportPortal.Client.IntegrationTests.Serialization
@@ -12,24 +15,22 @@ namespace ReportPortal.Client.IntegrationTests.Serialization
         public void ShouldThrowExceptionIfIncorrectJson()
         {
             var json = "<abc />";
-            var exp = Assert.ThrowsAny<Exception>(() => ModelSerializer.Deserialize<MessageResponse>(json));
-            Assert.Contains(json, exp.Message);
-            Assert.NotNull(exp.InnerException);
+            using (var reader = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+            {
+                Func<Task> act = async () => await ModelSerializer.DeserializeAsync<MessageResponse>(reader);
+                act.Should().Throw<Exception>();
+            }
         }
 
         [Fact]
-        public void ShouldDeserializeWithEscapedNewLine()
+        public async Task ShouldDeserializeWithEscapedNewLine()
         {
-            var json = "{\"P1\": \"abc\\nabc\"}";
-            var a = ModelSerializer.Deserialize<A>(json);
-            Assert.Equal("abc\nabc", a.P1);
-        }
-
-        [DataContract]
-        class A
-        {
-            [DataMember]
-            public string P1 { get; set; }
+            var json = "{\"message\": \"abc\\nabc\"}";
+            using (var reader = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+            {
+                var message = await ModelSerializer.DeserializeAsync<MessageResponse>(reader);
+                Assert.Equal("abc\nabc", message.Info);
+            }
         }
     }
 }

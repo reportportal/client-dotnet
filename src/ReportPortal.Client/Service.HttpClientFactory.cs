@@ -1,6 +1,6 @@
 ﻿using ReportPortal.Client.Extentions;
 using System;
-#if NET45
+#if NET462
 using System.Net;
 #endif
 using System.Net.Http;
@@ -25,7 +25,7 @@ namespace ReportPortal.Client
             {
                 var httpClientHandler = new HttpClientHandler();
 
-#if !NET45
+#if !NET462
                 httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
 #else
                 ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;

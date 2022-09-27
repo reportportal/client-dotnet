@@ -3,47 +3,34 @@ using ReportPortal.Client.Converters;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace ReportPortal.Client.Abstractions.Responses
 {
-    [DataContract]
     public class TestItemHistoryContainer
     {
-        [DataMember(Name = "groupingField")]
         public string GroupingField { get; set; }
 
-        [DataMember(Name = "resources")]
         public IEnumerable<TestItemHistoryElement> Resources { get; set; }
     }
 
-    [DataContract]
     public class TestItemHistoryElement
     {
-        [DataMember(Name = "name")]
         public string Name { get; set; }
 
-        [DataMember(Name = "status")]
-        private string StatusString { get; set; }
+        [JsonConverter(typeof(JsonStringEnumConverterEx<Status>))]
+        public Status Status { get; set; }
 
-        public Status Status => EnumConverter.ConvertTo<Status>(StatusString);
-
-        [DataMember(Name = "launchNumber")]
         public long LaunchNumber { get; set; }
 
-        [DataMember(Name = "launchId")]
-        public string LaunchId { get; set; }
+        public long LaunchId { get; set; }
 
-        [DataMember(Name = "startTime")]
-        private string StartTimeString { get; set; }
+        [JsonConverter(typeof(DateTimeUnixEpochConverter))]
+        public DateTime StartTime { get; set; }
 
-        public DateTime StartTime => DateTimeConverter.ConvertTo(StartTimeString);
+        [JsonConverter(typeof(JsonStringEnumConverterEx<Status>))]
+        public Status LaunchStatus { get; set; }
 
-        [DataMember(Name = "launchStatus")]
-        private string LaunchStatusString { get; set; }
-
-        public Status LaunchStatus => EnumConverter.ConvertTo<Status>(LaunchStatusString);
-
-        [DataMember(Name = "resources")]
         public IEnumerable<TestItemResponse> Resources { get; set; }
     }
 }

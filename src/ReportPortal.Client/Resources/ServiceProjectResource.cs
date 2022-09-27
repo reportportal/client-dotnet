@@ -13,32 +13,32 @@ namespace ReportPortal.Client.Resources
         {
         }
 
-        public async Task<ProjectResponse> GetAsync()
+        public async ValueTask<ProjectResponse> GetAsync()
         {
             return await GetAsync(CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<ProjectResponse> GetAsync(CancellationToken cancellationToken)
+        public async ValueTask<ProjectResponse> GetAsync(CancellationToken cancellationToken)
         {
             return await GetAsJsonAsync<ProjectResponse>($"project/{ProjectName}", cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<ProjectResponse> GetAsync(string projectName)
+        public async ValueTask<ProjectResponse> GetAsync(string projectName)
         {
             return await GetAsync(projectName, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<ProjectResponse> GetAsync(string projectName, CancellationToken cancellationToken)
+        public async ValueTask<ProjectResponse> GetAsync(string projectName, CancellationToken cancellationToken)
         {
             return await GetAsJsonAsync<ProjectResponse>($"project/{projectName}", cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<MessageResponse> UpdatePreferencesAsync(string projectName, string userName, long filterId)
+        public async ValueTask<MessageResponse> UpdatePreferencesAsync(string projectName, string userName, long filterId)
         {
             return await UpdatePreferencesAsync(projectName, userName, filterId, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<MessageResponse> UpdatePreferencesAsync(
+        public async ValueTask<MessageResponse> UpdatePreferencesAsync(
             string projectName, string userName, long filterId, CancellationToken cancellationToken)
         {
             return await PutAsJsonAsync<MessageResponse, object>(
@@ -47,14 +47,14 @@ namespace ReportPortal.Client.Resources
                 cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<PreferenceResponse> GetAllPreferencesAsync(
+        public async ValueTask<PreferenceResponse> GetAllPreferencesAsync(
             string projectName, string userName, CancellationToken cancellationToken)
         {
             return await GetAsJsonAsync<PreferenceResponse>(
                 $"project/{projectName}/preference/{userName}", cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<PreferenceResponse> GetAllPreferencesAsync(string projectName, string userName)
+        public async ValueTask<PreferenceResponse> GetAllPreferencesAsync(string projectName, string userName)
         {
             return await GetAllPreferencesAsync(projectName, userName, CancellationToken.None).ConfigureAwait(false);
         }

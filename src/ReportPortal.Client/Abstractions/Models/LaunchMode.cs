@@ -1,4 +1,4 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace ReportPortal.Client.Abstractions.Models
 {
@@ -7,9 +7,9 @@ namespace ReportPortal.Client.Abstractions.Models
     /// </summary>
     public enum LaunchMode
     {
-        [DataMember(Name = "DEFAULT")]
+        [JsonPropertyName("DEFAULT")]
         Default,
-        [DataMember(Name = "DEBUG")]
+        [JsonPropertyName("DEBUG")]
         Debug
     }
 }

@@ -34,8 +34,8 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
 
             var gotLaunch = await Service.Launch.GetAsync(launch.Uuid);
             Assert.Equal("StartFinishDeleteLaunch", gotLaunch.Name);
-            Assert.Equal(startLaunchRequest.StartTime, gotLaunch.StartTime);
-            Assert.Equal(finishLaunchRequest.EndTime, gotLaunch.EndTime);
+            gotLaunch.StartTime.Should().BeCloseTo(startLaunchRequest.StartTime, precision: 1);
+            gotLaunch.EndTime.Should().BeCloseTo(finishLaunchRequest.EndTime, precision: 1);
 
             var delMessage = await Service.Launch.DeleteAsync(gotLaunch.Id);
             Assert.Contains("successfully", delMessage.Info);
@@ -215,8 +215,8 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
             };
 
             var mergedLaunch = await Service.Launch.MergeAsync(mergeRequest);
-            Assert.Equal(mergeRequest.StartTime, mergedLaunch.StartTime);
-            Assert.Equal(mergeRequest.EndTime, mergedLaunch.EndTime);
+            mergedLaunch.StartTime.Should().BeCloseTo(mergeRequest.StartTime, precision: 1);
+            mergedLaunch.EndTime.Should().BeCloseTo(mergeRequest.EndTime, precision: 1);
 
             var delMessage = await Service.Launch.DeleteAsync(mergedLaunch.Id);
             Assert.Contains("successfully", delMessage.Info);
@@ -246,7 +246,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
                 LaunchId = gotLaunch.Id,
                 AnalyzerMode = AnalyzerMode.LaunchName,
                 AnalyzerTypeName = "autoAnalyzer",
-                AnalyzerItemsMode = new List<AnalyzerItemsMode> { AnalyzerItemsMode.ToInvestigate }
+                AnalyzerItemsMode = new List<string> { AnalyzerItemsMode.ToInvestigate }
             });
             Assert.Contains("started", analyzeMessage.Info);
 
@@ -336,7 +336,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
             await Service.Launch.FinishAsync(launch1Response.Uuid, new FinishLaunchRequest { EndTime = DateTime.UtcNow });
 
             // api doesn't allow to finish launch twice?! So when using rerun, we can start launch, but it seems we should not finish launch
-            await Assert.ThrowsAnyAsync<ReportPortalException>(() => Service.Launch.FinishAsync(launch2Response.Uuid, new FinishLaunchRequest { EndTime = DateTime.UtcNow }));
+            await Assert.ThrowsAnyAsync<ReportPortalException>(async () => await Service.Launch.FinishAsync(launch2Response.Uuid, new FinishLaunchRequest { EndTime = DateTime.UtcNow }));
 
             var gotLaunch = await Service.Launch.GetAsync(launch1Response.Uuid);
             await Service.Launch.DeleteAsync(gotLaunch.Id);
@@ -369,7 +369,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
             await Service.Launch.FinishAsync(launch1Response.Uuid, new FinishLaunchRequest { EndTime = DateTime.UtcNow });
 
             // api doesn't allow to finish launch twice?! So when using rerun, we can start launch, but it seems we should not finish launch
-            await Assert.ThrowsAnyAsync<ReportPortalException>(() => Service.Launch.FinishAsync(launch2Response.Uuid, new FinishLaunchRequest { EndTime = DateTime.UtcNow }));
+            await Assert.ThrowsAnyAsync<ReportPortalException>(async () => await Service.Launch.FinishAsync(launch2Response.Uuid, new FinishLaunchRequest { EndTime = DateTime.UtcNow }));
 
             var gotLaunch = await Service.Launch.GetAsync(launch1Response.Uuid);
             await Service.Launch.DeleteAsync(gotLaunch.Id);
@@ -386,7 +386,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
                 IsRerun = true
             };
 
-            await Assert.ThrowsAnyAsync<ReportPortalException>(() => Service.Launch.StartAsync(request));
+            await Assert.ThrowsAnyAsync<ReportPortalException>(async () => await Service.Launch.StartAsync(request));
         }
     }
 }

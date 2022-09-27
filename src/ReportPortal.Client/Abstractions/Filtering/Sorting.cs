@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace ReportPortal.Client.Abstractions.Filtering
 {
     public enum SortDirection
     {
-        [DataMember(Name = "ASC")]
+        [JsonPropertyName("ASC")]
         Ascending,
-        [DataMember(Name = "DESC")]
+        [JsonPropertyName("DESC")]
         Descending
     }
     public class Sorting

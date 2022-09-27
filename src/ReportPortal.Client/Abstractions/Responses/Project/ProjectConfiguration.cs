@@ -1,14 +1,13 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace ReportPortal.Client.Abstractions.Responses.Project
 {
     /// <summary>
     /// Information about project.
     /// </summary>
-    [DataContract]
     public class ProjectConfiguration
     {
-        [DataMember(Name = "subTypes")]
+        [JsonPropertyName("subTypes")]
         public ProjectDefectSubTypesContainer DefectSubTypes { get; set; }
     }
 }

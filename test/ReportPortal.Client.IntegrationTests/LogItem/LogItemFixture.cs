@@ -58,6 +58,10 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
                 Attach = new LogItemAttach("application/octet-stream", data)
             });
             Assert.NotNull(log.Uuid);
+
+            // binary is async on server side
+            Thread.Sleep(500);
+
             var getLog = await Service.LogItem.GetAsync(log.Uuid);
             Assert.Equal("Log1", getLog.Text);
 
@@ -80,6 +84,10 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
                 Attach = new LogItemAttach("application/json", data)
             });
             Assert.NotNull(log.Uuid);
+
+            // binary is async on server side
+            Thread.Sleep(500);
+
             var getLog = await Service.LogItem.GetAsync(log.Uuid);
             Assert.Equal("Log1", getLog.Text);
 
@@ -109,6 +117,9 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
             var logs = await Service.LogItem.CreateAsync(requests.ToArray());
 
             logs.LogItems.Should().HaveCount(10);
+
+            // binary is async on server side
+            Thread.Sleep(500);
 
             for (int i = 0; i < 10; i++)
             {
@@ -208,7 +219,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
             var gotLogItem = await Service.LogItem.GetAsync(log.Uuid);
             Assert.Equal(addLogItemRequest.Text, gotLogItem.Text);
             Assert.Equal(addLogItemRequest.Level, gotLogItem.Level);
-            Assert.Equal(addLogItemRequest.Time, gotLogItem.Time);
+            gotLogItem.Time.Should().BeCloseTo(addLogItemRequest.Time, precision: 1);
         }
 
         [Fact]

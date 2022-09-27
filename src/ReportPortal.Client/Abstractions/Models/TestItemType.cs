@@ -1,4 +1,4 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace ReportPortal.Client.Abstractions.Models
 {
@@ -7,20 +7,19 @@ namespace ReportPortal.Client.Abstractions.Models
     /// </summary>
     public enum TestItemType
     {
-        None,
-        [DataMember(Name = "SUITE")]
+        [JsonPropertyName("SUITE")]
         Suite,
-        [DataMember(Name = "TEST")]
+        [JsonPropertyName("TEST")]
         Test,
-        [DataMember(Name = "STEP")]
+        [JsonPropertyName("STEP")]
         Step,
-        [DataMember(Name = "BEFORE_CLASS")]
+        [JsonPropertyName("BEFORE_CLASS")]
         BeforeClass,
-        [DataMember(Name = "AFTER_CLASS")]
+        [JsonPropertyName("AFTER_CLASS")]
         AfterClass,
-        [DataMember(Name = "AFTER_METHOD")]
+        [JsonPropertyName("AFTER_METHOD")]
         AfterMethod,
-        [DataMember(Name = "BEFORE_METHOD")]
+        [JsonPropertyName("BEFORE_METHOD")]
         BeforeMethod
     }
 }
