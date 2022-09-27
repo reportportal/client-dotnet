@@ -1,37 +1,37 @@
 ﻿using System.Collections.Generic;
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace ReportPortal.Client.Abstractions.Filtering
 {
     public enum FilterOperation
     {
-        [DataMember(Name = "eq")]
+        [JsonPropertyName("eq")]
         Equals,
-        [DataMember(Name = "ne")]
+        [JsonPropertyName("ne")]
         NotEquals,
-        [DataMember(Name = "cnt")]
+        [JsonPropertyName("cnt")]
         Contains,
-        [DataMember(Name = "!cnt")]
+        [JsonPropertyName("!cnt")]
         NotContains,
-        [DataMember(Name = "ex")]
+        [JsonPropertyName("ex")]
         Exists,
-        [DataMember(Name = "in")]
+        [JsonPropertyName("in")]
         In,
-        [DataMember(Name = "!in")]
+        [JsonPropertyName("!in")]
         NotIn,
-        [DataMember(Name = "gt")]
+        [JsonPropertyName("gt")]
         GreaterThan,
-        [DataMember(Name = "gte")]
+        [JsonPropertyName("gte")]
         GreaterThanOrEquals,
-        [DataMember(Name = "lt")]
+        [JsonPropertyName("lt")]
         LowerThan,
-        [DataMember(Name = "lte")]
+        [JsonPropertyName("lte")]
         LowerThanOrEquals,
-        [DataMember(Name = "btw")]
+        [JsonPropertyName("btw")]
         Between,
-        [DataMember(Name = "size")]
+        [JsonPropertyName("size")]
         Size,
-        [DataMember(Name = "has")]
+        [JsonPropertyName("has")]
         Has
     }
     public class Filter

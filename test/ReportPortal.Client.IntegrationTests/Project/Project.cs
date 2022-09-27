@@ -19,7 +19,7 @@ namespace ReportPortal.Client.IntegrationTests.Project
             var projectInfo = await Service.Project.GetAsync();
 
             projectInfo.Name.Should().Be(ProjectName);
-            projectInfo.Id.Should().NotBeNull();
+            projectInfo.Id.Should().BePositive();
 
             projectInfo.Configuration.Should().NotBeNull();
             projectInfo.Configuration.DefectSubTypes.Should().NotBeNull();

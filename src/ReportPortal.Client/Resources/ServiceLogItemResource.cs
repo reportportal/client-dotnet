@@ -3,8 +3,10 @@ using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Resources;
 using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Client.Converters;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,22 +19,22 @@ namespace ReportPortal.Client.Resources
         {
         }
 
-        public async Task<Content<LogItemResponse>> GetAsync()
+        public async ValueTask<Content<LogItemResponse>> GetAsync()
         {
             return await GetAsync(filterOption: null, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<Content<LogItemResponse>> GetAsync(FilterOption filterOption)
+        public async ValueTask<Content<LogItemResponse>> GetAsync(FilterOption filterOption)
         {
             return await GetAsync(filterOption, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<Content<LogItemResponse>> GetAsync(CancellationToken cancellationToken)
+        public async ValueTask<Content<LogItemResponse>> GetAsync(CancellationToken cancellationToken)
         {
             return await GetAsync(filterOption: null, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<Content<LogItemResponse>> GetAsync(FilterOption filterOption, CancellationToken cancellationToken)
+        public async ValueTask<Content<LogItemResponse>> GetAsync(FilterOption filterOption, CancellationToken cancellationToken)
         {
             var uri = $"{ProjectName}/log";
 
@@ -44,42 +46,42 @@ namespace ReportPortal.Client.Resources
             return await GetAsJsonAsync<Content<LogItemResponse>>(uri, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<LogItemResponse> GetAsync(string uuid)
+        public async ValueTask<LogItemResponse> GetAsync(string uuid)
         {
             return await GetAsync(uuid, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<LogItemResponse> GetAsync(string uuid, CancellationToken cancellationToken)
+        public async ValueTask<LogItemResponse> GetAsync(string uuid, CancellationToken cancellationToken)
         {
             return await GetAsJsonAsync<LogItemResponse>($"{ProjectName}/log/uuid/{uuid}", cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<LogItemResponse> GetAsync(long id)
+        public async ValueTask<LogItemResponse> GetAsync(long id)
         {
             return await GetAsync(id, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<LogItemResponse> GetAsync(long id, CancellationToken cancellationToken)
+        public async ValueTask<LogItemResponse> GetAsync(long id, CancellationToken cancellationToken)
         {
             return await GetAsJsonAsync<LogItemResponse>($"{ProjectName}/log/{id}", cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<byte[]> GetBinaryDataAsync(string id)
+        public async ValueTask<byte[]> GetBinaryDataAsync(string id)
         {
             return await GetBinaryDataAsync(id, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<byte[]> GetBinaryDataAsync(string id, CancellationToken cancellationToken)
+        public async ValueTask<byte[]> GetBinaryDataAsync(string id, CancellationToken cancellationToken)
         {
             return await GetAsBytesAsync($"data/{ProjectName}/{id}", cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request)
+        public async ValueTask<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request)
         {
             return await CreateAsync(request, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request, CancellationToken cancellationToken)
+        public async ValueTask<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request, CancellationToken cancellationToken)
         {
             var uri = $"{ProjectName}/log";
 
@@ -94,41 +96,46 @@ namespace ReportPortal.Client.Resources
             }
         }
 
-        public async Task<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests)
+        public async ValueTask<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests)
         {
             return await CreateAsync(requests, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests, CancellationToken cancellationToken)
+        public async ValueTask<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests, CancellationToken cancellationToken)
         {
             var uri = $"{ProjectName}/log";
 
             var multipartContent = new MultipartFormDataContent();
 
-            var body = ModelSerializer.Serialize<CreateLogItemRequest[]>(requests);
-
-            var jsonContent = new StringContent(body, Encoding.UTF8, "application/json");
-            multipartContent.Add(jsonContent, "json_request_part");
-
-            foreach (var request in requests)
+            using (var memoryStream = new MemoryStream())
             {
-                if (request.Attach != null)
-                {
-                    var byteArrayContent = new ByteArrayContent(request.Attach.Data, 0, request.Attach.Data.Length);
-                    byteArrayContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(request.Attach.MimeType);
-                    multipartContent.Add(byteArrayContent, "file", request.Attach.Name);
-                }
-            }
+                await ModelSerializer.SerializeAsync<CreateLogItemRequest[]>(requests, memoryStream, cancellationToken).ConfigureAwait(false);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                var httpContent = new StreamContent(memoryStream);
+                httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-            return await SendHttpRequestAsync<LogItemsCreatedResponse>(HttpMethod.Post, uri, multipartContent, cancellationToken).ConfigureAwait(false);
+                multipartContent.Add(httpContent, "json_request_part");
+
+                foreach (var request in requests)
+                {
+                    if (request.Attach != null)
+                    {
+                        var byteArrayContent = new ByteArrayContent(request.Attach.Data, 0, request.Attach.Data.Length);
+                        byteArrayContent.Headers.ContentType = new MediaTypeHeaderValue(request.Attach.MimeType);
+                        multipartContent.Add(byteArrayContent, "file", request.Attach.Name);
+                    }
+                }
+
+                return await SendHttpRequestAsync<LogItemsCreatedResponse>(HttpMethod.Post, uri, multipartContent, cancellationToken).ConfigureAwait(false);
+            }
         }
 
-        public async Task<MessageResponse> DeleteAsync(long id)
+        public async ValueTask<MessageResponse> DeleteAsync(long id)
         {
             return await DeleteAsync(id, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<MessageResponse> DeleteAsync(long id, CancellationToken cancellationToken)
+        public async ValueTask<MessageResponse> DeleteAsync(long id, CancellationToken cancellationToken)
         {
             return await DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/log/{id}", cancellationToken).ConfigureAwait(false);
         }

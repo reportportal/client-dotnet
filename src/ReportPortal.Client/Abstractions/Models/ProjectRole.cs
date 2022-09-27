@@ -1,16 +1,16 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace ReportPortal.Client.Abstractions.Models
 {
     public enum ProjectRole
     {
-        [DataMember(Name = "PROJECT_MANAGER")]
+        [JsonPropertyName("PROJECT_MANAGER")]
         ProjectManager,
-        [DataMember(Name = "MEMBER")]
+        [JsonPropertyName("MEMBER")]
         Member,
-        [DataMember(Name = "OPERATOR")]
+        [JsonPropertyName("OPERATOR")]
         Operator,
-        [DataMember(Name = "CUSTOMER")]
+        [JsonPropertyName("CUSTOMER")]
         Customer
     }
 }

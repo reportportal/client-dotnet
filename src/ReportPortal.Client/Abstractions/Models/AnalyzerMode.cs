@@ -1,14 +1,14 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace ReportPortal.Client.Abstractions.Models
 {
     public enum AnalyzerMode
     {
-        [DataMember(Name = "ALL")]
+        [JsonPropertyName("ALL")]
         All,
-        [DataMember(Name = "CURRENT_LAUNCH")]
+        [JsonPropertyName("CURRENT_LAUNCH")]
         CurrentLaunch,
-        [DataMember(Name = "LAUNCH_NAME")]
+        [JsonPropertyName("LAUNCH_NAME")]
         LaunchName
     }
 }

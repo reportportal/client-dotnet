@@ -15,17 +15,17 @@ namespace ReportPortal.Client.IntegrationTests
         {
             for (int i = 0; i < 10; i++)
             {
-                var createdLaunch = Task.Run(() => Service.Launch.StartAsync(new StartLaunchRequest
+                var createdLaunch = Task.Run(async () => await Service.Launch.StartAsync(new StartLaunchRequest
                 {
                     Name = "LaunchItemFixture",
                     StartTime = DateTime.UtcNow,
                     Mode = LaunchMode.Default
                 })).GetAwaiter().GetResult();
 
-                Task.Run(() => Service.Launch.FinishAsync(createdLaunch.Uuid, new FinishLaunchRequest
+                Task.Run(async () => await Service.Launch.FinishAsync(createdLaunch.Uuid, new FinishLaunchRequest
                 {
                     EndTime = DateTime.UtcNow
-                })).Wait();
+                })).GetAwaiter().GetResult();
 
                 CreatedLaunches.Add(createdLaunch);
             }
@@ -35,9 +35,9 @@ namespace ReportPortal.Client.IntegrationTests
         {
             foreach (var createdLaunch in CreatedLaunches)
             {
-                var gotCreatedLaunch = Task.Run(() => Service.Launch.GetAsync(createdLaunch.Uuid)).GetAwaiter().GetResult();
+                var gotCreatedLaunch = Task.Run(async () => await Service.Launch.GetAsync(createdLaunch.Uuid)).GetAwaiter().GetResult();
 
-                Task.Run(() => Service.Launch.DeleteAsync(gotCreatedLaunch.Id)).Wait();
+                Task.Run(async () => await Service.Launch.DeleteAsync(gotCreatedLaunch.Id)).GetAwaiter().GetResult();
             }
         }
     }

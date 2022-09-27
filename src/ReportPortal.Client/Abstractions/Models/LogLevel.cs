@@ -1,4 +1,4 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace ReportPortal.Client.Abstractions.Models
 {
@@ -7,17 +7,17 @@ namespace ReportPortal.Client.Abstractions.Models
     /// </summary>
     public enum LogLevel
     {
-        [DataMember(Name = "TRACE")]
+        [JsonPropertyName("TRACE")]
         Trace,
-        [DataMember(Name = "DEBUG")]
+        [JsonPropertyName("DEBUG")]
         Debug,
-        [DataMember(Name = "INFO")]
+        [JsonPropertyName("INFO")]
         Info,
-        [DataMember(Name = "WARN")]
+        [JsonPropertyName("WARN")]
         Warning,
-        [DataMember(Name = "ERROR")]
+        [JsonPropertyName("ERROR")]
         Error,
-        [DataMember(Name = "FATAL")]
+        [JsonPropertyName("FATAL")]
         Fatal
     }
 }

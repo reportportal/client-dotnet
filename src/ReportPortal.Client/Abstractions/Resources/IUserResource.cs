@@ -13,10 +13,10 @@ namespace ReportPortal.Client.Abstractions.Resources
         /// Gets the current user's information.
         /// </summary>
         /// <returns></returns>
-        Task<UserResponse> GetAsync();
+        ValueTask<UserResponse> GetAsync();
 
         /// <inheritdoc cref="GetAsync"/>
         /// <param name="cancellationToken">Cancellation token.</param>
-        Task<UserResponse> GetAsync(CancellationToken cancellationToken);
+        ValueTask<UserResponse> GetAsync(CancellationToken cancellationToken);
     }
 }

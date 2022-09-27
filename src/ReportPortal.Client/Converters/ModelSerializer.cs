@@ -1,80 +1,20 @@
-﻿using System;
-using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
-using System.Text;
+﻿using System.IO;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ReportPortal.Client.Converters
 {
-    public class ModelSerializer
+    internal class ModelSerializer
     {
-        public static T Deserialize<T>(string json)
+        public static async ValueTask<T> DeserializeAsync<T>(Stream stream, CancellationToken cancellationToken = default)
         {
-            DataContractJsonSerializerSettings settings = new DataContractJsonSerializerSettings
-            {
-                UseSimpleDictionaryFormat = true
-            };
-
-            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(T), settings);
-
-            using (var stream = new MemoryStream())
-            {
-                var bytes = Encoding.UTF8.GetBytes(json);
-                stream.Write(bytes, 0, bytes.Length);
-                stream.Position = 0;
-
-                try
-                {
-                    return (T)serializer.ReadObject(stream);
-                }
-                catch (SerializationException exp)
-                {
-                    throw new SerializationException($"Cannot deserialize json to '{typeof(T).Name}' type.{Environment.NewLine}{json}", exp);
-                }
-            }
+            return (T)await JsonSerializer.DeserializeAsync(stream, typeof(T), ClientSourceGenerationContext.Default, cancellationToken);
         }
 
-        public static T Deserialize<T>(Stream stream)
+        public static async ValueTask SerializeAsync<T>(object obj, Stream stream, CancellationToken cancellationToken = default)
         {
-            DataContractJsonSerializerSettings settings = new DataContractJsonSerializerSettings
-            {
-                UseSimpleDictionaryFormat = true
-            };
-
-            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(T), settings);
-
-            if (stream.CanSeek)
-            {
-                stream.Seek(0, SeekOrigin.Begin);
-            }
-
-            try
-            {
-                return (T)serializer.ReadObject(stream);
-            }
-            catch (SerializationException exp)
-            {
-                throw new SerializationException($"Cannot deserialize stream to '{typeof(T).Name}' type.", exp);
-            }
-        }
-
-        public static string Serialize<T>(object obj)
-        {
-            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(T));
-
-            using (MemoryStream stream = new MemoryStream())
-            {
-                serializer.WriteObject(stream, obj);
-                var bytes = stream.ToArray();
-                return Encoding.UTF8.GetString(bytes, 0, bytes.Length);
-            }
-        }
-
-        public static void Serialize<T>(object obj, Stream stream)
-        {
-            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(T));
-
-            serializer.WriteObject(stream, obj);
+            await JsonSerializer.SerializeAsync(stream, obj, typeof(T), ClientSourceGenerationContext.Default, cancellationToken);
         }
     }
 }
