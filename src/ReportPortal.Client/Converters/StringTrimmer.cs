@@ -1,6 +1,6 @@
 ﻿namespace ReportPortal.Client.Converters
 {
-    public class StringTrimmer
+    internal class StringTrimmer
     {
         public static string Trim(string value, int maxSize)
         {

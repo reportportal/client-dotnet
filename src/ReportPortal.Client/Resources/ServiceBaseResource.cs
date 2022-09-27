@@ -19,29 +19,29 @@ namespace ReportPortal.Client.Resources
 
         protected string ProjectName { get; }
 
-        protected async Task<TResponse> GetAsJsonAsync<TResponse>(string uri, CancellationToken cancellationToken)
+        protected async ValueTask<TResponse> GetAsJsonAsync<TResponse>(string uri, CancellationToken cancellationToken)
         {
             return await SendAsJsonAsync<TResponse, object>(HttpMethod.Get, uri, null, cancellationToken).ConfigureAwait(false);
         }
 
-        protected async Task<TResponse> PostAsJsonAsync<TResponse, TRequest>(
+        protected async ValueTask<TResponse> PostAsJsonAsync<TResponse, TRequest>(
             string uri, TRequest request, CancellationToken cancellationToken)
         {
             return await SendAsJsonAsync<TResponse, TRequest>(HttpMethod.Post, uri, request, cancellationToken).ConfigureAwait(false);
         }
 
-        protected async Task<TResponse> PutAsJsonAsync<TResponse, TRequest>(
+        protected async ValueTask<TResponse> PutAsJsonAsync<TResponse, TRequest>(
             string uri, TRequest request, CancellationToken cancellationToken)
         {
             return await SendAsJsonAsync<TResponse, TRequest>(HttpMethod.Put, uri, request, cancellationToken).ConfigureAwait(false);
         }
 
-        protected async Task<TResponse> DeleteAsJsonAsync<TResponse>(string uri, CancellationToken cancellationToken)
+        protected async ValueTask<TResponse> DeleteAsJsonAsync<TResponse>(string uri, CancellationToken cancellationToken)
         {
             return await SendAsJsonAsync<TResponse, object>(HttpMethod.Delete, uri, null, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<TResponse> SendAsJsonAsync<TResponse, TRequest>(
+        private async ValueTask<TResponse> SendAsJsonAsync<TResponse, TRequest>(
             HttpMethod httpMethod, string uri, TRequest request, CancellationToken cancellationToken)
         {
             HttpContent httpContent = null;
@@ -64,7 +64,7 @@ namespace ReportPortal.Client.Resources
             }
         }
 
-        protected async Task<TResponse> SendHttpRequestAsync<TResponse>(
+        protected async ValueTask<TResponse> SendHttpRequestAsync<TResponse>(
             HttpMethod httpMethod, string uri, HttpContent httpContent, CancellationToken cancellationToken)
         {
             using (var httpRequest = new HttpRequestMessage(httpMethod, uri))
@@ -87,7 +87,7 @@ namespace ReportPortal.Client.Resources
             }
         }
 
-        protected async Task<byte[]> GetAsBytesAsync(string uri, CancellationToken cancellationToken)
+        protected async ValueTask<byte[]> GetAsBytesAsync(string uri, CancellationToken cancellationToken)
         {
             using (var httpRequest = new HttpRequestMessage(HttpMethod.Get, uri))
             {

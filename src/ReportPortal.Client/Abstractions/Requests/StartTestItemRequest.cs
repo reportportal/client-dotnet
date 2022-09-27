@@ -2,7 +2,6 @@
 using ReportPortal.Client.Converters;
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace ReportPortal.Client.Abstractions.Requests
@@ -22,7 +21,6 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// <summary>
         /// A short name of test item.
         /// </summary>
-        [DataMember(Name = "name")]
         public string Name { get { return _name; } set { _name = StringTrimmer.Trim(value, 1024); } }
 
         /// <summary>

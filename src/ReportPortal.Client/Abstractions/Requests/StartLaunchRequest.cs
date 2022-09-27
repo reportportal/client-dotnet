@@ -2,7 +2,6 @@
 using ReportPortal.Client.Converters;
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace ReportPortal.Client.Abstractions.Requests
@@ -17,7 +16,6 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// <summary>
         /// A short name of launch.
         /// </summary>
-        [DataMember(Name = "name")]
         public string Name { get { return _name; } set { _name = StringTrimmer.Trim(value, 256); } }
 
         /// <summary>
