@@ -48,14 +48,20 @@ namespace ReportPortal.Client.Resources
 
             if (request != null)
             {
-                var memoryStream = new MemoryStream();
-                ModelSerializer.Serialize<TRequest>(request, memoryStream);
-                memoryStream.Seek(0, SeekOrigin.Begin);
-                httpContent = new StreamContent(memoryStream);
-                httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            }
+                using (var memoryStream = new MemoryStream())
+                {
+                    await ModelSerializer.SerializeAsync<TRequest>(request, memoryStream, cancellationToken).ConfigureAwait(false);
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+                    httpContent = new StreamContent(memoryStream);
+                    httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-            return await SendHttpRequestAsync<TResponse>(httpMethod, uri, httpContent, cancellationToken).ConfigureAwait(false);
+                    return await SendHttpRequestAsync<TResponse>(httpMethod, uri, httpContent, cancellationToken).ConfigureAwait(false);
+                }
+            }
+            else
+            {
+                return await SendHttpRequestAsync<TResponse>(httpMethod, uri, httpContent, cancellationToken).ConfigureAwait(false);
+            }
         }
 
         protected async Task<TResponse> SendHttpRequestAsync<TResponse>(
@@ -74,7 +80,7 @@ namespace ReportPortal.Client.Resources
                         {
                             CheckSuccessStatusCode(response, stream);
 
-                            return ModelSerializer.Deserialize<TResponse>(stream);
+                            return await ModelSerializer.DeserializeAsync<TResponse>(stream, cancellationToken).ConfigureAwait(false);
                         }
                     }
                 }

@@ -1,33 +1,20 @@
 ﻿using System.IO;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ReportPortal.Client.Converters
 {
-    public class ModelSerializer
+    internal class ModelSerializer
     {
-        public static T Deserialize<T>(string json)
+        public static async ValueTask<T> DeserializeAsync<T>(Stream stream, CancellationToken cancellationToken = default)
         {
-            return (T)JsonSerializer.Deserialize(json, typeof(T), ClientSourceGenerationContext.Default);
+            return (T)await JsonSerializer.DeserializeAsync(stream, typeof(T), ClientSourceGenerationContext.Default, cancellationToken);
         }
 
-        public static T Deserialize<T>(Stream stream)
+        public static async ValueTask SerializeAsync<T>(object obj, Stream stream, CancellationToken cancellationToken = default)
         {
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
-
-            return (T)JsonSerializer.Deserialize(stream, typeof(T), ClientSourceGenerationContext.Default);
-        }
-
-        public static string Serialize<T>(object obj)
-        {
-            return JsonSerializer.Serialize(obj, typeof(T), ClientSourceGenerationContext.Default);
-        }
-
-        public static void Serialize<T>(object obj, Stream stream)
-        {
-            JsonSerializer.Serialize(stream, obj, typeof(T), ClientSourceGenerationContext.Default);
+            await JsonSerializer.SerializeAsync(stream, obj, typeof(T), ClientSourceGenerationContext.Default, cancellationToken);
         }
     }
 }

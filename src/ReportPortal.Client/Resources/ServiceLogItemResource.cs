@@ -3,8 +3,10 @@ using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Resources;
 using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Client.Converters;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -105,22 +107,27 @@ namespace ReportPortal.Client.Resources
 
             var multipartContent = new MultipartFormDataContent();
 
-            var body = ModelSerializer.Serialize<CreateLogItemRequest[]>(requests);
-
-            var jsonContent = new StringContent(body, Encoding.UTF8, "application/json");
-            multipartContent.Add(jsonContent, "json_request_part");
-
-            foreach (var request in requests)
+            using (var memoryStream = new MemoryStream())
             {
-                if (request.Attach != null)
-                {
-                    var byteArrayContent = new ByteArrayContent(request.Attach.Data, 0, request.Attach.Data.Length);
-                    byteArrayContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(request.Attach.MimeType);
-                    multipartContent.Add(byteArrayContent, "file", request.Attach.Name);
-                }
-            }
+                await ModelSerializer.SerializeAsync<CreateLogItemRequest[]>(requests, memoryStream, cancellationToken).ConfigureAwait(false);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                var httpContent = new StreamContent(memoryStream);
+                httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-            return await SendHttpRequestAsync<LogItemsCreatedResponse>(HttpMethod.Post, uri, multipartContent, cancellationToken).ConfigureAwait(false);
+                multipartContent.Add(httpContent, "json_request_part");
+
+                foreach (var request in requests)
+                {
+                    if (request.Attach != null)
+                    {
+                        var byteArrayContent = new ByteArrayContent(request.Attach.Data, 0, request.Attach.Data.Length);
+                        byteArrayContent.Headers.ContentType = new MediaTypeHeaderValue(request.Attach.MimeType);
+                        multipartContent.Add(byteArrayContent, "file", request.Attach.Name);
+                    }
+                }
+
+                return await SendHttpRequestAsync<LogItemsCreatedResponse>(HttpMethod.Post, uri, multipartContent, cancellationToken).ConfigureAwait(false);
+            }
         }
 
         public async Task<MessageResponse> DeleteAsync(long id)
