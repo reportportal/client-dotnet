@@ -24,6 +24,6 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// New status for test item.
         /// </summary>
         [JsonConverter(typeof(JsonStringEnumConverterEx<Status>))]
-        public Status? Status { get; set; }
+        public Status Status { get; set; }
     }
 }

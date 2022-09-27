@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace ReportPortal.Client.Converters
 {
@@ -8,12 +7,7 @@ namespace ReportPortal.Client.Converters
     {
         public static T Deserialize<T>(string json)
         {
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
-
-            return JsonSerializer.Deserialize<T>(json, options);
+            return (T)JsonSerializer.Deserialize(json, typeof(T), ClientSourceGenerationContext.Default);
         }
 
         public static T Deserialize<T>(Stream stream)
@@ -23,27 +17,17 @@ namespace ReportPortal.Client.Converters
                 PropertyNameCaseInsensitive = true
             };
 
-            return JsonSerializer.Deserialize<T>(stream, options);
+            return (T)JsonSerializer.Deserialize(stream, typeof(T), ClientSourceGenerationContext.Default);
         }
 
         public static string Serialize<T>(object obj)
         {
-            var options = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            };
-
-            return JsonSerializer.Serialize(obj, options);
+            return JsonSerializer.Serialize(obj, typeof(T), ClientSourceGenerationContext.Default);
         }
 
         public static void Serialize<T>(object obj, Stream stream)
         {
-            var options = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            };
-
-            JsonSerializer.Serialize(stream, obj, options);
+            JsonSerializer.Serialize(stream, obj, typeof(T), ClientSourceGenerationContext.Default);
         }
     }
 }

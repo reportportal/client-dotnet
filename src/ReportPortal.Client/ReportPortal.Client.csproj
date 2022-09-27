@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net462;</TargetFrameworks>
+    <LangVersion>Latest</LangVersion>
     <PackageId>ReportPortal.Client</PackageId>
     <Description>API client for https://reportportal.io</Description>
     <Authors>Nikolay Borisenko, Report Portal Community</Authors>

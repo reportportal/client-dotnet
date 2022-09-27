@@ -22,7 +22,7 @@ namespace ReportPortal.Client.Abstractions.Responses
         [JsonConverter(typeof(DateTimeUnixEpochConverter))]
         public DateTime StartTime { get; set; }
 
-        [JsonConverter(typeof(DateTimeUnixEpochConverter))]
+        [JsonConverter(typeof(NullableDateTimeUnixEpochConverter))]
         public DateTime? EndTime { get; set; }
 
         [JsonPropertyName("retry")]

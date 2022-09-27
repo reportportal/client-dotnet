@@ -1,7 +1,6 @@
 ﻿using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Client.Converters;
 using System;
-using System.Runtime.Serialization;
 using Xunit;
 
 namespace ReportPortal.Client.IntegrationTests.Serialization
@@ -19,16 +18,9 @@ namespace ReportPortal.Client.IntegrationTests.Serialization
         [Fact]
         public void ShouldDeserializeWithEscapedNewLine()
         {
-            var json = "{\"P1\": \"abc\\nabc\"}";
-            var a = ModelSerializer.Deserialize<A>(json);
-            Assert.Equal("abc\nabc", a.P1);
-        }
-
-        [DataContract]
-        class A
-        {
-            [DataMember]
-            public string P1 { get; set; }
+            var json = "{\"message\": \"abc\\nabc\"}";
+            var message = ModelSerializer.Deserialize<MessageResponse>(json);
+            Assert.Equal("abc\nabc", message.Info);
         }
     }
 }

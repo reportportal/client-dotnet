@@ -215,8 +215,8 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
             };
 
             var mergedLaunch = await Service.Launch.MergeAsync(mergeRequest);
-            Assert.Equal(mergeRequest.StartTime, mergedLaunch.StartTime);
-            Assert.Equal(mergeRequest.EndTime, mergedLaunch.EndTime);
+            mergedLaunch.StartTime.Should().BeCloseTo(mergeRequest.StartTime, precision: 1);
+            mergedLaunch.EndTime.Should().BeCloseTo(mergeRequest.EndTime, precision: 1);
 
             var delMessage = await Service.Launch.DeleteAsync(mergedLaunch.Id);
             Assert.Contains("successfully", delMessage.Info);
