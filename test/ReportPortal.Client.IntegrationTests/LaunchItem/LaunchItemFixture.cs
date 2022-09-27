@@ -246,7 +246,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
                 LaunchId = gotLaunch.Id,
                 AnalyzerMode = AnalyzerMode.LaunchName,
                 AnalyzerTypeName = "autoAnalyzer",
-                AnalyzerItemsMode = new List<AnalyzerItemsMode> { AnalyzerItemsMode.ToInvestigate }
+                AnalyzerItemsMode = new List<string> { AnalyzerItemsMode.ToInvestigate }
             });
             Assert.Contains("started", analyzeMessage.Info);
 

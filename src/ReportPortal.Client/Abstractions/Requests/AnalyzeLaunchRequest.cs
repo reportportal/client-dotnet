@@ -18,7 +18,6 @@ namespace ReportPortal.Client.Abstractions.Requests
         public string AnalyzerTypeName { get; set; }
 
         [JsonPropertyName("analyzeItemsMode")]
-        [JsonConverter(typeof(JsonStringEnumConverterEx<AnalyzerItemsMode>))]
-        public List<AnalyzerItemsMode> AnalyzerItemsMode { get; set; }
+        public List<string> AnalyzerItemsMode { get; set; }
     }
 }
