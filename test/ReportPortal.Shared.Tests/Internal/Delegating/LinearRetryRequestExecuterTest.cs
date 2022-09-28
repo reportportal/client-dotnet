@@ -37,43 +37,43 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
         }
 
         [Fact]
-        public void ShouldRetryTaskCanceledExceptionAction()
+        public async Task ShouldRetryTaskCanceledExceptionAction()
         {
             var action = new Mock<Func<Task<string>>>();
             action.Setup(a => a()).Throws<TaskCanceledException>();
 
             var executer = new LinearRetryRequestExecuter(3, 0);
-            executer.Awaiting(e => e.ExecuteAsync(action.Object)).Should().Throw<TaskCanceledException>();
+            await executer.Awaiting(e => e.ExecuteAsync(action.Object)).Should().ThrowAsync<TaskCanceledException>();
 
             action.Verify(a => a(), Times.Exactly(3));
         }
 
         [Fact]
-        public void ShouldRetryHttpRequestExceptionAction()
+        public async Task ShouldRetryHttpRequestExceptionAction()
         {
             var action = new Mock<Func<Task<string>>>();
             action.Setup(a => a()).Throws<HttpRequestException>();
 
             var executer = new LinearRetryRequestExecuter(3, 0);
-            executer.Awaiting(e => e.ExecuteAsync(action.Object)).Should().Throw<HttpRequestException>();
+            await executer.Awaiting(e => e.ExecuteAsync(action.Object)).Should().ThrowAsync<HttpRequestException>();
 
             action.Verify(a => a(), Times.Exactly(3));
         }
 
         [Fact]
-        public void ShouldNotRetryAnyOtherExceptionAction()
+        public async Task ShouldNotRetryAnyOtherExceptionAction()
         {
             var action = new Mock<Func<Task<string>>>();
             action.Setup(a => a()).Throws<Exception>();
 
             var executer = new LinearRetryRequestExecuter(3, 0);
-            executer.Awaiting(e => e.ExecuteAsync(action.Object)).Should().Throw<Exception>();
+            await executer.Awaiting(e => e.ExecuteAsync(action.Object)).Should().ThrowAsync<Exception>();
 
             action.Verify(a => a(), Times.Exactly(1));
         }
 
         [Fact]
-        public void ShouldUseThrottler()
+        public async Task ShouldUseThrottler()
         {
             var throttler = new Mock<IRequestExecutionThrottler>();
 
@@ -82,14 +82,14 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
             var action = new Mock<Func<Task<string>>>();
             action.Setup(a => a()).Throws<TaskCanceledException>();
 
-            executer.Awaiting(e => e.ExecuteAsync(action.Object)).Should().Throw<Exception>();
+            await executer.Awaiting(e => e.ExecuteAsync(action.Object)).Should().ThrowAsync<Exception>();
 
             throttler.Verify(t => t.ReserveAsync(), Times.Exactly(5));
             throttler.Verify(t => t.Release(), Times.Exactly(5));
         }
 
         [Fact]
-        public void ShouldInvokeCallbackAction()
+        public async Task ShouldInvokeCallbackAction()
         {
             var executer = new LinearRetryRequestExecuter(5, 0);
 
@@ -98,7 +98,7 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
 
             var invokedTimes = 0;
 
-            executer.Awaiting(e => e.ExecuteAsync(action.Object, (exp) => invokedTimes++)).Should().Throw<TaskCanceledException>();
+            await executer.Awaiting(e => e.ExecuteAsync(action.Object, (exp) => invokedTimes++)).Should().ThrowAsync<TaskCanceledException>();
 
             invokedTimes.Should().Be(4);
         }

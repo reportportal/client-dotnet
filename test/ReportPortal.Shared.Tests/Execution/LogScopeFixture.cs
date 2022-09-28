@@ -60,7 +60,7 @@ namespace ReportPortal.Shared.Tests.Execution
 
             tc.Should().Be(testContext);
             logScope.Name.Should().Be("qwe");
-            logScope.EndTime.Should().BeCloseTo(DateTime.UtcNow);
+            logScope.EndTime.Should().BeCloseTo(DateTime.UtcNow, precision: TimeSpan.FromMilliseconds(20));
         }
 
         [Fact]
@@ -159,7 +159,7 @@ namespace ReportPortal.Shared.Tests.Execution
 
             lc.Should().Be(launchContext);
             logScope.Name.Should().Be("qwe");
-            logScope.EndTime.Should().BeCloseTo(DateTime.UtcNow, 30);
+            logScope.EndTime.Should().BeCloseTo(DateTime.UtcNow, precision: TimeSpan.FromMilliseconds(30));
         }
 
         [Fact]

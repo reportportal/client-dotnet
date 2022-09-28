@@ -28,13 +28,13 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
             action.Setup(a => a()).Throws<TaskCanceledException>();
 
             var executer = new NoneRetryRequestExecuter(null);
-            executer.Awaiting(e => e.ExecuteAsync(action.Object)).Should().Throw<TaskCanceledException>();
+            executer.Awaiting(e => e.ExecuteAsync(action.Object)).Should().ThrowAsync<TaskCanceledException>();
 
             action.Verify(a => a(), Times.Once());
         }
 
         [Fact]
-        public void ShouldUseThrottler()
+        public async Task ShouldUseThrottler()
         {
             var throttler = new Mock<IRequestExecutionThrottler>();
 
@@ -43,14 +43,14 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
             var action = new Mock<Func<Task<string>>>();
             action.Setup(a => a()).Throws<TaskCanceledException>();
 
-            executer.Awaiting(e => e.ExecuteAsync(action.Object)).Should().Throw<Exception>();
+            await executer.Awaiting(e => e.ExecuteAsync(action.Object)).Should().ThrowAsync<Exception>();
 
             throttler.Verify(t => t.ReserveAsync(), Times.Once());
             throttler.Verify(t => t.Release(), Times.Once());
         }
 
         [Fact]
-        public void ShouldNotInvokeCallbackAction()
+        public async Task ShouldNotInvokeCallbackAction()
         {
             var executer = new NoneRetryRequestExecuter(null);
 
@@ -59,7 +59,7 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
 
             var invokedTimes = 0;
 
-            executer.Awaiting(e => e.ExecuteAsync(action.Object, (exp) => invokedTimes++)).Should().Throw<TaskCanceledException>();
+            await executer.Awaiting(e => e.ExecuteAsync(action.Object, (exp) => invokedTimes++)).Should().ThrowAsync<TaskCanceledException>();
 
             invokedTimes.Should().Be(0);
         }

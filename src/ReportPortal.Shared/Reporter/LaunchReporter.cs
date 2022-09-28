@@ -116,7 +116,7 @@ namespace ReportPortal.Shared.Reporter
                 {
                     NotifyStarting(request);
 
-                    var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.StartAsync(request), null, null).ConfigureAwait(false);
+                    var launch = await _requestExecuter.ExecuteAsync(async () => await _service.Launch.StartAsync(request), null, null).ConfigureAwait(false);
 
                     _launchInfo = new LaunchInfo
                     {
@@ -140,7 +140,7 @@ namespace ReportPortal.Shared.Reporter
                 {
                     NotifyStarting(request);
 
-                    var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.StartAsync(request), null, null).ConfigureAwait(false);
+                    var launch = await _requestExecuter.ExecuteAsync(async () => await _service.Launch.StartAsync(request), null, null).ConfigureAwait(false);
 
                     _launchInfo = new LaunchInfo
                     {
@@ -157,7 +157,7 @@ namespace ReportPortal.Shared.Reporter
                 // get launch info
                 StartTask = Task.Run(async () =>
                 {
-                    var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.GetAsync(Info.Uuid), null, null).ConfigureAwait(false);
+                    var launch = await _requestExecuter.ExecuteAsync(async () => await _service.Launch.GetAsync(Info.Uuid), null, null).ConfigureAwait(false);
 
                     _launchInfo = new LaunchInfo
                     {
@@ -266,7 +266,7 @@ namespace ReportPortal.Shared.Reporter
                     {
                         NotifyFinishing(request);
 
-                        var launchFinishedResponse = await _requestExecuter.ExecuteAsync(() => _service.Launch.FinishAsync(Info.Uuid, request), null, null).ConfigureAwait(false);
+                        var launchFinishedResponse = await _requestExecuter.ExecuteAsync(async () => await _service.Launch.FinishAsync(Info.Uuid, request), null, null).ConfigureAwait(false);
 
                         _launchInfo.Url = launchFinishedResponse.Link;
 

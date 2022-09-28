@@ -1,20 +1,14 @@
 ﻿using ReportPortal.Shared.Execution.Logging;
 using ReportPortal.Shared.Extensibility;
-using System;
-#if NET45
-using System.Runtime.Remoting;
-using System.Runtime.Remoting.Messaging;
-#endif
-using System.Text;
 using System.Threading;
 
 namespace ReportPortal.Shared.Execution
 {
     public class LaunchContext : ILaunchContext
     {
-        private IExtensionManager _extensionManager;
+        private readonly IExtensionManager _extensionManager;
 
-        private CommandsSource _commadsSource;
+        private readonly CommandsSource _commadsSource;
 
         public LaunchContext(IExtensionManager extensionManager, CommandsSource commandsSource)
         {
@@ -22,10 +16,9 @@ namespace ReportPortal.Shared.Execution
             _commadsSource = commandsSource;
         }
 
-#if !NET45
-        private AsyncLocal<ILogScope> _activeLogScope = new AsyncLocal<ILogScope>();
+        private readonly AsyncLocal<ILogScope> _activeLogScope = new AsyncLocal<ILogScope>();
 
-        private AsyncLocal<ILogScope> _rootLogScope = new AsyncLocal<ILogScope>();
+        private readonly AsyncLocal<ILogScope> _rootLogScope = new AsyncLocal<ILogScope>();
 
         /// <summary>
         /// Returns current active LogScope which provides methods for logging.
@@ -64,64 +57,5 @@ namespace ReportPortal.Shared.Execution
                 _rootLogScope.Value = value;
             }
         }
-#else
-        private readonly string _logicalActiveDataKey = "__AsyncLocalLogScope_Active__" + Guid.NewGuid().ToString("D");
-
-        private readonly string _logicalRootDataKey = "__AsyncLocalLogScope_Root__" + Guid.NewGuid().ToString("D");
-
-        /// <summary>
-        /// Returns current active LogScope which provides methods for logging.
-        /// </summary>
-        public ILogScope Log
-        {
-            get
-            {
-                var handle = CallContext.LogicalGetData(_logicalActiveDataKey) as ObjectHandle;
-                var activeScope = handle?.Unwrap() as ILogScope;
-
-                if (activeScope == null)
-                {
-                    activeScope = RootScope;
-                    
-                    Log = activeScope;
-                }
-
-                return activeScope;
-            }
-            set
-            {
-                CallContext.LogicalSetData(_logicalActiveDataKey, new ObjectHandle(value));
-            }
-        }
-
-        private static readonly object s_lockObj = new object();
-
-        private ILogScope RootScope
-        {
-            get
-            {
-                ILogScope rootScope;
-
-                lock (s_lockObj)
-                {
-                    var handle = CallContext.LogicalGetData(_logicalRootDataKey) as ObjectHandle;
-                    rootScope = handle?.Unwrap() as ILogScope;
-
-                    if (rootScope == null)
-                    {
-                        rootScope = new RootLogScope(this, _extensionManager, _commadsSource);
-
-                        RootScope = rootScope;
-                    }
-                }
-
-                return rootScope;
-            }
-            set
-            {
-                CallContext.LogicalSetData(_logicalRootDataKey, new ObjectHandle(value));
-            }
-        }
-#endif
     }
 }

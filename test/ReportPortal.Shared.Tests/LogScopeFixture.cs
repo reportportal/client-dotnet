@@ -170,12 +170,12 @@ namespace ReportPortal.Shared.Tests
         {
             ILogScope scope = Context.Current.Log.BeginScope("q");
 
-            scope.BeginTime.Should().BeCloseTo(DateTime.UtcNow);
+            scope.BeginTime.Should().BeCloseTo(DateTime.UtcNow, precision: TimeSpan.FromMilliseconds(20));
             scope.EndTime.Should().BeNull();
 
             scope.Dispose();
 
-            scope.EndTime.Should().BeCloseTo(DateTime.UtcNow);
+            scope.EndTime.Should().BeCloseTo(DateTime.UtcNow, precision: TimeSpan.FromMilliseconds(20));
         }
 
         [Fact]

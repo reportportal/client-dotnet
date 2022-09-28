@@ -79,7 +79,7 @@ namespace ReportPortal.Shared.Reporter
 
                                 NotifySending(requests);
 
-                                await _requestExecuter.ExecuteAsync(() => _service.LogItem.CreateAsync(requests.ToArray()), null, _reporter.StatisticsCounter.LogItemStatisticsCounter).ConfigureAwait(false);
+                                await _requestExecuter.ExecuteAsync(async () => await _service.LogItem.CreateAsync(requests.ToArray()), null, _reporter.StatisticsCounter.LogItemStatisticsCounter).ConfigureAwait(false);
                             }
                         }
                     }

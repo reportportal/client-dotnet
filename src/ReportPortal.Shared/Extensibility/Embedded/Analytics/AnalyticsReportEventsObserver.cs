@@ -28,7 +28,7 @@ namespace ReportPortal.Shared.Extensibility.Embedded.Analytics
 
         public AnalyticsReportEventsObserver() : this(new HttpClientHandler
         {
-#if !NET45 && !NET46
+#if !NET462
             ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; }
 #endif
         })

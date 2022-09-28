@@ -27,132 +27,132 @@ namespace ReportPortal.Shared.Benchmark.Reporter
 
     public class NopLaunchResource : ILaunchResource
     {
-        public async Task<MessageResponse> AnalyzeAsync(AnalyzeLaunchRequest model)
+        public async ValueTask<MessageResponse> AnalyzeAsync(AnalyzeLaunchRequest model)
         {
             return await AnalyzeAsync(model, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public Task<MessageResponse> AnalyzeAsync(AnalyzeLaunchRequest request, CancellationToken cancellationToken)
+        public ValueTask<MessageResponse> AnalyzeAsync(AnalyzeLaunchRequest request, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<MessageResponse> DeleteAsync(long id)
+        public async ValueTask<MessageResponse> DeleteAsync(long id)
         {
             return await DeleteAsync(id, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public Task<MessageResponse> DeleteAsync(long id, CancellationToken cancellationToken)
+        public ValueTask<MessageResponse> DeleteAsync(long id, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<LaunchFinishedResponse> FinishAsync(string uuid, FinishLaunchRequest model)
+        public async ValueTask<LaunchFinishedResponse> FinishAsync(string uuid, FinishLaunchRequest model)
         {
             return await FinishAsync(uuid, model, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<LaunchFinishedResponse> FinishAsync(string uuid, FinishLaunchRequest request, CancellationToken cancellationToken)
+        public async ValueTask<LaunchFinishedResponse> FinishAsync(string uuid, FinishLaunchRequest request, CancellationToken cancellationToken)
         {
             return await Task.FromResult(new LaunchFinishedResponse());
         }
 
-        public async Task<LaunchResponse> GetAsync(long id)
+        public async ValueTask<LaunchResponse> GetAsync(long id)
         {
             return await GetAsync(id, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<LaunchResponse> GetAsync(string uuid)
+        public async ValueTask<LaunchResponse> GetAsync(string uuid)
         {
             return await GetAsync(uuid, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<Content<LaunchResponse>> GetAsync(FilterOption filterOption)
+        public async ValueTask<Content<LaunchResponse>> GetAsync(FilterOption filterOption)
         {
             return await GetAsync(filterOption, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public Task<LaunchResponse> GetAsync(long id, CancellationToken cancellationToken)
+        public ValueTask<LaunchResponse> GetAsync(long id, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public Task<LaunchResponse> GetAsync(string uuid, CancellationToken cancellationToken)
+        public ValueTask<LaunchResponse> GetAsync(string uuid, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<Content<LaunchResponse>> GetAsync()
+        public async ValueTask<Content<LaunchResponse>> GetAsync()
         {
             return await GetAsync(CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<Content<LaunchResponse>> GetAsync(CancellationToken cancellationToken)
+        public async ValueTask<Content<LaunchResponse>> GetAsync(CancellationToken cancellationToken)
         {
             return await GetAsync(filterOption: null, cancellationToken).ConfigureAwait(false);
         }
 
-        public Task<Content<LaunchResponse>> GetAsync(FilterOption filterOption, CancellationToken cancellationToken)
+        public ValueTask<Content<LaunchResponse>> GetAsync(FilterOption filterOption, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<Content<LaunchResponse>> GetDebugAsync(FilterOption filterOption)
+        public async ValueTask<Content<LaunchResponse>> GetDebugAsync(FilterOption filterOption)
         {
             return await GetDebugAsync(filterOption, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<Content<LaunchResponse>> GetDebugAsync()
+        public async ValueTask<Content<LaunchResponse>> GetDebugAsync()
         {
             return await GetDebugAsync(filterOption: null, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<Content<LaunchResponse>> GetDebugAsync(CancellationToken cancellationToken)
+        public async ValueTask<Content<LaunchResponse>> GetDebugAsync(CancellationToken cancellationToken)
         {
             return await GetDebugAsync(filterOption: null, cancellationToken).ConfigureAwait(false);
         }
 
-        public Task<Content<LaunchResponse>> GetDebugAsync(FilterOption filterOption, CancellationToken cancellationToken)
+        public ValueTask<Content<LaunchResponse>> GetDebugAsync(FilterOption filterOption, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<LaunchResponse> MergeAsync(MergeLaunchesRequest model)
+        public async ValueTask<LaunchResponse> MergeAsync(MergeLaunchesRequest model)
         {
             return await MergeAsync(model, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public Task<LaunchResponse> MergeAsync(MergeLaunchesRequest request, CancellationToken cancellationToken)
+        public ValueTask<LaunchResponse> MergeAsync(MergeLaunchesRequest request, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<LaunchCreatedResponse> StartAsync(StartLaunchRequest request)
+        public async ValueTask<LaunchCreatedResponse> StartAsync(StartLaunchRequest request)
         {
             return await StartAsync(request, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<LaunchCreatedResponse> StartAsync(StartLaunchRequest request, CancellationToken cancellationToken)
+        public async ValueTask<LaunchCreatedResponse> StartAsync(StartLaunchRequest request, CancellationToken cancellationToken)
         {
             return await Task.FromResult(new LaunchCreatedResponse { Uuid = Guid.NewGuid().ToString() });
         }
 
-        public async Task<LaunchFinishedResponse> StopAsync(long id, FinishLaunchRequest model)
+        public async ValueTask<LaunchFinishedResponse> StopAsync(long id, FinishLaunchRequest model)
         {
             return await StopAsync(id, model, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public Task<LaunchFinishedResponse> StopAsync(long id, FinishLaunchRequest request, CancellationToken cancellationToken)
+        public ValueTask<LaunchFinishedResponse> StopAsync(long id, FinishLaunchRequest request, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<MessageResponse> UpdateAsync(long id, UpdateLaunchRequest model)
+        public async ValueTask<MessageResponse> UpdateAsync(long id, UpdateLaunchRequest model)
         {
             return await UpdateAsync(id, model, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public Task<MessageResponse> UpdateAsync(long id, UpdateLaunchRequest request, CancellationToken cancellationToken)
+        public ValueTask<MessageResponse> UpdateAsync(long id, UpdateLaunchRequest request, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -160,112 +160,112 @@ namespace ReportPortal.Shared.Benchmark.Reporter
 
     public class NopTestItemResource : ITestItemResource
     {
-        public async Task<IEnumerable<Issue>> AssignIssuesAsync(AssignTestItemIssuesRequest model)
+        public async ValueTask<IEnumerable<Issue>> AssignIssuesAsync(AssignTestItemIssuesRequest model)
         {
             return await AssignIssuesAsync(model, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public Task<IEnumerable<Issue>> AssignIssuesAsync(AssignTestItemIssuesRequest request, CancellationToken cancellationToken)
+        public ValueTask<IEnumerable<Issue>> AssignIssuesAsync(AssignTestItemIssuesRequest request, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<MessageResponse> DeleteAsync(long id)
+        public async ValueTask<MessageResponse> DeleteAsync(long id)
         {
             return await DeleteAsync(id, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public Task<MessageResponse> DeleteAsync(long id, CancellationToken cancellationToken)
+        public ValueTask<MessageResponse> DeleteAsync(long id, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<MessageResponse> FinishAsync(string id, FinishTestItemRequest model)
+        public async ValueTask<MessageResponse> FinishAsync(string id, FinishTestItemRequest model)
         {
             return await FinishAsync(id, model, CancellationToken.None);
         }
 
-        public async Task<MessageResponse> FinishAsync(string uuid, FinishTestItemRequest request, CancellationToken cancellationToken)
+        public async ValueTask<MessageResponse> FinishAsync(string uuid, FinishTestItemRequest request, CancellationToken cancellationToken)
         {
             return await Task.FromResult(new MessageResponse());
         }
 
-        public async Task<TestItemResponse> GetAsync(long id)
+        public async ValueTask<TestItemResponse> GetAsync(long id)
         {
             return await GetAsync(id, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<TestItemResponse> GetAsync(string uuid)
+        public async ValueTask<TestItemResponse> GetAsync(string uuid)
         {
             return await GetAsync(uuid, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<Content<TestItemResponse>> GetAsync(FilterOption filterOption)
+        public async ValueTask<Content<TestItemResponse>> GetAsync(FilterOption filterOption)
         {
             return await GetAsync(filterOption, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public Task<TestItemResponse> GetAsync(long id, CancellationToken cancellationToken)
+        public ValueTask<TestItemResponse> GetAsync(long id, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public Task<TestItemResponse> GetAsync(string uuid, CancellationToken cancellationToken)
+        public ValueTask<TestItemResponse> GetAsync(string uuid, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Content<TestItemResponse>> GetAsync()
+        public ValueTask<Content<TestItemResponse>> GetAsync()
         {
             return GetAsync(filterOption: null, CancellationToken.None);
         }
 
-        public Task<Content<TestItemResponse>> GetAsync(CancellationToken cancellationToken)
+        public ValueTask<Content<TestItemResponse>> GetAsync(CancellationToken cancellationToken)
         {
             return GetAsync(filterOption: null, cancellationToken);
         }
 
-        public Task<Content<TestItemResponse>> GetAsync(FilterOption filterOption, CancellationToken cancellationToken)
+        public ValueTask<Content<TestItemResponse>> GetAsync(FilterOption filterOption, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<Content<TestItemHistoryContainer>> GetHistoryAsync(long testItemId, int depth)
+        public async ValueTask<Content<TestItemHistoryContainer>> GetHistoryAsync(long testItemId, int depth)
         {
             return await GetHistoryAsync(testItemId, depth, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public Task<Content<TestItemHistoryContainer>> GetHistoryAsync(long id, int depth, CancellationToken cancellationToken)
+        public ValueTask<Content<TestItemHistoryContainer>> GetHistoryAsync(long id, int depth, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<TestItemCreatedResponse> StartAsync(StartTestItemRequest model)
+        public async ValueTask<TestItemCreatedResponse> StartAsync(StartTestItemRequest model)
         {
             return await StartAsync(model, CancellationToken.None);
         }
 
-        public async Task<TestItemCreatedResponse> StartAsync(string uuid, StartTestItemRequest model)
+        public async ValueTask<TestItemCreatedResponse> StartAsync(string uuid, StartTestItemRequest model)
         {
             return await StartAsync(uuid, model, CancellationToken.None);
         }
 
-        public async Task<TestItemCreatedResponse> StartAsync(StartTestItemRequest request, CancellationToken cancellationToken)
+        public async ValueTask<TestItemCreatedResponse> StartAsync(StartTestItemRequest request, CancellationToken cancellationToken)
         {
             return await Task.FromResult(new TestItemCreatedResponse { Uuid = Guid.NewGuid().ToString() });
         }
 
-        public async Task<TestItemCreatedResponse> StartAsync(string uuid, StartTestItemRequest model, CancellationToken cancellationToken)
+        public async ValueTask<TestItemCreatedResponse> StartAsync(string uuid, StartTestItemRequest model, CancellationToken cancellationToken)
         {
             return await Task.FromResult(new TestItemCreatedResponse { Uuid = Guid.NewGuid().ToString() });
         }
 
-        public async Task<MessageResponse> UpdateAsync(long id, UpdateTestItemRequest model)
+        public async ValueTask<MessageResponse> UpdateAsync(long id, UpdateTestItemRequest model)
         {
             return await UpdateAsync(id, model, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public Task<MessageResponse> UpdateAsync(long id, UpdateTestItemRequest request, CancellationToken cancellationToken)
+        public ValueTask<MessageResponse> UpdateAsync(long id, UpdateTestItemRequest request, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -273,82 +273,82 @@ namespace ReportPortal.Shared.Benchmark.Reporter
 
     public class NopLogItemResourse : ILogItemResource
     {
-        public async Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest model)
+        public async ValueTask<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest model)
         {
             return await CreateAsync(model, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] models)
+        public async ValueTask<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] models)
         {
             return await CreateAsync(models, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request, CancellationToken cancellationToken)
+        public async ValueTask<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request, CancellationToken cancellationToken)
         {
             return await Task.FromResult(new LogItemCreatedResponse());
         }
 
-        public async Task<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests, CancellationToken cancellationToken)
+        public async ValueTask<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests, CancellationToken cancellationToken)
         {
             return await Task.FromResult(new LogItemsCreatedResponse());
         }
 
-        public async Task<MessageResponse> DeleteAsync(long id)
+        public async ValueTask<MessageResponse> DeleteAsync(long id)
         {
             return await DeleteAsync(id, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public Task<MessageResponse> DeleteAsync(long id, CancellationToken cancellationToken)
+        public ValueTask<MessageResponse> DeleteAsync(long id, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<LogItemResponse> GetAsync(long id)
+        public async ValueTask<LogItemResponse> GetAsync(long id)
         {
             return await GetAsync(id, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<LogItemResponse> GetAsync(string uuid)
+        public async ValueTask<LogItemResponse> GetAsync(string uuid)
         {
             return await GetAsync(uuid, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<Content<LogItemResponse>> GetAsync(FilterOption filterOption)
+        public async ValueTask<Content<LogItemResponse>> GetAsync(FilterOption filterOption)
         {
             return await GetAsync(filterOption, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public Task<LogItemResponse> GetAsync(long id, CancellationToken cancellationToken)
+        public ValueTask<LogItemResponse> GetAsync(long id, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public Task<LogItemResponse> GetAsync(string uuid, CancellationToken cancellationToken)
+        public ValueTask<LogItemResponse> GetAsync(string uuid, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<Content<LogItemResponse>> GetAsync()
+        public async ValueTask<Content<LogItemResponse>> GetAsync()
         {
             return await GetAsync(filterOption: null, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async Task<Content<LogItemResponse>> GetAsync(CancellationToken cancellationToken)
+        public async ValueTask<Content<LogItemResponse>> GetAsync(CancellationToken cancellationToken)
         {
             return await GetAsync(filterOption: null, cancellationToken).ConfigureAwait(false);
         }
 
-        public Task<Content<LogItemResponse>> GetAsync(FilterOption filterOption, CancellationToken cancellationToken)
+        public ValueTask<Content<LogItemResponse>> GetAsync(FilterOption filterOption, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<byte[]> GetBinaryDataAsync(string id)
+        public async ValueTask<byte[]> GetBinaryDataAsync(string id)
         {
             return await GetBinaryDataAsync(id, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public Task<byte[]> GetBinaryDataAsync(string id, CancellationToken cancellationToken)
+        public ValueTask<byte[]> GetBinaryDataAsync(string id, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

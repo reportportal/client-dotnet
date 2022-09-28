@@ -15,7 +15,7 @@ namespace ReportPortal.Shared.Tests.Configuration
             File.AppendAllText(Path.Combine(dir.FullName, "rp_a1"), "a1_value");
 
             var dirProvider = new DirectoryProbingConfigurationProvider(dir.FullName, "rP", "_", false);
-            dirProvider.Load().Should().HaveCount(1).And.ContainKey("a1").WhichValue.Should().Be("a1_value");
+            dirProvider.Load().Should().HaveCount(1).And.ContainKey("a1").WhoseValue.Should().Be("a1_value");
 
             dir.Delete(true);
         }
@@ -27,7 +27,7 @@ namespace ReportPortal.Shared.Tests.Configuration
             File.AppendAllText(Path.Combine(dir.FullName, "rp_a1"), $" a1_value {Environment.NewLine}");
 
             var dirProvider = new DirectoryProbingConfigurationProvider(dir.FullName, "rP", "_", false);
-            dirProvider.Load().Should().HaveCount(1).And.ContainKey("a1").WhichValue.Should().Be("a1_value");
+            dirProvider.Load().Should().HaveCount(1).And.ContainKey("a1").WhoseValue.Should().Be("a1_value");
 
             dir.Delete(true);
         }
