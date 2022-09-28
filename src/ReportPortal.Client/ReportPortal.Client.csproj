@@ -19,10 +19,6 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net462'">
-    <Reference Include="System.Net.Http" />
-  </ItemGroup>
-
   <ItemGroup>
     <None Include="..\..\Logo.png" Pack="true" PackagePath="\" Visible="false" />
     <None Include="..\..\README.md" Pack="true" PackagePath="\" Visible="false" />
@@ -32,8 +28,17 @@
     <PackageReference Include="GitVersion.MsBuild" Version="5.10.3">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net462'">
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' != 'net6.0'">
     <PackageReference Include="System.Text.Json" Version="6.0.6" />
   </ItemGroup>
+
+  
 
   <Target Name="GeneratePackageReleaseNotes" DependsOnTargets="GetVersion" BeforeTargets="GenerateNuspec">
     <PropertyGroup>
