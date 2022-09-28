@@ -33,7 +33,7 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// Date time when the launch is executed.
         /// </summary>
         [JsonConverter(typeof(DateTimeUnixEpochConverter))]
-        public DateTime StartTime { get; set; }
+        public DateTime StartTime { get; set; } = DateTime.UtcNow;
 
         /// <summary>
         /// Don't start new launch and use some existing.

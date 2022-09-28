@@ -1,5 +1,3 @@
-
-
 API client for [Report Portal](https://reportportal.io)
 
 Provides an ability to interact with Report Portal API in .NET/C#. Supports starting/finishing launches/tests, sending logs.
@@ -28,8 +26,7 @@ Starting new launch:
 var launch = await service.Launch.StartAsync(new StartLaunchRequest
     {
         Name = "LaunchName",
-        Description = "LaunchDescription",
-        StartTime = DateTime.UtcNow,
+        Description = "LaunchDescription"
     });
 ```
 
@@ -39,7 +36,6 @@ var test = await service.TestItem.StartAsync(new StartTestItemRequest
     {
         LaunchUuid = launch.Uuid,
         Name = "Test1",
-        StartTime = DateTime.UtcNow,
         Type = TestItemType.Test
     });
 ```
@@ -50,7 +46,6 @@ var log = await service.LogItem.CreateAsync(new CreateLogItemRequest
     {
         TestItemUuid = test.Uuid,
         Text = "My log",
-        Time = DateTime.UtcNow,
         Level = LogLevel.Debug
     }); 
 ```
@@ -59,15 +54,11 @@ Finishing the test:
 ```C#
 await Service.TestItem.FinishAsync(test.Uuid, new FinishTestItemRequest
     {
-        EndTime = DateTime.UtcNow,
         Status = Status.Passed
     });
 ```
 
 Finishing the launch:
 ```C#
-await Service.Launch.FinishAsync(launch.Uuid, new FinishLaunchRequest
-    {
-        EndTime = DateTime.UtcNow
-    });
+await Service.Launch.FinishAsync(launch.Uuid, new FinishLaunchRequest());
 ```

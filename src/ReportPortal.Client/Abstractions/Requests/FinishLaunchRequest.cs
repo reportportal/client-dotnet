@@ -13,6 +13,6 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// Date time when launch execution is finished.
         /// </summary>
         [JsonConverter(typeof(DateTimeUnixEpochConverter))]
-        public DateTime EndTime { get; set; }
+        public DateTime EndTime { get; set; } = DateTime.UtcNow;
     }
 }
