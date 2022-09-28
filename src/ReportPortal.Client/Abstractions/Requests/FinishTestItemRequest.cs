@@ -21,7 +21,7 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// Date time when test item is finished.
         /// </summary>
         [JsonConverter(typeof(DateTimeUnixEpochConverter))]
-        public DateTime EndTime { get; set; }
+        public DateTime EndTime { get; set; } = DateTime.UtcNow;
 
         /// <summary>
         /// A result of test item.
