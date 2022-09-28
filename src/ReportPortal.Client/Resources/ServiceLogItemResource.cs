@@ -19,22 +19,22 @@ namespace ReportPortal.Client.Resources
         {
         }
 
-        public async ValueTask<Content<LogItemResponse>> GetAsync()
+        public async Task<Content<LogItemResponse>> GetAsync()
         {
             return await GetAsync(filterOption: null, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async ValueTask<Content<LogItemResponse>> GetAsync(FilterOption filterOption)
+        public async Task<Content<LogItemResponse>> GetAsync(FilterOption filterOption)
         {
             return await GetAsync(filterOption, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async ValueTask<Content<LogItemResponse>> GetAsync(CancellationToken cancellationToken)
+        public async Task<Content<LogItemResponse>> GetAsync(CancellationToken cancellationToken)
         {
             return await GetAsync(filterOption: null, cancellationToken).ConfigureAwait(false);
         }
 
-        public async ValueTask<Content<LogItemResponse>> GetAsync(FilterOption filterOption, CancellationToken cancellationToken)
+        public async Task<Content<LogItemResponse>> GetAsync(FilterOption filterOption, CancellationToken cancellationToken)
         {
             var uri = $"{ProjectName}/log";
 
@@ -46,42 +46,42 @@ namespace ReportPortal.Client.Resources
             return await GetAsJsonAsync<Content<LogItemResponse>>(uri, cancellationToken).ConfigureAwait(false);
         }
 
-        public async ValueTask<LogItemResponse> GetAsync(string uuid)
+        public async Task<LogItemResponse> GetAsync(string uuid)
         {
             return await GetAsync(uuid, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async ValueTask<LogItemResponse> GetAsync(string uuid, CancellationToken cancellationToken)
+        public async Task<LogItemResponse> GetAsync(string uuid, CancellationToken cancellationToken)
         {
             return await GetAsJsonAsync<LogItemResponse>($"{ProjectName}/log/uuid/{uuid}", cancellationToken).ConfigureAwait(false);
         }
 
-        public async ValueTask<LogItemResponse> GetAsync(long id)
+        public async Task<LogItemResponse> GetAsync(long id)
         {
             return await GetAsync(id, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async ValueTask<LogItemResponse> GetAsync(long id, CancellationToken cancellationToken)
+        public async Task<LogItemResponse> GetAsync(long id, CancellationToken cancellationToken)
         {
             return await GetAsJsonAsync<LogItemResponse>($"{ProjectName}/log/{id}", cancellationToken).ConfigureAwait(false);
         }
 
-        public async ValueTask<byte[]> GetBinaryDataAsync(string id)
+        public async Task<byte[]> GetBinaryDataAsync(string id)
         {
             return await GetBinaryDataAsync(id, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async ValueTask<byte[]> GetBinaryDataAsync(string id, CancellationToken cancellationToken)
+        public async Task<byte[]> GetBinaryDataAsync(string id, CancellationToken cancellationToken)
         {
             return await GetAsBytesAsync($"data/{ProjectName}/{id}", cancellationToken).ConfigureAwait(false);
         }
 
-        public async ValueTask<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request)
+        public async Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request)
         {
             return await CreateAsync(request, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async ValueTask<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request, CancellationToken cancellationToken)
+        public async Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request, CancellationToken cancellationToken)
         {
             var uri = $"{ProjectName}/log";
 
@@ -96,12 +96,12 @@ namespace ReportPortal.Client.Resources
             }
         }
 
-        public async ValueTask<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests)
+        public async Task<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests)
         {
             return await CreateAsync(requests, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async ValueTask<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests, CancellationToken cancellationToken)
+        public async Task<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests, CancellationToken cancellationToken)
         {
             var uri = $"{ProjectName}/log";
 
@@ -130,12 +130,12 @@ namespace ReportPortal.Client.Resources
             }
         }
 
-        public async ValueTask<MessageResponse> DeleteAsync(long id)
+        public async Task<MessageResponse> DeleteAsync(long id)
         {
             return await DeleteAsync(id, CancellationToken.None).ConfigureAwait(false);
         }
 
-        public async ValueTask<MessageResponse> DeleteAsync(long id, CancellationToken cancellationToken)
+        public async Task<MessageResponse> DeleteAsync(long id, CancellationToken cancellationToken)
         {
             return await DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/log/{id}", cancellationToken).ConfigureAwait(false);
         }
