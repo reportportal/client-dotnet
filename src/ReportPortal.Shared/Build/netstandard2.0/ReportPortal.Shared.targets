@@ -3,8 +3,4 @@
 
   <Import Project="..\ReportPortal.Shared.props" />
 
-  <PropertyGroup>
-    <_ReportPortal_Shared_Runtime_Path>$(MSBuildThisFileDirectory)..\..\lib\netstandard2.0\ReportPortal.Shared.dll</_ReportPortal_Shared_Runtime_Path>
-  </PropertyGroup>
-
 </Project>
