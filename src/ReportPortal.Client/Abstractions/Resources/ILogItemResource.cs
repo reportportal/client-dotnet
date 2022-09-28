@@ -16,83 +16,83 @@ namespace ReportPortal.Client.Abstractions.Resources
         /// </summary>
         /// <param name="request">Information about representation of log item.</param>
         /// <returns>Representation of just created log item.</returns>
-        ValueTask<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request);
+        Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request);
 
         /// <inheritdoc cref="CreateAsync(CreateLogItemRequest)"/>
         /// <param name="cancellationToken">Cancellation token.</param>
-        ValueTask<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request, CancellationToken cancellationToken);
+        Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request, CancellationToken cancellationToken);
 
         /// <summary>
         /// Creates a new log item.
         /// </summary>
         /// <param name="requests">Information about representation of log item.</param>
         /// <returns>Representation of just created log item.</returns>
-        ValueTask<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests);
+        Task<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests);
 
         /// <inheritdoc cref="CreateAsync(CreateLogItemRequest[])"/>
         /// <param name="cancellationToken">Cancellation token.</param>
-        ValueTask<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests, CancellationToken cancellationToken);
+        Task<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests, CancellationToken cancellationToken);
 
         /// <summary>
         /// Deletes specified log item.
         /// </summary>
         /// <param name="id">ID of the log item to delete.</param>
         /// <returns>A message from service.</returns>
-        ValueTask<MessageResponse> DeleteAsync(long id);
+        Task<MessageResponse> DeleteAsync(long id);
 
         /// <inheritdoc cref="DeleteAsync(long)"/>
         /// <param name="cancellationToken">Cancellation token.</param>
-        ValueTask<MessageResponse> DeleteAsync(long id, CancellationToken cancellationToken);
+        Task<MessageResponse> DeleteAsync(long id, CancellationToken cancellationToken);
 
         /// <summary>
         /// Returns binary data of attached file to log message.
         /// </summary>
         /// <param name="id">ID of data.</param>
         /// <returns>Array of bytes.</returns>
-        ValueTask<byte[]> GetBinaryDataAsync(string id);
+        Task<byte[]> GetBinaryDataAsync(string id);
 
         /// <inheritdoc cref="GetBinaryDataAsync(string)"/>
         /// <param name="cancellationToken">Cancellation token.</param>
-        ValueTask<byte[]> GetBinaryDataAsync(string id, CancellationToken cancellationToken);
+        Task<byte[]> GetBinaryDataAsync(string id, CancellationToken cancellationToken);
 
         /// <summary>
         /// Returns specified log item by ID.
         /// </summary>
         /// <param name="id">ID of the log item to retrieve.</param>
         /// <returns>A representation of log item/</returns>
-        ValueTask<LogItemResponse> GetAsync(long id);
+        Task<LogItemResponse> GetAsync(long id);
 
         /// <inheritdoc cref="GetAsync(long)"/>
         /// <param name="cancellationToken">Cancellation token.</param>
-        ValueTask<LogItemResponse> GetAsync(long id, CancellationToken cancellationToken);
+        Task<LogItemResponse> GetAsync(long id, CancellationToken cancellationToken);
 
         /// <summary>
         /// Returns specified log item by UUID.
         /// </summary>
         /// <param name="uuid">UUID of the log item to retrieve.</param>
         /// <returns>A representation of log item/</returns>
-        ValueTask<LogItemResponse> GetAsync(string uuid);
+        Task<LogItemResponse> GetAsync(string uuid);
 
         /// <inheritdoc cref="GetAsync(string)"/>
         /// <param name="cancellationToken">Cancellation token.</param>
-        ValueTask<LogItemResponse> GetAsync(string uuid, CancellationToken cancellationToken);
+        Task<LogItemResponse> GetAsync(string uuid, CancellationToken cancellationToken);
 
         /// <summary>
         /// Returns a list of log items for specified test item.
         /// </summary>
         /// <returns>A list of log items.</returns>
-        ValueTask<Content<LogItemResponse>> GetAsync();
+        Task<Content<LogItemResponse>> GetAsync();
 
         /// <inheritdoc cref="GetAsync()"/>
         /// <param name="filterOption">Specified criterias for retrieving log items.</param>
-        ValueTask<Content<LogItemResponse>> GetAsync(FilterOption filterOption);
+        Task<Content<LogItemResponse>> GetAsync(FilterOption filterOption);
 
         /// <inheritdoc cref="GetAsync()"/>
         /// <param name="cancellationToken">Cancellation token.</param>
-        ValueTask<Content<LogItemResponse>> GetAsync(CancellationToken cancellationToken);
+        Task<Content<LogItemResponse>> GetAsync(CancellationToken cancellationToken);
 
         /// <inheritdoc cref="GetAsync(FilterOption)"/>
         /// <param name="cancellationToken">Cancellation token.</param>
-        ValueTask<Content<LogItemResponse>> GetAsync(FilterOption filterOption, CancellationToken cancellationToken);
+        Task<Content<LogItemResponse>> GetAsync(FilterOption filterOption, CancellationToken cancellationToken);
     }
 }
