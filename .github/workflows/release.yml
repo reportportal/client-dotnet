@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      source:
+        description: 'Package source'
+        required: true
+        default: 'NuGet'
+        type: choice
+        options:
+          - NuGet
+          - MyGet
+
+  release:
+    types: [published]
+    
+env:
+  CONFIGURATION: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    
+    - name: Checkout
+      uses: actions/checkout@v2
+      with: 
+        fetch-depth: 0
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+
+    - name: Build
+      run: dotnet build --configuration ${{ env.CONFIGURATION }}
+
+    - name: Test
+      run: dotnet test --configuration ${{ env.CONFIGURATION }} --no-build
+
+    - name: Pack
+      run: dotnet pack --configuration ${{ env.CONFIGURATION }} --no-build --output .
+
+    - name: Push to NuGet
+      if: ${{ inputs.source == 'NuGet' }}
+      run: dotnet nuget push "*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source ${{ secrets.NUGET_SOURCE }}
+
+    - name: Push to MyGet
+      if: ${{ inputs.source == 'MyGet' }}
+      run: dotnet nuget push "*.nupkg" --api-key ${{ secrets.MYGET_API_KEY }} --source ${{ secrets.MYGET_SOURCE }}
