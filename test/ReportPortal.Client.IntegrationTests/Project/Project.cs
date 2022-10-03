@@ -12,7 +12,7 @@ using Xunit;
 namespace ReportPortal.Client.IntegrationTests.Project
 {
 #pragma warning disable xUnit1000 // https://github.com/reportportal/reportportal/issues/1213
-    public class ProjectFixture : BaseFixture
+    class ProjectFixture : BaseFixture
 #pragma warning restore xUnit1000
     {
         [Fact]
