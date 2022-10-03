@@ -1,0 +1,32 @@
+name: ci
+
+on: pull_request
+
+env:
+  CONFIGURATION: Release
+
+jobs:
+
+  buid:
+    runs-on: windows-2022
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install CodeCov
+        run: dotnet tool install -g codecov.tool
+
+      - name: Build
+        run: dotnet build --configuration ${{ env.CONFIGURATION }}
+
+      - name: Test
+        run: dotnet test --configuration ${{ env.CONFIGURATION }} /p:CollectCoverage=true /p:CoverletOutputFormat=OpenCover /p:CoverletOutput=./Coverage.xml
+
+      - name: Publish Coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: '**/*/Coverage.*.xml'
