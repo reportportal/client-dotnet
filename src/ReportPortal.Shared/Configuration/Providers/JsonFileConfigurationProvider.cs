@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Json;
-using System.Text;
-using System.Xml;
+using System.Text.Json;
 
 namespace ReportPortal.Shared.Configuration.Providers
 {
@@ -66,50 +63,57 @@ namespace ReportPortal.Shared.Configuration.Providers
         {
             var properties = new Dictionary<string, string>();
 
-            using (var jsonReader = JsonReaderWriterFactory.CreateJsonReader(Encoding.UTF8.GetBytes(json), new XmlDictionaryReaderQuotas()))
+            using (var jsonDocument = JsonDocument.Parse(json))
             {
-                string propertyName = string.Empty;
-                string propertyValue = null;
-
-                while (jsonReader.Read())
+                foreach (var jsonProperty in jsonDocument.RootElement.EnumerateObject())
                 {
-                    if (jsonReader.NodeType == XmlNodeType.Element)
+                    foreach (var item in ParseJsonProperty(jsonProperty))
                     {
-                        propertyName += $"{_delimeter}{jsonReader.Name}";
-                    }
-                    else if (jsonReader.NodeType == XmlNodeType.EndElement)
-                    {
-                        if (jsonReader.Name != "item" && jsonReader.Name != "root" && propertyValue != null)
-                        {
-                            properties[propertyName.Replace($"{_delimeter}root{_delimeter}", "").Replace(_delimeter, ConfigurationPath.KeyDelimeter)] = propertyValue;
-
-                            propertyValue = null;
-                        }
-
-                        propertyName = propertyName.Substring(0, propertyName.Length - jsonReader.Name.Length - _delimeter.Length);
-                    }
-                    else if (jsonReader.NodeType == XmlNodeType.Text)
-                    {
-                        if (propertyName.EndsWith("item", StringComparison.OrdinalIgnoreCase))
-                        {
-                            propertyValue += $"{jsonReader.Value};";
-                        }
-                        else
-                        {
-                            // \n character is considered as new Text element in JsonReader, so we are verifying whether it's continuing previous text and just append it
-                            if (propertyValue == null)
-                            {
-                                propertyValue = jsonReader.Value;
-                            }
-                            else
-                            {
-                                propertyValue += jsonReader.Value;
-                            }
-                        }
+                        properties.Add(item.Key, item.Value);
                     }
                 }
-
             }
+
+            return properties;
+        }
+
+        private Dictionary<string, string> ParseJsonProperty(JsonProperty jsonProperty, string parentPropertyName = null)
+        {
+            Dictionary<string, string> properties = new Dictionary<string, string>();
+
+            var propertyName = jsonProperty.Name;
+
+            if (parentPropertyName != null)
+            {
+                propertyName = $"{parentPropertyName}{_delimeter}{propertyName}";
+            }
+
+            if (jsonProperty.Value.ValueKind == JsonValueKind.Object)
+            {
+                foreach (var innerJsonProperty in jsonProperty.Value.EnumerateObject())
+                {
+                    foreach (var item in ParseJsonProperty(innerJsonProperty, propertyName))
+                    {
+                        properties.Add(item.Key, item.Value);
+                    }
+                }
+            }
+            else if (jsonProperty.Value.ValueKind == JsonValueKind.Array)
+            {
+                var propertyValue = "";
+
+                foreach (var item in jsonProperty.Value.EnumerateArray())
+                {
+                    propertyValue += $"{item};";
+                }
+
+                properties.Add(propertyName, propertyValue);
+            }
+            else
+            {
+                properties.Add(propertyName, jsonProperty.Value.ToString());
+            }
+
             return properties;
         }
     }

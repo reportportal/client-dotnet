@@ -4,7 +4,6 @@ using ReportPortal.Shared.Configuration.Providers;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml;
 using Xunit;
 
 namespace ReportPortal.Shared.Tests.Configuration
@@ -204,7 +203,7 @@ namespace ReportPortal.Shared.Tests.Configuration
 
             File.WriteAllText(tempFile, "Bh}");
 
-            Assert.Throws<XmlException>(() => new ConfigurationBuilder().AddJsonFile(filePath: tempFile).Build());
+            Assert.ThrowsAny<System.Text.Json.JsonException>(() => new ConfigurationBuilder().AddJsonFile(filePath: tempFile).Build());
         }
 
         // this test might pass in future when we will use oanother ser/derser library
@@ -215,7 +214,7 @@ namespace ReportPortal.Shared.Tests.Configuration
 
             File.WriteAllText(tempFile, "{\n// this is comment?\n}");
 
-            Assert.Throws<XmlException>(() => new ConfigurationBuilder().AddJsonFile(filePath: tempFile).Build());
+            Assert.ThrowsAny<System.Text.Json.JsonException>(() => new ConfigurationBuilder().AddJsonFile(filePath: tempFile).Build());
         }
 
         [Fact]
