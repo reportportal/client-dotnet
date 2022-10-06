@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using Moq;
 using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Internal.Delegating;
 using System;
@@ -17,13 +16,22 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
         }
 
         [Fact]
-        public void ShouldCreateDefaultThrottler()
+        public void ShouldThrowExceptionForIncorrectMaxRequests()
+        {
+            Action ctor = () => new RequestExecutionThrottler(0);
+            ctor.Should().Throw<ArgumentException>();
+        }
+
+        [Fact]
+        public void ShouldCreateAndDisposeDefaultThrottler()
         {
             var configuration = new ConfigurationBuilder().Build();
             var factory = new RequestExecutionThrottleFactory(configuration);
             var throttler = factory.Create();
 
             throttler.Should().BeOfType<RequestExecutionThrottler>();
+
+            (throttler as RequestExecutionThrottler).Dispose();
         }
 
         [Fact]

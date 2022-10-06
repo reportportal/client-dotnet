@@ -8,5 +8,7 @@ namespace ReportPortal.Shared.Reporter
         Task ProcessingTask { get; }
 
         void Log(CreateLogItemRequest logRequest);
+
+        void Sync();
     }
 }

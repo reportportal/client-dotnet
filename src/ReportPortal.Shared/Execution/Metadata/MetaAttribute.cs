@@ -24,7 +24,7 @@ namespace ReportPortal.Shared.Execution.Metadata
         {
             if (string.IsNullOrEmpty(value))
             {
-                throw new ArgumentException("Cannot parse empty value.");
+                throw new ArgumentException("Cannot parse null or empty value.");
             }
 
             string metaKey = null;

@@ -9,6 +9,8 @@ namespace ReportPortal.Shared.Reporter
 
         Task FinishTask { get; }
 
+        void Sync();
+
         ILaunchStatisticsCounter StatisticsCounter { get; }
     }
 }

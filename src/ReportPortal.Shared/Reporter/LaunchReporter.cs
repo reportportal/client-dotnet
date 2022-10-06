@@ -90,8 +90,6 @@ namespace ReportPortal.Shared.Reporter
         private readonly string _rerunOfUuid = null;
         private readonly bool _isRerun;
 
-        private readonly IList<Task> _additionalTasks;
-
         public Task StartTask { get; private set; }
 
         public void Start(StartLaunchRequest request)
@@ -198,11 +196,6 @@ namespace ReportPortal.Shared.Reporter
             if (_logsReporter != null)
             {
                 dependentTasks.Add(_logsReporter.ProcessingTask);
-            }
-
-            if (_additionalTasks != null)
-            {
-                dependentTasks.AddRange(_additionalTasks);
             }
 
             if (ChildTestReporters != null)
@@ -342,48 +335,36 @@ namespace ReportPortal.Shared.Reporter
         private LaunchInitializingEventArgs NotifyInitializing()
         {
             var args = new LaunchInitializingEventArgs(_service, _configuration);
-            Notify(() => ReportEventsSource.RaiseLaunchInitializing(_reportEventsSource, this, args));
+            ReportEventsSource.RaiseLaunchInitializing(_reportEventsSource, this, args);
             return args;
         }
 
         private BeforeLaunchStartingEventArgs NotifyStarting(StartLaunchRequest request)
         {
             var args = new BeforeLaunchStartingEventArgs(_service, _configuration, request);
-            Notify(() => ReportEventsSource.RaiseBeforeLaunchStarting(_reportEventsSource, this, args));
+            ReportEventsSource.RaiseBeforeLaunchStarting(_reportEventsSource, this, args);
             return args;
         }
 
         private AfterLaunchStartedEventArgs NotifyStarted()
         {
             var args = new AfterLaunchStartedEventArgs(_service, _configuration);
-            Notify(() => ReportEventsSource.RaiseAfterLaunchStarted(_reportEventsSource, this, args));
+            ReportEventsSource.RaiseAfterLaunchStarted(_reportEventsSource, this, args);
             return args;
         }
 
         private BeforeLaunchFinishingEventArgs NotifyFinishing(FinishLaunchRequest request)
         {
             var args = new BeforeLaunchFinishingEventArgs(_service, _configuration, request);
-            Notify(() => ReportEventsSource.RaiseBeforeLaunchFinishing(_reportEventsSource, this, args));
+            ReportEventsSource.RaiseBeforeLaunchFinishing(_reportEventsSource, this, args);
             return args;
         }
 
         private AfterLaunchFinishedEventArgs NotifyFinished()
         {
             var args = new AfterLaunchFinishedEventArgs(_service, _configuration);
-            Notify(() => ReportEventsSource.RaiseAfterLaunchFinished(_reportEventsSource, this, args));
+            ReportEventsSource.RaiseAfterLaunchFinished(_reportEventsSource, this, args);
             return args;
-        }
-
-        private void Notify(Action act)
-        {
-            try
-            {
-                act.Invoke();
-            }
-            catch (Exception exp)
-            {
-                TraceLogger.Error($"Unhandled error while notifying launch event observers: {exp}");
-            }
         }
     }
 }

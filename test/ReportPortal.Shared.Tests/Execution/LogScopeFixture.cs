@@ -211,5 +211,13 @@ namespace ReportPortal.Shared.Tests.Execution
             logMessageArg.LogMessage.Message.Should().Be("asd");
             logMessageArg.LogScope.Should().Be(launchContext.Log);
         }
+
+        [Fact]
+        public void RootLogScopeShouldBeTheSame()
+        {
+            var log = Context.Current.Log;
+
+            log.Root.Should().Be(log);
+        }
     }
 }

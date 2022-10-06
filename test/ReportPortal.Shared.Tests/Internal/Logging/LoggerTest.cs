@@ -1,4 +1,5 @@
-﻿using ReportPortal.Shared.Internal.Logging;
+﻿using FluentAssertions;
+using ReportPortal.Shared.Internal.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -84,6 +85,16 @@ namespace ReportPortal.Shared.Tests.Internal.Logging
             logger.Info("some message");
             Assert.False(File.Exists($"{tempDir.FullName}\\{_defaultLogFilePath}"));
             Assert.True(File.Exists(_defaultLogFilePath));
+        }
+
+        [Fact]
+        public void ShouldThrowIfTypeIsNull()
+        {
+            var traceLogManager = new TraceLogManager();
+
+            Action act = () => traceLogManager.GetLogger(null);
+
+            act.Should().Throw<ArgumentNullException>();
         }
 
         public void Dispose()

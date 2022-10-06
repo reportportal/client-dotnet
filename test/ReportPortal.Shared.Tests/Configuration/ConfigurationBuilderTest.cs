@@ -224,6 +224,22 @@ namespace ReportPortal.Shared.Tests.Configuration
 
             var exp = Assert.Throws<KeyNotFoundException>(() => config.GetValue<string>("someproperty"));
             Assert.Contains("someproperty", exp.Message);
+
+            exp = Assert.Throws<KeyNotFoundException>(() => config.GetValues<string>("someproperty"));
+            Assert.Contains("someproperty", exp.Message);
+
+            exp = Assert.Throws<KeyNotFoundException>(() => config.GetKeyValues<string>("someproperty"));
+            Assert.Contains("someproperty", exp.Message);
+        }
+
+        [Fact]
+        public void ShouldRaiseExceptionIfBoolNotRecognized()
+        {
+            var config = new ConfigurationBuilder().Build();
+
+            config.Properties["a"] = "invalid_bool";
+
+            var exp = Assert.Throws<InvalidCastException>(() => config.GetValue<bool>("a"));
         }
 
         [Fact]
@@ -234,6 +250,16 @@ namespace ReportPortal.Shared.Tests.Configuration
             var a = config.GetValue("a", "abc");
 
             Assert.Equal("abc", a);
+        }
+
+        [Fact]
+        public void ShouldReturnDefaultIfKeyValuesNotFound()
+        {
+            var config = new ConfigurationBuilder().Build();
+
+            var a = config.GetKeyValues<string>("a", null);
+
+            Assert.Null(a);
         }
 
         [Fact]
@@ -416,7 +442,7 @@ namespace ReportPortal.Shared.Tests.Configuration
         }
 
         [Fact]
-        public void ShouldUseDefaults()
+        public void ShouldUseDefaultsWithBaseDir()
         {
             var dir = Directory.CreateDirectory(Path.GetRandomFileName());
             File.AppendAllText(dir + "/ReportPortal_prop1", "value1");
@@ -427,6 +453,38 @@ namespace ReportPortal.Shared.Tests.Configuration
             config.Properties.Should().HaveCountGreaterOrEqualTo(2).And.ContainKeys("prop1", "prop2");
 
             dir.Delete(true);
+        }
+
+        [Fact]
+        public void ShouldUseDefaults()
+        {
+            var config = new ConfigurationBuilder().AddDefaults().Build();
+
+            config.Properties.Should().HaveCountGreaterOrEqualTo(0);
+        }
+
+        [Fact]
+        public void ShouldThrowNullExceptionIfBuilderIsNull()
+        {
+            ConfigurationBuilder builder = null;
+
+            Action act = () => builder.AddDefaults();
+            act.Should().Throw<ArgumentNullException>();
+
+            act = () => builder.AddDefaults(baseDir: Environment.CurrentDirectory);
+            act.Should().Throw<ArgumentNullException>();
+
+            act = () => builder.AddJsonFile("file");
+            act.Should().Throw<ArgumentNullException>();
+
+            act = () => builder.AddEnvironmentVariables();
+            act.Should().Throw<ArgumentNullException>();
+
+            act = () => builder.AddEnvironmentVariables("", "");
+            act.Should().Throw<ArgumentNullException>();
+
+            act = () => builder.AddDirectoryProbing(Environment.CurrentDirectory);
+            act.Should().Throw<ArgumentNullException>();
         }
     }
 }

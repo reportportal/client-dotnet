@@ -24,7 +24,7 @@ namespace ReportPortal.Shared.Extensibility.Embedded.Analytics
 
         private readonly string _platformVersion;
 
-        private HttpClient _httpClient;
+        private readonly HttpClient _httpClient;
 
         public AnalyticsReportEventsObserver() : this(new HttpClientHandler
         {
@@ -61,15 +61,15 @@ namespace ReportPortal.Shared.Extensibility.Embedded.Analytics
         /// <param name="agentVersion">Automatically identified as calling assembly version if null.</param>
         public static void DefineConsumer(string agentName, string agentVersion = null)
         {
-            AgentName = agentName;
-
-            if (string.IsNullOrEmpty(agentVersion))
+            if (string.IsNullOrEmpty(agentName) || string.IsNullOrEmpty(agentVersion))
             {
                 var agentAssemblyName = Assembly.GetCallingAssembly().GetName();
+                AgentName = agentAssemblyName.Name;
                 _agentVersion = agentAssemblyName.Version.ToString(3);
             }
             else
             {
+                AgentName = agentName;
                 _agentVersion = agentVersion;
             }
         }
@@ -91,12 +91,12 @@ namespace ReportPortal.Shared.Extensibility.Embedded.Analytics
             }
         }
 
-        IReportEventsSource _reportEventsSource;
+        private IReportEventsSource _reportEventsSource;
 
         /// <inheritdoc />
         public void Initialize(IReportEventsSource reportEventsSource)
         {
-            _reportEventsSource = reportEventsSource;
+            _reportEventsSource = reportEventsSource ?? throw new ArgumentNullException(nameof(reportEventsSource));
             reportEventsSource.OnBeforeLaunchStarting += ReportEventsSource_OnBeforeLaunchStarting;
             reportEventsSource.OnAfterLaunchFinished += ReportEventsSource_OnAfterLaunchFinished;
         }
@@ -117,8 +117,10 @@ namespace ReportPortal.Shared.Extensibility.Embedded.Analytics
                 {
                     try
                     {
-                        var response = await _httpClient.PostAsync(requestData, null);
-                        response.EnsureSuccessStatusCode();
+                        using (var response = await _httpClient.PostAsync(requestData, null))
+                        {
+                            response.EnsureSuccessStatusCode();
+                        }
                     }
                     catch (Exception exp)
                     {
@@ -130,18 +132,11 @@ namespace ReportPortal.Shared.Extensibility.Embedded.Analytics
 
         private void ReportEventsSource_OnAfterLaunchFinished(Reporter.ILaunchReporter launchReporter, ReportEvents.EventArgs.AfterLaunchFinishedEventArgs args)
         {
-            if (_sendGaUsageTask != null)
-            {
-                try
-                {
-                    _sendGaUsageTask.GetAwaiter().GetResult();
-                }
-                catch (Exception) { }
-            }
+            _sendGaUsageTask?.GetAwaiter().GetResult();
         }
 
         /// <summary>
-        /// Release HtpClient if needed.
+        /// Release HttpClient if needed.
         /// </summary>
         public void Dispose()
         {

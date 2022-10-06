@@ -58,6 +58,24 @@ namespace ReportPortal.Shared.Tests.Extensibility.ReportEvents
         }
 
         [Fact]
+        public void ShouldNotBreakReportingIfLogsHandlerThrowsException()
+        {
+            var observer = new Mock<IReportEventsObserver>();
+            observer.Setup(o => o.Initialize(It.IsAny<IReportEventsSource>())).Callback<IReportEventsSource>(s =>
+            {
+                s.OnBeforeLogsSending += (a, b) => throw new Exception();
+            });
+
+            var extManager = new Shared.Extensibility.ExtensionManager();
+            extManager.ReportEventObservers.Add(observer.Object);
+
+            var client = new MockServiceBuilder().Build().Object;
+            var launch = new LaunchReporterBuilder(client).With(extManager).Build(1, 1, 1);
+            Action act = () => launch.Sync();
+            act.Should().NotThrow();
+        }
+
+        [Fact]
         public void ShouldNotifyBeforeItemStarting()
         {
             ILaunchReporter l = null;

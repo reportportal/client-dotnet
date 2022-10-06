@@ -6,8 +6,6 @@ namespace ReportPortal.Shared.Extensibility
     {
         void Explore(string path);
 
-        IList<ILogFormatter> LogFormatters { get; }
-
         IList<IReportEventsObserver> ReportEventObservers { get; }
 
         IList<ICommandsListener> CommandsListeners { get; }

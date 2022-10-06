@@ -10,7 +10,7 @@ namespace ReportPortal.Shared.Extensibility
     {
         private static Internal.Logging.ITraceLogger TraceLogger { get; } = Internal.Logging.TraceLogManager.Instance.GetLogger(typeof(ExtensionManager));
 
-        private static Lazy<IExtensionManager> _instance = new Lazy<IExtensionManager>(() =>
+        private static readonly Lazy<IExtensionManager> _instance = new Lazy<IExtensionManager>(() =>
             {
                 var ext = new ExtensionManager();
 
@@ -54,7 +54,6 @@ namespace ReportPortal.Shared.Extensibility
                 {
                     if (!_exploredPaths.Contains(path))
                     {
-                        var logFormatters = new List<ILogFormatter>();
                         var reportEventObservers = new List<IReportEventsObserver>();
                         var commandsListeners = new List<ICommandsListener>();
 
@@ -65,10 +64,16 @@ namespace ReportPortal.Shared.Extensibility
                         foreach (var file in currentDirectory.GetFiles("*ReportPortal*.dll"))
                         {
                             TraceLogger.Verbose($"Found '{file.Name}' and loading it into current AppDomain.");
-                            AppDomain.CurrentDomain.Load(Path.GetFileNameWithoutExtension(file.Name));
+                            try
+                            {
+                                AppDomain.CurrentDomain.Load(Path.GetFileNameWithoutExtension(file.Name));
+                            }
+                            catch(Exception ex)
+                            {
+                                TraceLogger.Warn($"Could not load extension assembly into application domain. {ex}");
+                            }
                         }
 
-                        var iLogFormatterExtensionInterfaceType = typeof(ILogFormatter);
                         var iReportEventObserseExtensionInterfaceType = typeof(IReportEventsObserver);
                         var iCommandsListenerInterfaceType = typeof(ICommandsListener);
 
@@ -78,19 +83,13 @@ namespace ReportPortal.Shared.Extensibility
                             {
                                 _exploredAssemblies.Add(assembly.Location);
                                 TraceLogger.Verbose($"Exploring '{assembly.FullName}' assembly for extensions.");
+                                
                                 try
                                 {
                                     foreach (var type in assembly.GetTypes().Where(t => t.IsClass))
                                     {
                                         if (!type.IsAbstract && type.GetConstructors().Any(ctor => ctor.GetParameters().Length == 0))
                                         {
-                                            if (iLogFormatterExtensionInterfaceType.IsAssignableFrom(type))
-                                            {
-                                                var extension = Activator.CreateInstance(type);
-                                                logFormatters.Add((ILogFormatter)extension);
-                                                TraceLogger.Info($"Registered '{type.FullName}' type as {nameof(ILogFormatter)} extension.");
-                                            }
-
                                             if (iReportEventObserseExtensionInterfaceType.IsAssignableFrom(type))
                                             {
                                                 var extension = Activator.CreateInstance(type);
@@ -109,17 +108,16 @@ namespace ReportPortal.Shared.Extensibility
                                 }
                                 catch (ReflectionTypeLoadException exp)
                                 {
-                                    TraceLogger.Warn($"Couldn't load '{assembly.GetName().Name}' assembly into domain. \n {exp}");
+                                    TraceLogger.Warn($"Couldn't load '{assembly.GetName().Name}' assembly into domain.\n{exp}");
                                     foreach (var loaderException in exp.LoaderExceptions)
                                     {
-                                        TraceLogger.Error(loaderException.ToString());
+                                        TraceLogger.Warn(loaderException.ToString());
                                     }
                                 }
                             }
                         }
 
-                        logFormatters.OrderBy(ext => ext.Order).ToList().ForEach(lf => LogFormatters.Add(lf));
-                        reportEventObservers.ToList().ForEach(reo => ReportEventObservers.Add(reo));
+                        reportEventObservers.ForEach(reo => ReportEventObservers.Add(reo));
                         commandsListeners.ForEach(cl => CommandsListeners.Add(cl));
 
                         _exploredPaths.Add(path);
@@ -127,8 +125,6 @@ namespace ReportPortal.Shared.Extensibility
                 }
             }
         }
-
-        public IList<ILogFormatter> LogFormatters { get; } = new List<ILogFormatter>();
 
         public IList<IReportEventsObserver> ReportEventObservers { get; } = new List<IReportEventsObserver>();
 

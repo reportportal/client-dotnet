@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Newtonsoft.Json.Linq;
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Shared.Execution.Metadata;
 using System;
@@ -22,11 +23,22 @@ namespace ReportPortal.Shared.Tests.Execution.Metadata
         [InlineData("a:b", "a", "b")]
         [InlineData("a:b:c", "a", "b:c")]
         [InlineData(":b", null, "b")]
+        [InlineData("b", null, "b")]
         public void ShouldBeAbleToParseString(string value, string expectedKey, string expectedValue)
         {
             var metaAttribute = MetaAttribute.Parse(value);
             metaAttribute.Key.Should().Be(expectedKey);
             metaAttribute.Value.Should().Be(expectedValue);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        public void ShouldNotBeAbleToParseIncorrectString(string value)
+        {
+            Action act = () => MetaAttribute.Parse(value);
+
+            act.Should().ThrowExactly<ArgumentException>();
         }
 
         [Fact]

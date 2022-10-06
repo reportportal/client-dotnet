@@ -192,5 +192,39 @@ namespace ReportPortal.Shared.Tests.Reporter
             logItemRequestTexts.Should().HaveCount(1000);
             logItemRequestTexts.Should().OnlyHaveUniqueItems();
         }
+
+        [Fact]
+        public void ShouldAmendLogDatetimeForLaunch()
+        {
+            var startTime = DateTime.UtcNow;
+
+            var launchReporter = new Mock<ILaunchReporter>();
+            launchReporter.Setup(l => l.Info.StartTime).Returns(startTime);
+
+            var amender = new LaunchLogRequestAmender(launchReporter.Object);
+
+            var logRequest = new CreateLogItemRequest() { Time = startTime.AddMinutes(-1) };
+
+            amender.Amend(logRequest);
+
+            logRequest.Time.Should().Be(startTime);
+        }
+
+        [Fact]
+        public void ShouldAmendLogDatetimeForTestItem()
+        {
+            var startTime = DateTime.UtcNow;
+
+            var testReporter = new Mock<ITestReporter>();
+            testReporter.Setup(l => l.Info.StartTime).Returns(startTime);
+
+            var amender = new TestLogRequestAmender(testReporter.Object);
+
+            var logRequest = new CreateLogItemRequest() { Time = startTime.AddMinutes(-1) };
+
+            amender.Amend(logRequest);
+
+            logRequest.Time.Should().Be(startTime);
+        }
     }
 }

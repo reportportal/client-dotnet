@@ -31,6 +31,9 @@
     <None Update="Execution\data.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Extensibility\ExtensionManager\Data\ReportPortal.IncorrectExtension.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

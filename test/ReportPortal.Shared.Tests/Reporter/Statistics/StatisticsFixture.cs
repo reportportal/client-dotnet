@@ -117,6 +117,7 @@ namespace ReportPortal.Shared.Tests.Reporter.Statistics
             launchScheduler.StatisticsCounter.StartTestItemStatisticsCounter.Count.Should().Be(expectedItemInvocations);
             launchScheduler.StatisticsCounter.FinishTestItemStatisticsCounter.Count.Should().Be(expectedItemInvocations);
             launchScheduler.StatisticsCounter.LogItemStatisticsCounter.Count.Should().BeGreaterOrEqualTo(2 * 5 * 10 / 10); // default logs buffer size for processing is 10
+            launchScheduler.StatisticsCounter.ToString().Should().NotBeNullOrEmpty();
         }
     }
 }

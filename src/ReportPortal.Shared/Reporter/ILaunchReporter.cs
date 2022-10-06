@@ -16,7 +16,5 @@ namespace ReportPortal.Shared.Reporter
         IList<ITestReporter> ChildTestReporters { get; }
 
         void Log(CreateLogItemRequest createLogItemRequest);
-
-        void Sync();
     }
 }

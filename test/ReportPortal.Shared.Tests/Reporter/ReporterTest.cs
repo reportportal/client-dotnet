@@ -55,6 +55,28 @@ namespace ReportPortal.Shared.Tests.Reporter
         }
 
         [Fact]
+        public void ShouldFulfillTestInfo()
+        {
+            var now = DateTime.UtcNow;
+
+            var service = new MockServiceBuilder().Build();
+
+            var launchScheduler = new LaunchReporterBuilder(service.Object);
+            var launchReporter = launchScheduler.Build(1, 0, 0);
+
+            launchReporter.Sync();
+
+            var testReporter = launchReporter.ChildTestReporters[0];
+
+            testReporter.Should().NotBeNull();
+            testReporter.Info.Uuid.Should().NotBeNullOrEmpty();
+            testReporter.Info.Name.Should().NotBeNullOrEmpty();
+            testReporter.Info.StartTime.Should().BeCloseTo(now, precision: TimeSpan.FromMilliseconds(100));
+            testReporter.Info.FinishTime.Should().BeCloseTo(now, precision: TimeSpan.FromMilliseconds(100));
+            (testReporter.Info as TestInfo).Status.Should().Be(Client.Abstractions.Models.Status.Passed);
+        }
+
+        [Fact]
         public void MixingTestsAndLogs()
         {
             var service = new MockServiceBuilder().Build();
@@ -256,6 +278,16 @@ namespace ReportPortal.Shared.Tests.Reporter
         }
 
         [Fact]
+        public void ShouldSyncNotStartedLaunch()
+        {
+            var service = new MockServiceBuilder().Build();
+
+            var launch = new LaunchReporter(service.Object, null, null, new ExtensionManager());
+
+            launch.Sync();
+        }
+
+        [Fact]
         public void StartLaunchTimeout()
         {
             var service = new MockServiceBuilder().Build();
@@ -392,7 +424,7 @@ namespace ReportPortal.Shared.Tests.Reporter
         }
 
         [Fact]
-        public void RerunLaunch()
+        public void RerunOfLaunch()
         {
             var service = new MockServiceBuilder().Build();
 
@@ -406,6 +438,53 @@ namespace ReportPortal.Shared.Tests.Reporter
 
             service.Verify(s => s.Launch.StartAsync(It.IsAny<StartLaunchRequest>()), Times.Once);
             service.Verify(s => s.Launch.FinishAsync(It.IsAny<string>(), It.IsAny<FinishLaunchRequest>()), Times.Once);
+        }
+
+        [Fact]
+        public void RerunLaunch()
+        {
+            var service = new MockServiceBuilder().Build();
+
+            StartLaunchRequest startLaunchRequest = null;
+
+            service.Setup(s => s.Launch.StartAsync(It.IsAny<StartLaunchRequest>()))
+                .Returns(() => Task.FromResult(new LaunchCreatedResponse { Uuid = Guid.NewGuid().ToString() }))
+                .Callback<StartLaunchRequest>(r => startLaunchRequest = r);
+
+            var config = new Shared.Configuration.ConfigurationBuilder().Build();
+            config.Properties["Launch:Rerun"] = "true";
+
+            var launch = new LaunchReporter(service.Object, config, null, new Mock<IExtensionManager>().Object);
+            launch.Start(new StartLaunchRequest() { StartTime = DateTime.UtcNow });
+            launch.Finish(new FinishLaunchRequest() { EndTime = DateTime.UtcNow });
+            launch.Sync();
+
+            service.Verify(s => s.Launch.StartAsync(It.IsAny<StartLaunchRequest>()), Times.Once);
+            service.Verify(s => s.Launch.FinishAsync(It.IsAny<string>(), It.IsAny<FinishLaunchRequest>()), Times.Once);
+
+            startLaunchRequest.IsRerun.Should().BeTrue();
+        }
+
+        [Fact]
+        public void ExternalLaunch()
+        {
+            var service = new MockServiceBuilder().Build();
+            service.Setup(s => s.Launch.GetAsync(It.IsAny<string>())).Returns(Task.FromResult(new LaunchResponse { Uuid = "123"}));
+
+            var config = new Shared.Configuration.ConfigurationBuilder().Build();
+            config.Properties["Launch:Id"] = "any_uuid_of_existing_launch";
+
+            var launch = new LaunchReporter(service.Object, config, null, new Mock<IExtensionManager>().Object);
+            launch.Start(new StartLaunchRequest() { StartTime = DateTime.UtcNow });
+            launch.Finish(new FinishLaunchRequest() { EndTime = DateTime.UtcNow });
+            launch.Sync();
+
+            service.Verify(s => s.Launch.StartAsync(It.IsAny<StartLaunchRequest>()), Times.Never);
+            service.Verify(s => s.Launch.FinishAsync(It.IsAny<string>(), It.IsAny<FinishLaunchRequest>()), Times.Never);
+
+            service.Verify(s => s.Launch.GetAsync(It.IsAny<string>()), Times.Once);
+
+            launch.Info.Uuid.Should().Be("123");
         }
 
         [Fact]
@@ -477,6 +556,68 @@ namespace ReportPortal.Shared.Tests.Reporter
             launch.Finish(new FinishLaunchRequest() { EndTime = DateTime.UtcNow });
 
             launch.Sync();
+        }
+
+        [Fact]
+        public void ShouldThrowWhenLaunchStartingNullRequest()
+        {
+            var service = new MockServiceBuilder().Build();
+
+            var launch = new LaunchReporter(service.Object, null, null, new ExtensionManager());
+
+            Action act = () => launch.Start(null);
+            act.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void ShouldThrowWhenLaunchFinishingNullRequest()
+        {
+            var service = new MockServiceBuilder().Build();
+
+            var launch = new LaunchReporter(service.Object, null, null, new ExtensionManager());
+
+            launch.Start(new StartLaunchRequest());
+
+            Action act = () => launch.Finish(null);
+            act.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void ShouldThrowWhenTestStartingNullRequest()
+        {
+            var service = new MockServiceBuilder().Build();
+
+            var launch = new LaunchReporter(service.Object, null, null, new ExtensionManager());
+
+            launch.Start(new StartLaunchRequest());
+
+            Action act = () => launch.StartChildTestReporter(null);
+            act.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void ShouldThrowWhenTestFinishingNullRequest()
+        {
+            var service = new MockServiceBuilder().Build();
+
+            var launch = new LaunchReporter(service.Object, null, null, new ExtensionManager());
+
+            launch.Start(new StartLaunchRequest());
+
+            var test = launch.StartChildTestReporter(new StartTestItemRequest());
+
+            Action act = () => test.Finish(null);
+            act.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void ShouldThrowWhenExtensionManagerIsNull()
+        {
+            var service = new MockServiceBuilder().Build();
+
+            Action act = () => new LaunchReporter(service.Object, null, null, extensionManager: null);
+
+            act.Should().Throw<ArgumentNullException>();
         }
     }
 }
