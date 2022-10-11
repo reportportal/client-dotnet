@@ -4,10 +4,10 @@
     <TargetFrameworks>net6.0;netstandard2.0;net462;</TargetFrameworks>
     <PackageId>ReportPortal.Shared</PackageId>
 
-    <Description>Multithreaded reporter of test results to http://reportportal.io</Description>
+    <Description>Multithreaded reporter of test results to https://reportportal.io</Description>
     <Authors>Nikolay Borisenko, Report Portal Community</Authors>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageProjectUrl>http://reportportal.io</PackageProjectUrl>
+    <PackageProjectUrl>https://reportportal.io</PackageProjectUrl>
     <PackageIcon>Logo.png</PackageIcon>
     <RepositoryType>GitHub</RepositoryType>
     <RepositoryUrl>https://github.com/reportportal/commons-net</RepositoryUrl>
