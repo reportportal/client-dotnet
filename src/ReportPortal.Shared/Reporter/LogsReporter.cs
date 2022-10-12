@@ -75,6 +75,8 @@ namespace ReportPortal.Shared.Reporter
                                 NotifySending(requests);
 
                                 await _requestExecuter.ExecuteAsync(async () => await _service.LogItem.CreateAsync(requests.ToArray()), null, _reporter.StatisticsCounter.LogItemStatisticsCounter).ConfigureAwait(false);
+
+                                NotifySent(requests.AsReadOnly());
                             }
                         }
                     }
@@ -130,6 +132,13 @@ namespace ReportPortal.Shared.Reporter
         {
             var args = new BeforeLogsSendingEventArgs(_service, _configuration, requests);
             ReportEventsSource.RaiseBeforeLogsSending(_reportEventsSource, this, args);
+            return args;
+        }
+
+        private AfterLogsSentEventArgs NotifySent(IReadOnlyList<CreateLogItemRequest> requests)
+        {
+            var args = new AfterLogsSentEventArgs(_service, _configuration, requests);
+            ReportEventsSource.RaiseAfterLogsSent(_reportEventsSource, this, args);
             return args;
         }
     }

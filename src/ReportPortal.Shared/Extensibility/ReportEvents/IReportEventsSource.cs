@@ -26,6 +26,7 @@ namespace ReportPortal.Shared.Extensibility.ReportEvents
 
 
         event LogsEventHandler<BeforeLogsSendingEventArgs> OnBeforeLogsSending;
+        event LogsEventHandler<AfterLogsSentEventArgs> OnAfterLogsSent;
     }
 
     public delegate void LaunchEventHandler<TEventArgs>(ILaunchReporter launchReporter, TEventArgs args);

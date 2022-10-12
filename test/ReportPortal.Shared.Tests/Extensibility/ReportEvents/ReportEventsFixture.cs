@@ -64,6 +64,7 @@ namespace ReportPortal.Shared.Tests.Extensibility.ReportEvents
             observer.Setup(o => o.Initialize(It.IsAny<IReportEventsSource>())).Callback<IReportEventsSource>(s =>
             {
                 s.OnBeforeLogsSending += (a, b) => throw new Exception();
+                s.OnAfterLogsSent += (a, b) => throw new Exception();
             });
 
             var extManager = new Shared.Extensibility.ExtensionManager();
@@ -302,6 +303,27 @@ namespace ReportPortal.Shared.Tests.Extensibility.ReportEvents
         }
 
         [Fact]
+        public void ShouldNotifyAfterLogsSent()
+        {
+            IReadOnlyList<CreateLogItemRequest> logRequests = null;
+
+            var observer = new Mock<IReportEventsObserver>();
+            observer.Setup(o => o.Initialize(It.IsAny<IReportEventsSource>())).Callback<IReportEventsSource>(s =>
+            {
+                s.OnAfterLogsSent += (a, b) => logRequests = b.CreateLogItemRequests;
+            });
+
+            var extManager = new Shared.Extensibility.ExtensionManager();
+            extManager.ReportEventObservers.Add(observer.Object);
+
+            var client = new MockServiceBuilder().Build().Object;
+            var launch = new LaunchReporterBuilder(client).With(extManager).Build(1, 1, 1);
+            launch.Sync();
+
+            logRequests.Should().HaveCount(1);
+        }
+
+        [Fact]
         public void ShouldNotBreakNotificationIfOneHandlerThrowsException()
         {
             var badObserver = new Mock<IReportEventsObserver>();
@@ -341,6 +363,7 @@ namespace ReportPortal.Shared.Tests.Extensibility.ReportEvents
             var onAfterTestFinished = false;
 
             var onBeforeLogsSending = false;
+            var onAfterLogsSent = false;
 
             goodObserver.Setup(o => o.Initialize(It.IsAny<IReportEventsSource>())).Callback<IReportEventsSource>(s =>
             {
@@ -359,6 +382,7 @@ namespace ReportPortal.Shared.Tests.Extensibility.ReportEvents
                 s.OnAfterTestFinished += (l, args) => { onAfterTestFinished = true; };
 
                 s.OnBeforeLogsSending += (l, args) => { onBeforeLogsSending = true; };
+                s.OnAfterLogsSent += (l, args) => { onAfterLogsSent = true; };
             });
 
             var extManager = new Shared.Extensibility.ExtensionManager();
@@ -386,6 +410,7 @@ namespace ReportPortal.Shared.Tests.Extensibility.ReportEvents
             onAfterTestFinished.Should().BeTrue();
 
             onBeforeLogsSending.Should().BeTrue();
+            onAfterLogsSent.Should().BeTrue();
         }
     }
 }

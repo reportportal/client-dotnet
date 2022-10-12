@@ -21,6 +21,7 @@ namespace ReportPortal.Shared.Reporter
         public event TestEventHandler<AfterTestFinishedEventArgs> OnAfterTestFinished;
 
         public event LogsEventHandler<BeforeLogsSendingEventArgs> OnBeforeLogsSending;
+        public event LogsEventHandler<AfterLogsSentEventArgs> OnAfterLogsSent;
 
         public static void RaiseLaunchInitializing(ReportEventsSource source, ILaunchReporter launchReporter, LaunchInitializingEventArgs args)
         {
@@ -70,6 +71,11 @@ namespace ReportPortal.Shared.Reporter
         public static void RaiseBeforeLogsSending(ReportEventsSource source, ILogsReporter logsReporter, BeforeLogsSendingEventArgs args)
         {
             RaiseSafe(source.OnBeforeLogsSending, logsReporter, args);
+        }
+
+        public static void RaiseAfterLogsSent(ReportEventsSource source, ILogsReporter logsReporter, AfterLogsSentEventArgs args)
+        {
+            RaiseSafe(source.OnAfterLogsSent, logsReporter, args);
         }
 
         private static void RaiseSafe(Delegate source, object reporter, ReportEventBaseArgs args)
