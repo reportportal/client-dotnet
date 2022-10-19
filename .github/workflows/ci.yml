@@ -7,9 +7,8 @@ env:
 
 jobs:
 
-  buid:
-    runs-on: windows-2022
-    timeout-minutes: 10
+  build:
+    runs-on: windows-latest
 
     steps:
       - name: Checkout
