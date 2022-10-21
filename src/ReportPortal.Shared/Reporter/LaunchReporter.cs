@@ -74,11 +74,6 @@ namespace ReportPortal.Shared.Reporter
                     Uuid = externalLaunchUuid
                 };
             }
-
-            // identify whether launch should be rerun
-            _rerunOfUuid = _configuration.GetValue<string>("Launch:RerunOf", null);
-
-            _isRerun = _configuration.GetValue("Launch:Rerun", false);
         }
 
         private LaunchInfo _launchInfo;
@@ -87,8 +82,6 @@ namespace ReportPortal.Shared.Reporter
         public ILaunchStatisticsCounter StatisticsCounter { get; } = new LaunchStatisticsCounter();
 
         private readonly bool _isExternalLaunchId = false;
-        private readonly string _rerunOfUuid = null;
-        private readonly bool _isRerun;
 
         public Task StartTask { get; private set; }
 
@@ -105,35 +98,16 @@ namespace ReportPortal.Shared.Reporter
                 throw exp;
             }
 
-            if (_rerunOfUuid != null)
+            if (!_isExternalLaunchId)
             {
-                request.IsRerun = true;
-                request.RerunOfLaunchUuid = _rerunOfUuid;
-                // start rerun launch item
-                StartTask = Task.Run(async () =>
-                {
-                    NotifyStarting(request);
-
-                    var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.StartAsync(request), null, null).ConfigureAwait(false);
-
-                    _launchInfo = new LaunchInfo
-                    {
-                        Uuid = launch.Uuid,
-                        Name = request.Name,
-                        StartTime = request.StartTime
-                    };
-
-                    NotifyStarted();
-                });
-            }
-            else if (!_isExternalLaunchId)
-            {
-                if (_isRerun)
+                if (_configuration.GetValue("Launch:Rerun", false))
                 {
                     request.IsRerun = true;
+
+                    request.RerunOfLaunchUuid = _configuration.GetValue<string>("Launch:RerunOf", null);
                 }
 
-                // start new launch item
+                // start new launch item or rerun existing
                 StartTask = Task.Run(async () =>
                 {
                     NotifyStarting(request);
@@ -368,3 +342,4 @@ namespace ReportPortal.Shared.Reporter
         }
     }
 }
+

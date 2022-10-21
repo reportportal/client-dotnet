@@ -424,24 +424,7 @@ namespace ReportPortal.Shared.Tests.Reporter
         }
 
         [Fact]
-        public void RerunOfLaunch()
-        {
-            var service = new MockServiceBuilder().Build();
-
-            var config = new Shared.Configuration.ConfigurationBuilder().Build();
-            config.Properties["Launch:RerunOf"] = "any_uuid_of_existing_launch";
-
-            var launch = new LaunchReporter(service.Object, config, null, new Mock<IExtensionManager>().Object);
-            launch.Start(new StartLaunchRequest() { StartTime = DateTime.UtcNow });
-            launch.Finish(new FinishLaunchRequest() { EndTime = DateTime.UtcNow });
-            launch.Sync();
-
-            service.Verify(s => s.Launch.StartAsync(It.IsAny<StartLaunchRequest>()), Times.Once);
-            service.Verify(s => s.Launch.FinishAsync(It.IsAny<string>(), It.IsAny<FinishLaunchRequest>()), Times.Once);
-        }
-
-        [Fact]
-        public void RerunLaunch()
+        public void ShouldRerunLaunch()
         {
             var service = new MockServiceBuilder().Build();
 
@@ -463,13 +446,70 @@ namespace ReportPortal.Shared.Tests.Reporter
             service.Verify(s => s.Launch.FinishAsync(It.IsAny<string>(), It.IsAny<FinishLaunchRequest>()), Times.Once);
 
             startLaunchRequest.IsRerun.Should().BeTrue();
+            startLaunchRequest.RerunOfLaunchUuid.Should().BeNull();
         }
 
         [Fact]
-        public void ExternalLaunch()
+        public void ShouldRerunOfLaunchOnlyIfRerunIsSet()
         {
             var service = new MockServiceBuilder().Build();
-            service.Setup(s => s.Launch.GetAsync(It.IsAny<string>())).Returns(Task.FromResult(new LaunchResponse { Uuid = "123"}));
+
+            StartLaunchRequest startLaunchRequest = null;
+
+            service.Setup(s => s.Launch.StartAsync(It.IsAny<StartLaunchRequest>()))
+                .Returns(() => Task.FromResult(new LaunchCreatedResponse { Uuid = Guid.NewGuid().ToString() }))
+                .Callback<StartLaunchRequest>(r => startLaunchRequest = r);
+
+            var config = new Shared.Configuration.ConfigurationBuilder().Build();
+            config.Properties["Launch:Rerun"] = "true";
+            config.Properties["Launch:RerunOf"] = "any_uuid_of_existing_launch";
+
+            var launch = new LaunchReporter(service.Object, config, null, new Mock<IExtensionManager>().Object);
+            launch.Start(new StartLaunchRequest() { StartTime = DateTime.UtcNow });
+            launch.Finish(new FinishLaunchRequest() { EndTime = DateTime.UtcNow });
+            launch.Sync();
+
+            service.Verify(s => s.Launch.StartAsync(It.IsAny<StartLaunchRequest>()), Times.Once);
+            service.Verify(s => s.Launch.FinishAsync(It.IsAny<string>(), It.IsAny<FinishLaunchRequest>()), Times.Once);
+
+            startLaunchRequest.IsRerun.Should().BeTrue();
+            startLaunchRequest.RerunOfLaunchUuid.Should().Be("any_uuid_of_existing_launch");
+        }
+
+        [Fact]
+        public void ShouldNotRerunOfLaunchOnlyIfRerunIsSet()
+        {
+            var service = new MockServiceBuilder().Build();
+
+            StartLaunchRequest startLaunchRequest = null;
+
+            service.Setup(s => s.Launch.StartAsync(It.IsAny<StartLaunchRequest>()))
+                .Returns(() => Task.FromResult(new LaunchCreatedResponse { Uuid = Guid.NewGuid().ToString() }))
+                .Callback<StartLaunchRequest>(r => startLaunchRequest = r);
+
+            var config = new Shared.Configuration.ConfigurationBuilder().Build();
+            config.Properties["Launch:Rerun"] = "false";
+            config.Properties["Launch:RerunOf"] = "any_uuid_of_existing_launch";
+
+            var launch = new LaunchReporter(service.Object, config, null, new Mock<IExtensionManager>().Object);
+            launch.Start(new StartLaunchRequest() { StartTime = DateTime.UtcNow });
+            launch.Finish(new FinishLaunchRequest() { EndTime = DateTime.UtcNow });
+            launch.Sync();
+
+            service.Verify(s => s.Launch.StartAsync(It.IsAny<StartLaunchRequest>()), Times.Once);
+            service.Verify(s => s.Launch.FinishAsync(It.IsAny<string>(), It.IsAny<FinishLaunchRequest>()), Times.Once);
+
+            startLaunchRequest.IsRerun.Should().BeFalse();
+            startLaunchRequest.RerunOfLaunchUuid.Should().BeNull();
+        }
+
+        [Fact]
+        public void ShouldUseExternalLaunchEnsteadOfStartingNew()
+        {
+            var service = new MockServiceBuilder().Build();
+
+            service.Setup(s => s.Launch.GetAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(new LaunchResponse { Uuid = "123" }));
 
             var config = new Shared.Configuration.ConfigurationBuilder().Build();
             config.Properties["Launch:Id"] = "any_uuid_of_existing_launch";
