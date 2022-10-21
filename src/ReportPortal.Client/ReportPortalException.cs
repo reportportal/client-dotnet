@@ -22,16 +22,17 @@ namespace ReportPortal.Client
         /// <summary>
         /// Initializes a new instance of <see cref="ReportPortalException"/> class.
         /// </summary>
-        /// <param name="statusCode">Response status code.</param>
+        /// <param name="httpStatusCode">Response HTTP status code.</param>
         /// <param name="requestUri">Request Uri.</param>
-        /// <param name="method">HTTP request method.</param>
-        /// <param name="innerException">Reference to other error.</param>
-        public ReportPortalException(HttpStatusCode statusCode, Uri requestUri, HttpMethod method, Exception innerException)
-            : base($"Response status code does not indicate success: {statusCode} ({(int)statusCode}) {method} {requestUri}", innerException)
+        /// <param name="httpMethod">HTTP method.</param>
+        /// <param name="responseBody">Response body.</param>
+        public ReportPortalException(HttpStatusCode httpStatusCode, Uri requestUri, HttpMethod httpMethod, string responseBody)
+            : base($"Response status code does not indicate success: {httpStatusCode} ({(int)httpStatusCode}) {httpMethod} {requestUri}")
         {
-            HttpStatusCode = statusCode;
+            HttpStatusCode = httpStatusCode;
             RequestUri = requestUri;
-            HttpMethod = method;
+            HttpMethod = httpMethod;
+            ResponseBody = responseBody;
         }
 
         /// <summary>
@@ -48,5 +49,10 @@ namespace ReportPortal.Client
         /// Gets HTTP method.
         /// </summary>
         public HttpMethod HttpMethod { get; }
+
+        /// <summary>
+        /// Gets response body.
+        /// </summary>
+        public string ResponseBody { get; }
     }
 }

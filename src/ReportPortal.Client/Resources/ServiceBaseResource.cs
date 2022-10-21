@@ -120,7 +120,7 @@ namespace ReportPortal.Client.Resources
                         response.StatusCode, 
                         response.RequestMessage.RequestUri,
                         response.RequestMessage.Method,
-                        new HttpRequestException($"Response message: {body}"));
+                        body);
                 }
             }
         }
