@@ -115,7 +115,12 @@ namespace ReportPortal.Client.Resources
                 using (var reader = new StreamReader(stream))
                 {
                     string body = reader.ReadToEnd();
-                    throw new ReportPortalException($"Response status code does not indicate success: {response.StatusCode} ({(int)response.StatusCode}) {response.RequestMessage.Method} {response.RequestMessage.RequestUri}", new HttpRequestException($"Response message: {body}"));
+
+                    throw new ReportPortalException(
+                        response.StatusCode, 
+                        response.RequestMessage.RequestUri,
+                        response.RequestMessage.Method,
+                        new HttpRequestException($"Response message: {body}"));
                 }
             }
         }
