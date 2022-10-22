@@ -116,7 +116,8 @@ namespace ReportPortal.Client.Resources
                 {
                     string responseBody = reader.ReadToEnd();
 
-                    throw new ReportPortalException(
+                    throw new ServiceException(
+                        "Response status code does not indicate success.",
                         response.StatusCode,
                         response.RequestMessage.RequestUri,
                         response.RequestMessage.Method,
