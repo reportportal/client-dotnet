@@ -336,7 +336,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
             await Service.Launch.FinishAsync(launch1Response.Uuid, new FinishLaunchRequest { EndTime = DateTime.UtcNow });
 
             // api doesn't allow to finish launch twice?! So when using rerun, we can start launch, but it seems we should not finish launch
-            await Assert.ThrowsAnyAsync<ReportPortalException>(async () => await Service.Launch.FinishAsync(launch2Response.Uuid, new FinishLaunchRequest { EndTime = DateTime.UtcNow }));
+            await Assert.ThrowsAnyAsync<ServiceException>(async () => await Service.Launch.FinishAsync(launch2Response.Uuid, new FinishLaunchRequest { EndTime = DateTime.UtcNow }));
 
             var gotLaunch = await Service.Launch.GetAsync(launch1Response.Uuid);
             await Service.Launch.DeleteAsync(gotLaunch.Id);
@@ -369,7 +369,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
             await Service.Launch.FinishAsync(launch1Response.Uuid, new FinishLaunchRequest { EndTime = DateTime.UtcNow });
 
             // api doesn't allow to finish launch twice?! So when using rerun, we can start launch, but it seems we should not finish launch
-            await Assert.ThrowsAnyAsync<ReportPortalException>(async () => await Service.Launch.FinishAsync(launch2Response.Uuid, new FinishLaunchRequest { EndTime = DateTime.UtcNow }));
+            await Assert.ThrowsAnyAsync<ServiceException>(async () => await Service.Launch.FinishAsync(launch2Response.Uuid, new FinishLaunchRequest { EndTime = DateTime.UtcNow }));
 
             var gotLaunch = await Service.Launch.GetAsync(launch1Response.Uuid);
             await Service.Launch.DeleteAsync(gotLaunch.Id);
@@ -386,7 +386,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
                 IsRerun = true
             };
 
-            await Assert.ThrowsAnyAsync<ReportPortalException>(async () => await Service.Launch.StartAsync(request));
+            await Assert.ThrowsAnyAsync<ServiceException>(async () => await Service.Launch.StartAsync(request));
         }
     }
 }
