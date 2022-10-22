@@ -14,14 +14,14 @@ namespace ReportPortal.Client.Resources
         {
         }
 
-        public async Task<Content<UserFilterResponse>> GetAsync()
+        public Task<Content<UserFilterResponse>> GetAsync()
         {
-            return await GetAsync(filterOption: null, CancellationToken.None).ConfigureAwait(false);
+            return GetAsync(filterOption: null, CancellationToken.None);
         }
 
-        public async Task<Content<UserFilterResponse>> GetAsync(FilterOption filterOption)
+        public Task<Content<UserFilterResponse>> GetAsync(FilterOption filterOption)
         {
-            return await GetAsync(filterOption, CancellationToken.None).ConfigureAwait(false);
+            return GetAsync(filterOption, CancellationToken.None);
         }
 
         public async Task<Content<UserFilterResponse>> GetAsync(CancellationToken cancellationToken)
@@ -40,9 +40,9 @@ namespace ReportPortal.Client.Resources
             return await GetAsJsonAsync<Content<UserFilterResponse>>(uri, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<UserFilterCreatedResponse> CreateAsync(CreateUserFilterRequest request)
+        public Task<UserFilterCreatedResponse> CreateAsync(CreateUserFilterRequest request)
         {
-            return await CreateAsync(request, CancellationToken.None).ConfigureAwait(false);
+            return CreateAsync(request, CancellationToken.None);
         }
 
         public async Task<UserFilterCreatedResponse> CreateAsync(CreateUserFilterRequest request, CancellationToken cancellationToken)
@@ -51,9 +51,9 @@ namespace ReportPortal.Client.Resources
                 $"{ProjectName}/filter", request, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<MessageResponse> UpdateAsync(long id, UpdateUserFilterRequest request)
+        public Task<MessageResponse> UpdateAsync(long id, UpdateUserFilterRequest request)
         {
-            return await UpdateAsync(id, request, CancellationToken.None).ConfigureAwait(false);
+            return UpdateAsync(id, request, CancellationToken.None);
         }
 
         public async Task<MessageResponse> UpdateAsync(long id, UpdateUserFilterRequest request, CancellationToken cancellationToken)
@@ -62,9 +62,9 @@ namespace ReportPortal.Client.Resources
                 $"{ProjectName}/filter/{id}", request, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<UserFilterResponse> GetAsync(long id)
+        public Task<UserFilterResponse> GetAsync(long id)
         {
-            return await GetAsync(id, CancellationToken.None).ConfigureAwait(false);
+            return GetAsync(id, CancellationToken.None);
         }
 
         public async Task<UserFilterResponse> GetAsync(long id, CancellationToken cancellationToken)
@@ -72,9 +72,9 @@ namespace ReportPortal.Client.Resources
             return await GetAsJsonAsync<UserFilterResponse>($"{ProjectName}/filter/{id}", cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<MessageResponse> DeleteAsync(long id)
+        public Task<MessageResponse> DeleteAsync(long id)
         {
-            return await DeleteAsync(id, CancellationToken.None).ConfigureAwait(false);
+            return DeleteAsync(id, CancellationToken.None);
         }
 
         public async Task<MessageResponse> DeleteAsync(long id, CancellationToken cancellationToken)
