@@ -108,7 +108,7 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
             Func<Task> act = async () => await Service.TestItem.UpdateAsync(tempTest.Id, updateRequest);
 
             var exp = await act.Should().ThrowExactlyAsync<ReportPortalException>();
-            exp.WithInnerExceptionExactly<HttpRequestException>().WithMessage("*Unable to update status*");
+            exp.Which.ResponseBody.Should().Contain("Unable to update status");
 
             await Service.TestItem.FinishAsync(test.Uuid, new FinishTestItemRequest
             {
