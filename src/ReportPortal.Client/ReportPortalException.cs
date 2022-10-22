@@ -25,13 +25,15 @@ namespace ReportPortal.Client
         /// <param name="httpStatusCode">Response HTTP status code.</param>
         /// <param name="requestUri">Request Uri.</param>
         /// <param name="httpMethod">HTTP method.</param>
+        /// <param name="requestBody">Request body.</param>
         /// <param name="responseBody">Response body.</param>
-        public ReportPortalException(HttpStatusCode httpStatusCode, Uri requestUri, HttpMethod httpMethod, string responseBody)
-            : base($"Response status code does not indicate success: {httpStatusCode} ({(int)httpStatusCode}) {httpMethod} {requestUri}")
+        public ReportPortalException(HttpStatusCode httpStatusCode, Uri requestUri, HttpMethod httpMethod, string requestBody, string responseBody)
+            : base($"Response status code does not indicate success: {httpStatusCode} ({(int)httpStatusCode})")
         {
             HttpStatusCode = httpStatusCode;
             RequestUri = requestUri;
             HttpMethod = httpMethod;
+            RequestBody = requestBody;
             ResponseBody = responseBody;
         }
 
@@ -51,8 +53,26 @@ namespace ReportPortal.Client
         public HttpMethod HttpMethod { get; }
 
         /// <summary>
+        /// Gets request body.
+        /// </summary>
+        public string RequestBody { get; set; }
+
+        /// <summary>
         /// Gets response body.
         /// </summary>
         public string ResponseBody { get; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            
+
+            return string.Join("\n", $"{GetType()}: {Message}",
+                $"Request Uri: {RequestUri}",
+                $"HTTP Method: {HttpMethod}",
+                $"Request Body: {RequestBody ?? "<empty>"}",
+                $"Response Body: {ResponseBody}",
+                $"{StackTrace}");
+        }
     }
 }

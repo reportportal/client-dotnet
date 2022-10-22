@@ -71,14 +71,19 @@ namespace ReportPortal.Client.Resources
             {
                 using (httpContent)
                 {
-                    httpRequest.Content = httpContent;
-
                     using (var response = await HttpClient
                         .SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
                     {
                         using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                         {
-                            CheckSuccessStatusCode(response, stream);
+                            if (httpContent != null)
+                            {
+                                CheckSuccessStatusCode(response, stream, await httpContent.ReadAsStreamAsync());
+                            }
+                            else
+                            {
+                                CheckSuccessStatusCode(response, stream);
+                            }
 
                             return await ModelSerializer.DeserializeAsync<TResponse>(stream, cancellationToken).ConfigureAwait(false);
                         }
@@ -108,21 +113,32 @@ namespace ReportPortal.Client.Resources
             }
         }
 
-        private void CheckSuccessStatusCode(HttpResponseMessage response, Stream stream)
+        private void CheckSuccessStatusCode(HttpResponseMessage response, Stream responseStream, Stream requestStream = null)
         {
             if (!response.IsSuccessStatusCode)
             {
-                using (var reader = new StreamReader(stream))
-                {
-                    string body = reader.ReadToEnd();
+                string requestBody = null;
 
-                    throw new ReportPortalException(
-                        response.StatusCode, 
-                        response.RequestMessage.RequestUri,
-                        response.RequestMessage.Method,
-                        body);
+                if (requestStream != null)
+                {
+                    using (var reader = new StreamReader(requestStream))
+                    {
+                        requestBody = reader.ReadToEnd();
+                    }
+                }
+
+                    using (var reader = new StreamReader(responseStream))
+                    {
+                        string responseBody = reader.ReadToEnd();
+
+                        throw new ReportPortalException(
+                            response.StatusCode,
+                            response.RequestMessage.RequestUri,
+                            response.RequestMessage.Method,
+                            requestBody,
+                            responseBody);
+                    }
                 }
             }
         }
     }
-}
