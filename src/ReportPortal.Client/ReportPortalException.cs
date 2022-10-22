@@ -14,6 +14,7 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         /// <param name="innerException">Reference to other error.</param>
+        [Obsolete("This constructor overload is deprecated. Please use constructor with 4 parameters instead.", false)]
         public ReportPortalException(string message, Exception innerException) : base(message, innerException)
         {
 
