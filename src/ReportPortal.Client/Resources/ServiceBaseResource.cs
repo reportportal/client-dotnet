@@ -76,7 +76,7 @@ namespace ReportPortal.Client.Resources
                     using (var response = await HttpClient
                         .SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
                     {
-                        using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                        using (var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false))
                         {
                             CheckSuccessStatusCode(response, stream);
 
@@ -94,7 +94,7 @@ namespace ReportPortal.Client.Resources
                 using (var response = await HttpClient
                     .SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
                 {
-                    using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                    using (var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false))
                     {
                         CheckSuccessStatusCode(response, stream);
 
