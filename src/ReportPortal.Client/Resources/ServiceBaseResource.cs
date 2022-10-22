@@ -114,13 +114,13 @@ namespace ReportPortal.Client.Resources
             {
                 using (var reader = new StreamReader(stream))
                 {
-                    string body = reader.ReadToEnd();
+                    string responseBody = reader.ReadToEnd();
 
                     throw new ReportPortalException(
-                        response.StatusCode, 
+                        response.StatusCode,
                         response.RequestMessage.RequestUri,
                         response.RequestMessage.Method,
-                        body);
+                        responseBody);
                 }
             }
         }
