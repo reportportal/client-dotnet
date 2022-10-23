@@ -2,7 +2,7 @@
 
 namespace ReportPortal.Client.Extentions
 {
-    public static class UriExtensions
+    internal static class UriExtensions
     {
         public static Uri Normalize(this Uri uri)
         {
