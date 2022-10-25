@@ -30,8 +30,8 @@ jobs:
         with:
           name: pkgs
           path: |
-            'pkgs/*.nupkg'
-            'pkgs/*.snupkg'
+            pkgs/*.nupkg
+            pkgs/*.snupkg   
 
       - name: Test
         run: dotnet test -c ${{ env.CONFIGURATION }} --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=OpenCover /p:CoverletOutput=./Coverage.xml
