@@ -1,12 +1,9 @@
-name: Release (GitHub Packages)
+name: Release Dev
 
 on:
   push:
     branches:
       - develop
-     
-env:
-  CONFIGURATION: Release
 
 jobs:
   Build:
