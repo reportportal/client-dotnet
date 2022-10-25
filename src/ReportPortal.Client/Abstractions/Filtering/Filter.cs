@@ -32,7 +32,9 @@ namespace ReportPortal.Client.Abstractions.Filtering
         [JsonPropertyName("size")]
         Size,
         [JsonPropertyName("has")]
-        Has
+        Has,
+        [JsonPropertyName("!has")]
+        NotHas
     }
     public class Filter
     {

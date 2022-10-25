@@ -14,9 +14,9 @@ namespace ReportPortal.Client.Resources
         {
         }
 
-        public async Task<LaunchResponse> GetAsync(string uuid)
+        public Task<LaunchResponse> GetAsync(string uuid)
         {
-            return await GetAsync(uuid, CancellationToken.None).ConfigureAwait(false);
+            return GetAsync(uuid, CancellationToken.None);
         }
 
         public async Task<LaunchResponse> GetAsync(string uuid, CancellationToken cancellationToken)
@@ -24,9 +24,9 @@ namespace ReportPortal.Client.Resources
             return await GetAsJsonAsync<LaunchResponse>($"{ProjectName}/launch/uuid/{uuid}", cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<LaunchResponse> GetAsync(long id)
+        public Task<LaunchResponse> GetAsync(long id)
         {
-            return await GetAsync(id, CancellationToken.None);
+            return GetAsync(id, CancellationToken.None);
         }
 
         public async Task<LaunchResponse> GetAsync(long id, CancellationToken cancellationToken)
@@ -34,9 +34,9 @@ namespace ReportPortal.Client.Resources
             return await GetAsJsonAsync<LaunchResponse>($"{ProjectName}/launch/{id}", cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<LaunchCreatedResponse> StartAsync(StartLaunchRequest request)
+        public Task<LaunchCreatedResponse> StartAsync(StartLaunchRequest request)
         {
-            return await StartAsync(request, CancellationToken.None).ConfigureAwait(false);
+            return StartAsync(request, CancellationToken.None);
         }
 
         public async Task<LaunchCreatedResponse> StartAsync(StartLaunchRequest request, CancellationToken cancellationToken)
@@ -45,9 +45,9 @@ namespace ReportPortal.Client.Resources
                 $"{ProjectName}/launch", request, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<LaunchFinishedResponse> FinishAsync(string uuid, FinishLaunchRequest request)
+        public Task<LaunchFinishedResponse> FinishAsync(string uuid, FinishLaunchRequest request)
         {
-            return await FinishAsync(uuid, request, CancellationToken.None).ConfigureAwait(false);
+            return FinishAsync(uuid, request, CancellationToken.None);
         }
 
         public async Task<LaunchFinishedResponse> FinishAsync(string uuid, FinishLaunchRequest request, CancellationToken cancellationToken)
@@ -56,9 +56,9 @@ namespace ReportPortal.Client.Resources
                 $"{ProjectName}/launch/{uuid}/finish", request, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<LaunchFinishedResponse> StopAsync(long id, FinishLaunchRequest request)
+        public Task<LaunchFinishedResponse> StopAsync(long id, FinishLaunchRequest request)
         {
-            return await StopAsync(id, request, CancellationToken.None).ConfigureAwait(false);
+            return StopAsync(id, request, CancellationToken.None);
         }
 
         public async Task<LaunchFinishedResponse> StopAsync(long id, FinishLaunchRequest request, CancellationToken cancellationToken)
@@ -67,9 +67,9 @@ namespace ReportPortal.Client.Resources
                 $"{ProjectName}/launch/{id}/stop", request, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<MessageResponse> DeleteAsync(long id)
+        public Task<MessageResponse> DeleteAsync(long id)
         {
-            return await DeleteAsync(id, CancellationToken.None).ConfigureAwait(false);
+            return DeleteAsync(id, CancellationToken.None);
         }
 
         public async Task<MessageResponse> DeleteAsync(long id, CancellationToken cancellationToken)
@@ -77,9 +77,9 @@ namespace ReportPortal.Client.Resources
             return await DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/launch/{id}", cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<LaunchResponse> MergeAsync(MergeLaunchesRequest request)
+        public Task<LaunchResponse> MergeAsync(MergeLaunchesRequest request)
         {
-            return await MergeAsync(request, CancellationToken.None).ConfigureAwait(false);
+            return MergeAsync(request, CancellationToken.None);
         }
 
         public async Task<LaunchResponse> MergeAsync(MergeLaunchesRequest request, CancellationToken cancellationToken)
@@ -88,9 +88,9 @@ namespace ReportPortal.Client.Resources
                 $"{ProjectName}/launch/merge", request, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<MessageResponse> UpdateAsync(long id, UpdateLaunchRequest request)
+        public Task<MessageResponse> UpdateAsync(long id, UpdateLaunchRequest request)
         {
-            return await UpdateAsync(id, request, CancellationToken.None).ConfigureAwait(false);
+            return UpdateAsync(id, request, CancellationToken.None);
         }
 
         public async Task<MessageResponse> UpdateAsync(long id, UpdateLaunchRequest request, CancellationToken cancellationToken)
@@ -99,9 +99,9 @@ namespace ReportPortal.Client.Resources
                 $"{ProjectName}/launch/{id}/update", request, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<MessageResponse> AnalyzeAsync(AnalyzeLaunchRequest request)
+        public Task<MessageResponse> AnalyzeAsync(AnalyzeLaunchRequest request)
         {
-            return await AnalyzeAsync(request, CancellationToken.None).ConfigureAwait(false);
+            return AnalyzeAsync(request, CancellationToken.None);
         }
 
         public async Task<MessageResponse> AnalyzeAsync(AnalyzeLaunchRequest request, CancellationToken cancellationToken)
@@ -110,14 +110,14 @@ namespace ReportPortal.Client.Resources
                 $"{ProjectName}/launch/analyze", request, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<Content<LaunchResponse>> GetAsync()
+        public Task<Content<LaunchResponse>> GetAsync()
         {
-            return await GetAsync(filterOption: null, CancellationToken.None).ConfigureAwait(false);
+            return GetAsync(filterOption: null, CancellationToken.None);
         }
         
-        public async Task<Content<LaunchResponse>> GetAsync(FilterOption filterOption)
+        public Task<Content<LaunchResponse>> GetAsync(FilterOption filterOption)
         {
-            return await GetAsync(filterOption, CancellationToken.None).ConfigureAwait(false);
+            return GetAsync(filterOption, CancellationToken.None);
         }
 
         public async Task<Content<LaunchResponse>> GetAsync(CancellationToken cancellationToken)
@@ -137,14 +137,14 @@ namespace ReportPortal.Client.Resources
             return await GetAsJsonAsync<Content<LaunchResponse>>(uri, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<Content<LaunchResponse>> GetDebugAsync()
+        public Task<Content<LaunchResponse>> GetDebugAsync()
         {
-            return await GetDebugAsync(filterOption: null, CancellationToken.None).ConfigureAwait(false);
+            return GetDebugAsync(filterOption: null, CancellationToken.None);
         }
 
-        public async Task<Content<LaunchResponse>> GetDebugAsync(FilterOption filterOption)
+        public Task<Content<LaunchResponse>> GetDebugAsync(FilterOption filterOption)
         {
-            return await GetDebugAsync(filterOption, CancellationToken.None).ConfigureAwait(false);
+            return GetDebugAsync(filterOption, CancellationToken.None);
         }
 
         public async Task<Content<LaunchResponse>> GetDebugAsync(CancellationToken cancellationToken)

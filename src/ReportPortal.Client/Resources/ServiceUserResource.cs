@@ -12,9 +12,9 @@ namespace ReportPortal.Client.Resources
         {
         }
 
-        public async Task<UserResponse> GetAsync()
+        public Task<UserResponse> GetAsync()
         {
-            return await GetAsync(CancellationToken.None).ConfigureAwait(false);
+            return GetAsync(CancellationToken.None);
         }
 
         public async Task<UserResponse> GetAsync(CancellationToken cancellationToken)
