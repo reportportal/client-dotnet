@@ -1,5 +1,6 @@
 ﻿using ReportPortal.Shared.Reporter.Statistics;
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -19,7 +20,8 @@ namespace ReportPortal.Shared.Internal.Delegating
         /// </summary>
         /// <param name="maxRetryAttempts">Maximum number of attempts.</param>
         /// <param name="baseIndex">Exponential base index for delay.</param>
-        public ExponentialRetryRequestExecuter(int maxRetryAttempts, int baseIndex) : this(maxRetryAttempts, baseIndex, null)
+        public ExponentialRetryRequestExecuter(uint maxRetryAttempts, uint baseIndex) :
+            this(maxRetryAttempts, baseIndex, null, null)
         {
 
         }
@@ -30,32 +32,34 @@ namespace ReportPortal.Shared.Internal.Delegating
         /// <param name="maxRetryAttempts">Maximum number of attempts.</param>
         /// <param name="baseIndex">Exponential base index for delay.</param>
         /// <param name="throttler">Limits concurrent execution of requests.</param>
-        public ExponentialRetryRequestExecuter(int maxRetryAttempts, int baseIndex, IRequestExecutionThrottler throttler)
+        /// <param name="httpStatusCodes">Http status codes to be retried.</param>
+        public ExponentialRetryRequestExecuter(uint maxRetryAttempts, uint baseIndex, IRequestExecutionThrottler throttler, HttpStatusCode[] httpStatusCodes)
         {
             if (maxRetryAttempts < 1)
             {
                 throw new ArgumentException("Maximum attempts cannot be less than 1.", nameof(maxRetryAttempts));
             }
 
-            if (baseIndex < 0)
-            {
-                throw new ArgumentException("Base index for exponential delay cannot be less than 0.", nameof(baseIndex));
-            }
-
             _concurrentThrottler = throttler;
             MaxRetryAttemps = maxRetryAttempts;
             BaseIndex = baseIndex;
+            HttpStatusCodes = httpStatusCodes;
         }
 
         /// <summary>
         /// Maximum number of attempts
         /// </summary>
-        public int MaxRetryAttemps { get; private set; }
+        public uint MaxRetryAttemps { get; private set; }
 
         /// <summary>
         /// Exponential base index for delay
         /// </summary>
-        public int BaseIndex { get; private set; }
+        public uint BaseIndex { get; private set; }
+
+        /// <summary>
+        /// Http status codes to be retried.
+        /// </summary>
+        public HttpStatusCode[] HttpStatusCodes { get; private set; }
 
         /// <inheritdoc/>
         public override async Task<T> ExecuteAsync<T>(Func<Task<T>> func, Action<Exception> beforeNextAttempt = null, IStatisticsCounter statisticsCounter = null)
@@ -76,7 +80,9 @@ namespace ReportPortal.Shared.Internal.Delegating
                     result = await base.ExecuteAsync(func, beforeNextAttempt, statisticsCounter).ConfigureAwait(false);
                     break;
                 }
-                catch (Exception exp) when (exp is TaskCanceledException || exp is HttpRequestException)
+                catch (Exception exp) when (exp is TaskCanceledException ||
+                    exp is HttpRequestException ||
+                    Array.IndexOf(HttpStatusCodes, (exp as Client.ServiceException)?.HttpStatusCode) > -1)
                 {
                     if (i < MaxRetryAttemps - 1)
                     {

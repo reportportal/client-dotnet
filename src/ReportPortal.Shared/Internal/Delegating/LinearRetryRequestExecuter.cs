@@ -1,5 +1,6 @@
 ﻿using ReportPortal.Shared.Reporter.Statistics;
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -19,7 +20,8 @@ namespace ReportPortal.Shared.Internal.Delegating
         /// </summary>
         /// <param name="maxRetryAttempts">Maximum number of attempts.</param>
         /// <param name="delay">Delay between ateempts (in milliseconds).</param>
-        public LinearRetryRequestExecuter(int maxRetryAttempts, int delay) : this(maxRetryAttempts, delay, null)
+        public LinearRetryRequestExecuter(uint maxRetryAttempts, uint delay) :
+            this(maxRetryAttempts, delay, throttler: null, httpStatusCodes: null)
         {
 
         }
@@ -30,32 +32,34 @@ namespace ReportPortal.Shared.Internal.Delegating
         /// <param name="maxRetryAttempts">Maximum number of attempts.</param>
         /// <param name="delay">Delay between ateempts (in milliseconds).</param>
         /// <param name="throttler">Limits concurrent execution of requests.</param>
-        public LinearRetryRequestExecuter(int maxRetryAttempts, int delay, IRequestExecutionThrottler throttler)
+        /// <param name="httpStatusCodes">Http status codes to be retried.</param>
+        public LinearRetryRequestExecuter(uint maxRetryAttempts, uint delay, IRequestExecutionThrottler throttler, HttpStatusCode[] httpStatusCodes)
         {
             if (maxRetryAttempts < 1)
             {
                 throw new ArgumentException("Maximum attempts cannot be less than 1.", nameof(maxRetryAttempts));
             }
 
-            if (delay < 0)
-            {
-                throw new ArgumentException("Delay cannot be less than 0.", nameof(delay));
-            }
-
             _concurrentThrottler = throttler;
             MaxRetryAttemps = maxRetryAttempts;
             Delay = delay;
+            HttpStatusCodes = httpStatusCodes;
         }
 
         /// <summary>
-        /// Maximum number of attempts
+        /// Maximum number of attempts.
         /// </summary>
-        public int MaxRetryAttemps { get; private set; }
+        public uint MaxRetryAttemps { get; private set; }
 
         /// <summary>
-        /// How many milliseconds to wait between attempts
+        /// How many milliseconds to wait between attempts.
         /// </summary>
-        public int Delay { get; private set; }
+        public uint Delay { get; private set; }
+
+        /// <summary>
+        /// Http status codes to be retried.
+        /// </summary>
+        public HttpStatusCode[] HttpStatusCodes { get; private set; }
 
         /// <inheritdoc/>
         public override async Task<T> ExecuteAsync<T>(Func<Task<T>> func, Action<Exception> beforeNextAttempt = null, IStatisticsCounter statisticsCounter = null)
@@ -75,13 +79,15 @@ namespace ReportPortal.Shared.Internal.Delegating
                     result = await base.ExecuteAsync(func, beforeNextAttempt, statisticsCounter).ConfigureAwait(false);
                     break;
                 }
-                catch (Exception exp) when (exp is TaskCanceledException || exp is HttpRequestException)
+                catch (Exception exp) when (exp is TaskCanceledException ||
+                    exp is HttpRequestException ||
+                    Array.IndexOf(HttpStatusCodes, (exp as Client.ServiceException)?.HttpStatusCode) > -1)
                 {
                     if (i < MaxRetryAttemps - 1)
                     {
                         TraceLogger.Error($"Error while invoking '{func.Method.Name}' method. Current attempt: {i}. Waiting {Delay} milliseconds and retrying it.\n{exp}");
 
-                        await Task.Delay(Delay).ConfigureAwait(false);
+                        await Task.Delay((int)Delay).ConfigureAwait(false);
 
                         beforeNextAttempt?.Invoke(exp);
                     }

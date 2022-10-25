@@ -4,6 +4,7 @@ using ReportPortal.Shared.Configuration.Providers;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using Xunit;
 
 namespace ReportPortal.Shared.Tests.Configuration
@@ -325,6 +326,17 @@ namespace ReportPortal.Shared.Tests.Configuration
             var config = new ConfigurationBuilder().Build();
             config.Properties["a"] = value;
             Assert.False(config.GetValue<bool>("a"));
+        }
+
+        [Theory]
+        [InlineData("500", HttpStatusCode.InternalServerError)]
+        [InlineData("InternalServerError", HttpStatusCode.InternalServerError)]
+        [InlineData("internalServerError", HttpStatusCode.InternalServerError)]
+        public void ShouldReturnEnumValue(string value, HttpStatusCode expectedStatusCode)
+        {
+            var config = new ConfigurationBuilder().Build();
+            config.Properties["a"] = value;
+            config.GetValue<HttpStatusCode>("a").Should().Be(expectedStatusCode);
         }
 
         [Fact]

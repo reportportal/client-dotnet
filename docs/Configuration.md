@@ -12,18 +12,18 @@ Agents read the `ReportPortal.config.json` file for configuration properties. Th
 
 ```
 bin
-|- Debug
-    |- YourTests.dll
-    |- ReportPortal.Shared.dll
-    |- ReportPortal.config.json
+└── Debug
+    ├── YourTests.dll
+    ├── ReportPortal.Shared.dll
+    └── ReportPortal.config.json
 ```
 
 Values in json file are considered as flatten list. The following json file will be converted to `Section1:PropertyAbc`.
 ```json
 {
-    "Section1": {
-        "PropertyAbc": "Value"
-    }
+  "Section1": {
+    "PropertyAbc": "Value"
+  }
 }
 ```
 
@@ -43,6 +43,20 @@ Sometimes it's useful to specify configuration properties via environment variab
 
 # HTTP requests retry
 During tests execution agent sends test results as http requests to server. In case of fast test execution, or parallel tests execution, agent produces many requests to server. These requests are being sent in background and in parallel. Some requests might be failed due any reason e.g. short-term service unavailability, or network bandwith. To negotiate this issue several methodics can be applied.
+
+## Status codes
+By default reporting doesn't retry any http requests, recieved from api service, with unsuccessful http response status code. If you need to retry unsuccessful http request, you can set `Server:Retry:HttpStatusCodes` configuration property to a list of status codes to retry.
+
+Example:
+```json
+"server": {
+  "retry": {
+    "httpStatusCodes": [504, "BadGateway"]
+  }
+}
+```
+
+See the list of supported status codes [here](https://learn.microsoft.com/en-us/dotnet/api/system.net.httpstatuscode).
 
 ## Throttle requests
 Configure `Server:MaximumConnectionsNumber` property to set the maximum number of concurrent requests (default is `10`).

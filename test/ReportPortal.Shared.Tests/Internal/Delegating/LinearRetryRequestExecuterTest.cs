@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Moq;
+using ReportPortal.Client;
 using ReportPortal.Shared.Internal.Delegating;
 using ReportPortal.Shared.Reporter.Statistics;
 using System;
@@ -12,16 +13,9 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
     public class LinearRetryRequestExecuterTest
     {
         [Fact]
-        public void DelayShouldBeGreaterOrEqualZero()
-        {
-            Action ctor = () => new LinearRetryRequestExecuter(1, delay: -1, throttler: null);
-            ctor.Should().Throw<ArgumentException>();
-        }
-
-        [Fact]
         public void MaxAttemptsShouldBeGreaterZero()
         {
-            Action ctor = () => new LinearRetryRequestExecuter(0, delay: 0, throttler: null);
+            Action ctor = () => new LinearRetryRequestExecuter(0, delay: 0, throttler: null, httpStatusCodes: null);
             ctor.Should().Throw<ArgumentException>();
         }
 
@@ -30,7 +24,7 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
         {
             var action = new Mock<Func<Task<string>>>();
 
-            var executer = new LinearRetryRequestExecuter(3, 2, null);
+            var executer = new LinearRetryRequestExecuter(3, 2, null, null);
             var res = await executer.ExecuteAsync(action.Object);
             res.Should().Be(null);
             action.Verify(a => a(), Times.Once);
@@ -61,6 +55,18 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
         }
 
         [Fact]
+        public async Task ShouldRetryServiceExceptionAction()
+        {
+            var action = new Mock<Func<Task<string>>>();
+            action.Setup(a => a()).Throws(() => new ServiceException("", System.Net.HttpStatusCode.BadGateway, new Uri("https://example.com"), HttpMethod.Post, ""));
+
+            var executer = new LinearRetryRequestExecuter(3, 0, null, new System.Net.HttpStatusCode[] { System.Net.HttpStatusCode.BadGateway} );
+            await executer.Awaiting(e => e.ExecuteAsync(action.Object)).Should().ThrowAsync<ServiceException>();
+
+            action.Verify(a => a(), Times.Exactly(3));
+        }
+
+        [Fact]
         public async Task ShouldNotRetryAnyOtherExceptionAction()
         {
             var action = new Mock<Func<Task<string>>>();
@@ -77,7 +83,7 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
         {
             var throttler = new Mock<IRequestExecutionThrottler>();
 
-            var executer = new LinearRetryRequestExecuter(5, 0, throttler.Object);
+            var executer = new LinearRetryRequestExecuter(5, 0, throttler.Object, null);
 
             var action = new Mock<Func<Task<string>>>();
             action.Setup(a => a()).Throws<TaskCanceledException>();

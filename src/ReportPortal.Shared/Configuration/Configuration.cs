@@ -32,26 +32,7 @@ namespace ReportPortal.Shared.Configuration
 
             var propertyValue = Properties[property];
 
-            if (typeof(T) == typeof(bool))
-            {
-                var trueValues = new List<string> { "true", "yes", "y", "1" };
-                var falseValues = new List<string> { "false", "no", "n", "0" };
-
-                if (trueValues.Any(v => propertyValue.ToString().ToLowerInvariant() == v))
-                {
-                    return (T)(object)true;
-                }
-                else if (falseValues.Any(v => propertyValue.ToString().ToLowerInvariant() == v))
-                {
-                    return (T)(object)false;
-                }
-                else
-                {
-                    throw new InvalidCastException($"Unknown '{propertyValue}' value for '{typeof(T)}'.");
-                }
-            }
-
-            return (T)Convert.ChangeType(propertyValue, typeof(T), CultureInfo.InvariantCulture);
+            return ConvertValue<T>(propertyValue);
         }
 
         /// <inheritdoc />
@@ -77,9 +58,9 @@ namespace ReportPortal.Shared.Configuration
 
             var propertyValue = Properties[property];
 
-            var values = propertyValue.ToString().Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).Select(i => (T)Convert.ChangeType(i, typeof(T), CultureInfo.InvariantCulture)).ToList();
+            var values = propertyValue.ToString().Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
 
-            return values;
+            return values.Select(v => ConvertValue<T>(v)).ToList();
         }
 
         /// <inheritdoc />
@@ -124,7 +105,7 @@ namespace ReportPortal.Shared.Configuration
                     keyValue = value.Substring(key.Length + 1);
                 }
 
-                result.Add(new KeyValuePair<string, T>(key.Trim(), (T)Convert.ChangeType(keyValue.Trim(), typeof(T), CultureInfo.InvariantCulture)));
+                result.Add(new KeyValuePair<string, T>(key.Trim(), ConvertValue<T>(keyValue.Trim())));
             }
 
             return result;
@@ -140,6 +121,36 @@ namespace ReportPortal.Shared.Configuration
             else
             {
                 return GetKeyValues<T>(property);
+            }
+        }
+
+        private T ConvertValue<T>(object value)
+        {
+            if (typeof(T) == typeof(bool))
+            {
+                var trueValues = new List<string> { "true", "yes", "y", "1" };
+                var falseValues = new List<string> { "false", "no", "n", "0" };
+
+                if (trueValues.Any(v => value.ToString().ToLowerInvariant() == v))
+                {
+                    return (T)(object)true;
+                }
+                else if (falseValues.Any(v => value.ToString().ToLowerInvariant() == v))
+                {
+                    return (T)(object)false;
+                }
+                else
+                {
+                    throw new InvalidCastException($"Unknown '{value}' value for '{typeof(T)}'.");
+                }
+            }
+            else if (typeof(T).IsEnum)
+            {
+                return (T)Enum.Parse(typeof(T), value.ToString(), ignoreCase: true);
+            }
+            else
+            {
+                return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
             }
         }
     }

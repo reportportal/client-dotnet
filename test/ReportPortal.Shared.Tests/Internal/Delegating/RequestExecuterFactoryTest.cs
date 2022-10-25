@@ -2,6 +2,7 @@
 using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Internal.Delegating;
 using System;
+using System.Net;
 using Xunit;
 
 namespace ReportPortal.Shared.Tests.Internal.Delegating
@@ -37,9 +38,10 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
             var executer = factory.Create();
 
             executer.Should().BeOfType<LinearRetryRequestExecuter>();
-            var exponentialExecuter = executer as LinearRetryRequestExecuter;
-            exponentialExecuter.MaxRetryAttemps.Should().Be(3);
-            exponentialExecuter.Delay.Should().Be(5000);
+            var linearExecuter = executer as LinearRetryRequestExecuter;
+            linearExecuter.MaxRetryAttemps.Should().Be(3);
+            linearExecuter.Delay.Should().Be(5000);
+            linearExecuter.HttpStatusCodes.Should().BeNull();
         }
 
         [Fact]
@@ -59,10 +61,12 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
             configuration.Properties["Server:Retry:Strategy"] = "exponential";
             configuration.Properties["Server:Retry:MaxAttempts"] = 5;
             configuration.Properties["Server:Retry:BaseIndex"] = 6;
+            configuration.Properties["Server:Retry:HttpStatusCodes"] = "500";
             var executer = new RequestExecuterFactory(configuration).Create() as ExponentialRetryRequestExecuter;
 
             executer.MaxRetryAttemps.Should().Be(5);
             executer.BaseIndex.Should().Be(6);
+            executer.HttpStatusCodes.Should().BeEquivalentTo(new HttpStatusCode[] { HttpStatusCode.InternalServerError });
         }
 
         [Fact]
@@ -71,11 +75,13 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
             var configuration = new ConfigurationBuilder().Build();
             configuration.Properties["Server:Retry:Strategy"] = "linear";
             configuration.Properties["Server:Retry:MaxAttempts"] = 5;
-            configuration.Properties["Server:Retry:Delay"] = 6000; //secs
+            configuration.Properties["Server:Retry:Delay"] = 6000;
+            configuration.Properties["Server:Retry:HttpStatusCodes"] = "500";
             var executer = new RequestExecuterFactory(configuration).Create() as LinearRetryRequestExecuter;
 
             executer.MaxRetryAttemps.Should().Be(5);
             executer.Delay.Should().Be(6000);
+            executer.HttpStatusCodes.Should().BeEquivalentTo(new HttpStatusCode[] { HttpStatusCode.InternalServerError});
         }
 
         [Fact]

@@ -1,6 +1,7 @@
 ﻿using ReportPortal.Shared.Configuration;
-using ReportPortal.Shared.Reporter.Statistics;
 using System;
+using System.Linq;
+using System.Net;
 
 namespace ReportPortal.Shared.Internal.Delegating
 {
@@ -34,14 +35,16 @@ namespace ReportPortal.Shared.Internal.Delegating
                     executer = new NoneRetryRequestExecuter(throttler);
                     break;
                 case "exponential":
-                    var maxExponentialAttempts = _configuration.GetValue("Server:Retry:MaxAttempts", 3);
-                    var baseExponentialIndex = _configuration.GetValue("Server:Retry:BaseIndex", 2);
-                    executer = new ExponentialRetryRequestExecuter(maxExponentialAttempts, baseExponentialIndex, throttler);
+                    var maxExponentialAttempts = _configuration.GetValue("Server:Retry:MaxAttempts", 3U);
+                    var baseExponentialIndex = _configuration.GetValue("Server:Retry:BaseIndex", 2U);
+                    var httpStatusCodes = _configuration.GetValues<HttpStatusCode>("Server:Retry:HttpStatusCodes", null);
+                    executer = new ExponentialRetryRequestExecuter(maxExponentialAttempts, baseExponentialIndex, throttler, httpStatusCodes?.ToArray());
                     break;
                 case "linear":
-                    var maxLinearAttempts = _configuration.GetValue("Server:Retry:MaxAttempts", 3);
-                    var linearDelay = _configuration.GetValue("Server:Retry:Delay", 5 * 1000);
-                    executer = new LinearRetryRequestExecuter(maxLinearAttempts, linearDelay, throttler);
+                    var maxLinearAttempts = _configuration.GetValue("Server:Retry:MaxAttempts", 3U);
+                    var linearDelay = _configuration.GetValue("Server:Retry:Delay", 5U * 1000);
+                    httpStatusCodes = _configuration.GetValues<HttpStatusCode>("Server:Retry:HttpStatusCodes", null);
+                    executer = new LinearRetryRequestExecuter(maxLinearAttempts, linearDelay, throttler, httpStatusCodes?.ToArray());
                     break;
                 default:
                     throw new Exception($"Unknown '{retryStrategy}' retry strategy.");
