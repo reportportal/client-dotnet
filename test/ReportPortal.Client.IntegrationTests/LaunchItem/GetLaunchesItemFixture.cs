@@ -15,7 +15,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
         [Fact]
         public async Task GetInvalidLaunch()
         {
-            await Assert.ThrowsAsync<ReportPortalException>(async () => await Service.Launch.GetAsync("invalid_id"));
+            await Assert.ThrowsAsync<ServiceException>(async () => await Service.Launch.GetAsync("invalid_id"));
         }
 
         [Fact]

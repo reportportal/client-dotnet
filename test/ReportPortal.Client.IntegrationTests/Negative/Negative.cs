@@ -19,14 +19,14 @@ namespace ReportPortal.Client.IntegrationTests.Negative
         public async Task IncorrectUrlInCorrectHost()
         {
             var service = new Service(new Uri("https://rp.epam.com/api/blabla/"), "p", "p");
-            await Assert.ThrowsAsync<ReportPortalException>(async () => await service.Launch.StartAsync(new StartLaunchRequest { Name = "abc" }));
+            await Assert.ThrowsAsync<ServiceException>(async () => await service.Launch.StartAsync(new StartLaunchRequest { Name = "abc" }));
         }
 
         [Fact]
         public async Task IncorrectUuid()
         {
             var service = new Service(new Uri("https://rp.epam.com/api/v1/"), "default_project", "incorrect_uuid");
-            await Assert.ThrowsAsync<ReportPortalException>(async () => await service.Launch.GetAsync());
+            await Assert.ThrowsAsync<ServiceException>(async () => await service.Launch.GetAsync());
         }
     }
 }

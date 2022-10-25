@@ -19,26 +19,26 @@ namespace ReportPortal.Client.Resources
 
         protected string ProjectName { get; }
 
-        protected async Task<TResponse> GetAsJsonAsync<TResponse>(string uri, CancellationToken cancellationToken)
+        protected Task<TResponse> GetAsJsonAsync<TResponse>(string uri, CancellationToken cancellationToken)
         {
-            return await SendAsJsonAsync<TResponse, object>(HttpMethod.Get, uri, null, cancellationToken).ConfigureAwait(false);
+            return SendAsJsonAsync<TResponse, object>(HttpMethod.Get, uri, null, cancellationToken);
         }
 
-        protected async Task<TResponse> PostAsJsonAsync<TResponse, TRequest>(
+        protected Task<TResponse> PostAsJsonAsync<TResponse, TRequest>(
             string uri, TRequest request, CancellationToken cancellationToken)
         {
-            return await SendAsJsonAsync<TResponse, TRequest>(HttpMethod.Post, uri, request, cancellationToken).ConfigureAwait(false);
+            return SendAsJsonAsync<TResponse, TRequest>(HttpMethod.Post, uri, request, cancellationToken);
         }
 
-        protected async Task<TResponse> PutAsJsonAsync<TResponse, TRequest>(
+        protected Task<TResponse> PutAsJsonAsync<TResponse, TRequest>(
             string uri, TRequest request, CancellationToken cancellationToken)
         {
-            return await SendAsJsonAsync<TResponse, TRequest>(HttpMethod.Put, uri, request, cancellationToken).ConfigureAwait(false);
+            return SendAsJsonAsync<TResponse, TRequest>(HttpMethod.Put, uri, request, cancellationToken);
         }
 
-        protected async Task<TResponse> DeleteAsJsonAsync<TResponse>(string uri, CancellationToken cancellationToken)
+        protected Task<TResponse> DeleteAsJsonAsync<TResponse>(string uri, CancellationToken cancellationToken)
         {
-            return await SendAsJsonAsync<TResponse, object>(HttpMethod.Delete, uri, null, cancellationToken).ConfigureAwait(false);
+            return SendAsJsonAsync<TResponse, object>(HttpMethod.Delete, uri, null, cancellationToken);
         }
 
         private async Task<TResponse> SendAsJsonAsync<TResponse, TRequest>(
@@ -114,8 +114,14 @@ namespace ReportPortal.Client.Resources
             {
                 using (var reader = new StreamReader(stream))
                 {
-                    string body = reader.ReadToEnd();
-                    throw new ReportPortalException($"Response status code does not indicate success: {response.StatusCode} ({(int)response.StatusCode}) {response.RequestMessage.Method} {response.RequestMessage.RequestUri}", new HttpRequestException($"Response message: {body}"));
+                    string responseBody = reader.ReadToEnd();
+
+                    throw new ServiceException(
+                        "Response status code does not indicate success.",
+                        response.StatusCode,
+                        response.RequestMessage.RequestUri,
+                        response.RequestMessage.Method,
+                        responseBody);
                 }
             }
         }
