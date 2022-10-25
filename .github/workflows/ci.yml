@@ -29,9 +29,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: pkgs
-          path: |
-            pkgs/*.nupkg
-            pkgs/*.snupkg   
+          path: pkgs/*.[s]nupkg 
 
       - name: Test
         run: dotnet test -c ${{ env.CONFIGURATION }} --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=OpenCover /p:CoverletOutput=./Coverage.xml
