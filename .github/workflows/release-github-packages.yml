@@ -33,7 +33,5 @@ jobs:
     steps:
     - name: Download Artifacts
       uses: actions/download-artifact@v3
-    - name: Authenticate to GitHub Packages
-      run: dotnet nuget add source -u USERNAME -p ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text -n github 'https://nuget.pkg.github.com/reportportal/index.json'
     - name: Push
-      run: dotnet nuget push **/*.nupkg -s 'github' -k ${{ secrets.GITHUB_TOKEN }} 
+      run: dotnet nuget push **/*.nupkg -k ${{ secrets.GITHUB_TOKEN }} -s 'https://nuget.pkg.github.com/reportportal/index.json'
