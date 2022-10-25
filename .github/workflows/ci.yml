@@ -1,4 +1,4 @@
-name: ci
+name: CI
 
 on: push
 
@@ -7,7 +7,7 @@ env:
 
 jobs:
 
-  build:
+  Build:
     runs-on: windows-latest
 
     steps:
@@ -20,10 +20,19 @@ jobs:
         run: dotnet tool install -g codecov.tool
 
       - name: Build
-        run: dotnet build --configuration ${{ env.CONFIGURATION }}
+        run: dotnet build -c ${{ env.CONFIGURATION }}
+
+      - name: Pack
+        run: dotnet pack -c ${{ env.CONFIGURATION }} -o pkgs
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: pkgs
+          path: 'pkgs/*.nupkg'
 
       - name: Test
-        run: dotnet test --configuration ${{ env.CONFIGURATION }} /p:CollectCoverage=true /p:CoverletOutputFormat=OpenCover /p:CoverletOutput=./Coverage.xml
+        run: dotnet test -c ${{ env.CONFIGURATION }} --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=OpenCover /p:CoverletOutput=./Coverage.xml
 
       - name: Publish Coverage
         uses: codecov/codecov-action@v3
