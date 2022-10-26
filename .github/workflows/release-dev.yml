@@ -19,7 +19,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: pkgs
-        path: pkgs/*.?(s)nupkg
+        path: 'pkgs/*.?(s)nupkg'
   
   Publish:
     environment: 
