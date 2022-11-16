@@ -24,13 +24,16 @@ This approach is used by any existing log framework appenders for ReportPortal l
 You can attach any binary content
 
 ```csharp
-Context.Current.Log.Info("my binary", "image/png", bytes); // where bytes is byte[] and image/png is mime type of content
+Context.Current.Log.Info("my binary", "image/png", bytes);
+// where bytes is byte[] and image/png is mime type of content
 ```
 
 Or use file instead
 
 ```csharp
-Context.Current.Log.Info("my file", new FileInfo(filePath)); // where filePath is relative/absolute path to your file, mime type is determined automatically
+Context.Current.Log.Info("my file", new FileInfo(filePath));
+// where filePath is relative/absolute path to your file
+// mime type is determined automatically
 ```
 
 
