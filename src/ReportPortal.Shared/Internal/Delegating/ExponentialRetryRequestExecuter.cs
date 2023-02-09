@@ -1,5 +1,6 @@
 ﻿using ReportPortal.Shared.Reporter.Statistics;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -65,6 +66,7 @@ namespace ReportPortal.Shared.Internal.Delegating
         public override async Task<T> ExecuteAsync<T>(Func<Task<T>> func, Action<Exception> beforeNextAttempt = null, IStatisticsCounter statisticsCounter = null)
         {
             T result = default;
+            List<Exception> exceptions = new List<Exception>();
 
             for (int i = 0; i < MaxRetryAttemps; i++)
             {
@@ -84,11 +86,12 @@ namespace ReportPortal.Shared.Internal.Delegating
                     exp is HttpRequestException ||
                     Array.IndexOf(HttpStatusCodes, (exp as Client.ServiceException)?.HttpStatusCode) > -1)
                 {
+                    var delay = (int)Math.Pow(BaseIndex, i + MaxRetryAttemps);
+
                     if (i < MaxRetryAttemps - 1)
                     {
-                        var delay = (int)Math.Pow(BaseIndex, i + MaxRetryAttemps);
-
                         TraceLogger.Error($"Error while invoking '{func.Method.Name}' method. Current attempt: {i}. Waiting {delay} seconds and retrying it.\n{exp}");
+                        exceptions.Add(new HttpRequestException($"'{func.Method.Name}' threw an exception. Next attempt in {delay} second(s).", exp));
 
                         await Task.Delay(delay * 1000).ConfigureAwait(false);
 
@@ -97,7 +100,9 @@ namespace ReportPortal.Shared.Internal.Delegating
                     else
                     {
                         TraceLogger.Error($"Error while invoking '{func.Method.Name}' method. Current attempt: {i}.\n{exp}");
-                        throw;
+                        exceptions.Add(new HttpRequestException($"'{func.Method.Name}' threw an exception. Limit of retries has been reached.", exp));
+
+                        throw new RetryExecutionException(func.Method.Name, exceptions);
                     }
                 }
                 catch (Exception exp)
@@ -111,7 +116,7 @@ namespace ReportPortal.Shared.Internal.Delegating
                     {
                         _concurrentThrottler.Release();
                     }
-                };
+                }
             }
 
             return result;

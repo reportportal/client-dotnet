@@ -4,6 +4,8 @@ using ReportPortal.Client;
 using ReportPortal.Shared.Internal.Delegating;
 using ReportPortal.Shared.Reporter.Statistics;
 using System;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
@@ -37,7 +39,7 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
             action.Setup(a => a()).Throws<TaskCanceledException>();
 
             var executer = new LinearRetryRequestExecuter(3, 0);
-            await executer.Awaiting(e => e.ExecuteAsync(action.Object)).Should().ThrowAsync<TaskCanceledException>();
+            await executer.Awaiting(e => e.ExecuteAsync(action.Object)).Should().ThrowAsync<RetryExecutionException>();
 
             action.Verify(a => a(), Times.Exactly(3));
         }
@@ -58,12 +60,28 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
         public async Task ShouldRetryServiceExceptionAction()
         {
             var action = new Mock<Func<Task<string>>>();
-            action.Setup(a => a()).Throws(() => new ServiceException("", System.Net.HttpStatusCode.BadGateway, new Uri("https://example.com"), HttpMethod.Post, ""));
+            action.Setup(a => a()).Throws(() => new ServiceException("", HttpStatusCode.BadGateway, new Uri("https://example.com"), HttpMethod.Post, ""));
 
-            var executer = new LinearRetryRequestExecuter(3, 0, null, new System.Net.HttpStatusCode[] { System.Net.HttpStatusCode.BadGateway} );
-            await executer.Awaiting(e => e.ExecuteAsync(action.Object)).Should().ThrowAsync<ServiceException>();
+            var executer = new LinearRetryRequestExecuter(3, 0, null, new HttpStatusCode[] { HttpStatusCode.BadGateway} );
+            await executer.Awaiting(e => e.ExecuteAsync(action.Object)).Should().ThrowAsync<RetryExecutionException>();
 
             action.Verify(a => a(), Times.Exactly(3));
+        }
+
+        [Fact]
+        public async Task ShouldKeepAllHandledExceptionsAsInnerExceptions()
+        {
+            var action = new Mock<Func<Task<string>>>();
+
+            action.Setup(a => a()).Throws(() => new ServiceException("", HttpStatusCode.Conflict, new Uri("https://example.com"), HttpMethod.Post, ""));
+
+            var executer = new LinearRetryRequestExecuter(2, 0, null, new HttpStatusCode[] { HttpStatusCode.Conflict });
+            await executer.Awaiting(e => e.ExecuteAsync(action.Object))
+                .Should()
+                .ThrowAsync<RetryExecutionException>()
+                .Where(ex => ex.InnerExceptions.Count == 2);
+
+            action.Verify(a => a(), Times.Exactly(2));
         }
 
         [Fact]
@@ -104,7 +122,7 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
 
             var invokedTimes = 0;
 
-            await executer.Awaiting(e => e.ExecuteAsync(action.Object, (exp) => invokedTimes++)).Should().ThrowAsync<TaskCanceledException>();
+            await executer.Awaiting(e => e.ExecuteAsync(action.Object, (exp) => invokedTimes++)).Should().ThrowAsync<RetryExecutionException>();
 
             invokedTimes.Should().Be(4);
         }
