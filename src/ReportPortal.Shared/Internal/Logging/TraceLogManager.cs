@@ -75,14 +75,19 @@ namespace ReportPortal.Shared.Internal.Logging
 
                     SourceLevels traceLevel;
 
-                    if (!Enum.TryParse(envTraceLevelValue, ignoreCase: true, out traceLevel))
+                    if (string.IsNullOrEmpty(envTraceLevelValue))
                     {
                         traceLevel = SourceLevels.Error;
                     }
+                    else if (!Enum.TryParse(envTraceLevelValue, ignoreCase: true, out traceLevel))
+                    {
+                        throw new ArgumentOutOfRangeException($"Trace level '{envTraceLevelValue}' is not recognized. Known levels are [{string.Join(", ", Enum.GetNames(typeof(SourceLevels)))}]");
+                    }
 
-                    var traceSource = new TraceSource(type.Name);
-
-                    traceSource.Switch = new SourceSwitch("ReportPortal_TraceSwitch", traceLevel.ToString());
+                    var traceSource = new TraceSource(type.Name)
+                    {
+                        Switch = new SourceSwitch("ReportPortal_TraceSwitch", traceLevel.ToString())
+                    };
 
                     var logFileName = $"{type.Assembly.GetName().Name}.{Process.GetCurrentProcess().Id}.log";
 
