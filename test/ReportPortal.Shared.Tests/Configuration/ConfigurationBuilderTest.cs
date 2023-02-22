@@ -459,10 +459,12 @@ namespace ReportPortal.Shared.Tests.Configuration
             var dir = Directory.CreateDirectory(Path.GetRandomFileName());
             File.AppendAllText(dir + "/ReportPortal_prop1", "value1");
             File.AppendAllText(dir + "/ReportPortal.config.json", @"{""prop2"": ""value2""}");
+            File.AppendAllText(dir + "/ReportPortal.json", @"{""prop3"": ""value3""}");
 
             var config = new ConfigurationBuilder().AddDefaults(dir.FullName).Build();
 
-            config.Properties.Should().HaveCountGreaterOrEqualTo(2).And.ContainKeys("prop1", "prop2");
+            config.Properties.Should().HaveCountGreaterOrEqualTo(3)
+                .And.ContainKeys("prop1", "prop2", "prop3");
 
             dir.Delete(true);
         }

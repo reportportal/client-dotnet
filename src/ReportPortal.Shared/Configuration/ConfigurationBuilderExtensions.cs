@@ -19,6 +19,7 @@ namespace ReportPortal.Shared.Configuration
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
 
+            builder.AddJsonFile(Path.Combine(baseDir, "ReportPortal.json"), optional: true);
             builder.AddJsonFile(Path.Combine(baseDir, "ReportPortal.config.json"), optional: true);
             builder.AddDirectoryProbing(baseDir);
             builder.AddEnvironmentVariables();

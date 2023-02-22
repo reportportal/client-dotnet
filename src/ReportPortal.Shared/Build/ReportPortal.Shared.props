@@ -5,6 +5,10 @@
     <None Include="ReportPortal.config.json" Condition=" Exists('ReportPortal.config.json') ">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+
+    <None Include="ReportPortal.json" Condition=" Exists('ReportPortal.json') ">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
