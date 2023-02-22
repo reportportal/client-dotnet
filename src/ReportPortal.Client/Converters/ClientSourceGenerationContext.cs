@@ -5,7 +5,7 @@ namespace ReportPortal.Client.Converters
 {
     /// <inheritdoc />
 
-    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
+    [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, WriteIndented = false)]
 
     [JsonSerializable(typeof(Abstractions.Requests.StartLaunchRequest))]
     [JsonSerializable(typeof(Abstractions.Requests.FinishLaunchRequest))]
