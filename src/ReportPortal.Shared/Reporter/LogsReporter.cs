@@ -33,7 +33,8 @@ namespace ReportPortal.Shared.Reporter
                             IExtensionManager extensionManager,
                             IRequestExecuter requestExecuter,
                             ILogRequestAmender logRequestAmender,
-                            ReportEventsSource reportEventsSource)
+                            ReportEventsSource reportEventsSource,
+                            int batchCapacity)
         {
             _reporter = testReporter;
             _service = service;
@@ -42,11 +43,14 @@ namespace ReportPortal.Shared.Reporter
             _requestExecuter = requestExecuter;
             _logRequestAmender = logRequestAmender;
             _reportEventsSource = reportEventsSource;
+
+            if (batchCapacity < 1) throw new ArgumentException("Batch capacity for logs processing cannot be less than 1.", nameof(batchCapacity));
+            BatchCapacity = batchCapacity;
         }
 
         private readonly object _syncObj = new object();
 
-        public int BatchCapacity { get; set; } = 10;
+        public int BatchCapacity { get; }
 
         public void Log(CreateLogItemRequest logRequest)
         {

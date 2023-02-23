@@ -12,6 +12,8 @@
         public static readonly string ServerProject = $"Server{KeyDelimeter}Project";
         public static readonly string ServerAuthenticationUuid = $"Server{KeyDelimeter}Authentication{KeyDelimeter}Uuid";
 
+        public static readonly string LogsBatchCapacity = $"Server{KeyDelimeter}LogsBatchCapacity";
+
         public static readonly string LaunchName = $"Launch{KeyDelimeter}Name";
         public static readonly string LaunchDescription = $"Launch{KeyDelimeter}Description";
         public static readonly string LaunchDebugMode = $"Launch{KeyDelimeter}DebugMode";

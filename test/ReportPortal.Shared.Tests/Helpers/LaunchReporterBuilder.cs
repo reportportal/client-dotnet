@@ -71,7 +71,7 @@ namespace ReportPortal.Shared.Tests.Helpers
                         testNode.Log(new CreateLogItemRequest
                         {
                             Level = LogLevel.Info,
-                            Text = $"Log message #{l}",
+                            Text = $"Log message #{l:D5}",
                             Time = launchDateTime
                         });
                     }

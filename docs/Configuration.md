@@ -61,6 +61,9 @@ See the list of supported status codes [here](https://learn.microsoft.com/en-us/
 ## Throttle requests
 Configure `Server:MaximumConnectionsNumber` property to set the maximum number of concurrent requests (default is `10`).
 
+## Batching log messages
+If your test produces a lot of log messages shortly, then they, most likely, will be sent as single http request. `Server:LogsBatchCapacity` says how many log messages can be combined as 1 request (default is `20`).
+
 ## Retry requests
 Set `Server:Retry:Strategy` property to `Exponential` (default) or `Linear` or `None`.
 

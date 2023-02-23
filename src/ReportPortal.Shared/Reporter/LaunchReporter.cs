@@ -291,7 +291,10 @@ namespace ReportPortal.Shared.Reporter
                     if (_logsReporter == null)
                     {
                         var logRequestAmender = new LaunchLogRequestAmender(this);
-                        _logsReporter = new LogsReporter(this, _service, _configuration, _extensionManager, _requestExecuter, logRequestAmender, _reportEventsSource);
+
+                        var logsBatchCapacity = _configuration.GetValue<int>(ConfigurationPath.LogsBatchCapacity, 20);
+
+                        _logsReporter = new LogsReporter(this, _service, _configuration, _extensionManager, _requestExecuter, logRequestAmender, _reportEventsSource, logsBatchCapacity);
                     }
                 }
 

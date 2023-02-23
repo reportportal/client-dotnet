@@ -346,7 +346,7 @@ namespace ReportPortal.Shared.Tests.Reporter
             launchReporter.Sync();
 
             service.Verify(s => s.Launch.FinishAsync(It.IsAny<string>(), It.IsAny<FinishLaunchRequest>()), Times.Once);
-            service.Verify(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>()), Times.AtLeast(30 * 30 / 10)); // logs buffer size
+            service.Verify(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>()), Times.AtLeast(30 * 30 / 20)); // logs batch size
 
             foreach (var bufferedRequests in requests)
             {
