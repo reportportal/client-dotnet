@@ -23,7 +23,7 @@ jobs:
         run: dotnet build -c ${{ env.CONFIGURATION }}
 
       - name: Pack
-        run: dotnet pack -c ${{ env.CONFIGURATION }} -o pkgs
+        run: dotnet pack -c ${{ env.CONFIGURATION }} --property:PackageOutputPath=pkgs
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
