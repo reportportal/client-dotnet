@@ -13,14 +13,14 @@ jobs:
       with: 
         fetch-depth: 0
     - name: Pack
-      run: dotnet pack -c Release -o pkgs
+      run: dotnet pack -c Release --property:PackageOutputPath=../../pkgs
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: pkgs
         path: |
-            pkgs/*.nupkg
-            pkgs/*.snupkg
+            ./pkgs/*.nupkg
+            ./pkgs/*.snupkg
   
   Publish:
     environment: 
