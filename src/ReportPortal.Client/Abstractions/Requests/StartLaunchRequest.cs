@@ -11,12 +11,10 @@ namespace ReportPortal.Client.Abstractions.Requests
     /// </summary>
     public class StartLaunchRequest
     {
-        private string _name;
-
         /// <summary>
         /// A short name of launch.
         /// </summary>
-        public string Name { get { return _name; } set { _name = StringTrimmer.Trim(value, 256); } }
+        public string Name { get; set; }
 
         /// <summary>
         /// Description of launch.
@@ -51,7 +49,7 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// Launch attributes.
         /// </summary>
         public IList<ItemAttribute> Attributes { get; set; }
-        
+
         /// <summary>
         /// Set specific launch UUID.
         /// </summary>

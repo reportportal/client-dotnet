@@ -16,12 +16,10 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// </summary>
         public string LaunchUuid { get; set; }
 
-        private string _name;
-
         /// <summary>
         /// A short name of test item.
         /// </summary>
-        public string Name { get { return _name; } set { _name = StringTrimmer.Trim(value, 1024); } }
+        public string Name { get; set; }
 
         /// <summary>
         /// A long description of test item.
