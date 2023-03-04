@@ -6,8 +6,15 @@ using Xunit;
 
 namespace ReportPortal.Client.IntegrationTests.TestItem
 {
-    public class DeleteTestItemFixture : BaseFixture
+    public class DeleteTestItemFixture : IClassFixture<BaseFixture>
     {
+        Service Service { get; }
+
+        public DeleteTestItemFixture(BaseFixture baseFixture)
+        {
+            Service = baseFixture.Service;
+        }
+
         [Fact]
         public async Task StartFinishDeleteTest()
         {

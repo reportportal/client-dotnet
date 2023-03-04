@@ -11,13 +11,16 @@ using Xunit;
 
 namespace ReportPortal.Client.IntegrationTests.TestItem
 {
-    public class TestItemFixture : BaseFixture, IClassFixture<LaunchFixtureBase>
+    public class TestItemFixture : IClassFixture<LaunchFixtureBase>, IClassFixture<BaseFixture>
     {
         private LaunchFixtureBase _fixture;
 
-        public TestItemFixture(LaunchFixtureBase fixture)
+        Service Service { get; }
+
+        public TestItemFixture(LaunchFixtureBase fixture, BaseFixture baseFixture)
         {
             _fixture = fixture;
+            Service = baseFixture.Service;
         }
 
         [Fact]

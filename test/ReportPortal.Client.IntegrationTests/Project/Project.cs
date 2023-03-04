@@ -12,9 +12,22 @@ using Xunit;
 namespace ReportPortal.Client.IntegrationTests.Project
 {
 #pragma warning disable xUnit1000 // https://github.com/reportportal/reportportal/issues/1213
-    class ProjectFixture : BaseFixture
+    class ProjectFixture : IClassFixture<BaseFixture>
 #pragma warning restore xUnit1000
     {
+        Service Service { get; }
+
+        string ProjectName { get; }
+
+        string Username { get; }
+
+        public ProjectFixture(BaseFixture baseFixture)
+        {
+            Service = baseFixture.Service;
+            ProjectName = baseFixture.ProjectName;
+            Username = baseFixture.Username;
+        }
+
         [Fact]
         public async Task GetProjectInfo()
         {

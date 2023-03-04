@@ -12,12 +12,16 @@ using Xunit;
 
 namespace ReportPortal.Client.IntegrationTests.LogItem
 {
-    public class LogItemFixture : BaseFixture, IClassFixture<LogItemFixtureBase>
+    public class LogItemFixture : IClassFixture<LogItemFixtureBase>, IClassFixture<BaseFixture>
     {
         private LogItemFixtureBase _fixture;
-        public LogItemFixture(LogItemFixtureBase fixture)
+
+        Service Service { get; }
+
+        public LogItemFixture(LogItemFixtureBase fixture, BaseFixture baseFixture)
         {
             _fixture = fixture;
+            Service = baseFixture.Service;
         }
 
         [Theory]

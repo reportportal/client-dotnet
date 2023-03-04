@@ -11,9 +11,16 @@ namespace ReportPortal.Client.IntegrationTests.UserFilter
 {
 
 #pragma warning disable xUnit1000 // https://github.com/reportportal/reportportal/issues/1213
-    class UserFilterFixture : BaseFixture
+    class UserFilterFixture : IClassFixture<BaseFixture>
 #pragma warning restore xUnit1000 
     {
+        Service Service { get; }
+
+        public UserFilterFixture(BaseFixture baseFixture)
+        {
+            Service = baseFixture.Service;
+        }
+
         [Fact]
         public async Task CreateGetDeleteUserFilter()
         {

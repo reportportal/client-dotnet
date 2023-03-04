@@ -9,7 +9,7 @@ namespace ReportPortal.Client.IntegrationTests
 {
     public class LaunchesFixtureBase : BaseFixture, IDisposable
     {
-        private List<LaunchCreatedResponse> CreatedLaunches { get; } = new List<LaunchCreatedResponse>();
+        public List<LaunchCreatedResponse> CreatedLaunches { get; } = new List<LaunchCreatedResponse>();
 
         public LaunchesFixtureBase()
         {

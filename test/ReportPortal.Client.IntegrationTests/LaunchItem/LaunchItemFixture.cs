@@ -9,8 +9,15 @@ using Xunit;
 
 namespace ReportPortal.Client.IntegrationTests.LaunchItem
 {
-    public class LaunchItemFixture : BaseFixture
+    public class LaunchItemFixture : IClassFixture<BaseFixture>
     {
+        Service Service { get; }
+
+        public LaunchItemFixture(BaseFixture baseFixture)
+        {
+            Service = baseFixture.Service;
+        }
+
         [Fact]
         public async Task StartFinishDeleteLaunch()
         {
