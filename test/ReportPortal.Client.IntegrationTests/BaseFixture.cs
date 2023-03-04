@@ -17,8 +17,8 @@ namespace ReportPortal.Client.IntegrationTests
 
         public BaseFixture()
         {
-            //var url = "https://demo.reportportal.io";
-            var url = "http://localhost:8080";
+            var url = "https://demo.reportportal.io";
+            //var url = "http://localhost:8080";
 
             using (var httpClient = new HttpClient())
             {
