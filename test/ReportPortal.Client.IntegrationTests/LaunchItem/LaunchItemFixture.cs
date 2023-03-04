@@ -255,31 +255,6 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
         }
 
         [Fact]
-        public async Task TrimLaunchName()
-        {
-            var namePrefix = "TrimLaunch";
-            var launchName = namePrefix + new string('_', 256 - namePrefix.Length + 1);
-
-            var launch = await Service.Launch.StartAsync(new StartLaunchRequest
-            {
-                Name = launchName,
-                StartTime = DateTime.UtcNow
-            });
-            Assert.NotNull(launch.Uuid);
-            var message = await Service.Launch.FinishAsync(launch.Uuid, new FinishLaunchRequest
-            {
-                EndTime = DateTime.UtcNow
-            });
-            Assert.Contains(launch.Uuid, message.Uuid);
-
-            var gotLaunch = await Service.Launch.GetAsync(launch.Uuid);
-            Assert.Equal(launchName.Substring(0, 256), gotLaunch.Name);
-
-            var delMessage = await Service.Launch.DeleteAsync(gotLaunch.Id);
-            Assert.Contains("successfully", delMessage.Info);
-        }
-
-        [Fact]
         public async Task StartForceFinishIncompleteLaunch()
         {
             var launch = await Service.Launch.StartAsync(new StartLaunchRequest

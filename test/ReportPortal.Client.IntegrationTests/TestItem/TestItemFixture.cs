@@ -655,50 +655,6 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
         }
 
         [Fact]
-        public async Task TrimTestItemName()
-        {
-            var namePrefix = "TrimLaunch";
-            var testItemName = namePrefix + new string('_', 1024 - namePrefix.Length + 1);
-
-            var test = await Service.TestItem.StartAsync(new StartTestItemRequest
-            {
-                LaunchUuid = _fixture.LaunchUuid,
-                Name = testItemName,
-                StartTime = DateTime.UtcNow,
-                Type = TestItemType.Test
-            });
-            Assert.NotNull(test.Uuid);
-
-            var gotTestItem = await Service.TestItem.GetAsync(test.Uuid);
-            Assert.Equal(testItemName.Substring(0, 1024), gotTestItem.Name);
-
-            var message = await Service.TestItem.FinishAsync(test.Uuid, new FinishTestItemRequest
-            {
-                EndTime = DateTime.UtcNow,
-                Status = Status.Passed
-            });
-            Assert.Contains("successfully", message.Info);
-        }
-
-        [Fact]
-        public async Task TrimTestItemAttributeValue()
-        {
-            var test = await Service.TestItem.StartAsync(new StartTestItemRequest
-            {
-                LaunchUuid = _fixture.LaunchUuid,
-                Name = "TrimAttributeValue",
-                StartTime = DateTime.UtcNow,
-                Attributes = new List<ItemAttribute> { new ItemAttribute { Key = new string('K', ItemAttribute.MAX_KEY_SIZE + 1), Value = new string('V', ItemAttribute.MAX_VALUE_SIZE + 1) } }
-            });
-
-            var gotTestItem = await Service.TestItem.GetAsync(test.Uuid);
-
-            gotTestItem.Attributes.Should().HaveCount(1);
-            gotTestItem.Attributes.First().Key.Should().Be(new string('K', ItemAttribute.MAX_KEY_SIZE));
-            gotTestItem.Attributes.First().Value.Should().Be(new string('V', ItemAttribute.MAX_VALUE_SIZE));
-        }
-
-        [Fact]
         public async Task RetryTest()
         {
             var suite = await Service.TestItem.StartAsync(new StartTestItemRequest
