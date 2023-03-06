@@ -36,6 +36,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
             var now = DateTime.UtcNow;
             var log = await Service.AsyncLogItem.CreateAsync(new CreateLogItemRequest
             {
+                LaunchUuid = _fixture.LaunchUuid,
                 TestItemUuid = _fixture.TestUuid,
                 Text = "Log1",
                 Time = now,
@@ -118,6 +119,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
 
             var log = await Service.AsyncLogItem.CreateAsync(new CreateLogItemRequest
             {
+                LaunchUuid = _fixture.LaunchUuid,
                 TestItemUuid = _fixture.TestUuid,
                 Text = "TestLog",
                 Level = LogLevel.Info
