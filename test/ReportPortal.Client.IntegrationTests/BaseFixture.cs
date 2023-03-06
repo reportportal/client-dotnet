@@ -20,7 +20,10 @@ namespace ReportPortal.Client.IntegrationTests
             var url = "https://demo.reportportal.io";
             //var url = "http://localhost:8080";
 
-            using (var httpClient = new HttpClient())
+            var httpCllientHandler = new HttpClientHandler();
+            httpCllientHandler.ServerCertificateCustomValidationCallback = (a, b, c, d) => true;
+
+            using (var httpClient = new HttpClient(httpCllientHandler))
             {
                 httpClient.BaseAddress = new Uri(url);
 

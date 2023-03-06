@@ -21,7 +21,7 @@ namespace ReportPortal.Client.Resources
 
         public async Task<LaunchResponse> GetAsync(string uuid, CancellationToken cancellationToken)
         {
-            return await GetAsJsonAsync<LaunchResponse>($"{ProjectName}/launch/uuid/{uuid}", cancellationToken).ConfigureAwait(false);
+            return await GetAsJsonAsync<LaunchResponse>($"v1/{ProjectName}/launch/uuid/{uuid}", cancellationToken).ConfigureAwait(false);
         }
 
         public Task<LaunchResponse> GetAsync(long id)
@@ -31,7 +31,7 @@ namespace ReportPortal.Client.Resources
 
         public async Task<LaunchResponse> GetAsync(long id, CancellationToken cancellationToken)
         {
-            return await GetAsJsonAsync<LaunchResponse>($"{ProjectName}/launch/{id}", cancellationToken).ConfigureAwait(false);
+            return await GetAsJsonAsync<LaunchResponse>($"v1/{ProjectName}/launch/{id}", cancellationToken).ConfigureAwait(false);
         }
 
         public Task<LaunchCreatedResponse> StartAsync(StartLaunchRequest request)
@@ -42,7 +42,7 @@ namespace ReportPortal.Client.Resources
         public async Task<LaunchCreatedResponse> StartAsync(StartLaunchRequest request, CancellationToken cancellationToken)
         {
             return await PostAsJsonAsync<LaunchCreatedResponse, StartLaunchRequest>(
-                $"{ProjectName}/launch", request, cancellationToken).ConfigureAwait(false);
+                $"v1/{ProjectName}/launch", request, cancellationToken).ConfigureAwait(false);
         }
 
         public Task<LaunchFinishedResponse> FinishAsync(string uuid, FinishLaunchRequest request)
@@ -53,7 +53,7 @@ namespace ReportPortal.Client.Resources
         public async Task<LaunchFinishedResponse> FinishAsync(string uuid, FinishLaunchRequest request, CancellationToken cancellationToken)
         {
             return await PutAsJsonAsync<LaunchFinishedResponse, FinishLaunchRequest>(
-                $"{ProjectName}/launch/{uuid}/finish", request, cancellationToken).ConfigureAwait(false);
+                $"v1/{ProjectName}/launch/{uuid}/finish", request, cancellationToken).ConfigureAwait(false);
         }
 
         public Task<LaunchFinishedResponse> StopAsync(long id, FinishLaunchRequest request)
@@ -64,7 +64,7 @@ namespace ReportPortal.Client.Resources
         public async Task<LaunchFinishedResponse> StopAsync(long id, FinishLaunchRequest request, CancellationToken cancellationToken)
         {
             return await PutAsJsonAsync<LaunchFinishedResponse, FinishLaunchRequest>(
-                $"{ProjectName}/launch/{id}/stop", request, cancellationToken).ConfigureAwait(false);
+                $"v1/{ProjectName}/launch/{id}/stop", request, cancellationToken).ConfigureAwait(false);
         }
 
         public Task<MessageResponse> DeleteAsync(long id)
@@ -74,7 +74,7 @@ namespace ReportPortal.Client.Resources
 
         public async Task<MessageResponse> DeleteAsync(long id, CancellationToken cancellationToken)
         {
-            return await DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/launch/{id}", cancellationToken).ConfigureAwait(false);
+            return await DeleteAsJsonAsync<MessageResponse>($"v1/{ProjectName}/launch/{id}", cancellationToken).ConfigureAwait(false);
         }
 
         public Task<LaunchResponse> MergeAsync(MergeLaunchesRequest request)
@@ -85,7 +85,7 @@ namespace ReportPortal.Client.Resources
         public async Task<LaunchResponse> MergeAsync(MergeLaunchesRequest request, CancellationToken cancellationToken)
         {
             return await PostAsJsonAsync<LaunchResponse, MergeLaunchesRequest>(
-                $"{ProjectName}/launch/merge", request, cancellationToken).ConfigureAwait(false);
+                $"v1/{ProjectName}/launch/merge", request, cancellationToken).ConfigureAwait(false);
         }
 
         public Task<MessageResponse> UpdateAsync(long id, UpdateLaunchRequest request)
@@ -96,7 +96,7 @@ namespace ReportPortal.Client.Resources
         public async Task<MessageResponse> UpdateAsync(long id, UpdateLaunchRequest request, CancellationToken cancellationToken)
         {
             return await PutAsJsonAsync<MessageResponse, UpdateLaunchRequest>(
-                $"{ProjectName}/launch/{id}/update", request, cancellationToken).ConfigureAwait(false);
+                $"v1/{ProjectName}/launch/{id}/update", request, cancellationToken).ConfigureAwait(false);
         }
 
         public Task<MessageResponse> AnalyzeAsync(AnalyzeLaunchRequest request)
@@ -107,7 +107,7 @@ namespace ReportPortal.Client.Resources
         public async Task<MessageResponse> AnalyzeAsync(AnalyzeLaunchRequest request, CancellationToken cancellationToken)
         {
             return await PostAsJsonAsync<MessageResponse, AnalyzeLaunchRequest>(
-                $"{ProjectName}/launch/analyze", request, cancellationToken).ConfigureAwait(false);
+                $"v1/{ProjectName}/launch/analyze", request, cancellationToken).ConfigureAwait(false);
         }
 
         public Task<Content<LaunchResponse>> GetAsync()
@@ -127,7 +127,7 @@ namespace ReportPortal.Client.Resources
 
         public async Task<Content<LaunchResponse>> GetAsync(FilterOption filterOption, CancellationToken cancellationToken)
         {
-            var uri = $"{ProjectName}/launch";
+            var uri = $"v1/{ProjectName}/launch";
 
             if (filterOption != null)
             {
@@ -154,7 +154,7 @@ namespace ReportPortal.Client.Resources
 
         public async Task<Content<LaunchResponse>> GetDebugAsync(FilterOption filterOption, CancellationToken cancellationToken)
         {
-            var uri = $"{ProjectName}/launch/mode";
+            var uri = $"v1/{ProjectName}/launch/mode";
 
             if (filterOption != null)
             {

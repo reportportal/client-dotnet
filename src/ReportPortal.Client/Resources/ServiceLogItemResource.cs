@@ -36,7 +36,7 @@ namespace ReportPortal.Client.Resources
 
         public async Task<Content<LogItemResponse>> GetAsync(FilterOption filterOption, CancellationToken cancellationToken)
         {
-            var uri = $"{ProjectName}/log";
+            var uri = $"v1/{ProjectName}/log";
 
             if (filterOption != null)
             {
@@ -53,7 +53,7 @@ namespace ReportPortal.Client.Resources
 
         public async Task<LogItemResponse> GetAsync(string uuid, CancellationToken cancellationToken)
         {
-            return await GetAsJsonAsync<LogItemResponse>($"{ProjectName}/log/uuid/{uuid}", cancellationToken).ConfigureAwait(false);
+            return await GetAsJsonAsync<LogItemResponse>($"v1/{ProjectName}/log/uuid/{uuid}", cancellationToken).ConfigureAwait(false);
         }
 
         public Task<LogItemResponse> GetAsync(long id)
@@ -63,7 +63,7 @@ namespace ReportPortal.Client.Resources
 
         public async Task<LogItemResponse> GetAsync(long id, CancellationToken cancellationToken)
         {
-            return await GetAsJsonAsync<LogItemResponse>($"{ProjectName}/log/{id}", cancellationToken).ConfigureAwait(false);
+            return await GetAsJsonAsync<LogItemResponse>($"v1/{ProjectName}/log/{id}", cancellationToken).ConfigureAwait(false);
         }
 
         public Task<byte[]> GetBinaryDataAsync(string id)
@@ -73,7 +73,7 @@ namespace ReportPortal.Client.Resources
 
         public async Task<byte[]> GetBinaryDataAsync(string id, CancellationToken cancellationToken)
         {
-            return await GetAsBytesAsync($"data/{ProjectName}/{id}", cancellationToken).ConfigureAwait(false);
+            return await GetAsBytesAsync($"v1/data/{ProjectName}/{id}", cancellationToken).ConfigureAwait(false);
         }
 
         public Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request)
@@ -83,7 +83,7 @@ namespace ReportPortal.Client.Resources
 
         public async Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request, CancellationToken cancellationToken)
         {
-            var uri = $"{ProjectName}/log";
+            var uri = $"v1/{ProjectName}/log";
 
             if (request.Attach == null)
             {
@@ -103,7 +103,7 @@ namespace ReportPortal.Client.Resources
 
         public async Task<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests, CancellationToken cancellationToken)
         {
-            var uri = $"{ProjectName}/log";
+            var uri = $"v1/{ProjectName}/log";
 
             var multipartContent = new MultipartFormDataContent();
 
@@ -137,7 +137,7 @@ namespace ReportPortal.Client.Resources
 
         public async Task<MessageResponse> DeleteAsync(long id, CancellationToken cancellationToken)
         {
-            return await DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/log/{id}", cancellationToken).ConfigureAwait(false);
+            return await DeleteAsJsonAsync<MessageResponse>($"v1/{ProjectName}/log/{id}", cancellationToken).ConfigureAwait(false);
         }
     }
 }
