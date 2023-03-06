@@ -24,7 +24,7 @@ jobs:
             ./pkgs/*.nupkg
             ./pkgs/*.snupkg
   
-  Publish MyGet:
+  Publish_MyGet:
     environment: 
       name: MyGet Packages
     runs-on: ubuntu-latest
@@ -36,7 +36,7 @@ jobs:
     - name: Push
       run: dotnet nuget push **/*.nupkg -k ${{ secrets.MYGET_TOKEN }} -s 'https://www.myget.org/F/reportportal/api/v3/index.json'
 
-  Publish GitHub:
+  Publish_GitHub:
     environment: 
       name: GitHub Packages
     runs-on: ubuntu-latest
@@ -48,7 +48,7 @@ jobs:
     - name: Push
       run: dotnet nuget push **/*.nupkg -k ${{ secrets.GITHUB_TOKEN }} -s 'https://nuget.pkg.github.com/reportportal/index.json'
 
-  Publish NuGet:
+  Publish_NuGet:
     environment: 
       name: NuGet Gallery
       url: https://www.nuget.org/packages/ReportPortal.Client
