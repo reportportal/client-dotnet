@@ -1,5 +1,6 @@
 ﻿using ReportPortal.Client.Abstractions;
 using ReportPortal.Client.Abstractions.Resources;
+using ReportPortal.Client.Extentions;
 using ReportPortal.Client.Resources;
 using System;
 using System.Net.Http;
@@ -28,6 +29,7 @@ namespace ReportPortal.Client
             }
 
             _httpClient = httpClientFactory.Create();
+            _httpClient.BaseAddress = _httpClient.BaseAddress?.Normalize();
 
             Launch = new ServiceLaunchResource(_httpClient, ProjectName);
             TestItem = new ServiceTestItemResource(_httpClient, ProjectName);
