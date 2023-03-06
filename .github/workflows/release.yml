@@ -26,7 +26,7 @@ jobs:
   
   Publish_MyGet:
     environment: 
-      name: MyGet Packages
+      name: MyGet Gallery
     runs-on: ubuntu-latest
     needs: Build
     
@@ -34,7 +34,7 @@ jobs:
     - name: Download Artifacts
       uses: actions/download-artifact@v3
     - name: Push
-      run: dotnet nuget push **/*.nupkg -k ${{ secrets.MYGET_TOKEN }} -s 'https://www.myget.org/F/reportportal/api/v3/index.json'
+      run: dotnet nuget push **/*.nupkg -k ${{ secrets.MYGET_API_KEY }} -s 'https://www.myget.org/F/reportportal/api/v3/index.json'
 
   Publish_GitHub:
     environment: 
