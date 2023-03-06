@@ -9,6 +9,8 @@ namespace ReportPortal.Client.Abstractions
     {
         ILaunchResource Launch { get; }
 
+        IAsyncLaunchResource AsyncLaunch { get; }
+
         ITestItemResource TestItem { get; }
 
         ILogItemResource LogItem { get; }

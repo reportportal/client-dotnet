@@ -30,6 +30,7 @@ namespace ReportPortal.Client
             _httpClient = httpClientFactory.Create();
 
             Launch = new ServiceLaunchResource(_httpClient, ProjectName);
+            AsyncLaunch = new ServiceAsyncLaunchResource(_httpClient, ProjectName);
             TestItem = new ServiceTestItemResource(_httpClient, ProjectName);
             LogItem = new ServiceLogItemResource(_httpClient, ProjectName);
             User = new ServiceUserResource(_httpClient, ProjectName);
@@ -44,6 +45,9 @@ namespace ReportPortal.Client
 
         /// <inheritdoc cref="ILaunchResource"/>
         public ILaunchResource Launch { get; }
+
+        /// <inheritdoc cref="IAsyncLaunchResource"/>
+        public IAsyncLaunchResource AsyncLaunch { get; }
 
         /// <inheritdoc cref="ITestItemResource"/>
         public ITestItemResource TestItem { get; }
