@@ -10,8 +10,15 @@ using Xunit;
 
 namespace ReportPortal.Client.IntegrationTests.LaunchItem
 {
-    public class GetLaunchesItemFixture : BaseFixture, IClassFixture<LaunchesFixtureBase>
+    public class GetLaunchesItemFixture : IClassFixture<LaunchesFixtureBase>, IClassFixture<BaseFixture>
     {
+        Service Service { get; }
+
+        public GetLaunchesItemFixture(BaseFixture baseFixture)
+        {
+            Service = baseFixture.Service;
+        }
+
         [Fact]
         public async Task GetInvalidLaunch()
         {
@@ -90,7 +97,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
 
         [Fact]
         public async Task GetInProgressLaunch()
-        {
+        {   
             var launch = await Service.Launch.StartAsync(new StartLaunchRequest
             {
                 Name = "StartForceFinishIncompleteLaunch",

@@ -3,19 +3,22 @@ using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace ReportPortal.Client.IntegrationTests.TestItem
 {
-    public class UpdateTestItemFixture : BaseFixture, IClassFixture<LaunchFixtureBase>
+    public class UpdateTestItemFixture : IClassFixture<LaunchFixtureBase>, IClassFixture<BaseFixture>
     {
         private LaunchFixtureBase _fixture;
 
-        public UpdateTestItemFixture(LaunchFixtureBase fixture)
+        Service Service { get; }
+
+        public UpdateTestItemFixture(LaunchFixtureBase fixture, BaseFixture baseFixture)
         {
             _fixture = fixture;
+
+            Service = baseFixture.Service;
         }
 
         [Fact]

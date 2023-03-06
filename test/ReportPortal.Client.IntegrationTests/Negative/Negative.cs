@@ -6,7 +6,7 @@ using Xunit;
 
 namespace ReportPortal.Client.IntegrationTests.Negative
 {
-    public class NegativeFixture : BaseFixture
+    public class NegativeFixture
     {
         [Fact]
         public async Task IncorrectHost()

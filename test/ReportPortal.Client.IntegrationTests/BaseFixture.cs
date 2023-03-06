@@ -1,14 +1,65 @@
 ﻿using System;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ReportPortal.Client.IntegrationTests
 {
     public class BaseFixture
     {
-        protected static readonly string Username = "default";
-        protected static readonly string ProjectName = "default_personal";
-        protected readonly Service Service = new Service(new Uri("https://demo.reportportal.io/api/v1"), ProjectName, "850b8ae7-ff29-4079-81b0-6d8a7feb13cc");
-        //protected static readonly string Username = "default";
-        //protected static readonly string ProjectName = "default_personal";
-        //protected readonly Service Service = new Service(new Uri("http://localhost:8080/api/v1"), ProjectName, "d562c898-7705-49a4-be6d-17a8121715fa");
+        public Service Service { get; }
+
+        public string Username { get; } = "default";
+
+        public string ProjectName { get; } = "default_personal";
+
+        public BaseFixture()
+        {
+            var url = "https://demo.reportportal.io";
+            //var url = "http://localhost:8080";
+
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.BaseAddress = new Uri(url);
+
+                using (var uiTokenRequestMessage = new HttpRequestMessage(HttpMethod.Post, "/uat/sso/oauth/token"))
+                {
+                    uiTokenRequestMessage.Content = new StringContent("grant_type=password&username=default&password=1q2w3e", Encoding.UTF8, "application/x-www-form-urlencoded");
+                    uiTokenRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes("ui:uiman")));
+
+                    using (var uiTokenResponseMessage = httpClient.SendAsync(uiTokenRequestMessage).GetAwaiter().GetResult())
+                    {
+                        uiTokenResponseMessage.EnsureSuccessStatusCode();
+
+                        var uiTokenJson = uiTokenResponseMessage.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+
+                        var uiToken = JsonSerializer.Deserialize<TokenModel>(uiTokenJson);
+
+                        using (var apiTokenRequestMessage = new HttpRequestMessage(HttpMethod.Get, "uat/sso/me/apitoken"))
+                        {
+                            apiTokenRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", uiToken.AccessToken);
+                            using (var apiTokenResponseMessage = httpClient.SendAsync(apiTokenRequestMessage).GetAwaiter().GetResult())
+                            {
+                                apiTokenResponseMessage.EnsureSuccessStatusCode();
+
+                                var apiTokenJson = apiTokenResponseMessage.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+
+                                var apiToken = JsonSerializer.Deserialize<TokenModel>(apiTokenJson);
+
+                                Service = new Service(new Uri($"{url}/api/v1"), ProjectName, apiToken.AccessToken);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        class TokenModel
+        {
+            [JsonPropertyName("access_token")]
+            public string AccessToken { get; set; }
+        }
     }
 }

@@ -4,8 +4,15 @@ using Xunit;
 
 namespace ReportPortal.Client.IntegrationTests.User
 {
-    public class UserFixture : BaseFixture
+    public class UserFixture : IClassFixture<BaseFixture>
     {
+        Service Service { get; }
+
+        public UserFixture(BaseFixture baseFixture)
+        {
+            Service = baseFixture.Service;
+        }
+
         [Fact]
         public async Task GetUserInfo()
         {

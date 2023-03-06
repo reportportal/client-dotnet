@@ -3,9 +3,9 @@ using ReportPortal.Client.Abstractions.Requests;
 using System;
 using System.Threading.Tasks;
 
-namespace ReportPortal.Client.IntegrationTests.LogItem
+namespace ReportPortal.Client.IntegrationTests
 {
-    public class LogItemFixtureBase : BaseFixture, IDisposable
+    public class LogItemFixtureBase : BaseFixture
     {
         public string LaunchUuid { get; set; }
         public long LaunchId { get; set; }
