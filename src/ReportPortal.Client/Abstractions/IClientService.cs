@@ -17,6 +17,8 @@ namespace ReportPortal.Client.Abstractions
 
         ILogItemResource LogItem { get; }
 
+        IAsyncLogItemResource  AsyncLogItem { get; }
+
         IUserResource User { get; }
 
         IUserFilterResource UserFilter { get; }
