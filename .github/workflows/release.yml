@@ -1,7 +1,9 @@
-name: Release Prod
+name: Release Dev
 
 on:
   push:
+    branches:
+      - develop
     tags: '*'
 
 jobs:
@@ -22,7 +24,31 @@ jobs:
             ./pkgs/*.nupkg
             ./pkgs/*.snupkg
   
-  Publish:
+  Publish MyGet:
+    environment: 
+      name: MyGet Packages
+    runs-on: ubuntu-latest
+    needs: Build
+    
+    steps:
+    - name: Download Artifacts
+      uses: actions/download-artifact@v3
+    - name: Push
+      run: dotnet nuget push **/*.nupkg -k ${{ secrets.MYGET_TOKEN }} -s 'https://www.myget.org/F/reportportal/api/v3/index.json'
+
+  Publish GitHub:
+    environment: 
+      name: GitHub Packages
+    runs-on: ubuntu-latest
+    needs: Build
+    
+    steps:
+    - name: Download Artifacts
+      uses: actions/download-artifact@v3
+    - name: Push
+      run: dotnet nuget push **/*.nupkg -k ${{ secrets.GITHUB_TOKEN }} -s 'https://nuget.pkg.github.com/reportportal/index.json'
+
+  Publish NuGet:
     environment: 
       name: NuGet Gallery
       url: https://www.nuget.org/packages/ReportPortal.Client
