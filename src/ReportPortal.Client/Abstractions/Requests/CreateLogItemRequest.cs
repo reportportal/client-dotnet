@@ -17,7 +17,7 @@ namespace ReportPortal.Client.Abstractions.Requests
         public string TestItemUuid { get; set; }
 
         /// <summary>
-        /// Log item belongs to launch instead of test item.
+        /// Log item belongs to launch instead of test item if test item id is null.
         /// </summary>
         public string LaunchUuid { get; set; }
 
