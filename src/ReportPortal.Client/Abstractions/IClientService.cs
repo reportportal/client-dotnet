@@ -13,6 +13,8 @@ namespace ReportPortal.Client.Abstractions
 
         ITestItemResource TestItem { get; }
 
+        IAsyncTestItemResource AsyncTestItem { get; }
+
         ILogItemResource LogItem { get; }
 
         IUserResource User { get; }
