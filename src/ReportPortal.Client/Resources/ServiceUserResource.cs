@@ -12,11 +12,6 @@ namespace ReportPortal.Client.Resources
         {
         }
 
-        public Task<UserResponse> GetAsync()
-        {
-            return GetAsync(CancellationToken.None);
-        }
-
         public async Task<UserResponse> GetAsync(CancellationToken cancellationToken)
         {
             return await GetAsJsonAsync<UserResponse>("v1/user", cancellationToken).ConfigureAwait(false);

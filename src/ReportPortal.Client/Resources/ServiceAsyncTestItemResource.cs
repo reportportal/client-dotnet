@@ -13,32 +13,16 @@ namespace ReportPortal.Client.Resources
         {
         }
 
-
-        public Task<TestItemCreatedResponse> StartAsync(StartTestItemRequest request)
-        {
-            return StartAsync(request, CancellationToken.None);
-        }
-
         public async Task<TestItemCreatedResponse> StartAsync(StartTestItemRequest request, CancellationToken cancellationToken)
         {
             return await PostAsJsonAsync<TestItemCreatedResponse, StartTestItemRequest>(
                 $"v2/{ProjectName}/item", request, cancellationToken).ConfigureAwait(false);
         }
 
-        public Task<TestItemCreatedResponse> StartAsync(string uuid, StartTestItemRequest model)
-        {
-            return StartAsync(uuid, model, CancellationToken.None);
-        }
-
         public async Task<TestItemCreatedResponse> StartAsync(string uuid, StartTestItemRequest request, CancellationToken cancellationToken)
         {
             return await PostAsJsonAsync<TestItemCreatedResponse, StartTestItemRequest>(
                 $"v2/{ProjectName}/item/{uuid}", request, cancellationToken).ConfigureAwait(false);
-        }
-
-        public Task<MessageResponse> FinishAsync(string uuid, FinishTestItemRequest request)
-        {
-            return FinishAsync(uuid, request, CancellationToken.None);
         }
 
         public async Task<MessageResponse> FinishAsync(string uuid, FinishTestItemRequest request, CancellationToken cancellationToken)

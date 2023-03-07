@@ -10,23 +10,17 @@ namespace ReportPortal.Client.Abstractions.Resources
         /// <summary>
         /// Returns information about current accosiated project.
         /// </summary>
-        /// <returns>Project info.</returns>
-        Task<ProjectResponse> GetAsync();
-
-        /// <inheritdoc cref="GetAsync()"/>
         /// <param name="cancellationToken">Cancellation token.</param>
-        Task<ProjectResponse> GetAsync(CancellationToken cancellationToken);
+        /// <returns>Project info.</returns>
+        Task<ProjectResponse> GetAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Returns information about project filtered by name.
         /// </summary>
         /// <param name="projectName">Name of specified project.</param>
-        /// <returns>Project info.</returns>
-        Task<ProjectResponse> GetAsync(string projectName);
-
-        /// <inheritdoc cref="GetAsync(string)"/>
         /// <param name="cancellationToken">Cancellation token.</param>
-        Task<ProjectResponse> GetAsync(string projectName, CancellationToken cancellationToken);
+        /// <returns>Project info.</returns>
+        Task<ProjectResponse> GetAsync(string projectName, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Updates the project preference for user.
@@ -34,23 +28,17 @@ namespace ReportPortal.Client.Abstractions.Resources
         /// <param name="projectName">Name of specified project.</param>
         /// <param name="userName">Name of user.</param>
         /// <param name="filterId">Id of specified filter.</param>
-        /// <returns>Message with info.</returns>
-        Task<MessageResponse> UpdatePreferencesAsync(string projectName, string userName, long filterId);
-
-        /// <inheritdoc cref="UpdatePreferencesAsync(string, string, long)"/>
         /// <param name="cancellationToken">Cancellation token.</param>
-        Task<MessageResponse> UpdatePreferencesAsync(string projectName, string userName, long filterId, CancellationToken cancellationToken);
+        /// <returns>Message with info.</returns>
+        Task<MessageResponse> UpdatePreferencesAsync(string projectName, string userName, long filterId, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets all user preferences.
         /// </summary>
         /// <param name="projectName">Name of specified project.</param>
         /// <param name="userName">Name of user.</param>
-        /// <returns>Preference info.</returns>
-        Task<PreferenceResponse> GetAllPreferencesAsync(string projectName, string userName);
-
-        /// <inheritdoc cref="GetAllPreferencesAsync(string, string)"/>
         /// <param name="cancellationToken">Cancellation token.</param>
-        Task<PreferenceResponse> GetAllPreferencesAsync(string projectName, string userName, CancellationToken cancellationToken);
+        /// <returns>Preference info.</returns>
+        Task<PreferenceResponse> GetAllPreferencesAsync(string projectName, string userName, CancellationToken cancellationToken = default);
     }
 }

@@ -17,11 +17,6 @@ namespace ReportPortal.Client.Resources
         {
         }
 
-        public Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request)
-        {
-            return CreateAsync(request, CancellationToken.None);
-        }
-
         public async Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request, CancellationToken cancellationToken)
         {
             var uri = $"v2/{ProjectName}/log";
@@ -35,11 +30,6 @@ namespace ReportPortal.Client.Resources
                 var results = await CreateAsync(new CreateLogItemRequest[] { request }, cancellationToken).ConfigureAwait(false);
                 return results.LogItems.First();
             }
-        }
-
-        public Task<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests)
-        {
-            return CreateAsync(requests, CancellationToken.None);
         }
 
         public async Task<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests, CancellationToken cancellationToken)

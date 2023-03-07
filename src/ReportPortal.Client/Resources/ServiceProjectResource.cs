@@ -13,19 +13,9 @@ namespace ReportPortal.Client.Resources
         {
         }
 
-        public Task<ProjectResponse> GetAsync()
-        {
-            return GetAsync(CancellationToken.None);
-        }
-
         public async Task<ProjectResponse> GetAsync(CancellationToken cancellationToken)
         {
             return await GetAsJsonAsync<ProjectResponse>($"v1/project/{ProjectName}", cancellationToken).ConfigureAwait(false);
-        }
-
-        public Task<ProjectResponse> GetAsync(string projectName)
-        {
-            return GetAsync(projectName, CancellationToken.None);
         }
 
         public async Task<ProjectResponse> GetAsync(string projectName, CancellationToken cancellationToken)
@@ -33,13 +23,7 @@ namespace ReportPortal.Client.Resources
             return await GetAsJsonAsync<ProjectResponse>($"v1/project/{projectName}", cancellationToken).ConfigureAwait(false);
         }
 
-        public Task<MessageResponse> UpdatePreferencesAsync(string projectName, string userName, long filterId)
-        {
-            return UpdatePreferencesAsync(projectName, userName, filterId, CancellationToken.None);
-        }
-
-        public async Task<MessageResponse> UpdatePreferencesAsync(
-            string projectName, string userName, long filterId, CancellationToken cancellationToken)
+        public async Task<MessageResponse> UpdatePreferencesAsync(string projectName, string userName, long filterId, CancellationToken cancellationToken)
         {
             return await PutAsJsonAsync<MessageResponse, object>(
                 $"v1/project/{projectName}/preference/{userName}/{filterId}",
@@ -47,13 +31,7 @@ namespace ReportPortal.Client.Resources
                 cancellationToken).ConfigureAwait(false);
         }
 
-        public Task<PreferenceResponse> GetAllPreferencesAsync(string projectName, string userName)
-        {
-            return GetAllPreferencesAsync(projectName, userName, CancellationToken.None);
-        }
-
-        public async Task<PreferenceResponse> GetAllPreferencesAsync(
-            string projectName, string userName, CancellationToken cancellationToken)
+        public async Task<PreferenceResponse> GetAllPreferencesAsync(string projectName, string userName, CancellationToken cancellationToken)
         {
             return await GetAsJsonAsync<PreferenceResponse>(
                 $"v1/project/{projectName}/preference/{userName}", cancellationToken).ConfigureAwait(false);
