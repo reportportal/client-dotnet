@@ -18,16 +18,6 @@ namespace ReportPortal.Client.Resources
         {
         }
 
-        public Task<Content<LogItemResponse>> GetAsync()
-        {
-            return GetAsync(filterOption: null, CancellationToken.None);
-        }
-
-        public Task<Content<LogItemResponse>> GetAsync(FilterOption filterOption)
-        {
-            return GetAsync(filterOption, CancellationToken.None);
-        }
-
         public async Task<Content<LogItemResponse>> GetAsync(CancellationToken cancellationToken)
         {
             return await GetAsync(filterOption: null, cancellationToken).ConfigureAwait(false);
@@ -45,19 +35,9 @@ namespace ReportPortal.Client.Resources
             return await GetAsJsonAsync<Content<LogItemResponse>>(uri, cancellationToken).ConfigureAwait(false);
         }
 
-        public Task<LogItemResponse> GetAsync(string uuid)
-        {
-            return GetAsync(uuid, CancellationToken.None);
-        }
-
         public async Task<LogItemResponse> GetAsync(string uuid, CancellationToken cancellationToken)
         {
             return await GetAsJsonAsync<LogItemResponse>($"v1/{ProjectName}/log/uuid/{uuid}", cancellationToken).ConfigureAwait(false);
-        }
-
-        public Task<LogItemResponse> GetAsync(long id)
-        {
-            return GetAsync(id, CancellationToken.None);
         }
 
         public async Task<LogItemResponse> GetAsync(long id, CancellationToken cancellationToken)
@@ -65,19 +45,9 @@ namespace ReportPortal.Client.Resources
             return await GetAsJsonAsync<LogItemResponse>($"v1/{ProjectName}/log/{id}", cancellationToken).ConfigureAwait(false);
         }
 
-        public Task<byte[]> GetBinaryDataAsync(string id)
-        {
-            return GetBinaryDataAsync(id, CancellationToken.None);
-        }
-
         public async Task<byte[]> GetBinaryDataAsync(string id, CancellationToken cancellationToken)
         {
             return await GetAsBytesAsync($"v1/data/{ProjectName}/{id}", cancellationToken).ConfigureAwait(false);
-        }
-
-        public Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request)
-        {
-            return CreateAsync(request, CancellationToken.None);
         }
 
         public async Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request, CancellationToken cancellationToken)
@@ -93,11 +63,6 @@ namespace ReportPortal.Client.Resources
                 var results = await CreateAsync(new CreateLogItemRequest[] { request }, cancellationToken).ConfigureAwait(false);
                 return results.LogItems.First();
             }
-        }
-
-        public Task<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests)
-        {
-            return CreateAsync(requests, CancellationToken.None);
         }
 
         public async Task<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests, CancellationToken cancellationToken)
@@ -127,11 +92,6 @@ namespace ReportPortal.Client.Resources
 
                 return await SendHttpRequestAsync<LogItemsCreatedResponse>(HttpMethod.Post, uri, multipartContent, cancellationToken).ConfigureAwait(false);
             }
-        }
-
-        public Task<MessageResponse> DeleteAsync(long id)
-        {
-            return DeleteAsync(id, CancellationToken.None);
         }
 
         public async Task<MessageResponse> DeleteAsync(long id, CancellationToken cancellationToken)
