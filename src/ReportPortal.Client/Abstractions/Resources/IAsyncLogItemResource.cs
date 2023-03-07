@@ -14,22 +14,16 @@ namespace ReportPortal.Client.Abstractions.Resources
         /// Asynchronously creates a new log item.
         /// </summary>
         /// <param name="request">Information about representation of log item.</param>
-        /// <returns>Representation of just created log item.</returns>
-        Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request);
-
-        /// <inheritdoc cref="CreateAsync(CreateLogItemRequest)"/>
         /// <param name="cancellationToken">Cancellation token.</param>
-        Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request, CancellationToken cancellationToken);
+        /// <returns>Representation of just created log item.</returns>
+        Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Asynchronously creates a new log item.
         /// </summary>
         /// <param name="requests">Information about representation of log item.</param>
-        /// <returns>Representation of just created log item.</returns>
-        Task<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests);
-
-        /// <inheritdoc cref="CreateAsync(CreateLogItemRequest[])"/>
         /// <param name="cancellationToken">Cancellation token.</param>
-        Task<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests, CancellationToken cancellationToken);
+        /// <returns>Representation of just created log item.</returns>
+        Task<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests, CancellationToken cancellationToken = default);
     }
 }
