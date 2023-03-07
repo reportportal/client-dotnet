@@ -22,7 +22,7 @@ namespace ReportPortal.Shared.Tests.Reporter.Http
             var httpClient = factory.Create();
             httpClient.Should().NotBeNull();
 
-            httpClient.BaseAddress.Should().Be("http://abc.com/api/v1/");
+            httpClient.BaseAddress.Should().Be("http://abc.com");
             httpClient.DefaultRequestHeaders.Authorization.Should().NotBeNull();
             httpClient.DefaultRequestHeaders.Authorization.Scheme.Should().Be("Bearer");
             httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be("123");

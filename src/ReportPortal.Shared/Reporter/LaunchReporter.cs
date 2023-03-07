@@ -46,6 +46,7 @@ namespace ReportPortal.Shared.Reporter
             _extensionManager = extensionManager ?? throw new ArgumentNullException(nameof(extensionManager));
 
             _reportEventsSource = new ReportEventsSource();
+
             if (extensionManager.ReportEventObservers != null)
             {
                 foreach (var reportEventObserver in extensionManager.ReportEventObservers)
@@ -87,7 +88,10 @@ namespace ReportPortal.Shared.Reporter
 
         public void Start(StartLaunchRequest request)
         {
-            if (request == null) throw new ArgumentNullException(nameof(request));
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
 
             TraceLogger.Verbose($"Scheduling request to start new '{request.Name}' launch in {GetHashCode()} proxy instance");
 
@@ -223,18 +227,13 @@ namespace ReportPortal.Shared.Reporter
                         }
                     }
 
-                    if (request.EndTime < _launchInfo.StartTime)
-                    {
-                        request.EndTime = _launchInfo.StartTime;
-                        _launchInfo.FinishTime = request.EndTime;
-                    }
-
                     if (!_isExternalLaunchId)
                     {
                         NotifyFinishing(request);
 
                         var launchFinishedResponse = await _requestExecuter.ExecuteAsync(() => _service.Launch.FinishAsync(Info.Uuid, request), null, null).ConfigureAwait(false);
 
+                        _launchInfo.FinishTime = request.EndTime;
                         _launchInfo.Url = launchFinishedResponse.Link;
 
                         NotifyFinished();
@@ -264,6 +263,7 @@ namespace ReportPortal.Shared.Reporter
                         ChildTestReporters = new List<ITestReporter>();
                     }
                 }
+
                 ChildTestReporters.Add(newTestNode);
             }
 

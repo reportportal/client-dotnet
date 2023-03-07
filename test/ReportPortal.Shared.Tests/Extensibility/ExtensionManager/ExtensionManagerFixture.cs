@@ -14,7 +14,9 @@ namespace ReportPortal.Shared.Tests.Extensibility.ExtensionManager
             var manager = new Shared.Extensibility.ExtensionManager();
             manager.Explore(Environment.CurrentDirectory);
 
-            manager.ReportEventObservers.Count.Should().Be(1, "google analytic event observer");
+            manager.ReportEventObservers.Count.Should()
+                .Be(2, "default and google analytic observers should be registered by default");
+
             manager.CommandsListeners.Should().HaveCount(1);
         }
 

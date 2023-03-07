@@ -52,7 +52,10 @@ namespace ReportPortal.Shared.Reporter
 
         public void Start(StartTestItemRequest startTestItemRequest)
         {
-            if (startTestItemRequest == null) throw new ArgumentNullException(nameof(startTestItemRequest));
+            if (startTestItemRequest == null)
+            {
+                throw new ArgumentNullException(nameof(startTestItemRequest));
+            }
 
             if (StartTask != null)
             {
@@ -79,13 +82,9 @@ namespace ReportPortal.Shared.Reporter
                 }
 
                 startTestItemRequest.LaunchUuid = LaunchReporter.Info.Uuid;
+
                 if (ParentTestReporter == null)
                 {
-                    if (startTestItemRequest.StartTime < LaunchReporter.Info.StartTime)
-                    {
-                        startTestItemRequest.StartTime = LaunchReporter.Info.StartTime;
-                    }
-
                     NotifyStarting(startTestItemRequest);
 
                     var testModel = await _requestExecuter.ExecuteAsync(() => _service.TestItem.StartAsync(startTestItemRequest), null, LaunchReporter.StatisticsCounter.StartTestItemStatisticsCounter).ConfigureAwait(false);
@@ -101,11 +100,6 @@ namespace ReportPortal.Shared.Reporter
                 }
                 else
                 {
-                    if (startTestItemRequest.StartTime < ParentTestReporter.Info.StartTime)
-                    {
-                        startTestItemRequest.StartTime = ParentTestReporter.Info.StartTime;
-                    }
-
                     NotifyStarting(startTestItemRequest);
 
                     var testModel = await _requestExecuter.ExecuteAsync(() => _service.TestItem.StartAsync(ParentTestReporter.Info.Uuid, startTestItemRequest), null, LaunchReporter.StatisticsCounter.StartTestItemStatisticsCounter).ConfigureAwait(false);
@@ -128,7 +122,10 @@ namespace ReportPortal.Shared.Reporter
 
         public void Finish(FinishTestItemRequest request)
         {
-            if (request == null) throw new ArgumentNullException(nameof(request));
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
 
             TraceLogger.Verbose($"Scheduling request to finish test item in {GetHashCode()} proxy instance");
 
@@ -163,6 +160,7 @@ namespace ReportPortal.Shared.Reporter
                 {
                     throw new InsufficientExecutionStackException("Some of child test item(s) are not scheduled to finish yet.");
                 }
+
                 dependentTasks.AddRange(childTestReporterFinishTasks);
             }
 
@@ -207,17 +205,12 @@ namespace ReportPortal.Shared.Reporter
                         }
                     }
 
-                    _testInfo.FinishTime = request.EndTime;
-                    _testInfo.Status = request.Status;
-
-                    if (request.EndTime < Info.StartTime)
-                    {
-                        request.EndTime = Info.StartTime;
-                    }
-
                     NotifyFinishing(request);
 
                     await _requestExecuter.ExecuteAsync(() => _service.TestItem.FinishAsync(Info.Uuid, request), null, LaunchReporter.StatisticsCounter.FinishTestItemStatisticsCounter).ConfigureAwait(false);
+
+                    _testInfo.FinishTime = request.EndTime;
+                    _testInfo.Status = request.Status;
 
                     NotifyFinished();
                 }
@@ -251,6 +244,7 @@ namespace ReportPortal.Shared.Reporter
                         ChildTestReporters = new List<ITestReporter>();
                     }
                 }
+
                 ChildTestReporters.Add(newTestNode);
             }
 
@@ -324,5 +318,4 @@ namespace ReportPortal.Shared.Reporter
             return args;
         }
     }
-
 }

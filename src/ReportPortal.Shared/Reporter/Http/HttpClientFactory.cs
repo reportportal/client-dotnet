@@ -49,7 +49,7 @@ namespace ReportPortal.Shared.Reporter.Http
 
             var token = Configuration.GetValue<string>(ConfigurationPath.ServerAuthenticationUuid);
 
-            httpClient.BaseAddress = new Uri(url).Normalize();
+            httpClient.BaseAddress = new Uri(url);
 
             httpClient.DefaultRequestHeaders.Clear();
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));

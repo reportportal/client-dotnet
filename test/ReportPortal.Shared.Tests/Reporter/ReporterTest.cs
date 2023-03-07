@@ -1,8 +1,10 @@
 ﻿using FluentAssertions;
 using Moq;
+using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Responses;
 using ReportPortal.Shared.Extensibility;
+using ReportPortal.Shared.Extensibility.Embedded.Normalization;
 using ReportPortal.Shared.Reporter;
 using ReportPortal.Shared.Tests.Helpers;
 using System;
@@ -525,21 +527,6 @@ namespace ReportPortal.Shared.Tests.Reporter
             service.Verify(s => s.Launch.GetAsync(It.IsAny<string>()), Times.Once);
 
             launch.Info.Uuid.Should().Be("123");
-        }
-
-        [Fact]
-        public void LaunchShouldCareOfFinishTime()
-        {
-            var launchStartTime = DateTime.UtcNow;
-
-            var service = new MockServiceBuilder().Build();
-
-            var launch = new LaunchReporter(service.Object, null, null, new ExtensionManager());
-            launch.Start(new StartLaunchRequest() { StartTime = launchStartTime });
-            launch.Finish(new FinishLaunchRequest() { EndTime = launchStartTime.AddDays(-1) });
-            launch.Sync();
-
-            launch.Info.FinishTime.Should().Be(launch.Info.StartTime);
         }
 
         [Fact]
