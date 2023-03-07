@@ -50,5 +50,10 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// Test Item to be marked as retry.
         /// </summary>
         public string RetryOf { get; set; }
+
+        /// <summary>
+        /// Uuid of the parent launch.
+        /// </summary>
+        public string LaunchUuid { get; set; }
     }
 }

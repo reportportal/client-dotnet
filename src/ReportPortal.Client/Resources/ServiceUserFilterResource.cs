@@ -31,7 +31,7 @@ namespace ReportPortal.Client.Resources
 
         public async Task<Content<UserFilterResponse>> GetAsync(FilterOption filterOption, CancellationToken cancellationToken)
         {
-            var uri = $"{ProjectName}/filter";
+            var uri = $"v1/{ProjectName}/filter";
             if (filterOption != null)
             {
                 uri += $"?{filterOption}";
@@ -48,7 +48,7 @@ namespace ReportPortal.Client.Resources
         public async Task<UserFilterCreatedResponse> CreateAsync(CreateUserFilterRequest request, CancellationToken cancellationToken)
         {
             return await PostAsJsonAsync<UserFilterCreatedResponse, CreateUserFilterRequest>(
-                $"{ProjectName}/filter", request, cancellationToken).ConfigureAwait(false);
+                $"v1/{ProjectName}/filter", request, cancellationToken).ConfigureAwait(false);
         }
 
         public Task<MessageResponse> UpdateAsync(long id, UpdateUserFilterRequest request)
@@ -59,7 +59,7 @@ namespace ReportPortal.Client.Resources
         public async Task<MessageResponse> UpdateAsync(long id, UpdateUserFilterRequest request, CancellationToken cancellationToken)
         {
             return await PutAsJsonAsync<MessageResponse, UpdateUserFilterRequest>(
-                $"{ProjectName}/filter/{id}", request, cancellationToken).ConfigureAwait(false);
+                $"v1/{ProjectName}/filter/{id}", request, cancellationToken).ConfigureAwait(false);
         }
 
         public Task<UserFilterResponse> GetAsync(long id)
@@ -69,7 +69,7 @@ namespace ReportPortal.Client.Resources
 
         public async Task<UserFilterResponse> GetAsync(long id, CancellationToken cancellationToken)
         {
-            return await GetAsJsonAsync<UserFilterResponse>($"{ProjectName}/filter/{id}", cancellationToken).ConfigureAwait(false);
+            return await GetAsJsonAsync<UserFilterResponse>($"v1/{ProjectName}/filter/{id}", cancellationToken).ConfigureAwait(false);
         }
 
         public Task<MessageResponse> DeleteAsync(long id)
@@ -79,7 +79,7 @@ namespace ReportPortal.Client.Resources
 
         public async Task<MessageResponse> DeleteAsync(long id, CancellationToken cancellationToken)
         {
-            return await DeleteAsJsonAsync<MessageResponse>($"{ProjectName}/filter/{id}", cancellationToken).ConfigureAwait(false);
+            return await DeleteAsJsonAsync<MessageResponse>($"v1/{ProjectName}/filter/{id}", cancellationToken).ConfigureAwait(false);
         }
     }
 }

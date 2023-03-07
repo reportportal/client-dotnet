@@ -32,8 +32,11 @@ namespace ReportPortal.Client
             _httpClient.BaseAddress = _httpClient.BaseAddress?.Normalize();
 
             Launch = new ServiceLaunchResource(_httpClient, ProjectName);
+            AsyncLaunch = new ServiceAsyncLaunchResource(_httpClient, ProjectName);
             TestItem = new ServiceTestItemResource(_httpClient, ProjectName);
+            AsyncTestItem = new ServiceAsyncTestItemResource(_httpClient, ProjectName);
             LogItem = new ServiceLogItemResource(_httpClient, ProjectName);
+            AsyncLogItem = new ServiceAsyncLogItemResource(_httpClient, ProjectName);
             User = new ServiceUserResource(_httpClient, ProjectName);
             UserFilter = new ServiceUserFilterResource(_httpClient, ProjectName);
             Project = new ServiceProjectResource(_httpClient, ProjectName);
@@ -47,11 +50,20 @@ namespace ReportPortal.Client
         /// <inheritdoc cref="ILaunchResource"/>
         public ILaunchResource Launch { get; }
 
+        /// <inheritdoc cref="IAsyncLaunchResource"/>
+        public IAsyncLaunchResource AsyncLaunch { get; }
+
         /// <inheritdoc cref="ITestItemResource"/>
         public ITestItemResource TestItem { get; }
 
+        /// <inheritdoc cref="IAsyncTestItemResource"/>
+        public IAsyncTestItemResource AsyncTestItem { get; }
+
         /// <inheritdoc cref="ILogItemResource"/>
         public ILogItemResource LogItem { get; }
+
+        /// <inheritdoc cref="IAsyncLogItemResource"/>
+        public IAsyncLogItemResource AsyncLogItem { get; }
 
         /// <inheritdoc cref="IUserResource"/>
         public IUserResource User { get; }

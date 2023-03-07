@@ -36,6 +36,7 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
             Assert.NotNull(test.Uuid);
             var message = await Service.TestItem.FinishAsync(test.Uuid, new FinishTestItemRequest
             {
+                LaunchUuid = _fixture.LaunchUuid,
                 EndTime = DateTime.UtcNow,
                 Status = Status.Passed
             });

@@ -6,18 +6,29 @@ namespace ReportPortal.Client.Extentions
     {
         public static Uri Normalize(this Uri uri)
         {
-            var normalizedUri = uri;
+            var normalizedUriString = string.Format("{0}://{1}", uri.Scheme, uri.Authority);
 
-            if (!uri.LocalPath.ToLowerInvariant().Contains("api/v1"))
+            for (int i = 0; i < uri.Segments.Length; i++)
             {
-                normalizedUri = new Uri(uri + "api/v1/");
-            }
-            if (!normalizedUri.ToString().EndsWith("/"))
-            {
-                normalizedUri = new Uri(normalizedUri + "/");
+                if (!uri.Segments[i].Equals("v1/", StringComparison.OrdinalIgnoreCase) && !uri.Segments[i].Equals("v1", StringComparison.OrdinalIgnoreCase))
+                {
+                    normalizedUriString += uri.Segments[i];
+                }
             }
 
-            return normalizedUri;
+            normalizedUriString = normalizedUriString.TrimEnd("/".ToCharArray());
+
+            if (!normalizedUriString.EndsWith("api", StringComparison.OrdinalIgnoreCase))
+            {
+                normalizedUriString += "/api";
+            }
+
+            if (!normalizedUriString.EndsWith("/"))
+            {
+                normalizedUriString += "/";
+            }
+
+            return new Uri(normalizedUriString);
         }
     }
 }

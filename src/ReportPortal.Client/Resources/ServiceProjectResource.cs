@@ -20,7 +20,7 @@ namespace ReportPortal.Client.Resources
 
         public async Task<ProjectResponse> GetAsync(CancellationToken cancellationToken)
         {
-            return await GetAsJsonAsync<ProjectResponse>($"project/{ProjectName}", cancellationToken).ConfigureAwait(false);
+            return await GetAsJsonAsync<ProjectResponse>($"v1/project/{ProjectName}", cancellationToken).ConfigureAwait(false);
         }
 
         public Task<ProjectResponse> GetAsync(string projectName)
@@ -30,7 +30,7 @@ namespace ReportPortal.Client.Resources
 
         public async Task<ProjectResponse> GetAsync(string projectName, CancellationToken cancellationToken)
         {
-            return await GetAsJsonAsync<ProjectResponse>($"project/{projectName}", cancellationToken).ConfigureAwait(false);
+            return await GetAsJsonAsync<ProjectResponse>($"v1/project/{projectName}", cancellationToken).ConfigureAwait(false);
         }
 
         public Task<MessageResponse> UpdatePreferencesAsync(string projectName, string userName, long filterId)
@@ -42,7 +42,7 @@ namespace ReportPortal.Client.Resources
             string projectName, string userName, long filterId, CancellationToken cancellationToken)
         {
             return await PutAsJsonAsync<MessageResponse, object>(
-                $"project/{projectName}/preference/{userName}/{filterId}",
+                $"v1/project/{projectName}/preference/{userName}/{filterId}",
                 string.Empty,
                 cancellationToken).ConfigureAwait(false);
         }
@@ -56,7 +56,7 @@ namespace ReportPortal.Client.Resources
             string projectName, string userName, CancellationToken cancellationToken)
         {
             return await GetAsJsonAsync<PreferenceResponse>(
-                $"project/{projectName}/preference/{userName}", cancellationToken).ConfigureAwait(false);
+                $"v1/project/{projectName}/preference/{userName}", cancellationToken).ConfigureAwait(false);
         }
     }
 }
