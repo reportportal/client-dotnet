@@ -23,23 +23,19 @@ namespace ReportPortal.Shared.Benchmark.Reporter
         public IUserFilterResource UserFilter => throw new NotImplementedException();
 
         public IProjectResource Project => throw new NotImplementedException();
+
+        public IAsyncLaunchResource AsyncLaunch => new NopAsyncLaunchResource();
+
+        public IAsyncTestItemResource AsyncTestItem => new NopAsyncTestItemResource();
+
+        public IAsyncLogItemResource AsyncLogItem => new NopAsyncLogItemResource();
     }
 
     public class NopLaunchResource : ILaunchResource
     {
-        public async Task<MessageResponse> AnalyzeAsync(AnalyzeLaunchRequest model)
-        {
-            return await AnalyzeAsync(model, CancellationToken.None).ConfigureAwait(false);
-        }
-
         public Task<MessageResponse> AnalyzeAsync(AnalyzeLaunchRequest request, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
-        }
-
-        public async Task<MessageResponse> DeleteAsync(long id)
-        {
-            return await DeleteAsync(id, CancellationToken.None).ConfigureAwait(false);
         }
 
         public Task<MessageResponse> DeleteAsync(long id, CancellationToken cancellationToken)
@@ -47,29 +43,9 @@ namespace ReportPortal.Shared.Benchmark.Reporter
             throw new NotImplementedException();
         }
 
-        public async Task<LaunchFinishedResponse> FinishAsync(string uuid, FinishLaunchRequest model)
-        {
-            return await FinishAsync(uuid, model, CancellationToken.None).ConfigureAwait(false);
-        }
-
         public async Task<LaunchFinishedResponse> FinishAsync(string uuid, FinishLaunchRequest request, CancellationToken cancellationToken)
         {
             return await Task.FromResult(new LaunchFinishedResponse());
-        }
-
-        public async Task<LaunchResponse> GetAsync(long id)
-        {
-            return await GetAsync(id, CancellationToken.None).ConfigureAwait(false);
-        }
-
-        public async Task<LaunchResponse> GetAsync(string uuid)
-        {
-            return await GetAsync(uuid, CancellationToken.None).ConfigureAwait(false);
-        }
-
-        public async Task<Content<LaunchResponse>> GetAsync(FilterOption filterOption)
-        {
-            return await GetAsync(filterOption, CancellationToken.None).ConfigureAwait(false);
         }
 
         public Task<LaunchResponse> GetAsync(long id, CancellationToken cancellationToken)
@@ -82,11 +58,6 @@ namespace ReportPortal.Shared.Benchmark.Reporter
             throw new NotImplementedException();
         }
 
-        public async Task<Content<LaunchResponse>> GetAsync()
-        {
-            return await GetAsync(CancellationToken.None).ConfigureAwait(false);
-        }
-
         public async Task<Content<LaunchResponse>> GetAsync(CancellationToken cancellationToken)
         {
             return await GetAsync(filterOption: null, cancellationToken).ConfigureAwait(false);
@@ -95,16 +66,6 @@ namespace ReportPortal.Shared.Benchmark.Reporter
         public Task<Content<LaunchResponse>> GetAsync(FilterOption filterOption, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
-        }
-
-        public async Task<Content<LaunchResponse>> GetDebugAsync(FilterOption filterOption)
-        {
-            return await GetDebugAsync(filterOption, CancellationToken.None).ConfigureAwait(false);
-        }
-
-        public async Task<Content<LaunchResponse>> GetDebugAsync()
-        {
-            return await GetDebugAsync(filterOption: null, CancellationToken.None).ConfigureAwait(false);
         }
 
         public async Task<Content<LaunchResponse>> GetDebugAsync(CancellationToken cancellationToken)
@@ -117,19 +78,9 @@ namespace ReportPortal.Shared.Benchmark.Reporter
             throw new NotImplementedException();
         }
 
-        public async Task<LaunchResponse> MergeAsync(MergeLaunchesRequest model)
-        {
-            return await MergeAsync(model, CancellationToken.None).ConfigureAwait(false);
-        }
-
         public Task<LaunchResponse> MergeAsync(MergeLaunchesRequest request, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
-        }
-
-        public async Task<LaunchCreatedResponse> StartAsync(StartLaunchRequest request)
-        {
-            return await StartAsync(request, CancellationToken.None).ConfigureAwait(false);
         }
 
         public async Task<LaunchCreatedResponse> StartAsync(StartLaunchRequest request, CancellationToken cancellationToken)
@@ -137,19 +88,9 @@ namespace ReportPortal.Shared.Benchmark.Reporter
             return await Task.FromResult(new LaunchCreatedResponse { Uuid = Guid.NewGuid().ToString() });
         }
 
-        public async Task<LaunchFinishedResponse> StopAsync(long id, FinishLaunchRequest model)
-        {
-            return await StopAsync(id, model, CancellationToken.None).ConfigureAwait(false);
-        }
-
         public Task<LaunchFinishedResponse> StopAsync(long id, FinishLaunchRequest request, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
-        }
-
-        public async Task<MessageResponse> UpdateAsync(long id, UpdateLaunchRequest model)
-        {
-            return await UpdateAsync(id, model, CancellationToken.None).ConfigureAwait(false);
         }
 
         public Task<MessageResponse> UpdateAsync(long id, UpdateLaunchRequest request, CancellationToken cancellationToken)
@@ -158,21 +99,29 @@ namespace ReportPortal.Shared.Benchmark.Reporter
         }
     }
 
-    public class NopTestItemResource : ITestItemResource
+    public class NopAsyncLaunchResource : IAsyncLaunchResource
     {
-        public async Task<IEnumerable<Issue>> AssignIssuesAsync(AssignTestItemIssuesRequest model)
+        public async Task<LaunchFinishedResponse> FinishAsync(string uuid, FinishLaunchRequest request, CancellationToken cancellationToken = default)
         {
-            return await AssignIssuesAsync(model, CancellationToken.None).ConfigureAwait(false);
+            return await Task.FromResult(new LaunchFinishedResponse());
         }
 
-        public Task<IEnumerable<Issue>> AssignIssuesAsync(AssignTestItemIssuesRequest request, CancellationToken cancellationToken)
+        public Task<LaunchResponse> MergeAsync(MergeLaunchesRequest request, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<MessageResponse> DeleteAsync(long id)
+        public async Task<LaunchCreatedResponse> StartAsync(StartLaunchRequest request, CancellationToken cancellationToken = default)
         {
-            return await DeleteAsync(id, CancellationToken.None).ConfigureAwait(false);
+            return await Task.FromResult(new LaunchCreatedResponse { Uuid = Guid.NewGuid().ToString() });
+        }
+    }
+
+    public class NopTestItemResource : ITestItemResource
+    {
+        public Task<IEnumerable<Issue>> AssignIssuesAsync(AssignTestItemIssuesRequest request, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
 
         public Task<MessageResponse> DeleteAsync(long id, CancellationToken cancellationToken)
@@ -180,29 +129,14 @@ namespace ReportPortal.Shared.Benchmark.Reporter
             throw new NotImplementedException();
         }
 
-        public async Task<MessageResponse> FinishAsync(string id, FinishTestItemRequest model)
-        {
-            return await FinishAsync(id, model, CancellationToken.None);
-        }
-
         public async Task<MessageResponse> FinishAsync(string uuid, FinishTestItemRequest request, CancellationToken cancellationToken)
         {
             return await Task.FromResult(new MessageResponse());
         }
 
-        public async Task<TestItemResponse> GetAsync(long id)
-        {
-            return await GetAsync(id, CancellationToken.None).ConfigureAwait(false);
-        }
-
         public async Task<TestItemResponse> GetAsync(string uuid)
         {
             return await GetAsync(uuid, CancellationToken.None).ConfigureAwait(false);
-        }
-
-        public async Task<Content<TestItemResponse>> GetAsync(FilterOption filterOption)
-        {
-            return await GetAsync(filterOption, CancellationToken.None).ConfigureAwait(false);
         }
 
         public Task<TestItemResponse> GetAsync(long id, CancellationToken cancellationToken)
@@ -215,11 +149,6 @@ namespace ReportPortal.Shared.Benchmark.Reporter
             throw new NotImplementedException();
         }
 
-        public Task<Content<TestItemResponse>> GetAsync()
-        {
-            return GetAsync(filterOption: null, CancellationToken.None);
-        }
-
         public Task<Content<TestItemResponse>> GetAsync(CancellationToken cancellationToken)
         {
             return GetAsync(filterOption: null, cancellationToken);
@@ -230,24 +159,9 @@ namespace ReportPortal.Shared.Benchmark.Reporter
             throw new NotImplementedException();
         }
 
-        public async Task<Content<TestItemHistoryContainer>> GetHistoryAsync(long testItemId, int depth)
-        {
-            return await GetHistoryAsync(testItemId, depth, CancellationToken.None).ConfigureAwait(false);
-        }
-
         public Task<Content<TestItemHistoryContainer>> GetHistoryAsync(long id, int depth, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
-        }
-
-        public async Task<TestItemCreatedResponse> StartAsync(StartTestItemRequest model)
-        {
-            return await StartAsync(model, CancellationToken.None);
-        }
-
-        public async Task<TestItemCreatedResponse> StartAsync(string uuid, StartTestItemRequest model)
-        {
-            return await StartAsync(uuid, model, CancellationToken.None);
         }
 
         public async Task<TestItemCreatedResponse> StartAsync(StartTestItemRequest request, CancellationToken cancellationToken)
@@ -260,14 +174,27 @@ namespace ReportPortal.Shared.Benchmark.Reporter
             return await Task.FromResult(new TestItemCreatedResponse { Uuid = Guid.NewGuid().ToString() });
         }
 
-        public async Task<MessageResponse> UpdateAsync(long id, UpdateTestItemRequest model)
-        {
-            return await UpdateAsync(id, model, CancellationToken.None).ConfigureAwait(false);
-        }
-
         public Task<MessageResponse> UpdateAsync(long id, UpdateTestItemRequest request, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
+        }
+    }
+
+    public class NopAsyncTestItemResource : IAsyncTestItemResource
+    {
+        public async Task<MessageResponse> FinishAsync(string uuid, FinishTestItemRequest request, CancellationToken cancellationToken = default)
+        {
+            return await Task.FromResult(new MessageResponse());
+        }
+
+        public async Task<TestItemCreatedResponse> StartAsync(StartTestItemRequest request, CancellationToken cancellationToken = default)
+        {
+            return await Task.FromResult(new TestItemCreatedResponse { Uuid = Guid.NewGuid().ToString() });
+        }
+
+        public async Task<TestItemCreatedResponse> StartAsync(string uuid, StartTestItemRequest model, CancellationToken cancellationToken = default)
+        {
+            return await Task.FromResult(new TestItemCreatedResponse { Uuid = Guid.NewGuid().ToString() });
         }
     }
 
@@ -351,6 +278,19 @@ namespace ReportPortal.Shared.Benchmark.Reporter
         public Task<byte[]> GetBinaryDataAsync(string id, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
+        }
+    }
+
+    public class NopAsyncLogItemResource : IAsyncLogItemResource
+    {
+        public async Task<LogItemCreatedResponse> CreateAsync(CreateLogItemRequest request, CancellationToken cancellationToken = default)
+        {
+            return await Task.FromResult(new LogItemCreatedResponse());
+        }
+
+        public async Task<LogItemsCreatedResponse> CreateAsync(CreateLogItemRequest[] requests, CancellationToken cancellationToken = default)
+        {
+            return await Task.FromResult(new LogItemsCreatedResponse());
         }
     }
 }

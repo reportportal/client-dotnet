@@ -13,6 +13,7 @@
         public static readonly string ServerAuthenticationUuid = $"Server{KeyDelimeter}Authentication{KeyDelimeter}Uuid";
 
         public static readonly string LogsBatchCapacity = $"Server{KeyDelimeter}LogsBatchCapacity";
+        public static readonly string AsyncReporting = $"Server{KeyDelimeter}AsyncReporting";
 
         public static readonly string LaunchName = $"Launch{KeyDelimeter}Name";
         public static readonly string LaunchDescription = $"Launch{KeyDelimeter}Description";

@@ -9,6 +9,8 @@ using ReportPortal.Shared.Extensibility;
 using ReportPortal.Shared.Extensibility.ReportEvents.EventArgs;
 using ReportPortal.Shared.Internal.Delegating;
 using ReportPortal.Shared.Reporter.Statistics;
+using ReportPortal.Client.Abstractions.Responses;
+using System.Threading;
 
 namespace ReportPortal.Shared.Reporter
 {
@@ -16,6 +18,7 @@ namespace ReportPortal.Shared.Reporter
     {
         private Internal.Logging.ITraceLogger TraceLogger { get; } = Internal.Logging.TraceLogManager.Instance.GetLogger<LaunchReporter>();
 
+        private readonly bool _asyncReporting;
         private readonly IConfiguration _configuration;
         private readonly IClientService _service;
         private readonly IRequestExecuter _requestExecuter;
@@ -41,6 +44,7 @@ namespace ReportPortal.Shared.Reporter
                 _configuration = new ConfigurationBuilder().AddDefaults(configurationDirectory).Build();
             }
 
+            _asyncReporting = _configuration.GetValue(ConfigurationPath.AsyncReporting, false);
             _requestExecuter = requestExecuter ?? new RequestExecuterFactory(_configuration).Create();
 
             _extensionManager = extensionManager ?? throw new ArgumentNullException(nameof(extensionManager));
@@ -116,7 +120,11 @@ namespace ReportPortal.Shared.Reporter
                 {
                     NotifyStarting(request);
 
-                    var launch = await _requestExecuter.ExecuteAsync(() => _service.Launch.StartAsync(request), null, null).ConfigureAwait(false);
+                    var launch = await _requestExecuter
+                        .ExecuteAsync(() => _asyncReporting
+                            ? _service.AsyncLaunch.StartAsync(request)
+                            : _service.Launch.StartAsync(request), null, null)
+                        .ConfigureAwait(false);
 
                     _launchInfo = new LaunchInfo
                     {
@@ -231,7 +239,11 @@ namespace ReportPortal.Shared.Reporter
                     {
                         NotifyFinishing(request);
 
-                        var launchFinishedResponse = await _requestExecuter.ExecuteAsync(() => _service.Launch.FinishAsync(Info.Uuid, request), null, null).ConfigureAwait(false);
+                        var launchFinishedResponse = await _requestExecuter
+                            .ExecuteAsync(() => _asyncReporting
+                                ? _service.AsyncLaunch.FinishAsync(Info.Uuid, request)
+                                : _service.Launch.FinishAsync(Info.Uuid, request), null, null)
+                            .ConfigureAwait(false);
 
                         _launchInfo.FinishTime = request.EndTime;
                         _launchInfo.Url = launchFinishedResponse.Link;

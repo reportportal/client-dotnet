@@ -9,13 +9,14 @@ using ReportPortal.Shared.Reporter.Statistics;
 using ReportPortal.Shared.Tests.Helpers;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace ReportPortal.Shared.Tests.Reporter
 {
-    public class LogsReporterFixture
+    public class AsyncLogsReporterFixture
     {
         readonly Mock<ITestReporter> _testReporter;
         readonly IConfiguration _configuration;
@@ -24,7 +25,7 @@ namespace ReportPortal.Shared.Tests.Reporter
         readonly Mock<ILogRequestAmender> _logRequestAmender;
         readonly ReportEventsSource _reportEventsSource;
 
-        public LogsReporterFixture()
+        public AsyncLogsReporterFixture()
         {
             _testReporter = new Mock<ITestReporter>();
             _testReporter.SetupGet(r => r.StatisticsCounter).Returns(() => new LaunchStatisticsCounter());
@@ -32,11 +33,12 @@ namespace ReportPortal.Shared.Tests.Reporter
             _testReporter.SetupGet(r => r.Info).Returns(() => new TestInfo { });
 
             _configuration = new ConfigurationBuilder().Build();
+            _configuration.Properties[ConfigurationPath.AsyncReporting] = true;
+
             _requestExecuter = new NoneRetryRequestExecuter(null);
             _reportEventsSource = new ReportEventsSource();
 
             _extensionManager = new ExtensionManager();
-
             _logRequestAmender = new Mock<ILogRequestAmender>();
         }
 
@@ -45,9 +47,17 @@ namespace ReportPortal.Shared.Tests.Reporter
         {
             var service = new MockServiceBuilder().Build();
 
-            var logsReporter = new LogsReporter(_testReporter.Object, service.Object, _configuration, _extensionManager, _requestExecuter, _logRequestAmender.Object, _reportEventsSource, 1);
+            var logsReporter = new LogsReporter(
+                _testReporter.Object,
+                service.Object,
+                _configuration,
+                _extensionManager,
+                _requestExecuter,
+                _logRequestAmender.Object,
+                _reportEventsSource,
+                1);
 
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < 100; i++)
             {
                 logsReporter.Log(new CreateLogItemRequest
                 {
@@ -58,7 +68,7 @@ namespace ReportPortal.Shared.Tests.Reporter
 
             logsReporter.Sync();
 
-            service.Verify(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>(), default), Times.Exactly(50));
+            service.Verify(s => s.AsyncLogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>(), default), Times.Exactly(100));
         }
 
         [Fact]
@@ -66,7 +76,15 @@ namespace ReportPortal.Shared.Tests.Reporter
         {
             var service = new MockServiceBuilder().Build();
 
-            var logsReporter = new LogsReporter(_testReporter.Object, service.Object, _configuration, _extensionManager, _requestExecuter, _logRequestAmender.Object, _reportEventsSource, 20);
+            var logsReporter = new LogsReporter(
+                _testReporter.Object,
+                service.Object,
+                _configuration,
+                _extensionManager,
+                _requestExecuter,
+                _logRequestAmender.Object,
+                _reportEventsSource, 
+                20);
 
             for (int i = 0; i < 60; i++)
             {
@@ -80,7 +98,7 @@ namespace ReportPortal.Shared.Tests.Reporter
             logsReporter.Sync();
 
             // sometimes on slow machines it's not exact 3 invocations
-            service.Verify(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>(), default), Times.Between(3, 4, Moq.Range.Inclusive));
+            service.Verify(s => s.AsyncLogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>(), default), Times.Between(3, 4, Moq.Range.Inclusive));
         }
 
         [Fact]
@@ -89,7 +107,15 @@ namespace ReportPortal.Shared.Tests.Reporter
             var service = new MockServiceBuilder().Build();
             service.Setup(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>(), default)).Throws<Exception>();
 
-            var logsReporter = new LogsReporter(_testReporter.Object, service.Object, _configuration, _extensionManager, _requestExecuter, _logRequestAmender.Object, _reportEventsSource, 1);
+            var logsReporter = new LogsReporter(
+                _testReporter.Object,
+                service.Object,
+                _configuration,
+                _extensionManager,
+                _requestExecuter,
+                _logRequestAmender.Object,
+                _reportEventsSource,
+                1);
 
             for (int i = 0; i < 2; i++)
             {
@@ -106,7 +132,7 @@ namespace ReportPortal.Shared.Tests.Reporter
             }
             catch (Exception) { }
 
-            service.Verify(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>(), default), Times.Exactly(2));
+            service.Verify(s => s.AsyncLogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>(), default), Times.Exactly(2));
         }
 
         [Fact]
@@ -114,7 +140,15 @@ namespace ReportPortal.Shared.Tests.Reporter
         {
             var service = new MockServiceBuilder().Build();
 
-            var logsReporter = new LogsReporter(_testReporter.Object, service.Object, _configuration, _extensionManager, _requestExecuter, _logRequestAmender.Object, _reportEventsSource, 20);
+            var logsReporter = new LogsReporter(
+                _testReporter.Object,
+                service.Object,
+                _configuration,
+                _extensionManager,
+                _requestExecuter,
+                _logRequestAmender.Object,
+                _reportEventsSource,
+                20);
 
             for (int i = 0; i < 2; i++)
             {
@@ -128,7 +162,7 @@ namespace ReportPortal.Shared.Tests.Reporter
 
             logsReporter.Sync();
 
-            service.Verify(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>(), default), Times.Exactly(2));
+            service.Verify(s => s.AsyncLogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>(), default), Times.Exactly(2));
         }
 
         [Fact]
@@ -136,7 +170,15 @@ namespace ReportPortal.Shared.Tests.Reporter
         {
             var service = new MockServiceBuilder().Build();
 
-            var logsReporter = new LogsReporter(_testReporter.Object, service.Object, _configuration, _extensionManager, _requestExecuter, _logRequestAmender.Object, _reportEventsSource, 20);
+            var logsReporter = new LogsReporter(
+                _testReporter.Object,
+                service.Object,
+                _configuration, 
+                _extensionManager, 
+                _requestExecuter,
+                _logRequestAmender.Object,
+                _reportEventsSource,
+                20);
 
             var withoutAttachment = new CreateLogItemRequest
             {
@@ -157,7 +199,7 @@ namespace ReportPortal.Shared.Tests.Reporter
 
             logsReporter.Sync();
 
-            service.Verify(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>(), default), Times.Exactly(2));
+            service.Verify(s => s.AsyncLogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>(), default), Times.Exactly(2));
         }
 
         [Fact]
@@ -166,7 +208,7 @@ namespace ReportPortal.Shared.Tests.Reporter
             var logItemRequestTexts = new List<string>();
 
             var service = new MockServiceBuilder().Build();
-            service.Setup(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>(), default))
+            service.Setup(s => s.AsyncLogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>(), default))
                 .Callback<CreateLogItemRequest[], CancellationToken>((rqs, t) =>
                 {
                     foreach (var rq in rqs)
@@ -176,7 +218,15 @@ namespace ReportPortal.Shared.Tests.Reporter
                 })
                 .Returns(() => Task.FromResult(new Client.Abstractions.Responses.LogItemsCreatedResponse()));
 
-            var logsReporter = new LogsReporter(_testReporter.Object, service.Object, _configuration, _extensionManager, _requestExecuter, _logRequestAmender.Object, _reportEventsSource, 20);
+            var logsReporter = new LogsReporter(
+                _testReporter.Object,
+                service.Object,
+                _configuration,
+                _extensionManager,
+                _requestExecuter,
+                _logRequestAmender.Object,
+                _reportEventsSource,
+                20);
 
             Parallel.For(0, 1000, (i) => logsReporter.Log(new CreateLogItemRequest
             {
@@ -188,44 +238,10 @@ namespace ReportPortal.Shared.Tests.Reporter
 
             // we have scheduled 1000 log items which will be consumed by 10 items in loop in background (happy path)
             // sometimes consumer iterates faster than producer
-            service.Verify(s => s.LogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>(), default), Times.Between(50, 100, Moq.Range.Inclusive));
+            service.Verify(s => s.AsyncLogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>(), default), Times.Between(50, 100, Moq.Range.Inclusive));
 
             logItemRequestTexts.Should().HaveCount(1000);
             logItemRequestTexts.Should().OnlyHaveUniqueItems();
-        }
-
-        [Fact]
-        public void ShouldAmendLogDatetimeForLaunch()
-        {
-            var startTime = DateTime.UtcNow;
-
-            var launchReporter = new Mock<ILaunchReporter>();
-            launchReporter.Setup(l => l.Info.StartTime).Returns(startTime);
-
-            var amender = new LaunchLogRequestAmender(launchReporter.Object);
-
-            var logRequest = new CreateLogItemRequest() { Time = startTime.AddMinutes(-1) };
-
-            amender.Amend(logRequest);
-
-            logRequest.Time.Should().Be(startTime);
-        }
-
-        [Fact]
-        public void ShouldAmendLogDatetimeForTestItem()
-        {
-            var startTime = DateTime.UtcNow;
-
-            var testReporter = new Mock<ITestReporter>();
-            testReporter.Setup(l => l.Info.StartTime).Returns(startTime);
-
-            var amender = new TestLogRequestAmender(testReporter.Object);
-
-            var logRequest = new CreateLogItemRequest() { Time = startTime.AddMinutes(-1) };
-
-            amender.Amend(logRequest);
-
-            logRequest.Time.Should().Be(startTime);
         }
     }
 }

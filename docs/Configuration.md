@@ -41,6 +41,9 @@ Sometimes it's useful to specify configuration properties via environment variab
 ## Timeout
 `Server:Timeout` - how many seconds to wait when awaiting response from server.
 
+## Asynchronous reporting
+`Server:AsyncReporting` - [asynchronous report](https://reportportal.io/docs/dev-guides/AsynchronousReporting) processing on server side (`false` by default). It gives a response back immediately after a server that is receiving a request from a client. Useful when you have a lot of tests which produce a lot of log messages to be sent to a server.
+
 # HTTP requests retry
 During tests execution agent sends test results as http requests to server. In case of fast test execution, or parallel tests execution, agent produces many requests to server. These requests are being sent in background and in parallel. Some requests might be failed due any reason e.g. short-term service unavailability, or network bandwith. To negotiate this issue several methodics can be applied.
 
