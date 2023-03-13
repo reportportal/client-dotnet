@@ -68,6 +68,8 @@ namespace ReportPortal.Shared.Extensibility.Embedded.Normalization
             }
 
             NormalizeAttributes(args.FinishTestItemRequest.Attributes);
+
+            args.FinishTestItemRequest.LaunchUuid = testReporter.LaunchReporter.Info.Uuid;
         }
 
         private static void NormalizeAttributes(IEnumerable<ItemAttribute> attributes)

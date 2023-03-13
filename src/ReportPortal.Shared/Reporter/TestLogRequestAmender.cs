@@ -18,6 +18,7 @@ namespace ReportPortal.Shared.Reporter
                 request.Time = _testReporter.Info.StartTime;
             }
 
+            request.LaunchUuid = _testReporter.LaunchReporter.Info.Uuid;
             request.TestItemUuid = _testReporter.Info.Uuid;
         }
     }

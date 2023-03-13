@@ -217,6 +217,7 @@ namespace ReportPortal.Shared.Tests.Reporter
             var startTime = DateTime.UtcNow;
 
             var testReporter = new Mock<ITestReporter>();
+            testReporter.Setup(l => l.LaunchReporter.Info.Uuid).Returns("123");
             testReporter.Setup(l => l.Info.StartTime).Returns(startTime);
 
             var amender = new TestLogRequestAmender(testReporter.Object);
