@@ -101,7 +101,15 @@ namespace ReportPortal.Shared.Reporter
 
         public void Sync()
         {
-            ProcessingTask?.GetAwaiter().GetResult();
+            try
+            {
+                ProcessingTask?.GetAwaiter().GetResult();
+            }
+            catch
+            {
+                // we don't aware of failed requests for sending log messages (for now)
+            }
+
         }
 
         private List<CreateLogItemRequest> GetBufferedLogRequests(int batchCapacity)

@@ -300,9 +300,24 @@ namespace ReportPortal.Shared.Reporter
 
         public void Sync()
         {
-            StartTask?.GetAwaiter().GetResult();
+            if (FinishTask != null)
+            {
+                FinishTask.GetAwaiter().GetResult();
+            }
+            else
+            {
+                StartTask?.GetAwaiter().GetResult();
 
-            FinishTask?.GetAwaiter().GetResult();
+                if (ChildTestReporters != null)
+                {
+                    foreach (var testNode in ChildTestReporters)
+                    {
+                        testNode.Sync();
+                    }
+                }
+
+                _logsReporter?.Sync();
+            }
         }
 
         private BeforeTestStartingEventArgs NotifyStarting(StartTestItemRequest request)
