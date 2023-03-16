@@ -100,7 +100,7 @@ namespace ReportPortal.Shared.Tests.Reporter.Statistics
             counter.Measure(2.222.Seconds());
             counter.Measure(3.333.Seconds());
 
-            counter.ToString().Should().Be("3 cnt min/max/avg 1111/3333/2222 ms");
+            counter.ToString().Should().Be("3 cnt min/avg/max 1111/2222/3333 ms");
         }
 
         [Fact]

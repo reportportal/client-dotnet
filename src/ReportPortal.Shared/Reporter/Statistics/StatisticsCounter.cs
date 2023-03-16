@@ -69,7 +69,7 @@ namespace ReportPortal.Shared.Reporter.Statistics
         /// <returns>A string that represents the statistics counter.</returns>
         public override string ToString()
         {
-            return $"{Count} cnt min/max/avg {Min.TotalMilliseconds:F0}/{Max.TotalMilliseconds:F0}/{Avg.TotalMilliseconds:F0} ms";
+            return $"{Count} cnt min/avg/max {Min.TotalMilliseconds:F0}/{Avg.TotalMilliseconds:F0}/{Max.TotalMilliseconds:F0} ms";
         }
     }
 }
