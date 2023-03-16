@@ -14,11 +14,13 @@ namespace ReportPortal.Client
         {
             private Uri _baseUri;
             private string _token;
+            private readonly bool _ignoreSslErrors;
 
-            public HttpClientFactory(Uri baseUri, string token)
+            public HttpClientFactory(Uri baseUri, string token, bool ignoreSslErrors)
             {
                 _baseUri = baseUri;
                 _token = token;
+                _ignoreSslErrors = ignoreSslErrors;
             }
 
             public HttpClient Create()
@@ -26,9 +28,15 @@ namespace ReportPortal.Client
                 var httpClientHandler = new HttpClientHandler();
 
 #if !NET462
-                httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
+                if (_ignoreSslErrors)
+                {
+                    httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => _ignoreSslErrors;
+                }
 #else
-                ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+                if (_ignoreSslErrors)
+                {
+                    ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+                }
                 ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
 #endif
 

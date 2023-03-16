@@ -19,13 +19,14 @@ namespace ReportPortal.Client
         /// <param name="projectName">A project to manage.</param>
         /// <param name="token">A token for user. Can be UID given from user's profile page.</param>
         /// <param name="httpClientFactory">Factory object to create an instance of <see cref="HttpClient"/>.</param>
-        public Service(Uri uri, string projectName, string token, IHttpClientFactory httpClientFactory = null)
+        /// <param name="ignoreSslErrors">Ignore SSL / TLS errors during https web requests</param>
+        public Service(Uri uri, string projectName, string token, IHttpClientFactory httpClientFactory = null, bool ignoreSslErrors = true)
         {
             ProjectName = projectName;
 
             if (httpClientFactory == null)
             {
-                httpClientFactory = new HttpClientFactory(uri, token);
+                httpClientFactory = new HttpClientFactory(uri, token, ignoreSslErrors);
             }
 
             _httpClient = httpClientFactory.Create();
