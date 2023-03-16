@@ -33,7 +33,16 @@ It's easier to define some property in any textual file. Agent finds all these f
 ## Environment variables
 Sometimes it's useful to specify configuration properties via environment variables. To specify `Section1:PropertyAbc` property just set environment variable with `ReportPortal_Section1_PropertyAbc` or `ReportPortal__Section1__PropertyAbc` name. We provide ability use `_` or `__` as a delimiter of nested variables. In case if you decided to use `_` as a delimiter, variable names should be started from `RP_` or `ReportPortal_`. Otherwise, variable names should be started from `RP__` or `ReportPortal__`. Variable names are case-insensitive.
 
+# General
+
+`Server:Project` - the name of your (pre-existing) project in ReportPortal server.
+
 # HTTP
+
+`Server:Url` - url to your ReportPortal server, including protocol and ports, e.g. `https://reportportal.example.com` or `https://reportportal.example.com:8080`.
+`Server:Authentication:Uuid` - access token to submit results to ReportPortal. You can find this in your user profile.
+`Server:IgnoreSslErrors` - ignores SSL / TLS errors. Defaults to `false`. This can be helpful when using self-signed certificates, however this can make the connection susceptible to [man-in-the-middle](https://en.wikipedia.org/wiki/Man-in-the-middle_attack) attacks.
+
 ## Proxy
 `Server:Proxy:Url` - url to proxy server to be used for http requests like `http://myproxy.corp:8080`.
 `Server:Proxy:Username`, `Server:Proxy:Domain` and `Server:Proxy:Password` to specify credentials for proxy server which require authorization.

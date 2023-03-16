@@ -1,9 +1,11 @@
 ﻿using ReportPortal.Shared.Extensibility.ReportEvents;
 using ReportPortal.Shared.Internal.Logging;
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
+using ReportPortal.Shared.Configuration;
 
 namespace ReportPortal.Shared.Extensibility.Embedded.Analytics
 {
@@ -24,18 +26,10 @@ namespace ReportPortal.Shared.Extensibility.Embedded.Analytics
 
         private readonly string _platformVersion;
 
-        private readonly HttpClient _httpClient;
+        private HttpClient _httpClient;
+        private readonly object _httpClientLock = new object();
 
-        public AnalyticsReportEventsObserver() : this(new HttpClientHandler
-        {
-#if !NET462
-            ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; }
-#endif
-        })
-        {
-        }
-
-        public AnalyticsReportEventsObserver(HttpMessageHandler httpHandler)
+        public AnalyticsReportEventsObserver()
         {
             _clientId = Guid.NewGuid().ToString();
 
@@ -47,7 +41,10 @@ namespace ReportPortal.Shared.Extensibility.Embedded.Analytics
 #else
             _platformVersion = AppDomain.CurrentDomain.SetupInformation.TargetFrameworkName;
 #endif
+        }
 
+        public AnalyticsReportEventsObserver(HttpMessageHandler httpHandler) : this()
+        {
             _httpClient = new HttpClient(httpHandler)
             {
                 BaseAddress = new Uri(BASE_URI)
@@ -103,6 +100,39 @@ namespace ReportPortal.Shared.Extensibility.Embedded.Analytics
 
         private Task _sendGaUsageTask;
 
+        HttpClient GetHttpClient(IConfiguration configuration)
+        {
+            if (_httpClient != null) 
+                return _httpClient;
+
+            lock (_httpClientLock)
+            {
+                if (_httpClient != null) 
+                    return _httpClient;
+                
+                var handler = new HttpClientHandler();
+                var ignoreSslErrors = configuration.GetValue<bool>("Server:IgnoreSslErrors", false);
+
+#if NET462
+                if (ignoreSslErrors)
+                {
+                    ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+                }
+#else
+                if (ignoreSslErrors) 
+                {
+                    handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+                }
+#endif
+                _httpClient = new HttpClient(handler)
+                {
+                    BaseAddress = new Uri(BASE_URI)
+                };
+            }
+
+            return _httpClient;
+        }
+        
         private void ReportEventsSource_OnBeforeLaunchStarting(Reporter.ILaunchReporter launchReporter, ReportEvents.EventArgs.BeforeLaunchStartingEventArgs args)
         {
             if (args.Configuration.GetValue("Analytics:Enabled", true))
@@ -112,12 +142,14 @@ namespace ReportPortal.Shared.Extensibility.Embedded.Analytics
 
                 var requestData = $"/collect?v=1&tid={MEASUREMENT_ID}&cid={_clientId}&t=event&ec={category}&ea=Start launch&el={label}";
 
+                var httpClient = GetHttpClient(args.Configuration);
+                
                 // schedule tracking request
                 _sendGaUsageTask = Task.Run(async () =>
                 {
                     try
                     {
-                        using (var response = await _httpClient.PostAsync(requestData, null))
+                        using (var response = await httpClient.PostAsync(requestData, null))
                         {
                             response.EnsureSuccessStatusCode();
                         }
