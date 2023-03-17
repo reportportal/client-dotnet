@@ -1,9 +1,9 @@
 # Configuration Source
 There are several configuration sources to configure reporting.
 
-- Json file
-- Directory source
-- Environment variables
+- [Json file](#json-file)
+- [Environment variables](#environment-variables)
+- [Directory source](#directory-source)
 
 Configuration sources are not mandatory, you can use any of them, or in combination. But specifying of same properties is mandatory, e.g. URI to server Web API. If some property is defined in several sources, the latest one is used by reporters. If you want concatenate a value which is already defined in configuration chain, just begin your value from `++` entry. Specifying `reportportal_launch_description` env variable with `++this is additional launch info` will be used in cooperation with defined property value in json file. Or `reportportal_launch_tags` = `++more_tag_1;and_one_more_2` tags will be added to launch instead of overwriting it. 
 
@@ -27,21 +27,22 @@ Values in json file are considered as flatten list. The following json file will
 }
 ```
 
+## Environment variables
+Sometimes it's useful to specify configuration properties via environment variables. To specify `Section1:PropertyAbc` property just set environment variable with `ReportPortal_Section1_PropertyAbc` or `ReportPortal__Section1__PropertyAbc` name. We provide ability use `_` or `__` as a delimiter of nested variables. In case if you decided to use `_` as a delimiter, variable names should be started from `RP_` or `ReportPortal_`. Otherwise, variable names should be started from `RP__` or `ReportPortal__`. Variable names are case-insensitive.
+
 ## Directory source
 It's easier to define some property in any textual file. Agent finds all these files and considers them as configuration source. For example to define `Section1:PropertyAbc` property just create a file with `ReportPortal_Section1_PropertyAbc` name, put any value into this file, and agent will take it during test results reporting.
 
-## Environment variables
-Sometimes it's useful to specify configuration properties via environment variables. To specify `Section1:PropertyAbc` property just set environment variable with `ReportPortal_Section1_PropertyAbc` or `ReportPortal__Section1__PropertyAbc` name. We provide ability use `_` or `__` as a delimiter of nested variables. In case if you decided to use `_` as a delimiter, variable names should be started from `RP_` or `ReportPortal_`. Otherwise, variable names should be started from `RP__` or `ReportPortal__`. Variable names are case-insensitive.
 
 # General
 
 `Server:Project` - the name of your (pre-existing) project in ReportPortal server.
 
-# HTTP
+`Server:Url` - url to your ReportPortal server, including protocol and ports, e.g. `https://reportportal.example.com` or `http://reportportal.example.com:8080`.
 
-`Server:Url` - url to your ReportPortal server, including protocol and ports, e.g. `https://reportportal.example.com` or `https://reportportal.example.com:8080`.
 `Server:Authentication:Uuid` - access token to submit results to ReportPortal. You can find this in your user profile.
-`Server:IgnoreSslErrors` - ignores SSL / TLS errors. Defaults to `false`. This can be helpful when using self-signed certificates, however this can make the connection susceptible to [man-in-the-middle](https://en.wikipedia.org/wiki/Man-in-the-middle_attack) attacks.
+
+# HTTP
 
 ## Proxy
 `Server:Proxy:Url` - url to proxy server to be used for http requests like `http://myproxy.corp:8080`.
@@ -49,6 +50,9 @@ Sometimes it's useful to specify configuration properties via environment variab
 
 ## Timeout
 `Server:Timeout` - how many seconds to wait when awaiting response from server.
+
+## Insecure connection
+`Server:IgnoreSslErrors` - ignores SSL/TLS errors. Defaults to `false`. This can be helpful when using self-signed certificates, however this can make the connection susceptible to [man-in-the-middle](https://en.wikipedia.org/wiki/Man-in-the-middle_attack) attacks.
 
 ## Asynchronous reporting
 `Server:AsyncReporting` - [asynchronous report](https://reportportal.io/docs/dev-guides/AsynchronousReporting) processing on server side (`false` by default). It gives a response back immediately after a server that is receiving a request from a client. Useful when you have a lot of tests which produce a lot of log messages to be sent to a server.
