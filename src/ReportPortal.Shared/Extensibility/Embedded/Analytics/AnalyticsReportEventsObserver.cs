@@ -58,15 +58,25 @@ namespace ReportPortal.Shared.Extensibility.Embedded.Analytics
         /// <param name="agentVersion">Automatically identified as calling assembly version if null.</param>
         public static void DefineConsumer(string agentName, string agentVersion = null)
         {
-            if (string.IsNullOrEmpty(agentName) || string.IsNullOrEmpty(agentVersion))
+            // determine agent name
+            if (string.IsNullOrEmpty(agentName))
             {
                 var agentAssemblyName = Assembly.GetCallingAssembly().GetName();
                 AgentName = agentAssemblyName.Name;
-                _agentVersion = agentAssemblyName.Version.ToString(3);
             }
             else
             {
                 AgentName = agentName;
+            }
+
+            // determine agent version
+            if (string.IsNullOrEmpty(agentVersion))
+            {
+                var agentAssemblyName = Assembly.GetCallingAssembly().GetName();
+                _agentVersion = agentAssemblyName.Version.ToString(3);
+            }
+            else
+            {
                 _agentVersion = agentVersion;
             }
         }
@@ -102,14 +112,14 @@ namespace ReportPortal.Shared.Extensibility.Embedded.Analytics
 
         HttpClient GetHttpClient(IConfiguration configuration)
         {
-            if (_httpClient != null) 
+            if (_httpClient != null)
                 return _httpClient;
 
             lock (_httpClientLock)
             {
-                if (_httpClient != null) 
+                if (_httpClient != null)
                     return _httpClient;
-                
+
                 var handler = new HttpClientHandler();
                 var ignoreSslErrors = configuration.GetValue<bool>("Server:IgnoreSslErrors", false);
 
@@ -119,7 +129,7 @@ namespace ReportPortal.Shared.Extensibility.Embedded.Analytics
                     ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
                 }
 #else
-                if (ignoreSslErrors) 
+                if (ignoreSslErrors)
                 {
                     handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
                 }
@@ -132,7 +142,7 @@ namespace ReportPortal.Shared.Extensibility.Embedded.Analytics
 
             return _httpClient;
         }
-        
+
         private void ReportEventsSource_OnBeforeLaunchStarting(Reporter.ILaunchReporter launchReporter, ReportEvents.EventArgs.BeforeLaunchStartingEventArgs args)
         {
             if (args.Configuration.GetValue("Analytics:Enabled", true))
@@ -143,7 +153,7 @@ namespace ReportPortal.Shared.Extensibility.Embedded.Analytics
                 var requestData = $"/collect?v=1&tid={MEASUREMENT_ID}&cid={_clientId}&t=event&ec={category}&ea=Start launch&el={label}";
 
                 var httpClient = GetHttpClient(args.Configuration);
-                
+
                 // schedule tracking request
                 _sendGaUsageTask = Task.Run(async () =>
                 {
