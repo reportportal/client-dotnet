@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace ReportPortal.Shared.Internal.Delegating
@@ -63,7 +64,7 @@ namespace ReportPortal.Shared.Internal.Delegating
         public HttpStatusCode[] HttpStatusCodes { get; private set; }
 
         /// <inheritdoc/>
-        public override async Task<T> ExecuteAsync<T>(Func<Task<T>> func, Action<Exception> beforeNextAttempt = null, IStatisticsCounter statisticsCounter = null)
+        public override async Task<T> ExecuteAsync<T>(Func<Task<T>> func, Action<Exception> beforeNextAttempt = null, IStatisticsCounter statisticsCounter = null, [CallerMemberName] string logicalOperationName = null)
         {
             T result = default;
             List<Exception> exceptions = new List<Exception>();
@@ -77,8 +78,8 @@ namespace ReportPortal.Shared.Internal.Delegating
                         await _concurrentThrottler.ReserveAsync().ConfigureAwait(false);
                     }
 
-                    TraceLogger.Verbose($"Invoking {func.Method.Name} method... Current attempt: {i}");
-                    result = await base.ExecuteAsync(func, beforeNextAttempt, statisticsCounter).ConfigureAwait(false);
+                    TraceLogger.Verbose($"{logicalOperationName} Current attempt: {i}");
+                    result = await base.ExecuteAsync(func, beforeNextAttempt, statisticsCounter, logicalOperationName).ConfigureAwait(false);
                     break;
                 }
                 catch (Exception exp) when (exp is TaskCanceledException ||
@@ -87,8 +88,8 @@ namespace ReportPortal.Shared.Internal.Delegating
                 {
                     if (i < MaxRetryAttemps - 1)
                     {
-                        TraceLogger.Error($"Error while invoking '{func.Method.Name}' method. Current attempt: {i}. Waiting {Delay} milliseconds and retrying it.\n{exp}");
-                        exceptions.Add(new HttpRequestException($"'{func.Method.Name}' threw an exception. Next attempt in {Delay / 1000} second(s).", exp));
+                        TraceLogger.Error($"Error while invoking '{logicalOperationName}' operation. Current attempt: {i}. Waiting {Delay} milliseconds and retrying it.\n{exp}");
+                        exceptions.Add(new HttpRequestException($"'{logicalOperationName}' threw an exception. Next attempt in {Delay / 1000} second(s).", exp));
 
                         await Task.Delay((int)Delay).ConfigureAwait(false);
 
@@ -96,10 +97,10 @@ namespace ReportPortal.Shared.Internal.Delegating
                     }
                     else
                     {
-                        TraceLogger.Error($"Error while invoking '{func.Method.Name}' method. Current attempt: {i}.\n{exp}");
-                        exceptions.Add(new HttpRequestException($"'{func.Method.Name}' threw an exception. Limit of retries has been reached.", exp));
+                        TraceLogger.Error($"Error while invoking '{logicalOperationName}' operation. Current attempt: {i}.\n{exp}");
+                        exceptions.Add(new HttpRequestException($"'{logicalOperationName}' threw an exception. Limit of retries has been reached.", exp));
 
-                        throw new RetryExecutionException(func.Method.Name, exceptions);
+                        throw new RetryExecutionException(logicalOperationName, exceptions);
                     }
                 }
                 catch (Exception exp)
@@ -109,10 +110,7 @@ namespace ReportPortal.Shared.Internal.Delegating
                 }
                 finally
                 {
-                    if (_concurrentThrottler != null)
-                    {
-                        _concurrentThrottler.Release();
-                    }
+                    _concurrentThrottler?.Release();
                 }
             }
 

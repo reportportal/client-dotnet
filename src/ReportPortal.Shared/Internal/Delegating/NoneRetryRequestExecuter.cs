@@ -1,5 +1,6 @@
 ﻿using ReportPortal.Shared.Reporter.Statistics;
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace ReportPortal.Shared.Internal.Delegating
@@ -23,7 +24,7 @@ namespace ReportPortal.Shared.Internal.Delegating
         }
 
         /// <inheritdoc/>
-        public override async Task<T> ExecuteAsync<T>(Func<Task<T>> func, Action<Exception> beforeNextAttempt = null, IStatisticsCounter statisticsCounter = null)
+        public override async Task<T> ExecuteAsync<T>(Func<Task<T>> func, Action<Exception> beforeNextAttempt = null, IStatisticsCounter statisticsCounter = null, [CallerMemberName] string logicalOperationName = null)
         {
             T result = default;
 
@@ -34,9 +35,9 @@ namespace ReportPortal.Shared.Internal.Delegating
                     await _concurrentThrottler.ReserveAsync().ConfigureAwait(false);
                 }
 
-                TraceLogger.Verbose($"Invoking {func.Method.Name} method...");
+                TraceLogger.Verbose($"{logicalOperationName}");
 
-                result = await base.ExecuteAsync(func, beforeNextAttempt, statisticsCounter).ConfigureAwait(false);
+                result = await base.ExecuteAsync(func, beforeNextAttempt, statisticsCounter, logicalOperationName).ConfigureAwait(false);
             }
             catch (Exception exp)
             {
@@ -45,10 +46,7 @@ namespace ReportPortal.Shared.Internal.Delegating
             }
             finally
             {
-                if (_concurrentThrottler != null)
-                {
-                    _concurrentThrottler.Release();
-                }
+                _concurrentThrottler?.Release();
             }
 
             return result;

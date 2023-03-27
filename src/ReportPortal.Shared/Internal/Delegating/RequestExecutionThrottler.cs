@@ -11,7 +11,7 @@ namespace ReportPortal.Shared.Internal.Delegating
 
         private readonly SemaphoreSlim _concurrentAwaiter;
 
-        private int _maximumConcurrentCountRequested;
+        private int _waitingThreads = 0;
 
         /// <summary>
         /// Initializes new instance of <see cref="RequestExecutionThrottler"/>
@@ -35,28 +35,23 @@ namespace ReportPortal.Shared.Internal.Delegating
         /// <inheritdoc/>
         public async Task ReserveAsync()
         {
-            TraceLogger.Verbose($"Awaiting free executor. Currently available: {_concurrentAwaiter.CurrentCount}");
+            TraceLogger.Verbose($"Awaiting free executor. Available: {_concurrentAwaiter.CurrentCount}, waiting: {_waitingThreads}");
+
+            Interlocked.Increment(ref _waitingThreads);
 
             await _concurrentAwaiter.WaitAsync().ConfigureAwait(false);
 
-            TraceLogger.Verbose($"Executer is reserved. Available executers after reservation: {_concurrentAwaiter.CurrentCount}");
-
-            // track maximum level of actual concurrent requests
-            lock (_concurrentAwaiter)
-            {
-                var maximumConcurrentCountRequested = MaxCapacity - _concurrentAwaiter.CurrentCount;
-                if (maximumConcurrentCountRequested > _maximumConcurrentCountRequested)
-                {
-                    _maximumConcurrentCountRequested = maximumConcurrentCountRequested;
-                    TraceLogger.Verbose($"Maximum level of actual concurrent requests has been changed to {_maximumConcurrentCountRequested}");
-                }
-            }
+            TraceLogger.Verbose($"Executor is reserved. Available: {_concurrentAwaiter.CurrentCount}");
         }
 
         /// <inheritdoc/>
         public void Release()
         {
-            _concurrentAwaiter.Release();
+            var previousCount = _concurrentAwaiter.Release();
+
+            Interlocked.Decrement(ref _waitingThreads);
+
+            TraceLogger.Verbose($"Executor is released. Available: {previousCount + 1}, waiting: {_waitingThreads}");
         }
 
         /// <summary>

@@ -84,7 +84,10 @@ namespace ReportPortal.Shared.Reporter
                                 await _requestExecuter
                                     .ExecuteAsync(async () => _asyncReporting
                                         ? await _service.AsyncLogItem.CreateAsync(requests.ToArray())
-                                        : await _service.LogItem.CreateAsync(requests.ToArray()), null, _reporter.StatisticsCounter.LogItemStatisticsCounter)
+                                        : await _service.LogItem.CreateAsync(requests.ToArray()),
+                                        null,
+                                        _reporter.StatisticsCounter.LogItemStatisticsCounter,
+                                        $"Sending {requests.Count} log items...")
                                     .ConfigureAwait(false);
 
                                 NotifySent(requests.AsReadOnly());
