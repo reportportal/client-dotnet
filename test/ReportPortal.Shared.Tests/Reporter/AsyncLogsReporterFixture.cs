@@ -9,7 +9,6 @@ using ReportPortal.Shared.Reporter.Statistics;
 using ReportPortal.Shared.Tests.Helpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -199,7 +198,7 @@ namespace ReportPortal.Shared.Tests.Reporter
 
             logsReporter.Sync();
 
-            service.Verify(s => s.AsyncLogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>(), default), Times.Exactly(2));
+            service.Verify(s => s.AsyncLogItem.CreateAsync(It.IsAny<CreateLogItemRequest[]>(), default), Times.Exactly(4));
         }
 
         [Fact]
