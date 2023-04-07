@@ -49,6 +49,7 @@ jobs:
       run: dotnet nuget push **/*.nupkg -k ${{ secrets.GITHUB_TOKEN }} -s 'https://nuget.pkg.github.com/reportportal/index.json'
 
   Publish_NuGet:
+    if: startsWith(github.event.ref, 'refs/tags')
     environment: 
       name: NuGet Gallery
       url: https://www.nuget.org/packages/ReportPortal.Client
