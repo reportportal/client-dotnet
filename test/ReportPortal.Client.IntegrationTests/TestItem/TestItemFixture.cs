@@ -695,7 +695,6 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
             await Service.TestItem.FinishAsync(secondAttempt.Uuid, new FinishTestItemRequest
             {
                 EndTime = DateTime.UtcNow,
-                //IsRetry = true
             });
 
             await Service.TestItem.FinishAsync(suite.Uuid, new FinishTestItemRequest
@@ -705,7 +704,13 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
 
             var launch = await Service.Launch.GetAsync(_fixture.LaunchId);
 
-            Assert.True(launch.HasRetries);
+            var retriedTestItem = await Service.TestItem.GetAsync(secondAttempt.Uuid);
+            var originalTestItem = await Service.TestItem.GetAsync(firstAttempt.Uuid);
+
+            retriedTestItem.Retries.Should().BeEquivalentTo(new[] { originalTestItem },
+                because: "retried test item should has information about original test item execution");
+
+            launch.HasRetries.Should().BeTrue(because: "launch has retied test items");
         }
 
         [Fact]
