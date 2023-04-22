@@ -25,8 +25,7 @@ namespace ReportPortal.Client.Abstractions.Responses
         [JsonConverter(typeof(NullableDateTimeUnixEpochConverter))]
         public DateTime? EndTime { get; set; }
 
-        [JsonPropertyName("retry")]
-        public bool IsRetry { get; set; }
+        public IEnumerable<TestItemResponse> Retries { get; set; }
 
         [JsonConverter(typeof(JsonStringEnumConverterEx<Status>))]
         public Status Status { get; set; }
