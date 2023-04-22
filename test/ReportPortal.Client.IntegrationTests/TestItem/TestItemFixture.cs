@@ -708,9 +708,9 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
             var originalTestItem = await Service.TestItem.GetAsync(firstAttempt.Uuid);
 
             retriedTestItem.Retries.Should().BeEquivalentTo(new[] { originalTestItem },
-                because: "retried test item should has information about original test item execution");
+                because: "retried test item should have information about original test item execution");
 
-            launch.HasRetries.Should().BeTrue(because: "launch has retied test items");
+            launch.HasRetries.Should().BeTrue(because: "launch has retried test item");
         }
 
         [Fact]
