@@ -21,7 +21,7 @@ namespace ReportPortal.Client.Abstractions.Responses
         /// <summary>
         /// List of conditions to filter data.
         /// </summary>
-        public IEnumerable<Condition> Conditions { get; set; }
+        public IList<Condition> Conditions { get; set; }
 
         /// <summary>
         /// Name of user filter.
@@ -31,7 +31,7 @@ namespace ReportPortal.Client.Abstractions.Responses
         /// <summary>
         /// list of parameters of selection.
         /// </summary>
-        public IEnumerable<FilterOrder> Orders { get; set; }
+        public IList<FilterOrder> Orders { get; set; }
 
         /// <summary>
         /// Is filter shared.

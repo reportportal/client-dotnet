@@ -25,7 +25,7 @@ namespace ReportPortal.Client.Abstractions.Responses
         [JsonConverter(typeof(NullableDateTimeUnixEpochConverter))]
         public DateTime? EndTime { get; set; }
 
-        public IEnumerable<TestItemResponse> Retries { get; set; }
+        public IList<TestItemResponse> Retries { get; set; }
 
         [JsonConverter(typeof(JsonStringEnumConverterEx<Status>))]
         public Status Status { get; set; }
@@ -39,7 +39,7 @@ namespace ReportPortal.Client.Abstractions.Responses
 
         public bool HasChildren { get; set; }
 
-        public List<KeyValuePair<string, string>> Parameters { get; set; }
+        public IList<KeyValuePair<string, string>> Parameters { get; set; }
 
         public string UniqueId { get; set; }
 
@@ -52,7 +52,7 @@ namespace ReportPortal.Client.Abstractions.Responses
         /// <summary>
         /// Test item attributes.
         /// </summary>
-        public IEnumerable<ItemAttribute> Attributes { get; set; }
+        public IList<ItemAttribute> Attributes { get; set; }
     }
 
     public class PathNames
@@ -87,7 +87,7 @@ namespace ReportPortal.Client.Abstractions.Responses
 
         public bool IgnoreAnalyzer { get; set; }
 
-        public List<ExternalSystemIssue> ExternalSystemIssues { get; set; }
+        public IList<ExternalSystemIssue> ExternalSystemIssues { get; set; }
     }
 
     public class ExternalSystemIssue

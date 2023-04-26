@@ -2,7 +2,6 @@
 using ReportPortal.Client.Converters;
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace ReportPortal.Client.Abstractions.Responses
@@ -11,7 +10,7 @@ namespace ReportPortal.Client.Abstractions.Responses
     {
         public string GroupingField { get; set; }
 
-        public IEnumerable<TestItemHistoryElement> Resources { get; set; }
+        public IList<TestItemHistoryElement> Resources { get; set; }
     }
 
     public class TestItemHistoryElement
@@ -31,6 +30,6 @@ namespace ReportPortal.Client.Abstractions.Responses
         [JsonConverter(typeof(JsonStringEnumConverterEx<Status>))]
         public Status LaunchStatus { get; set; }
 
-        public IEnumerable<TestItemResponse> Resources { get; set; }
+        public IList<TestItemResponse> Resources { get; set; }
     }
 }
