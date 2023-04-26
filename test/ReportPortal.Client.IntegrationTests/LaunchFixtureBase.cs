@@ -22,8 +22,11 @@ namespace ReportPortal.Client.IntegrationTests
 
         public void Dispose()
         {
-            Task.Run(async () => await Service.Launch.StopAsync(LaunchId, new FinishLaunchRequest { EndTime = DateTime.UtcNow })).GetAwaiter().GetResult();
-            Task.Run(async () => await Service.Launch.DeleteAsync(LaunchId)).GetAwaiter().GetResult();
+            Task.Run(async () =>
+            {
+                await Service.Launch.StopAsync(LaunchId, new FinishLaunchRequest { EndTime = DateTime.UtcNow });
+                await Service.Launch.DeleteAsync(LaunchId);
+            }).GetAwaiter().GetResult();
         }
     }
 }

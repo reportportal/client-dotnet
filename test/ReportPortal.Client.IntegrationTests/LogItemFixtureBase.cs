@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ReportPortal.Client.IntegrationTests
 {
-    public class LogItemFixtureBase : BaseFixture
+    public class LogItemFixtureBase : BaseFixture, IDisposable
     {
         public string LaunchUuid { get; set; }
         public long LaunchId { get; set; }
@@ -41,7 +41,8 @@ namespace ReportPortal.Client.IntegrationTests
         {
             Task.Run(async () =>
             {
-                await Service.Launch.FinishAsync(LaunchUuid, new FinishLaunchRequest { EndTime = DateTime.UtcNow });
+                await Service.TestItem.FinishAsync(TestUuid, new FinishTestItemRequest());
+                await Service.Launch.FinishAsync(LaunchUuid, new FinishLaunchRequest());
                 await Service.Launch.DeleteAsync(LaunchId);
             }).GetAwaiter().GetResult();
         }
