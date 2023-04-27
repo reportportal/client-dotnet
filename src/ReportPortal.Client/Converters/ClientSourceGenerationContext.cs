@@ -28,7 +28,7 @@ namespace ReportPortal.Client.Converters
     [JsonSerializable(typeof(Abstractions.Responses.TestItemResponse))]
     [JsonSerializable(typeof(Abstractions.Responses.Content<Abstractions.Responses.TestItemResponse>))]
     [JsonSerializable(typeof(Abstractions.Responses.TestItemCreatedResponse))]
-    [JsonSerializable(typeof(IEnumerable<Abstractions.Responses.Issue>))]
+    [JsonSerializable(typeof(IList<Abstractions.Responses.Issue>))]
     [JsonSerializable(typeof(Abstractions.Responses.Content<Abstractions.Responses.TestItemHistoryContainer>))]
 
     [JsonSerializable(typeof(Abstractions.Requests.CreateLogItemRequest))]

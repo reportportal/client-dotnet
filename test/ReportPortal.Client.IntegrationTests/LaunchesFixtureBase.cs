@@ -35,9 +35,12 @@ namespace ReportPortal.Client.IntegrationTests
         {
             foreach (var createdLaunch in CreatedLaunches)
             {
-                var gotCreatedLaunch = Task.Run(async () => await Service.Launch.GetAsync(createdLaunch.Uuid)).GetAwaiter().GetResult();
+                Task.Run(async () =>
+                {
+                    var launch = await Service.Launch.GetAsync(createdLaunch.Uuid);
+                    await Service.Launch.DeleteAsync(launch.Id);
 
-                Task.Run(async () => await Service.Launch.DeleteAsync(gotCreatedLaunch.Id)).GetAwaiter().GetResult();
+                }).GetAwaiter().GetResult();
             }
         }
     }

@@ -14,7 +14,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
 {
     public class LogItemFixture : IClassFixture<LogItemFixtureBase>, IClassFixture<BaseFixture>
     {
-        private LogItemFixtureBase _fixture;
+        private readonly LogItemFixtureBase _fixture;
 
         Service Service { get; }
 

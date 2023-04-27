@@ -70,9 +70,9 @@ namespace ReportPortal.Client.Resources
             return await DeleteAsJsonAsync<MessageResponse>($"v1/{ProjectName}/item/{id}", cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<Issue>> AssignIssuesAsync(AssignTestItemIssuesRequest request, CancellationToken cancellationToken)
+        public async Task<IList<Issue>> AssignIssuesAsync(AssignTestItemIssuesRequest request, CancellationToken cancellationToken)
         {
-            return await PutAsJsonAsync<IEnumerable<Issue>, AssignTestItemIssuesRequest>(
+            return await PutAsJsonAsync<IList<Issue>, AssignTestItemIssuesRequest>(
                 $"v1/{ProjectName}/item", request, cancellationToken).ConfigureAwait(false);
         }
 

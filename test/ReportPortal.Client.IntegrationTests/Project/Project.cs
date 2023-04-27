@@ -46,7 +46,7 @@ namespace ReportPortal.Client.IntegrationTests.Project
             VerifyDefectTypesModel(projectInfo.Configuration.DefectSubTypes.NoDefectTypes);
         }
 
-        private void VerifyDefectTypesModel(IList<ProjectDefectSubType> defectTypes)
+        private void VerifyDefectTypesModel(IEnumerable<ProjectDefectSubType> defectTypes)
         {
             defectTypes.Should().NotBeEmpty();
             foreach (var defectType in defectTypes)

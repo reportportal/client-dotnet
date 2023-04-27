@@ -29,7 +29,7 @@ namespace ReportPortal.Client.Abstractions.Responses
 
         public bool HasRetries { get; set; }
 
-        public IEnumerable<ItemAttribute> Attributes { get; set; }
+        public IList<ItemAttribute> Attributes { get; set; }
 
         public Statistic Statistics { get; set; }
     }

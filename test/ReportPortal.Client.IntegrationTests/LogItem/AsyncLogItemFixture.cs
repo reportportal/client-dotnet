@@ -1,12 +1,9 @@
 ﻿using FluentAssertions;
-using ReportPortal.Client.Abstractions.Filtering;
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -14,7 +11,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
 {
     public class AsyncLogItemFixture : IClassFixture<LogItemFixtureBase>, IClassFixture<BaseFixture>
     {
-        private LogItemFixtureBase _fixture;
+        private readonly LogItemFixtureBase _fixture;
 
         Service Service { get; }
 

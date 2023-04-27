@@ -6,7 +6,7 @@ namespace ReportPortal.Client.Abstractions.Responses
     public class Content<T>
     {
         [JsonPropertyName("content")]
-        public IEnumerable<T> Items { get; set; }
+        public IList<T> Items { get; set; }
 
         public Page Page { get; set; }
     }

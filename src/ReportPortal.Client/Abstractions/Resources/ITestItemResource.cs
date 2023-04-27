@@ -18,7 +18,7 @@ namespace ReportPortal.Client.Abstractions.Resources
         /// <param name="request">Information about test items and their issues.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A list of assigned issues.</returns>
-        Task<IEnumerable<Issue>> AssignIssuesAsync(AssignTestItemIssuesRequest request, CancellationToken cancellationToken = default);
+        Task<IList<Issue>> AssignIssuesAsync(AssignTestItemIssuesRequest request, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Deletes specified test item.
