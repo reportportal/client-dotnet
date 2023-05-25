@@ -119,7 +119,7 @@ namespace ReportPortal.Shared.Benchmark.Reporter
 
     public class NopTestItemResource : ITestItemResource
     {
-        public Task<IEnumerable<Issue>> AssignIssuesAsync(AssignTestItemIssuesRequest request, CancellationToken cancellationToken)
+        public Task<IList<Issue>> AssignIssuesAsync(AssignTestItemIssuesRequest request, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
