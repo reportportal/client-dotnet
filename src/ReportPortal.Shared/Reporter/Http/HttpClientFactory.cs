@@ -1,6 +1,6 @@
 ﻿using ReportPortal.Client;
-using ReportPortal.Client.Extentions;
 using ReportPortal.Shared.Configuration;
+using ReportPortal.Shared.Internal.Logging;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -12,6 +12,8 @@ namespace ReportPortal.Shared.Reporter.Http
     /// </summary>
     public class HttpClientFactory : IHttpClientFactory
     {
+        private static ITraceLogger TraceLogger => TraceLogManager.Instance.GetLogger<HttpClientFactory>();
+
         /// <summary>
         /// Creates an instance of <see cref="HttpClientFactory"/> class.
         /// </summary>
@@ -47,13 +49,27 @@ namespace ReportPortal.Shared.Reporter.Http
 
             var url = Configuration.GetValue<string>(ConfigurationPath.ServerUrl);
 
-            var token = Configuration.GetValue<string>(ConfigurationPath.ServerAuthenticationUuid);
+            var apiKey = Configuration.GetValue<string>(ConfigurationPath.ServerAuthenticationKey, null);
+            if (apiKey is null)
+            {
+                apiKey = Configuration.GetValue<string>(ConfigurationPath.ServerAuthenticationUuid, null);
+                if (apiKey is null)
+                {
+                    // Trigger proper exception throwing or use 'null'.
+                    apiKey = Configuration.GetValue<string>(ConfigurationPath.ServerAuthenticationKey);
+                }
+                else
+                {
+                    TraceLogger.Warn($"Configuration parameter '${ConfigurationPath.ServerAuthenticationUuid}' is deprecated. " +
+                        $"Use '${ConfigurationPath.ServerAuthenticationKey}' instead.");
+                }
+            }
 
             httpClient.BaseAddress = new Uri(url);
 
             httpClient.DefaultRequestHeaders.Clear();
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + apiKey);
             httpClient.DefaultRequestHeaders.Add("User-Agent", ".NET Reporter");
 
             var timeout = GetTimeout();

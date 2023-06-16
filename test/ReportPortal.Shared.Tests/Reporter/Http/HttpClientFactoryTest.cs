@@ -2,6 +2,7 @@
 using ReportPortal.Shared.Configuration;
 using ReportPortal.Shared.Reporter.Http;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace ReportPortal.Shared.Tests.Reporter.Http
@@ -15,7 +16,7 @@ namespace ReportPortal.Shared.Tests.Reporter.Http
         {
             var configuration = new ConfigurationBuilder().Build();
             configuration.Properties["server:url"] = "http://abc.com";
-            configuration.Properties["server:authentication:uuid"] = "123";
+            configuration.Properties["server:authentication:apiKey"] = "123";
 
             var factory = new HttpClientFactory(configuration, _handler);
 
@@ -32,7 +33,7 @@ namespace ReportPortal.Shared.Tests.Reporter.Http
         public void ShouldThrowExceptionWhenServerUrlIsMissing()
         {
             var configuration = new ConfigurationBuilder().Build();
-            configuration.Properties["server:authentication:uuid"] = "123";
+            configuration.Properties["server:authentication:apiKey"] = "123";
 
             var factory = new HttpClientFactory(configuration, _handler);
 
@@ -73,13 +74,62 @@ namespace ReportPortal.Shared.Tests.Reporter.Http
         {
             var configuration = new ConfigurationBuilder().Build();
             configuration.Properties["server:url"] = "http://abc.com";
-            configuration.Properties["server:authentication:uuid"] = "123";
+            configuration.Properties["server:authentication:apiKey"] = "123";
             configuration.Properties["server:timeout"] = 0.1;
 
             var factory = new HttpClientFactory(configuration, _handler);
             var httpClient = factory.Create();
 
             httpClient.Timeout.Should().Be(TimeSpan.FromSeconds(0.1));
+        }
+
+        [Fact]
+        public void ShouldUseUuid()
+        {
+            var uuid = "12345";
+            var configuration = new ConfigurationBuilder().Build();
+            configuration.Properties["Server:Url"] = "http://abc.com";
+            configuration.Properties["Server:Project"] = "proj1";
+            configuration.Properties["Server:Authentication:Uuid"] = uuid;
+
+            var httpClient = new HttpClientFactory(configuration, _handler).Create();
+
+            httpClient.Should().NotBeNull();
+            httpClient.DefaultRequestHeaders.Authorization.Scheme.Should().Be("Bearer");
+            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(uuid);
+        }
+
+        [Fact]
+        public void ShouldPreferApiKey()
+        {
+            var apiKey = "12345";
+            var uuid = "54321";
+            var configuration = new ConfigurationBuilder().Build();
+            configuration.Properties["Server:Url"] = "http://abc.com";
+            configuration.Properties["Server:Project"] = "proj1";
+            configuration.Properties["Server:Authentication:Uuid"] = uuid;
+            configuration.Properties["Server:Authentication:ApiKey"] = apiKey;
+
+            var httpClient = new HttpClientFactory(configuration, _handler).Create();
+
+            httpClient.Should().NotBeNull();
+            httpClient.DefaultRequestHeaders.Authorization.Scheme.Should().Be("Bearer");
+            httpClient.DefaultRequestHeaders.Authorization.Parameter.Should().Be(apiKey);
+        }
+
+        [Fact]
+        public void ShouldThrowCorrectExceptionIfApiKeyOrUuidNotSet()
+        {
+            var configuration = new ConfigurationBuilder().Build();
+            configuration.Properties["Server:Url"] = "http://abc.com";
+            configuration.Properties["Server:Project"] = "proj1";
+
+            Action ctor = () => new HttpClientFactory(configuration, _handler).Create();
+            ctor
+                .Should()
+                .ThrowExactly<KeyNotFoundException>(
+                "Property 'Server:Authentication:ApiKey' not found in the configuration. Make sure you have configured it properly."
+                );
         }
     }
 }

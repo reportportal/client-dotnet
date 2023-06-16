@@ -1,6 +1,7 @@
 ﻿using ReportPortal.Client;
 using ReportPortal.Client.Abstractions;
 using ReportPortal.Shared.Configuration;
+using ReportPortal.Shared.Internal.Logging;
 using System;
 
 namespace ReportPortal.Shared.Reporter.Http
@@ -10,6 +11,8 @@ namespace ReportPortal.Shared.Reporter.Http
     /// </summary>
     public class ClientServiceBuilder
     {
+        private static ITraceLogger TraceLogger => TraceLogManager.Instance.GetLogger<ClientServiceBuilder>();
+
         private readonly IConfiguration _configuration;
 
         private HttpClientHandlerFactory _httpClientHandlerFactory;
@@ -61,7 +64,21 @@ namespace ReportPortal.Shared.Reporter.Http
 
             var project = _configuration.GetValue<string>(ConfigurationPath.ServerProject);
 
-            var token = _configuration.GetValue<string>(ConfigurationPath.ServerAuthenticationUuid);
+            var apiKey = _configuration.GetValue<string>(ConfigurationPath.ServerAuthenticationKey, null);
+            if (apiKey is null)
+            {
+                apiKey = _configuration.GetValue<string>(ConfigurationPath.ServerAuthenticationUuid, null);
+                if (apiKey is null)
+                {
+                    // Trigger proper exception throwing or use 'null'.
+                    apiKey = _configuration.GetValue<string>(ConfigurationPath.ServerAuthenticationKey);
+                }
+                else
+                {
+                    TraceLogger.Warn($"Configuration parameter '${ConfigurationPath.ServerAuthenticationUuid}' is deprecated. " +
+                        $"Use '${ConfigurationPath.ServerAuthenticationKey}' instead.");
+                }
+            }
 
             if (_httpClientHandlerFactory is null)
             {
@@ -73,7 +90,7 @@ namespace ReportPortal.Shared.Reporter.Http
                 _httpClientFactory = new HttpClientFactory(_configuration, _httpClientHandlerFactory.Create());
             }
 
-            IClientService service = new Service(new Uri(url), project, token, _httpClientFactory);
+            IClientService service = new Service(new Uri(url), project, apiKey, _httpClientFactory);
 
             return service;
         }
