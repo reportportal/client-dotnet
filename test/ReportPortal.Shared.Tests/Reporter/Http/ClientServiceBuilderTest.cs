@@ -114,7 +114,7 @@ namespace ReportPortal.Shared.Tests.Reporter.Http
             var configuration = new ConfigurationBuilder().Build();
             configuration.Properties["Server:Url"] = "http://abc.com";
             configuration.Properties["Server:Project"] = "proj1";
-            configuration.Properties["Server:Authentication:ApiKey"] = apiKey;
+            configuration.Properties["Server:ApiKey"] = apiKey;
 
             var client = new ClientServiceBuilder(configuration).Build();
 
@@ -150,7 +150,7 @@ namespace ReportPortal.Shared.Tests.Reporter.Http
             configuration.Properties["Server:Url"] = "http://abc.com";
             configuration.Properties["Server:Project"] = "proj1";
             configuration.Properties["Server:Authentication:Uuid"] = uuid;
-            configuration.Properties["Server:Authentication:ApiKey"] = apiKey;
+            configuration.Properties["Server:ApiKey"] = apiKey;
 
             var client = new ClientServiceBuilder(configuration).Build();
 
@@ -171,7 +171,7 @@ namespace ReportPortal.Shared.Tests.Reporter.Http
             ctor
                 .Should()
                 .ThrowExactly<KeyNotFoundException>(
-                "Property 'Server:Authentication:ApiKey' not found in the configuration. Make sure you have configured it properly."
+                "Property 'Server:ApiKey' not found in the configuration. Make sure you have configured it properly."
                 );
         }
     }

@@ -16,7 +16,7 @@ namespace ReportPortal.Shared.Tests.Reporter.Http
         {
             var configuration = new ConfigurationBuilder().Build();
             configuration.Properties["server:url"] = "http://abc.com";
-            configuration.Properties["server:authentication:apiKey"] = "123";
+            configuration.Properties["server:apiKey"] = "123";
 
             var factory = new HttpClientFactory(configuration, _handler);
 
@@ -33,7 +33,7 @@ namespace ReportPortal.Shared.Tests.Reporter.Http
         public void ShouldThrowExceptionWhenServerUrlIsMissing()
         {
             var configuration = new ConfigurationBuilder().Build();
-            configuration.Properties["server:authentication:apiKey"] = "123";
+            configuration.Properties["server:apiKey"] = "123";
 
             var factory = new HttpClientFactory(configuration, _handler);
 
@@ -74,7 +74,7 @@ namespace ReportPortal.Shared.Tests.Reporter.Http
         {
             var configuration = new ConfigurationBuilder().Build();
             configuration.Properties["server:url"] = "http://abc.com";
-            configuration.Properties["server:authentication:apiKey"] = "123";
+            configuration.Properties["server:apiKey"] = "123";
             configuration.Properties["server:timeout"] = 0.1;
 
             var factory = new HttpClientFactory(configuration, _handler);
@@ -108,7 +108,7 @@ namespace ReportPortal.Shared.Tests.Reporter.Http
             configuration.Properties["Server:Url"] = "http://abc.com";
             configuration.Properties["Server:Project"] = "proj1";
             configuration.Properties["Server:Authentication:Uuid"] = uuid;
-            configuration.Properties["Server:Authentication:ApiKey"] = apiKey;
+            configuration.Properties["Server:ApiKey"] = apiKey;
 
             var httpClient = new HttpClientFactory(configuration, _handler).Create();
 
@@ -128,7 +128,7 @@ namespace ReportPortal.Shared.Tests.Reporter.Http
             ctor
                 .Should()
                 .ThrowExactly<KeyNotFoundException>(
-                "Property 'Server:Authentication:ApiKey' not found in the configuration. Make sure you have configured it properly."
+                "Property 'Server:ApiKey' not found in the configuration. Make sure you have configured it properly."
                 );
         }
     }

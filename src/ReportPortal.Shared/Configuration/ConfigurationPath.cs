@@ -12,9 +12,9 @@ namespace ReportPortal.Shared.Configuration
 
         public static readonly string ServerUrl = $"Server{KeyDelimeter}Url";
         public static readonly string ServerProject = $"Server{KeyDelimeter}Project";
-        [Obsolete("'Uuid' parameter is deprecated. Use 'ApiKey' instead.")]
+        [Obsolete("'Server:Authentication:Uuid' parameter is deprecated. Use 'Server:ApiKey' instead.")]
         public static readonly string ServerAuthenticationUuid = $"Server{KeyDelimeter}Authentication{KeyDelimeter}Uuid";
-        public static readonly string ServerAuthenticationKey = $"Server{KeyDelimeter}Authentication{KeyDelimeter}ApiKey";
+        public static readonly string ServerAuthenticationKey = $"Server{KeyDelimeter}ApiKey";
 
         public static readonly string LogsBatchCapacity = $"Server{KeyDelimeter}LogsBatchCapacity";
         public static readonly string AsyncReporting = $"Server{KeyDelimeter}AsyncReporting";
