@@ -8,14 +8,14 @@ There are several configuration sources to configure reporting.
 Configuration sources are not mandatory, you can use any of them, or in combination. But specifying of same properties is mandatory, e.g. URI to server Web API. If some property is defined in several sources, the latest one is used by reporters. If you want concatenate a value which is already defined in configuration chain, just begin your value from `++` entry. Specifying `reportportal_launch_description` env variable with `++this is additional launch info` will be used in cooperation with defined property value in json file. Or `reportportal_launch_tags` = `++more_tag_1;and_one_more_2` tags will be added to launch instead of overwriting it. 
 
 ## Json file
-Agents read the `ReportPortal.config.json` file for configuration properties. This file should be located in the same directory where agent dll file is located (usually it's your tests output `bin\Debug` directory).
+Agents read the `ReportPortal.json` file for configuration properties. This file should be located in the same directory where agent dll file is located (usually it's your tests output `bin\Debug` directory).
 
 ```
 bin
 └── Debug
     ├── YourTests.dll
     ├── ReportPortal.Shared.dll
-    └── ReportPortal.config.json
+    └── ReportPortal.json
 ```
 
 Values in json file are considered as flatten list. The following json file will be converted to `Section1:PropertyAbc`.
