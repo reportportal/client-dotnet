@@ -37,7 +37,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
             Assert.Equal(launch.Uuid, message.Uuid);
 
             // race condition: get a chance the launch is in database before deleting it
-            await Task.Delay(1000);
+            await Task.Delay(10_000);
 
             var gotLaunch = await Service.Launch.GetAsync(launch.Uuid);
             Assert.Equal("StartFinishDeleteAsyncLaunch", gotLaunch.Name);
