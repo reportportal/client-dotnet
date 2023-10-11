@@ -40,20 +40,7 @@ namespace ReportPortal.Client.IntegrationTests
 
                         var uiToken = JsonSerializer.Deserialize<TokenModel>(uiTokenJson);
 
-                        using (var apiTokenRequestMessage = new HttpRequestMessage(HttpMethod.Get, "uat/sso/me/apitoken"))
-                        {
-                            apiTokenRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", uiToken.AccessToken);
-                            using (var apiTokenResponseMessage = httpClient.SendAsync(apiTokenRequestMessage).GetAwaiter().GetResult())
-                            {
-                                apiTokenResponseMessage.EnsureSuccessStatusCode();
-
-                                var apiTokenJson = apiTokenResponseMessage.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-
-                                var apiToken = JsonSerializer.Deserialize<TokenModel>(apiTokenJson);
-
-                                Service = new Service(new Uri($"{url}/api/v1"), ProjectName, apiToken.AccessToken);
-                            }
-                        }
+                        Service = new Service(new Uri($"{url}/api/v1"), ProjectName, uiToken.AccessToken);
                     }
                 }
             }
