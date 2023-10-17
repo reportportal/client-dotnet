@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Client.Abstractions.Responses;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -36,10 +37,13 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
             var message = await Service.AsyncLaunch.FinishAsync(launch.Uuid, finishLaunchRequest);
             Assert.Equal(launch.Uuid, message.Uuid);
 
-            // race condition: get a chance the launch is in database before deleting it
-            await Task.Delay(1000);
+            LaunchResponse gotLaunch = null;
 
-            var gotLaunch = await Service.Launch.GetAsync(launch.Uuid);
+            // wait until async launch will be processed
+            Func<Task> getLaunchAction = async () => gotLaunch = await Service.Launch.GetAsync(launch.Uuid);
+            await getLaunchAction.Should().NotThrowAfterAsync(TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(1));
+            
+            Assert.NotNull(gotLaunch);
             Assert.Equal("StartFinishDeleteAsyncLaunch", gotLaunch.Name);
             gotLaunch.StartTime.Should().BeCloseTo(startLaunchRequest.StartTime, precision: 1);
             gotLaunch.EndTime.Should().BeCloseTo(finishLaunchRequest.EndTime, precision: 1);
