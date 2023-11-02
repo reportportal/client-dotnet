@@ -634,10 +634,12 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
         {
             var launchName = Guid.NewGuid().ToString();
             var launch1 = await Service.Launch.StartAsync(new StartLaunchRequest { Name = launchName, StartTime = DateTime.UtcNow });
-            var test1 = await Service.TestItem.StartAsync(new StartTestItemRequest { LaunchUuid = launch1.Uuid, Name = "ABC", StartTime = DateTime.UtcNow });
+            var test1 = await Service.TestItem.StartAsync(new StartTestItemRequest
+            { LaunchUuid = launch1.Uuid, Name = "ABC", StartTime = DateTime.UtcNow, Attributes = new List<ItemAttribute> { new ItemAttribute() { Key = "k1", Value = "v1" } } });
 
             var launch2 = await Service.Launch.StartAsync(new StartLaunchRequest { Name = launchName, StartTime = DateTime.UtcNow });
-            var test2 = await Service.TestItem.StartAsync(new StartTestItemRequest { LaunchUuid = launch2.Uuid, Name = "ABC", StartTime = DateTime.UtcNow });
+            var test2 = await Service.TestItem.StartAsync(new StartTestItemRequest
+            { LaunchUuid = launch2.Uuid, Name = "ABC", StartTime = DateTime.UtcNow, Attributes = new List<ItemAttribute> { new ItemAttribute() { Key = "k1", Value = "v1" } } });
 
             var gotTest2 = await Service.TestItem.GetAsync(test2.Uuid);
 
@@ -647,12 +649,19 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
             var element = histories.Items.First().Resources.First();
             element.Name.Should().Be("ABC");
             element.Status.Should().Be(Status.InProgress);
+            element.Attributes.Should().BeEquivalentTo(new List<ItemAttribute> { new ItemAttribute() { Key = "k1", Value = "v1" } });
 
             var gotLaunch1 = await Service.Launch.GetAsync(launch1.Uuid);
             var gotLaunch2 = await Service.Launch.GetAsync(launch2.Uuid);
 
-            await Service.Launch.StopAsync(gotLaunch1.Id, new FinishLaunchRequest { EndTime = DateTime.UtcNow });
-            await Service.Launch.StopAsync(gotLaunch2.Id, new FinishLaunchRequest { EndTime = DateTime.UtcNow });
+            await Service.Launch.StopAsync(gotLaunch1.Id, new FinishLaunchRequest
+            {
+                EndTime = DateTime.UtcNow
+            });
+            await Service.Launch.StopAsync(gotLaunch2.Id, new FinishLaunchRequest
+            {
+                EndTime = DateTime.UtcNow
+            });
 
             await Service.Launch.DeleteAsync(gotLaunch1.Id);
             await Service.Launch.DeleteAsync(gotLaunch2.Id);

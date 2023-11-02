@@ -1,5 +1,4 @@
-﻿using ReportPortal.Client.Converters;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace ReportPortal.Client.Abstractions.Models
 {
