@@ -9,7 +9,7 @@ using System;
 namespace ReportPortal.Shared.Benchmark.Reporter
 {
     [MemoryDiagnoser]
-    [SimpleJob(targetCount: 10)]
+    [SimpleJob]
     public class ReporterBenchmark
     {
         [Params(1, 100000)]
