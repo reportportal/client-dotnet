@@ -204,7 +204,17 @@ namespace ReportPortal.Shared.Execution.Logging
                 }
 
                 var contentType = MimeTypeMap.GetMimeType(file.Extension);
-                message.Attachment = new LogMessageAttachment(contentType, File.ReadAllBytes(file.FullName));
+
+                using (var fileStream = File.Open(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        fileStream.CopyTo(memoryStream);
+                        var bytes = memoryStream.ToArray();
+
+                        message.Attachment = new LogMessageAttachment(contentType, bytes);
+                    }
+                }
             }
             catch (Exception ex)
             {
