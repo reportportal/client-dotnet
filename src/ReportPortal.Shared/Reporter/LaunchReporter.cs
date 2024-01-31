@@ -38,7 +38,7 @@ namespace ReportPortal.Shared.Reporter
             }
             else
             {
-                var configurationDirectory = System.IO.Path.GetDirectoryName(new Uri(typeof(LaunchReporter).Assembly.CodeBase).LocalPath);
+                var configurationDirectory = AppContext.BaseDirectory;
                 _configuration = new ConfigurationBuilder().AddDefaults(configurationDirectory).Build();
             }
 

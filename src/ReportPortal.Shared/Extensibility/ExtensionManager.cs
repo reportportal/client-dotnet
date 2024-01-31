@@ -26,7 +26,7 @@ namespace ReportPortal.Shared.Extensibility
 
         private readonly List<string> _exploredPaths = new List<string>();
 
-        private readonly List<string> _exploredAssemblies = new List<string>();
+        private readonly List<string> _exploredAssemblyNames = new List<string>();
 
         private static readonly object _lockObj = new object();
 
@@ -63,9 +63,9 @@ namespace ReportPortal.Shared.Extensibility
 
                         foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies().Where(a => a.GetName().Name.Contains("ReportPortal")))
                         {
-                            if (!_exploredAssemblies.Contains(assembly.Location))
+                            if (!_exploredAssemblyNames.Contains(assembly.FullName))
                             {
-                                _exploredAssemblies.Add(assembly.Location);
+                                _exploredAssemblyNames.Add(assembly.FullName);
                                 _traceLogger.Verbose($"Exploring '{assembly.FullName}' assembly for extensions.");
 
                                 try
