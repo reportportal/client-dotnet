@@ -8,43 +8,27 @@ namespace ReportPortal.Shared.Extensibility
 {
     public class ExtensionManager : IExtensionManager
     {
-        private static Internal.Logging.ITraceLogger TraceLogger { get; } = Internal.Logging.TraceLogManager.Instance.GetLogger(typeof(ExtensionManager));
+        private static readonly Internal.Logging.ITraceLogger _traceLogger = Internal.Logging.TraceLogManager.Instance.GetLogger(typeof(ExtensionManager));
 
         private static readonly Lazy<IExtensionManager> _instance = new Lazy<IExtensionManager>(() =>
             {
                 var ext = new ExtensionManager();
 
-                var assemblyLocation = Assembly.GetExecutingAssembly().Location;
-                TraceLogger.Verbose($"Executing assembly location: {assemblyLocation}");
-                if (!string.IsNullOrEmpty(assemblyLocation))
-                {
-                    ext.Explore(Path.GetDirectoryName(assemblyLocation));
-                }
-                else
-                {
-                    // fallback to env executing args
-                    TraceLogger.Verbose("Location of executing assembly is not determined, falling back to get it from environment command args.");
+                var assemblyLocation = AppContext.BaseDirectory;
+                _traceLogger.Verbose($"Executing assembly location: {assemblyLocation}");
 
-                    var assemblySingleFileLocation = Environment.GetCommandLineArgs().FirstOrDefault();
-
-                    if (assemblySingleFileLocation != null)
-                    {
-                        ext.Explore(Path.GetDirectoryName(assemblySingleFileLocation));
-                    }
-                }
-
-                ext.Explore(Environment.CurrentDirectory);
+                ext.Explore(assemblyLocation);
 
                 return ext;
             });
 
         public static IExtensionManager Instance => _instance.Value;
 
-        private List<string> _exploredPaths = new List<string>();
+        private readonly List<string> _exploredPaths = new List<string>();
 
-        private List<string> _exploredAssemblies = new List<string>();
+        private readonly List<string> _exploredAssemblies = new List<string>();
 
-        private static object _lockObj = new object();
+        private static readonly object _lockObj = new object();
 
         public void Explore(string path)
         {
@@ -59,18 +43,18 @@ namespace ReportPortal.Shared.Extensibility
 
                         var currentDirectory = new DirectoryInfo(path);
 
-                        TraceLogger.Info($"Exploring extensions in '{currentDirectory}' directory.");
+                        _traceLogger.Info($"Exploring extensions in '{currentDirectory}' directory.");
 
                         foreach (var file in currentDirectory.GetFiles("*ReportPortal*.dll"))
                         {
-                            TraceLogger.Verbose($"Found '{file.Name}' and loading it into current AppDomain.");
+                            _traceLogger.Verbose($"Found '{file.Name}' and loading it into current AppDomain.");
                             try
                             {
                                 AppDomain.CurrentDomain.Load(Path.GetFileNameWithoutExtension(file.Name));
                             }
-                            catch(Exception ex)
+                            catch (Exception ex)
                             {
-                                TraceLogger.Warn($"Could not load extension assembly into application domain. {ex}");
+                                _traceLogger.Warn($"Could not load extension assembly into application domain. {ex}");
                             }
                         }
 
@@ -82,8 +66,8 @@ namespace ReportPortal.Shared.Extensibility
                             if (!_exploredAssemblies.Contains(assembly.Location))
                             {
                                 _exploredAssemblies.Add(assembly.Location);
-                                TraceLogger.Verbose($"Exploring '{assembly.FullName}' assembly for extensions.");
-                                
+                                _traceLogger.Verbose($"Exploring '{assembly.FullName}' assembly for extensions.");
+
                                 try
                                 {
                                     foreach (var type in assembly.GetTypes().Where(t => t.IsClass))
@@ -94,24 +78,24 @@ namespace ReportPortal.Shared.Extensibility
                                             {
                                                 var extension = Activator.CreateInstance(type);
                                                 reportEventObservers.Add((IReportEventsObserver)extension);
-                                                TraceLogger.Info($"Registered '{type.FullName}' type as {nameof(IReportEventsObserver)} extension.");
+                                                _traceLogger.Info($"Registered '{type.FullName}' type as {nameof(IReportEventsObserver)} extension.");
                                             }
 
                                             if (iCommandsListenerInterfaceType.IsAssignableFrom(type))
                                             {
                                                 var extension = Activator.CreateInstance(type);
                                                 commandsListeners.Add((ICommandsListener)extension);
-                                                TraceLogger.Info($"Registered '{type.FullName}' type as {nameof(ICommandsListener)} extension.");
+                                                _traceLogger.Info($"Registered '{type.FullName}' type as {nameof(ICommandsListener)} extension.");
                                             }
                                         }
                                     }
                                 }
                                 catch (ReflectionTypeLoadException exp)
                                 {
-                                    TraceLogger.Warn($"Couldn't load '{assembly.GetName().Name}' assembly into domain.\n{exp}");
+                                    _traceLogger.Warn($"Couldn't load '{assembly.GetName().Name}' assembly into domain.\n{exp}");
                                     foreach (var loaderException in exp.LoaderExceptions)
                                     {
-                                        TraceLogger.Warn(loaderException.ToString());
+                                        _traceLogger.Warn(loaderException.ToString());
                                     }
                                 }
                             }
