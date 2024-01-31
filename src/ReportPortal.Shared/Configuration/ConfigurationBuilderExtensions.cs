@@ -6,15 +6,26 @@ namespace ReportPortal.Shared.Configuration
 {
     public static class ConfigurationBuilderExtensions
     {
+        /// <summary>
+        /// Adds default configuration to the specified <see cref="IConfigurationBuilder"/>.
+        /// </summary>
+        /// <param name="builder">The <see cref="IConfigurationBuilder"/> to add default configuration to.</param>
+        /// <returns>The <see cref="IConfigurationBuilder"/> with default configuration added.</returns>
         public static IConfigurationBuilder AddDefaults(this IConfigurationBuilder builder)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
 
-            var baseDir = Environment.CurrentDirectory;
+            var baseDir = AppContext.BaseDirectory;
 
             return builder.AddDefaults(baseDir);
         }
 
+        /// <summary>
+        /// Adds default configuration sources to the <see cref="IConfigurationBuilder"/>.
+        /// </summary>
+        /// <param name="builder">The <see cref="IConfigurationBuilder"/> to add the default configuration sources to.</param>
+        /// <param name="baseDir">The base directory path.</param>
+        /// <returns>The <see cref="IConfigurationBuilder"/> with the default configuration sources added.</returns>
         public static IConfigurationBuilder AddDefaults(this IConfigurationBuilder builder, string baseDir)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
