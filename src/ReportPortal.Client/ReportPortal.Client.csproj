@@ -10,7 +10,7 @@
     <PackageProjectUrl>https://reportportal.io</PackageProjectUrl>
     <PackageIcon>Logo.png</PackageIcon>
     <RepositoryType>GitHub</RepositoryType>
-    <RepositoryUrl>https://github.com/reportportal/client-net</RepositoryUrl>
+    <RepositoryUrl>https://github.com/reportportal/client-dotnet</RepositoryUrl>
     <PackageTags>report reportportal api client testing</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

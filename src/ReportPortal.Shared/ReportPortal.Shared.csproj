@@ -10,7 +10,7 @@
     <PackageProjectUrl>https://reportportal.io</PackageProjectUrl>
     <PackageIcon>Logo.png</PackageIcon>
     <RepositoryType>GitHub</RepositoryType>
-    <RepositoryUrl>https://github.com/reportportal/commons-net</RepositoryUrl>
+    <RepositoryUrl>https://github.com/reportportal/client-dotnet</RepositoryUrl>
     <PackageTags>reportportal report reporter api testing</PackageTags>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
