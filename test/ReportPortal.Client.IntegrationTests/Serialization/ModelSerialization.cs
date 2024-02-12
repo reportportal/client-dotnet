@@ -12,13 +12,13 @@ namespace ReportPortal.Client.IntegrationTests.Serialization
     public class ModelSerialization
     {
         [Fact]
-        public void ShouldThrowExceptionIfIncorrectJson()
+        public async Task ShouldThrowExceptionIfIncorrectJson()
         {
             var json = "<abc />";
             using (var reader = new MemoryStream(Encoding.UTF8.GetBytes(json)))
             {
-                Action act = async () => await ModelSerializer.DeserializeAsync<MessageResponse>(reader);
-                act.Should().Throw<Exception>();
+                Func<Task> act = async () => await ModelSerializer.DeserializeAsync<MessageResponse>(reader);
+                await act.Should().ThrowAsync<Exception>();
             }
         }
 
