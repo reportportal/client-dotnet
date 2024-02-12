@@ -45,8 +45,8 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
             
             Assert.NotNull(gotLaunch);
             Assert.Equal("StartFinishDeleteAsyncLaunch", gotLaunch.Name);
-            gotLaunch.StartTime.Should().BeCloseTo(startLaunchRequest.StartTime, precision: 1);
-            gotLaunch.EndTime.Should().BeCloseTo(finishLaunchRequest.EndTime, precision: 1);
+            gotLaunch.StartTime.Should().BeCloseTo(startLaunchRequest.StartTime, precision: TimeSpan.FromMilliseconds(1));
+            gotLaunch.EndTime.Should().BeCloseTo(finishLaunchRequest.EndTime, precision: TimeSpan.FromMilliseconds(1));
 
             var delMessage = await Service.Launch.DeleteAsync(gotLaunch.Id);
             Assert.Contains("successfully", delMessage.Info);

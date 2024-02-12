@@ -17,7 +17,7 @@ namespace ReportPortal.Client.IntegrationTests.Serialization
             var json = "<abc />";
             using (var reader = new MemoryStream(Encoding.UTF8.GetBytes(json)))
             {
-                Func<Task> act = async () => await ModelSerializer.DeserializeAsync<MessageResponse>(reader);
+                Action act = async () => await ModelSerializer.DeserializeAsync<MessageResponse>(reader);
                 act.Should().Throw<Exception>();
             }
         }

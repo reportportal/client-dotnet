@@ -41,8 +41,8 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
 
             var gotLaunch = await Service.Launch.GetAsync(launch.Uuid);
             Assert.Equal("StartFinishDeleteLaunch", gotLaunch.Name);
-            gotLaunch.StartTime.Should().BeCloseTo(startLaunchRequest.StartTime, precision: 1);
-            gotLaunch.EndTime.Should().BeCloseTo(finishLaunchRequest.EndTime, precision: 1);
+            gotLaunch.StartTime.Should().BeCloseTo(startLaunchRequest.StartTime, precision: TimeSpan.FromMilliseconds(1));
+            gotLaunch.EndTime.Should().BeCloseTo(finishLaunchRequest.EndTime, precision: TimeSpan.FromMilliseconds(1));
 
             var delMessage = await Service.Launch.DeleteAsync(gotLaunch.Id);
             Assert.Contains("successfully", delMessage.Info);
@@ -222,8 +222,8 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
             };
 
             var mergedLaunch = await Service.Launch.MergeAsync(mergeRequest);
-            mergedLaunch.StartTime.Should().BeCloseTo(mergeRequest.StartTime, precision: 1);
-            mergedLaunch.EndTime.Should().BeCloseTo(mergeRequest.EndTime, precision: 1);
+            mergedLaunch.StartTime.Should().BeCloseTo(mergeRequest.StartTime, precision: TimeSpan.FromMilliseconds(1));
+            mergedLaunch.EndTime.Should().BeCloseTo(mergeRequest.EndTime, precision: TimeSpan.FromMilliseconds(1));
 
             var delMessage = await Service.Launch.DeleteAsync(mergedLaunch.Id);
             Assert.Contains("successfully", delMessage.Info);

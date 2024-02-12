@@ -170,7 +170,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
 
             var getLog = await Service.LogItem.GetAsync(log.Uuid);
 
-            getLog.Time.Should().BeCloseTo(utcNow);
+            getLog.Time.Should().BeCloseTo(utcNow, precision: TimeSpan.FromMilliseconds(1));
         }
 
         [Fact]
@@ -223,7 +223,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
             var gotLogItem = await Service.LogItem.GetAsync(log.Uuid);
             Assert.Equal(addLogItemRequest.Text, gotLogItem.Text);
             Assert.Equal(addLogItemRequest.Level, gotLogItem.Level);
-            gotLogItem.Time.Should().BeCloseTo(addLogItemRequest.Time, precision: 1);
+            gotLogItem.Time.Should().BeCloseTo(addLogItemRequest.Time, precision: TimeSpan.FromMilliseconds(1));
         }
 
         [Fact]
