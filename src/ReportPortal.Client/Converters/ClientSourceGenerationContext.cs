@@ -51,7 +51,7 @@ namespace ReportPortal.Client.Converters
     [JsonSerializable(typeof(Abstractions.Responses.Project.ProjectResponse))]
     [JsonSerializable(typeof(Abstractions.Responses.Project.PreferenceResponse))]
 
-    public partial class ClientSourceGenerationContext : JsonSerializerContext
+    partial class ClientSourceGenerationContext : JsonSerializerContext
     {
     }
 }
