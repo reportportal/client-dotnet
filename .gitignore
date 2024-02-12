@@ -4,6 +4,11 @@
 # Coverlet
 Coverage.xml
 
+BenchmarkDotNet.Artifacts
+
+#Coverlet coverage report
+*coverage.*.xml
+
 # User-specific files
 *.suo
 *.user
@@ -254,3 +259,6 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+# MacOS auxiliary files
+.DS_Store
