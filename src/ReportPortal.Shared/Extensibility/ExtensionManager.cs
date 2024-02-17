@@ -6,6 +6,9 @@ using System.Reflection;
 
 namespace ReportPortal.Shared.Extensibility
 {
+    /// <summary>
+    /// Represents an extension manager for managing extensions.
+    /// </summary>
     public class ExtensionManager : IExtensionManager
     {
         private static readonly Internal.Logging.ITraceLogger _traceLogger = Internal.Logging.TraceLogManager.Instance.GetLogger(typeof(ExtensionManager));
@@ -29,6 +32,9 @@ namespace ReportPortal.Shared.Extensibility
                 return ext;
             });
 
+        /// <summary>
+        /// Gets the instance of the extension manager.
+        /// </summary>
         public static IExtensionManager Instance => _instance.Value;
 
         private readonly List<string> _exploredPaths = new List<string>();
@@ -37,6 +43,10 @@ namespace ReportPortal.Shared.Extensibility
 
         private static readonly object _lockObj = new object();
 
+        /// <summary>
+        /// Explores the specified path for extensions.
+        /// </summary>
+        /// <param name="path">The path to explore.</param>
         public void Explore(string path)
         {
             if (!_exploredPaths.Contains(path))
@@ -121,8 +131,14 @@ namespace ReportPortal.Shared.Extensibility
             }
         }
 
+        /// <summary>
+        /// Gets the list of report event observers.
+        /// </summary>
         public IList<IReportEventsObserver> ReportEventObservers { get; } = new List<IReportEventsObserver>();
 
+        /// <summary>
+        /// Gets the list of commands listeners.
+        /// </summary>
         public IList<ICommandsListener> CommandsListeners { get; } = new List<ICommandsListener>();
     }
 }

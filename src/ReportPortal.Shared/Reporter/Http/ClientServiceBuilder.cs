@@ -67,7 +67,9 @@ namespace ReportPortal.Shared.Reporter.Http
             var apiKey = _configuration.GetValue<string>(ConfigurationPath.ServerAuthenticationKey, null);
             if (apiKey is null)
             {
+#pragma warning disable CS0618 // Type or member is obsolete
                 apiKey = _configuration.GetValue<string>(ConfigurationPath.ServerAuthenticationUuid, null);
+#pragma warning restore CS0618 // Type or member is obsolete
                 if (apiKey is null)
                 {
                     // Trigger proper exception throwing or use 'null'.
@@ -75,8 +77,10 @@ namespace ReportPortal.Shared.Reporter.Http
                 }
                 else
                 {
+#pragma warning disable CS0618 // Type or member is obsolete
                     TraceLogger.Warn($"Configuration parameter '${ConfigurationPath.ServerAuthenticationUuid}' is deprecated. " +
                         $"Use '${ConfigurationPath.ServerAuthenticationKey}' instead.");
+#pragma warning restore CS0618 // Type or member is obsolete
                 }
             }
 
