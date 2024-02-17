@@ -14,10 +14,17 @@ namespace ReportPortal.Shared.Extensibility
             {
                 var ext = new ExtensionManager();
 
-                var assemblyLocation = AppContext.BaseDirectory;
-                _traceLogger.Verbose($"Executing assembly location: {assemblyLocation}");
+                var extentionDirectories = new List<string>
+                {
+                    AppContext.BaseDirectory,
+                    Path.GetDirectoryName(typeof(ExtensionManager).Assembly.Location),
+                    Environment.CurrentDirectory,
+                };
 
-                ext.Explore(assemblyLocation);
+                foreach (var extentionDirectory in extentionDirectories)
+                {
+                    ext.Explore(extentionDirectory);
+                }
 
                 return ext;
             });
@@ -38,12 +45,12 @@ namespace ReportPortal.Shared.Extensibility
                 {
                     if (!_exploredPaths.Contains(path))
                     {
+                        _traceLogger.Info($"Exploring extensions in '{path}' directory.");
+
                         var reportEventObservers = new List<IReportEventsObserver>();
                         var commandsListeners = new List<ICommandsListener>();
 
                         var currentDirectory = new DirectoryInfo(path);
-
-                        _traceLogger.Info($"Exploring extensions in '{currentDirectory}' directory.");
 
                         foreach (var file in currentDirectory.GetFiles("*ReportPortal*.dll"))
                         {
@@ -107,6 +114,10 @@ namespace ReportPortal.Shared.Extensibility
                         _exploredPaths.Add(path);
                     }
                 }
+            }
+            else
+            {
+                _traceLogger.Verbose($"The extensions '{path}' path was visited before, skipping");
             }
         }
 
