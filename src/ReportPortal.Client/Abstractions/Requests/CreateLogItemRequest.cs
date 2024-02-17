@@ -46,6 +46,9 @@ namespace ReportPortal.Client.Abstractions.Requests
         public LogItemAttach Attach { get; set; }
     }
 
+    /// <summary>
+    /// Represents an attachment for a log item.
+    /// </summary>
     public class LogItemAttach
     {
         // empty ctor for json serialization
@@ -54,12 +57,20 @@ namespace ReportPortal.Client.Abstractions.Requests
 
         }
 
+        /// <summary>
+        /// Initializes a new instance of the LogItemAttach class with the specified MIME type and data.
+        /// </summary>
+        /// <param name="mimeType">The MIME type of the attachment.</param>
+        /// <param name="data">The data of the attachment.</param>
         public LogItemAttach(string mimeType, byte[] data)
         {
             MimeType = mimeType;
             Data = data;
         }
 
+        /// <summary>
+        /// Gets or sets the name of the attachment.
+        /// </summary>
         public string Name { get; set; } = Guid.NewGuid().ToString();
 
         [JsonIgnore]

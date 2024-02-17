@@ -11,17 +11,17 @@ namespace ReportPortal.Client.Abstractions.Requests
     public class UpdateTestItemRequest
     {
         /// <summary>
-        /// Update attributes for test item.
+        /// Gets or sets the attributes for the test item.
         /// </summary>
         public List<ItemAttribute> Attributes { get; set; }
 
         /// <summary>
-        /// Description of test item.
+        /// Gets or sets the description of the test item.
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        /// New status for test item.
+        /// Gets or sets the new status for the test item.
         /// </summary>
         [JsonConverter(typeof(JsonStringEnumConverterEx<Status>))]
         public Status Status { get; set; }

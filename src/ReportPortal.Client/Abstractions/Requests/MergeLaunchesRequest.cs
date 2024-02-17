@@ -12,40 +12,40 @@ namespace ReportPortal.Client.Abstractions.Requests
     public class MergeLaunchesRequest
     {
         /// <summary>
-        /// A short name of launch.
+        /// Gets or sets the short name of the launch.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// Description of launch.
+        /// Gets or sets the description of the launch.
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        /// Specify whether the launch is executed under debugging.
+        /// Gets or sets whether the launch is executed under debugging.
         /// </summary>
         [JsonConverter(typeof(JsonStringEnumConverterEx<LaunchMode>))]
         public LaunchMode Mode { get; set; }
 
         /// <summary>
-        /// Date time when the launch is executed.
+        /// Gets or sets the date and time when the launch is executed.
         /// </summary>
         [JsonConverter(typeof(DateTimeUnixEpochConverter))]
         public DateTime StartTime { get; set; }
 
         /// <summary>
-        /// Date time when the launch is finished.
+        /// Gets or sets the date and time when the launch is finished.
         /// </summary>
         [JsonConverter(typeof(DateTimeUnixEpochConverter))]
         public DateTime EndTime { get; set; }
 
         /// <summary>
-        /// Tags for merged launch.
+        /// Gets or sets the tags for the merged launch.
         /// </summary>
         public List<long> Launches { get; set; }
 
         /// <summary>
-        /// Type of launches merge.
+        /// Gets or sets the type of launches merge.
         /// </summary>
         public string MergeType { get; set; }
     }

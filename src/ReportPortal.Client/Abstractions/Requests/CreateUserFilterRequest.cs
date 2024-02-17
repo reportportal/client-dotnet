@@ -8,44 +8,44 @@ using System.Text.Json.Serialization;
 namespace ReportPortal.Client.Abstractions.Requests
 {
     /// <summary>
-    /// Defines a request for creating of user filters
+    /// Defines a request for creating user filters.
     /// </summary>
     public class CreateUserFilterRequest
     {
         /// <summary>
-        /// Name of user filter.
+        /// Gets or sets the name of the user filter.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// Description of user filter.
+        /// Gets or sets the description of the user filter.
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        /// List of conditions to filter data.
+        /// Gets or sets the list of conditions to filter data.
         /// </summary>
         public IEnumerable<Condition> Conditions { get; set; }
 
         /// <summary>
-        /// List of parameters of selection.
+        /// Gets or sets the list of parameters of selection.
         /// </summary>
         public IEnumerable<FilterOrder> Orders { get; set; }
 
         /// <summary>
-        /// Indicates if filter is shared.
+        /// Gets or sets a value indicating whether the filter is shared.
         /// </summary>
         [JsonPropertyName("share")]
         public bool IsShared { get; set; }
 
         /// <summary>
-        /// Owner of the filter.
+        /// Gets or sets the owner of the filter.
         /// </summary>
         [DataMember(Name = "owner")]
         public string Owner { get; set; }
 
         /// <summary>
-        /// User filter type enum.
+        /// Gets or sets the user filter type enum.
         /// </summary>
         [JsonPropertyName("type")]
         [JsonConverter(typeof(JsonStringEnumConverterEx<UserFilterType>))]

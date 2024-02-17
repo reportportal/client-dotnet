@@ -11,28 +11,28 @@ namespace ReportPortal.Client.Abstractions.Resources
     public interface IAsyncLaunchResource
     {
         /// <summary>
-        /// Asynchronously finishes specified launch.
+        /// Asynchronously finishes a specified launch.
         /// </summary>
-        /// <param name="uuid">UUID of specified launch.</param>
-        /// <param name="request">Information about representation of launch to finish.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>A message from service.</returns>
+        /// <param name="uuid">The UUID of the specified launch.</param>
+        /// <param name="request">Information about the representation of the launch to finish.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A message from the service.</returns>
         Task<LaunchFinishedResponse> FinishAsync(string uuid, FinishLaunchRequest request, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Asynchronously merge several launches.
+        /// Asynchronously merges several launches.
         /// </summary>
-        /// <param name="request">Request for merging.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Returns the model of merged launches.</returns>
+        /// <param name="request">The request for merging.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Returns the model of the merged launches.</returns>
         Task<LaunchResponse> MergeAsync(MergeLaunchesRequest request, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Asynchronously starts new launch.
+        /// Asynchronously starts a new launch.
         /// </summary>
-        /// <param name="request">Information about launch.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Information about started launch.</returns>
+        /// <param name="request">Information about the launch.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>Information about the started launch.</returns>
         Task<LaunchCreatedResponse> StartAsync(StartLaunchRequest request, CancellationToken cancellationToken = default);
     }
 }

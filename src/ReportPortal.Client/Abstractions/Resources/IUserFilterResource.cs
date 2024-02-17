@@ -38,7 +38,7 @@ namespace ReportPortal.Client.Abstractions.Resources
         /// <summary>
         /// Gets all user filters.
         /// </summary>
-        /// /// <param name="filterOption">Filter criteria for user filters.</param>
+        /// <param name="filterOption">Filter criteria for user filters.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Filtered user filters.</returns>
         Task<Content<UserFilterResponse>> GetAsync(FilterOption filterOption, CancellationToken cancellationToken = default);

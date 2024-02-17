@@ -1,6 +1,6 @@
 ﻿using ReportPortal.Client.Abstractions;
 using ReportPortal.Client.Abstractions.Resources;
-using ReportPortal.Client.Extentions;
+using ReportPortal.Client.Extensions;
 using ReportPortal.Client.Resources;
 using System;
 using System.Net.Http;

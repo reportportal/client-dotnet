@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace ReportPortal.Client.Abstractions.Resources
 {
     /// <summary>
-    /// Interacts with current user.
+    /// Interacts with the current user.
     /// </summary>
     public interface IUserResource
     {

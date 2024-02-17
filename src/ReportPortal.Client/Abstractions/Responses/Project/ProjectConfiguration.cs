@@ -7,6 +7,9 @@ namespace ReportPortal.Client.Abstractions.Responses.Project
     /// </summary>
     public class ProjectConfiguration
     {
+        /// <summary>
+        /// Gets or sets the container for project defect subtypes.
+        /// </summary>
         [JsonPropertyName("subTypes")]
         public ProjectDefectSubTypesContainer DefectSubTypes { get; set; }
     }

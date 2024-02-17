@@ -7,8 +7,15 @@ namespace ReportPortal.Client.Abstractions.Models
     /// </summary>
     public enum LaunchMode
     {
+        /// <summary>
+        /// The default launch mode.
+        /// </summary>
         [JsonPropertyName("DEFAULT")]
         Default,
+
+        /// <summary>
+        /// The debug launch mode.
+        /// </summary>
         [JsonPropertyName("DEBUG")]
         Debug
     }

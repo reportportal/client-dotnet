@@ -11,17 +11,17 @@ namespace ReportPortal.Client.Abstractions.Requests
     public class UpdateLaunchRequest
     {
         /// <summary>
-        /// Update attributes for launch.
+        /// Gets or sets the list of attributes to update for the launch.
         /// </summary>
         public List<ItemAttribute> Attributes { get; set; }
 
         /// <summary>
-        /// Description of launch.
+        /// Gets or sets the description of the launch.
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        /// Specify whether the launch is executed under debugging.
+        /// Gets or sets the mode in which the launch is executed.
         /// </summary>
         [JsonConverter(typeof(JsonStringEnumConverterEx<LaunchMode>))]
         public LaunchMode Mode { get; set; }

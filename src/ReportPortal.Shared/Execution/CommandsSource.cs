@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace ReportPortal.Shared.Execution
 {
+    /// <inheritdoc cref="ICommandsSource"/>
     public class CommandsSource : ICommandsSource
     {
         private IList<ICommandsListener> _listeners;

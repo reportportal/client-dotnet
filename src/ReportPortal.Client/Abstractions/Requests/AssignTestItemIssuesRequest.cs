@@ -9,7 +9,7 @@ namespace ReportPortal.Client.Abstractions.Requests
     public class AssignTestItemIssuesRequest
     {
         /// <summary>
-        /// List of test items and their issues.
+        /// Gets or sets the list of test items and their issues.
         /// </summary>
         public List<TestItemIssueUpdate> Issues { get; set; }
     }
@@ -17,12 +17,12 @@ namespace ReportPortal.Client.Abstractions.Requests
     public class TestItemIssueUpdate
     {
         /// <summary>
-        /// A issue of test item.
+        /// Gets or sets the issue of the test item.
         /// </summary>
         public Issue Issue { get; set; }
 
         /// <summary>
-        /// ID of test item to assign the issue.
+        /// Gets or sets the ID of the test item to assign the issue.
         /// </summary>
         public long TestItemId { get; set; }
     }

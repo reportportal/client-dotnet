@@ -6,79 +6,91 @@ using System.Text.Json.Serialization;
 
 namespace ReportPortal.Client.Abstractions.Responses
 {
+    /// <summary>
+    /// Represents a response containing user filter information.
+    /// </summary>
     public class UserFilterResponse
     {
         /// <summary>
-        /// ID of user filter.
+        /// Gets or sets the ID of the user filter.
         /// </summary>
         public long Id { get; set; }
 
         /// <summary>
-        /// Description of user filter.
+        /// Gets or sets the description of the user filter.
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        /// List of conditions to filter data.
+        /// Gets or sets the list of conditions to filter data.
         /// </summary>
         public IList<Condition> Conditions { get; set; }
 
         /// <summary>
-        /// Name of user filter.
+        /// Gets or sets the name of the user filter.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// list of parameters of selection.
+        /// Gets or sets the list of parameters of selection.
         /// </summary>
         public IList<FilterOrder> Orders { get; set; }
 
         /// <summary>
-        /// Is filter shared.
+        /// Gets or sets a value indicating whether the filter is shared.
         /// </summary>
         [JsonPropertyName("share")]
         public bool IsShared { get; set; }
 
         /// <summary>
-        /// User filter type enum.
+        /// Gets or sets the user filter type.
         /// </summary>
         [JsonPropertyName("type")]
         [JsonConverter(typeof(JsonStringEnumConverterEx<UserFilterType>))]
         public UserFilterType UserFilterType { get; set; }
 
         /// <summary>
-        /// Owner of user filter.
+        /// Gets or sets the owner of the user filter.
         /// </summary>
         public string Owner { get; set; }
     }
 
+    /// <summary>
+    /// Represents a condition used for filtering data.
+    /// </summary>
     public class Condition
     {
+        /// <summary>
+        /// Gets or sets the user filter condition.
+        /// </summary>
         [JsonPropertyName("condition")]
         [JsonConverter(typeof(JsonStringEnumConverterEx<FilterOperation>))]
         public FilterOperation UserFilterCondition { get; set; }
 
         /// <summary>
-        /// Field to filter by.
+        /// Gets or sets the field to filter by.
         /// </summary>
         public string FilteringField { get; set; }
 
         /// <summary>
-        /// Value to filter by.
+        /// Gets or sets the value to filter by.
         /// </summary>
         public string Value { get; set; }
     }
 
+    /// <summary>
+    /// Represents the order of filtering.
+    /// </summary>
     public class FilterOrder
     {
         /// <summary>
-        /// Is ascendant order.
+        /// Gets or sets a value indicating whether the order is ascendant.
         /// </summary>
         [JsonPropertyName("isAsc")]
         public bool Asc { get; set; }
 
         /// <summary>
-        /// A column to sort by.
+        /// Gets or sets the column to sort by.
         /// </summary>
         public string SortingColumn { get; set; }
     }

@@ -62,7 +62,7 @@ namespace ReportPortal.Client.Abstractions.Resources
         /// <summary>
         /// Returns a list of launches for current project.
         /// </summary>
-        /// <param name="filterOption">Specified criterias for retrieving launches.</param>
+        /// <param name="filterOption">Specified criteria for retrieving launches.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A list of launches.</returns>
         Task<Content<LaunchResponse>> GetAsync(FilterOption filterOption, CancellationToken cancellationToken = default);
@@ -77,7 +77,7 @@ namespace ReportPortal.Client.Abstractions.Resources
         /// <summary>
         /// Returns a list of debug launches for current project.
         /// </summary>
-        /// <param name="filterOption">Specified criterias for retrieving launches.</param>
+        /// <param name="filterOption">Specified criteria for retrieving launches.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A list of launches.</returns>
         Task<Content<LaunchResponse>> GetDebugAsync(FilterOption filterOption, CancellationToken cancellationToken = default);
@@ -99,7 +99,7 @@ namespace ReportPortal.Client.Abstractions.Resources
         Task<LaunchCreatedResponse> StartAsync(StartLaunchRequest request, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Stopes specified launch even if inner tests are not finished yet.
+        /// Stops specified launch even if inner tests are not finished yet.
         /// </summary>
         /// <param name="id">ID of specified launch.</param>
         /// <param name="request">Information about representation of launch to finish.</param>
@@ -108,7 +108,7 @@ namespace ReportPortal.Client.Abstractions.Resources
         Task<LaunchFinishedResponse> StopAsync(long id, FinishLaunchRequest request, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Update specified launch.
+        /// Updates specified launch.
         /// </summary>
         /// <param name="id">ID of launch to update.</param>
         /// <param name="request">Information about launch.</param>

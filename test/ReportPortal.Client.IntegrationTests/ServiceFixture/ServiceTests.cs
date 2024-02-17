@@ -1,4 +1,4 @@
-﻿using ReportPortal.Client.Extentions;
+﻿using ReportPortal.Client.Extensions;
 using System;
 using Xunit;
 

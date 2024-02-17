@@ -11,29 +11,29 @@ namespace ReportPortal.Client.Abstractions.Resources
     public interface IAsyncTestItemResource
     {
         /// <summary>
-        /// Asynchronously finishes specified test item.
+        /// Asynchronously finishes a specified test item.
         /// </summary>
-        /// <param name="uuid">ID of specified test item.</param>
-        /// <param name="request">Information about representation of test item to finish.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>A message from service.</returns>
+        /// <param name="uuid">The ID of the specified test item.</param>
+        /// <param name="request">Information about the representation of the test item to finish.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A message from the service.</returns>
         Task<MessageResponse> FinishAsync(string uuid, FinishTestItemRequest request, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Asynchronously creates a new test item.
         /// </summary>
-        /// <param name="request">Information about representation of test item.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Representation of created test item.</returns>
+        /// <param name="request">Information about the representation of the test item.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The representation of the created test item.</returns>
         Task<TestItemCreatedResponse> StartAsync(StartTestItemRequest request, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Asynchronously creates a new test item.
         /// </summary>
-        /// <param name="uuid">UUID of parent item.</param>
-        /// <param name="model">Information about representation of test item.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Representation of created test item.</returns>
+        /// <param name="uuid">The UUID of the parent item.</param>
+        /// <param name="model">Information about the representation of the test item.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The representation of the created test item.</returns>
         Task<TestItemCreatedResponse> StartAsync(string uuid, StartTestItemRequest model, CancellationToken cancellationToken = default);
     }
 }

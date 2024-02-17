@@ -69,7 +69,7 @@ namespace ReportPortal.Client.Abstractions.Resources
         /// <summary>
         /// Returns a list of log items for specified test item.
         /// </summary>
-        /// <param name="filterOption">Specified criterias for retrieving log items.</param>
+        /// <param name="filterOption">Specified criteria for retrieving log items.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A list of log items.</returns>
         Task<Content<LogItemResponse>> GetAsync(FilterOption filterOption, CancellationToken cancellationToken = default);
