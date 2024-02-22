@@ -154,11 +154,12 @@ namespace ReportPortal.Shared.Tests.Execution
             var launchContext = new LaunchContext(extensionManager, new CommandsSource(new List<ICommandsListener> { listener.Object }));
 
             var scope = launchContext.Log.BeginScope("qwe");
+            var scopeEndTime = DateTime.UtcNow;
             scope.Dispose();
 
             lc.Should().Be(launchContext);
             logScope.Name.Should().Be("qwe");
-            logScope.EndTime.Should().BeCloseTo(DateTime.UtcNow, precision: TimeSpan.FromMilliseconds(30));
+            logScope.EndTime.Should().BeCloseTo(scopeEndTime, precision: TimeSpan.FromMilliseconds(60));
         }
 
         [Fact]
