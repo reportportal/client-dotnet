@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using Newtonsoft.Json.Linq;
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Shared.Execution.Metadata;
 using System;

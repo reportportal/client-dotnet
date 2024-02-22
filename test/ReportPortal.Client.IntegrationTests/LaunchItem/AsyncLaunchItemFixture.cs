@@ -42,7 +42,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
             // wait until async launch will be processed
             Func<Task> getLaunchAction = async () => gotLaunch = await Service.Launch.GetAsync(launch.Uuid);
             await getLaunchAction.Should().NotThrowAfterAsync(TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(1));
-            
+
             Assert.NotNull(gotLaunch);
             Assert.Equal("StartFinishDeleteAsyncLaunch", gotLaunch.Name);
             gotLaunch.StartTime.Should().BeCloseTo(startLaunchRequest.StartTime, precision: TimeSpan.FromMilliseconds(1));

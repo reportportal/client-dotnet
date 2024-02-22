@@ -62,7 +62,7 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
             var action = new Mock<Func<Task<string>>>();
             action.Setup(a => a()).Throws(() => new ServiceException("", HttpStatusCode.BadGateway, new Uri("https://example.com"), HttpMethod.Post, ""));
 
-            var executer = new LinearRetryRequestExecuter(3, 0, null, new HttpStatusCode[] { HttpStatusCode.BadGateway} );
+            var executer = new LinearRetryRequestExecuter(3, 0, null, new HttpStatusCode[] { HttpStatusCode.BadGateway });
             await executer.Awaiting(e => e.ExecuteAsync(action.Object)).Should().ThrowAsync<RetryExecutionException>();
 
             action.Verify(a => a(), Times.Exactly(3));

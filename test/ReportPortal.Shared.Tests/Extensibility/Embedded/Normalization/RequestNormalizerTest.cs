@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using Moq;
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Shared.Extensibility;
@@ -50,11 +49,11 @@ namespace ReportPortal.Shared.Tests.Extensibility.Embedded.Normalization
                 Attributes = new[]
                 {
                     new ItemAttribute
-                    { 
+                    {
                         Key = new string('a', RequestNormalizer.MAX_ATTRIBUTE_KEY_LENGTH + 1),
                         Value = new string('b', RequestNormalizer.MAX_ATTRIBUTE_VALUE_LENGTH + 1)
                     },
-                    new ItemAttribute 
+                    new ItemAttribute
                     {
                         Key = new string('a', RequestNormalizer.MAX_ATTRIBUTE_KEY_LENGTH * 2),
                         Value = new string('b', RequestNormalizer.MAX_ATTRIBUTE_VALUE_LENGTH * 2)
@@ -81,7 +80,7 @@ namespace ReportPortal.Shared.Tests.Extensibility.Embedded.Normalization
             var launchReporter = new LaunchReporter(service, null, null, _extensionManager);
             launchReporter.Start(new StartLaunchRequest());
 
-            var request = new StartTestItemRequest 
+            var request = new StartTestItemRequest
             {
                 Name = new string('a', RequestNormalizer.MAX_TEST_ITEM_NAME_LENGTH + 1)
             };
@@ -109,9 +108,9 @@ namespace ReportPortal.Shared.Tests.Extensibility.Embedded.Normalization
                     new ItemAttribute
                     {
                         Key = new string('a', RequestNormalizer.MAX_ATTRIBUTE_KEY_LENGTH + 1),
-                        Value = new string('b', RequestNormalizer.MAX_ATTRIBUTE_VALUE_LENGTH + 1) 
+                        Value = new string('b', RequestNormalizer.MAX_ATTRIBUTE_VALUE_LENGTH + 1)
                     },
-                    new ItemAttribute 
+                    new ItemAttribute
                     {
                         Key = new string('a', RequestNormalizer.MAX_ATTRIBUTE_KEY_LENGTH * 2),
                         Value = new string('b', RequestNormalizer.MAX_ATTRIBUTE_VALUE_LENGTH * 2)

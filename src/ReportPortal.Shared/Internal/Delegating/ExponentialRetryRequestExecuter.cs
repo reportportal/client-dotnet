@@ -64,7 +64,7 @@ namespace ReportPortal.Shared.Internal.Delegating
         public HttpStatusCode[] HttpStatusCodes { get; private set; }
 
         /// <inheritdoc/>
-        public override async Task<T> ExecuteAsync<T>(Func<Task<T>> func, Action<Exception> beforeNextAttempt = null, IStatisticsCounter statisticsCounter = null, [CallerMemberName]string logicalOperationName = null)
+        public override async Task<T> ExecuteAsync<T>(Func<Task<T>> func, Action<Exception> beforeNextAttempt = null, IStatisticsCounter statisticsCounter = null, [CallerMemberName] string logicalOperationName = null)
         {
             T result = default;
             List<Exception> exceptions = new List<Exception>();

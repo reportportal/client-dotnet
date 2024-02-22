@@ -209,7 +209,7 @@ namespace ReportPortal.Shared.Extensibility.Embedded.Analytics
                     }
 
                     var stringContent = new StringContent(content, Encoding.UTF8, "application/json");
-                    
+
                     try
                     {
                         using (var response = await httpClient.PostAsync(requestUri, stringContent))

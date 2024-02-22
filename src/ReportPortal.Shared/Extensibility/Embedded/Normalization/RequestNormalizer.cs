@@ -34,7 +34,7 @@ namespace ReportPortal.Shared.Extensibility.Embedded.Normalization
         private void ReportEventsSource_OnBeforeLaunchStarting(ILaunchReporter launchReporter, BeforeLaunchStartingEventArgs args)
         {
             args.StartLaunchRequest.Name = StringTrimmer.Trim(args.StartLaunchRequest.Name, MAX_LAUNCH_NAME_LENGTH);
-            
+
             NormalizeAttributes(args.StartLaunchRequest.Attributes);
         }
 

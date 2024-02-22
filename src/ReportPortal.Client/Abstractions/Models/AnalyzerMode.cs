@@ -12,13 +12,13 @@ namespace ReportPortal.Client.Abstractions.Models
         /// </summary>
         [JsonPropertyName("ALL")]
         All,
-        
+
         /// <summary>
         /// Analyzes the current launch.
         /// </summary>
         [JsonPropertyName("CURRENT_LAUNCH")]
         CurrentLaunch,
-        
+
         /// <summary>
         /// Analyzes launches by launch name.
         /// </summary>

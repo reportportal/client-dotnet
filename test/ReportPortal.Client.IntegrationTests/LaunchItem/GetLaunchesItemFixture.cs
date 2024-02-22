@@ -97,7 +97,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
 
         [Fact]
         public async Task GetInProgressLaunch()
-        {   
+        {
             var launch = await Service.Launch.StartAsync(new StartLaunchRequest
             {
                 Name = "StartForceFinishIncompleteLaunch",

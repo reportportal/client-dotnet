@@ -48,7 +48,7 @@ namespace ReportPortal.Client
         /// Gets response body.
         /// </summary>
         public string ResponseBody { get; }
-        
+
         /// <inheritdoc/>
         public override string Message => _message;
     }

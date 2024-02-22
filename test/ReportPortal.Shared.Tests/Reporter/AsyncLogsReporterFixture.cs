@@ -82,7 +82,7 @@ namespace ReportPortal.Shared.Tests.Reporter
                 _extensionManager,
                 _requestExecuter,
                 _logRequestAmender.Object,
-                _reportEventsSource, 
+                _reportEventsSource,
                 20);
 
             for (int i = 0; i < 60; i++)
@@ -172,8 +172,8 @@ namespace ReportPortal.Shared.Tests.Reporter
             var logsReporter = new LogsReporter(
                 _testReporter.Object,
                 service.Object,
-                _configuration, 
-                _extensionManager, 
+                _configuration,
+                _extensionManager,
                 _requestExecuter,
                 _logRequestAmender.Object,
                 _reportEventsSource,

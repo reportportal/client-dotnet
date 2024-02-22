@@ -6,13 +6,10 @@ using ReportPortal.Shared.Extensibility.ReportEvents.EventArgs;
 using ReportPortal.Shared.Reporter;
 using ReportPortal.Shared.Tests.Helpers;
 using RichardSzalay.MockHttp;
-using RichardSzalay.MockHttp.Matchers;
 using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Web;
 using Xunit;
 

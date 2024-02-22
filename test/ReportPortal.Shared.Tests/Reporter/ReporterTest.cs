@@ -460,7 +460,7 @@ namespace ReportPortal.Shared.Tests.Reporter
 
             service.Setup(s => s.Launch.StartAsync(It.IsAny<StartLaunchRequest>(), default))
                 .Returns(() => Task.FromResult(new LaunchCreatedResponse { Uuid = Guid.NewGuid().ToString() }))
-                .Callback<StartLaunchRequest, CancellationToken>((r,t) => startLaunchRequest = r);
+                .Callback<StartLaunchRequest, CancellationToken>((r, t) => startLaunchRequest = r);
 
             var config = new Shared.Configuration.ConfigurationBuilder().Build();
             config.Properties["Launch:Rerun"] = "true";

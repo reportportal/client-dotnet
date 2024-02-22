@@ -37,7 +37,7 @@ namespace ReportPortal.Shared.Reporter.Http
             httpClientHandler.Proxy = GetProxy();
 
             var ignoreSslErrors = Configuration.GetValue<bool>("Server:IgnoreSslErrors", false);
-            
+
 #if NET462
             if (ignoreSslErrors)
             {
@@ -45,7 +45,7 @@ namespace ReportPortal.Shared.Reporter.Http
             }
             ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
 #else
-            if (ignoreSslErrors)            
+            if (ignoreSslErrors)
             {
                 httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
             }

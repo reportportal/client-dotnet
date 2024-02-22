@@ -35,7 +35,7 @@ namespace ReportPortal.Client.Abstractions
         /// <summary>
         /// Gets the resource for managing asynchronous log items.
         /// </summary>
-        IAsyncLogItemResource  AsyncLogItem { get; }
+        IAsyncLogItemResource AsyncLogItem { get; }
 
         /// <summary>
         /// Gets the resource for managing users.

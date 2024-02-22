@@ -1,3 +1,3 @@
 ﻿using System.Runtime.CompilerServices;
 
-[assembly:InternalsVisibleTo("ReportPortal.Shared.Tests")]
+[assembly: InternalsVisibleTo("ReportPortal.Shared.Tests")]

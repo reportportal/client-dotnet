@@ -81,7 +81,7 @@ namespace ReportPortal.Shared.Tests.Internal.Delegating
 
             executer.MaxRetryAttemps.Should().Be(5);
             executer.Delay.Should().Be(6000);
-            executer.HttpStatusCodes.Should().BeEquivalentTo(new HttpStatusCode[] { HttpStatusCode.InternalServerError});
+            executer.HttpStatusCodes.Should().BeEquivalentTo(new HttpStatusCode[] { HttpStatusCode.InternalServerError });
         }
 
         [Fact]

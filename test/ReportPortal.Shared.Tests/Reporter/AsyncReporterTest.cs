@@ -509,7 +509,7 @@ namespace ReportPortal.Shared.Tests.Reporter
                 .Callback<StartLaunchRequest, CancellationToken>((r, t) => startLaunchRequest = r);
 
             var config = new ConfigurationBuilder().Build();
-    
+
             config.Properties[ConfigurationPath.AsyncReporting] = true;
             config.Properties["Launch:Rerun"] = "false";
             config.Properties["Launch:RerunOf"] = "any_uuid_of_existing_launch";

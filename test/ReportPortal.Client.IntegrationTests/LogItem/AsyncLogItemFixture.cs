@@ -54,7 +54,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
                 Level = LogLevel.Info,
                 Attach = new LogItemAttach("application/octet-stream", data)
             });
-            
+
             Assert.NotNull(log.Uuid);
         }
 

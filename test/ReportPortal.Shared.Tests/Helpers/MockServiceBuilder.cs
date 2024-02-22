@@ -28,7 +28,7 @@ namespace ReportPortal.Shared.Tests.Helpers
             service.Setup(s => s.TestItem.FinishAsync(It.IsAny<string>(), It.IsAny<FinishTestItemRequest>(), default)).Returns(() => Task.FromResult(new MessageResponse()));
             service.Setup(s => s.AsyncTestItem.FinishAsync(It.IsAny<string>(), It.IsAny<FinishTestItemRequest>(), default)).Returns(() => Task.FromResult(new MessageResponse()));
 
-            service.Setup(s => s.Launch.FinishAsync(It.IsAny<string>(), It.IsAny<FinishLaunchRequest>(), default)).Returns(() => Task.FromResult(new LaunchFinishedResponse { Link = "http://server:80/path/to/launch"}));
+            service.Setup(s => s.Launch.FinishAsync(It.IsAny<string>(), It.IsAny<FinishLaunchRequest>(), default)).Returns(() => Task.FromResult(new LaunchFinishedResponse { Link = "http://server:80/path/to/launch" }));
             service.Setup(s => s.AsyncLaunch.FinishAsync(It.IsAny<string>(), It.IsAny<FinishLaunchRequest>(), default)).Returns(() => Task.FromResult(new LaunchFinishedResponse { Link = "http://server:80/path/to/launch" }));
 
             return service;

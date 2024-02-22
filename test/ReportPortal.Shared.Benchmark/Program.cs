@@ -1,6 +1,5 @@
 ﻿using BenchmarkDotNet.Running;
 using ReportPortal.Shared.Benchmark.Reporter;
-using System;
 
 namespace ReportPortal.Shared.Benchmark
 {

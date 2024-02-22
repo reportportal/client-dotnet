@@ -18,7 +18,7 @@ namespace ReportPortal.Client.Extensions
 
             for (int i = 0; i < uri.Segments.Length; i++)
             {
-                if (!uri.Segments[i].Equals("v1/", StringComparison.OrdinalIgnoreCase) && 
+                if (!uri.Segments[i].Equals("v1/", StringComparison.OrdinalIgnoreCase) &&
                     !uri.Segments[i].Equals("v1", StringComparison.OrdinalIgnoreCase))
                 {
                     normalizedUriString += uri.Segments[i];

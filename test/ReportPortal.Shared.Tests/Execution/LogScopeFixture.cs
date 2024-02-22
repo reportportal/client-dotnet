@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using Moq;
-using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Shared.Execution;
 using ReportPortal.Shared.Execution.Logging;
 using ReportPortal.Shared.Extensibility;
