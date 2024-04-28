@@ -29,7 +29,6 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// <summary>
         /// Date time when new test item is created.
         /// </summary>
-        [JsonConverter(typeof(DateTimeUnixEpochConverter))]
         public DateTime StartTime { get; set; } = DateTime.UtcNow;
 
         /// <summary>
