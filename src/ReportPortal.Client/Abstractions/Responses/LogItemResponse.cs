@@ -34,7 +34,6 @@ namespace ReportPortal.Client.Abstractions.Responses
         /// <summary>
         /// Gets or sets the time when the log item was created.
         /// </summary>
-        [JsonConverter(typeof(DateTimeUnixEpochConverter))]
         public DateTime Time { get; set; }
 
         /// <summary>

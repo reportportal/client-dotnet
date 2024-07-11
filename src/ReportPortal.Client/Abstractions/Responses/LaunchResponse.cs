@@ -45,13 +45,11 @@ namespace ReportPortal.Client.Abstractions.Responses
         /// <summary>
         /// Gets or sets the start time of the launch.
         /// </summary>
-        [JsonConverter(typeof(DateTimeUnixEpochConverter))]
         public DateTime StartTime { get; set; }
 
         /// <summary>
         /// Gets or sets the end time of the launch.
         /// </summary>
-        [JsonConverter(typeof(NullableDateTimeUnixEpochConverter))]
         public DateTime? EndTime { get; set; }
 
         /// <summary>

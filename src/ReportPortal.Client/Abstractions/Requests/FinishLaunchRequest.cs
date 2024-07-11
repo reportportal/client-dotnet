@@ -1,6 +1,4 @@
-﻿using ReportPortal.Client.Converters;
-using System;
-using System.Text.Json.Serialization;
+﻿using System;
 
 namespace ReportPortal.Client.Abstractions.Requests
 {
@@ -12,7 +10,6 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// <summary>
         /// Gets or sets the date and time when the launch execution is finished.
         /// </summary>
-        [JsonConverter(typeof(DateTimeUnixEpochConverter))]
         public DateTime EndTime { get; set; } = DateTime.UtcNow;
     }
 }

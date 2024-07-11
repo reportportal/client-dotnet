@@ -24,7 +24,6 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// <summary>
         /// Date time of log item.
         /// </summary>
-        [JsonConverter(typeof(DateTimeUnixEpochConverter))]
         public DateTime Time { get; set; } = DateTime.UtcNow;
 
         /// <summary>
