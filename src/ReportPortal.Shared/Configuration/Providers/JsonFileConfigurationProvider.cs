@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 
 namespace ReportPortal.Shared.Configuration.Providers
@@ -10,6 +12,21 @@ namespace ReportPortal.Shared.Configuration.Providers
     /// </summary>
     public class JsonFileConfigurationProvider : IConfigurationProvider
     {
+        static JsonFileConfigurationProvider()
+        {
+            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+        }
+
+        private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            if (args.Name.StartsWith("System.Text.Json", StringComparison.OrdinalIgnoreCase))
+            {
+                return Assembly.Load("System.Text.Json");
+            }
+
+            return null;
+        }
+
         private readonly string _delimeter;
         private readonly string _filePath;
         private readonly bool _optional;

@@ -4,12 +4,32 @@ using ReportPortal.Client.Extensions;
 using ReportPortal.Client.Resources;
 using System;
 using System.Net.Http;
+using System.Reflection;
 
 namespace ReportPortal.Client
 {
     /// <inheritdoc cref="IClientService"/>
     public partial class Service : IClientService, IDisposable
     {
+        static Service()
+        {
+            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+        }
+
+        private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            if (args.Name.StartsWith("System.Text.Json", StringComparison.OrdinalIgnoreCase))
+            {
+                return Assembly.Load("System.Text.Json");
+            }
+            else if (args.Name.StartsWith("System.Text.Encodings.Web", StringComparison.OrdinalIgnoreCase))
+            {
+                return Assembly.Load("System.Text.Encodings.Web");
+            }
+
+            return null;
+        }
+
         private readonly HttpClient _httpClient;
 
         /// <summary>
