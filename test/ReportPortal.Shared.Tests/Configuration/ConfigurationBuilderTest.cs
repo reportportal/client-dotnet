@@ -123,7 +123,7 @@ namespace ReportPortal.Shared.Tests.Configuration
 
             var config = new ConfigurationBuilder().AddJsonFile(filePath: tempFile).Build();
 
-            Assert.Equal(1, config.Properties.Count);
+            Assert.Single(config.Properties);
 
             var variable = config.GetValue<string>("prop1:prop2");
             Assert.Equal("value2", variable);

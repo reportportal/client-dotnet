@@ -113,7 +113,8 @@ namespace ReportPortal.Shared.Tests
                     {
                         parallelTasks.Add(Task.Factory.StartNew(async () => await DoSomeWorkAsync(rootScope)).Unwrap());
                     }
-                    Task.WaitAll(parallelTasks.ToArray());
+
+                    await Task.WhenAll(parallelTasks.ToArray());
                     parallelTasks.ForEach(t => t.Result.Should().BeSameAs(scope2));
 
                     var threads = new List<Thread>();

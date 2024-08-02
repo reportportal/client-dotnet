@@ -212,7 +212,7 @@ namespace ReportPortal.Shared.Tests
                 }));
             }
 
-            Task.WaitAll(tasks.ToArray());
+            await Task.WhenAll(tasks.ToArray());
 
             var reportedLaunch = await _service.Launch.GetAsync(launch.Uuid);
             Assert.Equal(launchName, reportedLaunch.Name);

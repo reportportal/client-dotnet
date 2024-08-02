@@ -23,7 +23,7 @@ namespace ReportPortal.Shared.Tests.Internal.Logging
         }
 
         [Fact]
-        public void ConcurrentWriters()
+        public async Task ConcurrentWriters()
         {
             var logManager = new TraceLogManager();
 
@@ -41,7 +41,7 @@ namespace ReportPortal.Shared.Tests.Internal.Logging
                 }));
             }
 
-            Task.WaitAll(tasks.ToArray());
+            await Task.WhenAll(tasks.ToArray());
 
             Assert.True(File.Exists(_defaultLogFilePath));
         }
