@@ -15,7 +15,7 @@ namespace ReportPortal.Shared.Tests.Extensibility.ExtensionManager
             manager.Explore(Environment.CurrentDirectory);
 
             manager.ReportEventObservers.Count.Should()
-                .Be(2, "default and google analytic observers should be registered by default");
+                .Be(3, "normalizer, google analytic, launch artifacts - observers should be registered by default");
 
             manager.CommandsListeners.Should().HaveCount(1);
         }
