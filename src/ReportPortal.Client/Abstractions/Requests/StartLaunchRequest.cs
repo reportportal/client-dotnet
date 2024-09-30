@@ -30,7 +30,6 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// <summary>
         /// Gets or sets the date and time when the launch is executed.
         /// </summary>
-        [JsonConverter(typeof(DateTimeUnixEpochConverter))]
         public DateTime StartTime { get; set; } = DateTime.UtcNow;
 
         /// <summary>

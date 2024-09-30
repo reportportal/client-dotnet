@@ -20,7 +20,6 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// <summary>
         /// Gets or sets the date and time when the test item is finished.
         /// </summary>
-        [JsonConverter(typeof(DateTimeUnixEpochConverter))]
         public DateTime EndTime { get; set; } = DateTime.UtcNow;
 
         /// <summary>
