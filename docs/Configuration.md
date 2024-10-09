@@ -112,8 +112,8 @@ In additional of attaching artifacts during tests execution [dynamically](./Logg
 Example:
 ```json
 {
-  "launch":{
-    "artifacts": ["*.log", "screenshots/*.png"]
+  "launch": {
+    "artifacts": [ "*.log", "screenshots/*.png" ]
   }
 }
 ```
