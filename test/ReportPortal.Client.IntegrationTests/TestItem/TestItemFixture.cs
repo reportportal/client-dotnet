@@ -739,7 +739,7 @@ namespace ReportPortal.Client.IntegrationTests.TestItem
                 LaunchUuid = _fixture.LaunchUuid,
                 Name = "Test1",
                 StartTime = DateTime.UtcNow,
-                Type = TestItemType.Test
+                Type = TestItemType.Step
             });
 
             test.Uuid.Should().NotBeNull(
