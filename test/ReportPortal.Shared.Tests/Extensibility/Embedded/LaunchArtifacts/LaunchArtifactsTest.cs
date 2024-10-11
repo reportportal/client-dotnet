@@ -44,7 +44,7 @@ namespace ReportPortal.Shared.Tests.Extensibility.Embedded.LaunchArtifacts
                 .Callback<CreateLogItemRequest, CancellationToken>((a, b) => request = a);
 
             var config = new ConfigurationBuilder().Build();
-            config.Properties["launch:artifacts"] = "test_file_1.txt";
+            config.Properties["launch:artifacts"] = " test_file_1.txt ";
 
             var launchReporter = new LaunchReporterBuilder(client.Object).With(_extensionManager).WithConfiguration(config).Build(1, 0, 0);
             launchReporter.Sync();

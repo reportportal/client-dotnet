@@ -27,7 +27,7 @@ namespace ReportPortal.Shared.Extensibility.Embedded.LaunchArtifacts
             {
                 foreach (var filePattern in artifactPaths)
                 {
-                    var artifacts = Directory.GetFiles(BaseDirectory, filePattern);
+                    var artifacts = Directory.GetFiles(BaseDirectory, filePattern.Trim());
 
                     foreach (var artifact in artifacts)
                     {
