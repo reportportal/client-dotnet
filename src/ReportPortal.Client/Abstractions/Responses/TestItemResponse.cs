@@ -40,11 +40,13 @@ namespace ReportPortal.Client.Abstractions.Responses
         /// <summary>
         /// Gets or sets the start time of the test item.
         /// </summary>
+        [JsonConverter(typeof(DateTimeConverter))]
         public DateTime StartTime { get; set; }
 
         /// <summary>
         /// Gets or sets the end time of the test item.
         /// </summary>
+        [JsonConverter(typeof(NullableDateTimeConverter))]
         public DateTime? EndTime { get; set; }
 
         /// <summary>
@@ -189,6 +191,7 @@ namespace ReportPortal.Client.Abstractions.Responses
         /// <summary>
         /// Gets or sets the submit date of the external system issue.
         /// </summary>
+        [JsonConverter(typeof(DateTimeConverter))]
         public DateTime SubmitDate { get; set; }
 
         /// <summary>
