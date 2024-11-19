@@ -24,8 +24,12 @@ namespace ReportPortal.Client.Converters
     {
         public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            Debug.Assert(typeToConvert == typeof(DateTime));
-            return DateTime.Parse(reader.GetString() ?? string.Empty, null, DateTimeStyles.AdjustToUniversal);
+            if (DateTime.TryParse(reader.GetString(), null, DateTimeStyles.AdjustToUniversal, out var result))
+            {
+                return result;
+            }
+
+            return null;
         }
 
         public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
