@@ -21,28 +21,39 @@ namespace ReportPortal.Client.Resources
 
         protected Task<TResponse> GetAsJsonAsync<TResponse>(string uri, CancellationToken cancellationToken)
         {
-            return SendAsJsonAsync<TResponse, object>(HttpMethod.Get, uri, null, cancellationToken);
+            return SendAsJsonAsync<TResponse, object>(HttpMethod.Get, uri, null, cancellationToken: cancellationToken);
+        }
+
+        protected Task<TResponse> GetAsJsonAsync<TResponse>(string uri, string contentType, CancellationToken cancellationToken)
+        {
+            return SendAsJsonAsync<TResponse, object>(HttpMethod.Get, uri, null, contentType, cancellationToken);
         }
 
         protected Task<TResponse> PostAsJsonAsync<TResponse, TRequest>(
             string uri, TRequest request, CancellationToken cancellationToken)
         {
-            return SendAsJsonAsync<TResponse, TRequest>(HttpMethod.Post, uri, request, cancellationToken);
+            return SendAsJsonAsync<TResponse, TRequest>(HttpMethod.Post, uri, request, cancellationToken: cancellationToken);
+        }
+
+        protected Task<TResponse> PostAsJsonAsync<TResponse, TRequest>(
+            string uri, TRequest request, string contentType, CancellationToken cancellationToken)
+        {
+            return SendAsJsonAsync<TResponse, TRequest>(HttpMethod.Post, uri, request, contentType, cancellationToken);
         }
 
         protected Task<TResponse> PutAsJsonAsync<TResponse, TRequest>(
             string uri, TRequest request, CancellationToken cancellationToken)
         {
-            return SendAsJsonAsync<TResponse, TRequest>(HttpMethod.Put, uri, request, cancellationToken);
+            return SendAsJsonAsync<TResponse, TRequest>(HttpMethod.Put, uri, request, cancellationToken: cancellationToken);
         }
 
         protected Task<TResponse> DeleteAsJsonAsync<TResponse>(string uri, CancellationToken cancellationToken)
         {
-            return SendAsJsonAsync<TResponse, object>(HttpMethod.Delete, uri, null, cancellationToken);
+            return SendAsJsonAsync<TResponse, object>(HttpMethod.Delete, uri, null, cancellationToken: cancellationToken);
         }
 
         private async Task<TResponse> SendAsJsonAsync<TResponse, TRequest>(
-            HttpMethod httpMethod, string uri, TRequest request, CancellationToken cancellationToken)
+            HttpMethod httpMethod, string uri, TRequest request, string contentType = "application/json", CancellationToken cancellationToken = default)
         {
             HttpContent httpContent = null;
 
@@ -53,25 +64,26 @@ namespace ReportPortal.Client.Resources
                     await ModelSerializer.SerializeAsync<TRequest>(request, memoryStream, cancellationToken).ConfigureAwait(false);
                     memoryStream.Seek(0, SeekOrigin.Begin);
                     httpContent = new StreamContent(memoryStream);
-                    httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                    httpContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
 
-                    return await SendHttpRequestAsync<TResponse>(httpMethod, uri, httpContent, cancellationToken).ConfigureAwait(false);
+                    return await SendHttpRequestAsync<TResponse>(httpMethod, uri, httpContent, "application/json", cancellationToken).ConfigureAwait(false);
                 }
             }
             else
             {
-                return await SendHttpRequestAsync<TResponse>(httpMethod, uri, httpContent, cancellationToken).ConfigureAwait(false);
+                return await SendHttpRequestAsync<TResponse>(httpMethod, uri, httpContent, contentType, cancellationToken).ConfigureAwait(false);
             }
         }
 
         protected async Task<TResponse> SendHttpRequestAsync<TResponse>(
-            HttpMethod httpMethod, string uri, HttpContent httpContent, CancellationToken cancellationToken)
+            HttpMethod httpMethod, string uri, HttpContent httpContent, string contentType = "application/json", CancellationToken cancellationToken = default)
         {
             using (var httpRequest = new HttpRequestMessage(httpMethod, uri))
             {
                 using (httpContent)
                 {
                     httpRequest.Content = httpContent;
+                    httpRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(contentType));
 
                     using (var response = await HttpClient
                         .SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))

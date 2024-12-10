@@ -38,7 +38,7 @@ namespace ReportPortal.Client.Resources
 
         public async Task<TestItemResponse> GetAsync(string uuid, CancellationToken cancellationToken)
         {
-            return await GetAsJsonAsync<TestItemResponse>($"v1/{ProjectName}/item/uuid/{uuid}", cancellationToken).ConfigureAwait(false);
+            return await GetAsJsonAsync<TestItemResponse>($"v1/{ProjectName}/item/uuid/{uuid}", "application/x.reportportal.test.v2+json", cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<TestItemCreatedResponse> StartAsync(StartTestItemRequest request, CancellationToken cancellationToken)

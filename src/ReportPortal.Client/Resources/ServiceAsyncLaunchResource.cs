@@ -16,7 +16,7 @@ namespace ReportPortal.Client.Resources
         public async Task<LaunchCreatedResponse> StartAsync(StartLaunchRequest request, CancellationToken cancellationToken)
         {
             return await PostAsJsonAsync<LaunchCreatedResponse, StartLaunchRequest>(
-                $"v2/{ProjectName}/launch", request, cancellationToken).ConfigureAwait(false);
+                $"v2/{ProjectName}/launch", request, "application/x.reportportal.launch.v2+json", cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<LaunchFinishedResponse> FinishAsync(string uuid, FinishLaunchRequest request, CancellationToken cancellationToken)
@@ -28,7 +28,7 @@ namespace ReportPortal.Client.Resources
         public async Task<LaunchResponse> MergeAsync(MergeLaunchesRequest request, CancellationToken cancellationToken)
         {
             return await PostAsJsonAsync<LaunchResponse, MergeLaunchesRequest>(
-                $"v2/{ProjectName}/launch/merge", request, cancellationToken).ConfigureAwait(false);
+                $"v2/{ProjectName}/launch/merge", request, "application/x.reportportal.launch.v2+json", cancellationToken).ConfigureAwait(false);
         }
     }
 }
