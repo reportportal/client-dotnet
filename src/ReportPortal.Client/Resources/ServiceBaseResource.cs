@@ -64,7 +64,7 @@ namespace ReportPortal.Client.Resources
                     await ModelSerializer.SerializeAsync<TRequest>(request, memoryStream, cancellationToken).ConfigureAwait(false);
                     memoryStream.Seek(0, SeekOrigin.Begin);
                     httpContent = new StreamContent(memoryStream);
-                    httpContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+                    httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
                     return await SendHttpRequestAsync<TResponse>(httpMethod, uri, httpContent, contentType, cancellationToken).ConfigureAwait(false);
                 }
