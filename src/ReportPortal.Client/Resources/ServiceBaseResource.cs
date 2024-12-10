@@ -66,7 +66,7 @@ namespace ReportPortal.Client.Resources
                     httpContent = new StreamContent(memoryStream);
                     httpContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
 
-                    return await SendHttpRequestAsync<TResponse>(httpMethod, uri, httpContent, "application/json", cancellationToken).ConfigureAwait(false);
+                    return await SendHttpRequestAsync<TResponse>(httpMethod, uri, httpContent, contentType, cancellationToken).ConfigureAwait(false);
                 }
             }
             else
@@ -82,8 +82,8 @@ namespace ReportPortal.Client.Resources
             {
                 using (httpContent)
                 {
-                    httpRequest.Content = httpContent;
                     httpRequest.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(contentType));
+                    httpRequest.Content = httpContent;
 
                     using (var response = await HttpClient
                         .SendAsync(httpRequest, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
