@@ -57,7 +57,7 @@ namespace ReportPortal.Client.Resources
                     }
                 }
 
-                return await SendHttpRequestAsync<LogItemsCreatedResponse>(HttpMethod.Post, uri, multipartContent, cancellationToken).ConfigureAwait(false);
+                return await SendHttpRequestAsync<LogItemsCreatedResponse>(HttpMethod.Post, uri, multipartContent, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
         }
     }
