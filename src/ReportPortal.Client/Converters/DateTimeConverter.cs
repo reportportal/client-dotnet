@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace ReportPortal.Client.Converters
 {
@@ -8,8 +9,16 @@ namespace ReportPortal.Client.Converters
 
         public static DateTime ConvertTo(string dateString)
         {
-            var doubleDate = double.Parse(dateString);
-            return UNIX_EPOCH.AddMilliseconds(doubleDate);
+            try
+            {
+                var doubleDate = double.Parse(dateString);
+                return UNIX_EPOCH.AddMilliseconds(doubleDate);
+            }
+            catch (FormatException)
+            {
+                return DateTime.Parse(dateString, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal);
+            }
+
         }
 
         public static string ConvertFrom(DateTime date)
