@@ -68,6 +68,21 @@ namespace ReportPortal.Client.Abstractions.Resources
         Task<Content<LaunchResponse>> GetAsync(FilterOption filterOption, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Returns a list of latest launches for current project.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns></returns>
+        Task<Content<LaunchResponse>> GetLatestAsync(CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Returns a list of latest launches for current project.
+        /// </summary>
+        /// <param name="filterOption">Specified criteria for retrieving launches.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns></returns>
+        Task<Content<LaunchResponse>> GetLatestAsync(FilterOption filterOption, CancellationToken cancellationToken = default);
+        
+        /// <summary>
         /// Returns a list of debug launches for current project.
         /// </summary>
         /// <param name="cancellationToken">Cancellation token.</param>

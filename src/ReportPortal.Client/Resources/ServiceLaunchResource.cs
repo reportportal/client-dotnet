@@ -82,6 +82,23 @@ namespace ReportPortal.Client.Resources
             return await GetAsJsonAsync<Content<LaunchResponse>>(uri, cancellationToken).ConfigureAwait(false);
         }
 
+        public async Task<Content<LaunchResponse>> GetLatestAsync(CancellationToken cancellationToken)
+        {
+            return await GetAsJsonAsync<Content<LaunchResponse>>($"v1/{ProjectName}/launch/latest", cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<Content<LaunchResponse>> GetLatestAsync(FilterOption filterOption, CancellationToken cancellationToken)
+        {
+            var uri = $"v1/{ProjectName}/launch/latest";
+
+            if (filterOption != null)
+            {
+                uri += $"?{filterOption}";
+            }
+
+            return await GetAsJsonAsync<Content<LaunchResponse>>(uri, cancellationToken).ConfigureAwait(false);
+        }
+
         public async Task<Content<LaunchResponse>> GetDebugAsync(CancellationToken cancellationToken)
         {
             return await GetDebugAsync(filterOption: null, cancellationToken).ConfigureAwait(false);
