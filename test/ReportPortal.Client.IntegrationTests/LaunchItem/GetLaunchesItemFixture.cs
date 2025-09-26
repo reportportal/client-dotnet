@@ -135,13 +135,8 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
             var latestLaunches = latestContainer.Items.OrderByDescending(l => l.StartTime).ToList();
             
             Assert.Equal(uniqueLaunches.Count, latestLaunches.Count);
-            Assert.Multiple(() =>
-            {
-              for (int i = 0; i < latestLaunches.Count; i++)
-              {
-                  Assert.Equal(uniqueLaunches[i].Name, latestLaunches[i].Name);
-              }
-            });
+            latestLaunches.Select(l => l.Name)
+                .Should().Equal(uniqueLaunches.Select(l => l.Name));
         }
 
         [Fact]
