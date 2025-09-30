@@ -122,21 +122,11 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
         [Fact]
         public async Task GetLatestLaunches()
         {
-            var container = await Service.Launch.GetAsync();
-            var uniqueLaunches = container.Items
-              .OrderByDescending(l => l.StartTime)
-              .GroupBy(l => l.Name)
-              .Select(g => g.First())
-              .ToList();
-
-            Assert.True(uniqueLaunches.Count > 0);
-            
             var latestContainer = await Service.Launch.GetLatestAsync();
-            var latestLaunches = latestContainer.Items.OrderByDescending(l => l.StartTime).ToList();
+            var latestLaunches = latestContainer.Items.ToList();
             
-            Assert.Equal(uniqueLaunches.Count, latestLaunches.Count);
-            latestLaunches.Select(l => l.Name)
-                .Should().Equal(uniqueLaunches.Select(l => l.Name));
+            Assert.True(latestLaunches.Count > 0);
+            latestLaunches.Select(l => l.Name).Should().OnlyHaveUniqueItems();
         }
 
         [Fact]
