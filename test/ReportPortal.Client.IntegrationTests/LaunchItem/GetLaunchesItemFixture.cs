@@ -118,5 +118,75 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
             var delMessage = await Service.Launch.DeleteAsync(getLaunch.Id);
             Assert.Contains("successfully", delMessage.Info);
         }
+        
+        [Fact]
+        public async Task GetLatestLaunches()
+        {
+            var latestContainer = await Service.Launch.GetLatestAsync();
+            var latestLaunches = latestContainer.Items.ToList();
+            
+            Assert.True(latestLaunches.Count > 0);
+            latestLaunches.Select(l => l.Name).Should().OnlyHaveUniqueItems();
+        }
+
+        [Fact]
+        public async Task GetLatestLaunchesWithMultipleItems()
+        {
+            var launch = await Service.Launch.StartAsync(new StartLaunchRequest
+            {
+              Name = $"StartForceFinishIncompleteLaunch {Guid.NewGuid()}",
+              StartTime = DateTime.UtcNow,
+              Mode = LaunchMode.Default
+            });
+
+            var getLaunch = await Service.Launch.GetAsync(launch.Uuid);
+
+            Assert.NotEqual(default(DateTime), getLaunch.StartTime);
+            Assert.Null(getLaunch.EndTime);
+
+            await Service.Launch.FinishAsync(launch.Uuid, new FinishLaunchRequest
+            {
+              EndTime = DateTime.UtcNow
+            });
+
+            var latestLaunches = await Service.Launch.GetLatestAsync();
+            Assert.Contains(latestLaunches.Items, l => l.Name == getLaunch.Name && l.Number == 1);
+
+            var delMessage = await Service.Launch.DeleteAsync(getLaunch.Id);
+            Assert.Contains("successfully", delMessage.Info);
+        }
+
+        [Fact]
+        public async Task GetLatestLaunchesFilteredByName()
+        {
+            var launch = await Service.Launch.StartAsync(new StartLaunchRequest
+            {
+              Name = $"AnotherStartForceFinishIncompleteLaunch  {Guid.NewGuid()}",
+              StartTime = DateTime.UtcNow,
+              Mode = LaunchMode.Default
+            });
+
+            var getLaunch = await Service.Launch.GetAsync(launch.Uuid);
+
+            Assert.NotEqual(default(DateTime), getLaunch.StartTime);
+            Assert.Null(getLaunch.EndTime);
+
+            await Service.Launch.FinishAsync(launch.Uuid, new FinishLaunchRequest
+            {
+              EndTime = DateTime.UtcNow
+            });
+
+            var latestLaunches = await Service.Launch.GetLatestAsync(new FilterOption
+            {
+              Paging = new Paging(1, 10),
+              Filters = new List<Filter> { new Filter(FilterOperation.Equals, "name", getLaunch.Name) }
+            });
+            
+            Assert.Single(latestLaunches.Items);
+            Assert.Equal(1, latestLaunches.Items[0].Number);
+
+            var delMessage = await Service.Launch.DeleteAsync(getLaunch.Id);
+            Assert.Contains("successfully", delMessage.Info);
+        }
     }
 }

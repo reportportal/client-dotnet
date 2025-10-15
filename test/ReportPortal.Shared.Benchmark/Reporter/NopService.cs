@@ -68,6 +68,16 @@ namespace ReportPortal.Shared.Benchmark.Reporter
             throw new NotImplementedException();
         }
 
+        public Task<Content<LaunchResponse>> GetLatestAsync(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Content<LaunchResponse>> GetLatestAsync(FilterOption filterOption, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<Content<LaunchResponse>> GetDebugAsync(CancellationToken cancellationToken)
         {
             return await GetDebugAsync(filterOption: null, cancellationToken).ConfigureAwait(false);
