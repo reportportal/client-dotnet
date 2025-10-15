@@ -134,7 +134,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
         {
             var launch = await Service.Launch.StartAsync(new StartLaunchRequest
             {
-              Name = $"StartForceFinishIncompleteLaunch {DateTime.UtcNow.Ticks}",
+              Name = $"StartForceFinishIncompleteLaunch {Guid.NewGuid()}",
               StartTime = DateTime.UtcNow,
               Mode = LaunchMode.Default
             });
@@ -161,7 +161,7 @@ namespace ReportPortal.Client.IntegrationTests.LaunchItem
         {
             var launch = await Service.Launch.StartAsync(new StartLaunchRequest
             {
-              Name = $"AnotherStartForceFinishIncompleteLaunch  {DateTime.UtcNow.Ticks}",
+              Name = $"AnotherStartForceFinishIncompleteLaunch  {Guid.NewGuid()}",
               StartTime = DateTime.UtcNow,
               Mode = LaunchMode.Default
             });
