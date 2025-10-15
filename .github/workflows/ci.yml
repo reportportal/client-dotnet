@@ -2,10 +2,10 @@ name: CI
 
 on:
   - push
+  - pull_request
   - workflow_dispatch
 
 jobs:
-
   Build:
     runs-on: windows-latest
 
@@ -14,6 +14,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: |
+            6.0.x
+            8.0.x
 
       - name: Install CodeCov
         run: dotnet tool install -g codecov.tool
@@ -38,7 +45,7 @@ jobs:
       - name: Publish Coverage
         uses: codecov/codecov-action@v3
         with:
-          files: '**/*/Coverage.*.xml'
+          files: "**/*/Coverage.*.xml"
 
   Benchmark:
     runs-on: ubuntu-latest
@@ -48,6 +55,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: |
+            6.0.x
+            8.0.x
 
       - name: Run Benchmark
         run: dotnet run -p test/ReportPortal.Shared.Benchmark -c Release
