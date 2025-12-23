@@ -23,7 +23,7 @@ namespace ReportPortal.Shared.Execution.Logging
 
             var levelString = !string.IsNullOrWhiteSpace(logMessage.LevelText)
                 ? logMessage.LevelText.Trim()
-                : LogLevelConverter.ToLevelText((LogLevel)logMessage.Level);
+                : LogLevelConverter.ToLevelText(LogMessageLevelConverter.ToLogLevel(logMessage.Level));
 
             var logRequest = new CreateLogItemRequest
             {

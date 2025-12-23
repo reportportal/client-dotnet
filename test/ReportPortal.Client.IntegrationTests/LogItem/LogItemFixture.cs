@@ -2,6 +2,7 @@
 using ReportPortal.Client.Abstractions.Filtering;
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
+using ReportPortal.Shared.Execution.Logging;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -281,11 +282,13 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
                 Time = now,
                 LevelText = customLevel
             });
+
             Assert.NotNull(log.Uuid);
             var getLog = await Service.LogItem.GetAsync(log.Uuid);
             Assert.Equal(0, getLog.LaunchId);
             Assert.Equal(_fixture.TestId, getLog.TestItemId);
             Assert.Equal(logText, getLog.Text);
+            Assert.Equal(customLevel, getLog.LevelText); 
             Assert.Equal(now.ToString(CultureInfo.InvariantCulture), getLog.Time.ToString(CultureInfo.InvariantCulture));
         }
     }
