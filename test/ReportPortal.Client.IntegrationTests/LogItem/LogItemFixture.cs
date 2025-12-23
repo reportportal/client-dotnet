@@ -4,6 +4,7 @@ using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -265,6 +266,27 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
             var tempLogItem = await Service.LogItem.GetAsync(log.Uuid);
             var message = (await Service.LogItem.DeleteAsync(tempLogItem.Id)).Info;
             Assert.Contains("successfully", message);
+        }
+
+        [Fact]
+        public async Task CreateLogWithCustomLevel()
+        {
+            const string customLevel = "CustomLevel";
+            const string logText = "Custom Log";
+            var now = DateTime.UtcNow;
+            var log = await Service.LogItem.CreateAsync(new CreateLogItemRequest
+            {
+                TestItemUuid = _fixture.TestUuid,
+                Text = logText,
+                Time = now,
+                LevelText = customLevel
+            });
+            Assert.NotNull(log.Uuid);
+            var getLog = await Service.LogItem.GetAsync(log.Uuid);
+            Assert.Equal(0, getLog.LaunchId);
+            Assert.Equal(_fixture.TestId, getLog.TestItemId);
+            Assert.Equal(logText, getLog.Text);
+            Assert.Equal(now.ToString(CultureInfo.InvariantCulture), getLog.Time.ToString(CultureInfo.InvariantCulture));
         }
     }
 }

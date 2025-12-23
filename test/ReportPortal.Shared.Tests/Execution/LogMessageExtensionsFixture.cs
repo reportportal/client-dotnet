@@ -65,5 +65,25 @@ namespace ReportPortal.Shared.Tests.Execution
             request.Attach.MimeType.Should().Be("image/png");
             request.Attach.Data.Should().BeEquivalentTo(new byte[] { 1, 2, 3 });
         }
+
+        [Fact]
+        public void ShouldUseCustomLevelTextWhenProvided()
+        {
+            var logMessage = new LogMessage("message") { LevelText = "MyLevel" };
+
+            var request = logMessage.ConvertToRequest();
+
+            request.LevelText.Should().Be("MyLevel");
+        }
+
+        [Fact]
+        public void ShouldTrimCustomLevelText()
+        {
+            var logMessage = new LogMessage("message") { LevelText = "  MyLevel  " };
+
+            var request = logMessage.ConvertToRequest();
+
+            request.LevelText.Should().Be("MyLevel");
+        }
     }
 }

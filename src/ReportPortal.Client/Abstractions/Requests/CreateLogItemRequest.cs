@@ -1,7 +1,7 @@
 ﻿using ReportPortal.Client.Abstractions.Models;
-using ReportPortal.Client.Converters;
 using System;
 using System.Text.Json.Serialization;
+using ReportPortal.Client.Converters;
 
 namespace ReportPortal.Client.Abstractions.Requests
 {
@@ -25,12 +25,22 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// Date time of log item.
         /// </summary>
         public DateTime Time { get; set; } = DateTime.UtcNow;
+        
+        /// <summary>
+        /// A level of log item serialized as string to support custom levels.
+        /// </summary>
+        [JsonPropertyName("level")]
+        public string LevelText { get; set; } = "INFO";
 
         /// <summary>
-        /// A level of log item.
+        ///     A typed helper property for programs that prefer the typed LogLevel enum.
         /// </summary>
-        [JsonConverter(typeof(JsonStringEnumConverterEx<LogLevel>))]
-        public LogLevel Level { get; set; } = LogLevel.Info;
+        [JsonIgnore]
+        public LogLevel Level
+        {
+            get => LogLevelConverter.Parse(LevelText);
+            set => LevelText = LogLevelConverter.ToLevelText(value);
+        }
 
         /// <summary>
         /// Message of log item.

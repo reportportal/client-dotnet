@@ -26,6 +26,9 @@ namespace ReportPortal.Shared.Execution.Logging
 
         /// <inheritdoc />
         public LogMessageLevel Level { get; set; }
+        
+        /// <inheritdoc />
+        public string LevelText { get; set; }
 
         /// <inheritdoc />
         public ILogMessageAttachment Attachment { get; set; }
