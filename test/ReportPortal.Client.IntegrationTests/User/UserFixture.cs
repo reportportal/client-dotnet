@@ -6,11 +6,13 @@ namespace ReportPortal.Client.IntegrationTests.User
 {
     public class UserFixture : IClassFixture<BaseFixture>
     {
-        Service Service { get; }
+        private Service Service { get; }
+        private string ProjectName { get; }
 
         public UserFixture(BaseFixture baseFixture)
         {
             Service = baseFixture.Service;
+            ProjectName = baseFixture.ProjectName;
         }
 
         [Fact]
@@ -26,9 +28,9 @@ namespace ReportPortal.Client.IntegrationTests.User
             Assert.NotEmpty(user.AssignedProjects.Keys);
 
             // Assert.Contains("ci-agents-checks", user.AssignedProjects.Keys);
-            Assert.Contains("default_personal", user.AssignedProjects.Keys);
+            Assert.Contains(ProjectName, user.AssignedProjects.Keys);
             //Assert.Equal(ProjectRole.Member, user.AssignedProjects["ci-agents-checks"].ProjectRole);
-            Assert.Equal(ProjectRole.ProjectManager, user.AssignedProjects["default_personal"].ProjectRole);
+            Assert.Equal(ProjectRole.ProjectManager, user.AssignedProjects[ProjectName].ProjectRole);
         }
     }
 }
