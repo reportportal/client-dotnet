@@ -19,7 +19,7 @@ namespace ReportPortal.Shared.Execution.Logging
         public static CreateLogItemRequest ConvertToRequest(this ILogMessage logMessage)
         {
             if (logMessage == null)
-                throw new ArgumentNullException("Cannot convert nullable log message object.", nameof(logMessage));
+                throw new ArgumentNullException(nameof(logMessage), "Cannot convert nullable log message object.");
 
             var levelString = !string.IsNullOrWhiteSpace(logMessage.LevelString)
                 ? logMessage.LevelString.Trim()
