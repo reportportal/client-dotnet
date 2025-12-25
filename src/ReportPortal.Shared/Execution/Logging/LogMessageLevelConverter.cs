@@ -10,8 +10,8 @@ namespace ReportPortal.Shared.Execution.Logging
         /// <summary>
         ///     Converts a LogMessageLevel to a LogLevel.
         /// </summary>
-        /// <param name="level"></param>
-        /// <returns></returns>
+        /// <param name="level">The log message level to convert.</param>
+        /// <returns>The corresponding LogLevel enum value.</returns>
         public static LogLevel ToLogLevel(LogMessageLevel level)
         {
             switch (level)

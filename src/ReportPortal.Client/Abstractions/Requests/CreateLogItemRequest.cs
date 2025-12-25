@@ -25,21 +25,22 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// Date time of log item.
         /// </summary>
         public DateTime Time { get; set; } = DateTime.UtcNow;
-        
-        /// <summary>
-        /// A level of log item serialized as string to support custom levels.
-        /// </summary>
-        [JsonPropertyName("level")]
-        public string LevelText { get; set; } = "INFO";
 
         /// <summary>
-        ///     A typed helper property for programs that prefer the typed LogLevel enum.
+        /// Custom log level of log item.
         /// </summary>
+        [JsonPropertyName("level")]
+        public string LevelString { get; set; } = "INFO";
+
+        /// <summary>
+        /// A typed helper property for programs that prefer the typed LogLevel enum.
+        /// </summary>
+        [Obsolete]
         [JsonIgnore]
         public LogLevel Level
         {
-            get => LogLevelConverter.Parse(LevelText);
-            set => LevelText = LogLevelConverter.ToLevelText(value);
+            get => LogLevelConverter.Parse(LevelString);
+            set => LevelString = LogLevelConverter.ToLevelString(value);
         }
 
         /// <summary>

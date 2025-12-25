@@ -67,23 +67,25 @@ namespace ReportPortal.Shared.Tests.Execution
         }
 
         [Fact]
-        public void ShouldUseCustomLevelTextWhenProvided()
+        public void ShouldUseCustomLevelStringWhenProvided()
         {
-            var logMessage = new LogMessage("message") { LevelText = "MyLevel" };
+            const string levelString = "MyLevel";
+            var logMessage = new LogMessage("message") { LevelString = levelString };
 
             var request = logMessage.ConvertToRequest();
 
-            request.LevelText.Should().Be("MyLevel");
+            request.LevelString.Should().Be(levelString);
         }
 
         [Fact]
-        public void ShouldTrimCustomLevelText()
+        public void ShouldTrimCustomLevelString()
         {
-            var logMessage = new LogMessage("message") { LevelText = "  MyLevel  " };
+            const string levelString = "MyLevel";
+            var logMessage = new LogMessage("message") { LevelString = $"  {levelString}  " };
 
             var request = logMessage.ConvertToRequest();
 
-            request.LevelText.Should().Be("MyLevel");
+            request.LevelString.Should().Be(levelString);
         }
     }
 }

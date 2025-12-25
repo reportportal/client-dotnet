@@ -1,4 +1,5 @@
 using ReportPortal.Client.Abstractions.Models;
+using System;
 
 namespace ReportPortal.Client.Converters;
 
@@ -10,22 +11,21 @@ public static class LogLevelConverter
     /// <summary>
     ///     Converts a string representation of a log level to its LogLevel enum counterpart.
     /// </summary>
-    /// <param name="levelText"></param>
+    /// <param name="levelString"></param>
     /// <returns></returns>
-    public static LogLevel Parse(string levelText)
+    public static LogLevel Parse(string levelString)
     {
-        if (string.IsNullOrEmpty(levelText)) return LogLevel.Info;
-        switch (levelText.ToUpperInvariant())
+        if (string.IsNullOrEmpty(levelString)) return LogLevel.Info;
+        return levelString.ToUpperInvariant() switch
         {
-            case "TRACE": return LogLevel.Trace;
-            case "DEBUG": return LogLevel.Debug;
-            case "INFO": return LogLevel.Info;
-            case "WARN":
-            case "WARNING": return LogLevel.Warning;
-            case "ERROR": return LogLevel.Error;
-            case "FATAL": return LogLevel.Fatal;
-            default: return LogLevel.Info;
-        }
+            "TRACE" => LogLevel.Trace,
+            "DEBUG" => LogLevel.Debug,
+            "INFO" => LogLevel.Info,
+            "WARN" or "WARNING" => LogLevel.Warning,
+            "ERROR" => LogLevel.Error,
+            "FATAL" => LogLevel.Fatal,
+            _ => throw new ArgumentException($"Unknown log level: {levelString}", nameof(levelString))
+        };
     }
 
     /// <summary>
@@ -33,7 +33,7 @@ public static class LogLevelConverter
     /// </summary>
     /// <param name="level"></param>
     /// <returns></returns>
-    public static string ToLevelText(LogLevel level)
+    public static string ToLevelString(LogLevel level)
     {
         return level switch
         {
@@ -43,7 +43,7 @@ public static class LogLevelConverter
             LogLevel.Warning => "WARN",
             LogLevel.Error => "ERROR",
             LogLevel.Fatal => "FATAL",
-            _ => "INFO"
+            _ => throw new ArgumentException($"Unknown log level: {level}", nameof(level))
         };
     }
 }

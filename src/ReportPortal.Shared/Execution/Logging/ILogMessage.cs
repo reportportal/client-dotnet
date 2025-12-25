@@ -23,10 +23,9 @@ namespace ReportPortal.Shared.Execution.Logging
         LogMessageLevel Level { get; set; }
 
         /// <summary>
-        /// Optional textual level for custom log levels. If set, this value will be used when converting to request
-        /// payload instead of the enum-based <see cref="Level"/>.
+        /// Textual custom log level.
         /// </summary>
-        string LevelText { get; set; }
+        string LevelString { get; set; }
 
         /// <summary>
         /// Binary data attached to log event.

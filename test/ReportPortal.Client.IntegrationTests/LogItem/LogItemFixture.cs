@@ -279,7 +279,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
                 TestItemUuid = _fixture.TestUuid,
                 Text = logText,
                 Time = now,
-                LevelText = customLevel
+                LevelString = customLevel
             });
 
             Assert.NotNull(log.Uuid);
@@ -287,7 +287,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
             Assert.Equal(0, getLog.LaunchId);
             Assert.Equal(_fixture.TestId, getLog.TestItemId);
             Assert.Equal(logText, getLog.Text);
-            Assert.Equal(customLevel, getLog.LevelText); 
+            Assert.Equal(customLevel, getLog.LevelString); 
             Assert.Equal(now.ToString(CultureInfo.InvariantCulture), getLog.Time.ToString(CultureInfo.InvariantCulture));
         }
     }
