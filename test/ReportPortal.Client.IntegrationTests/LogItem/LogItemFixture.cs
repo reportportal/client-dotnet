@@ -2,7 +2,6 @@
 using ReportPortal.Client.Abstractions.Filtering;
 using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
-using ReportPortal.Shared.Execution.Logging;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
