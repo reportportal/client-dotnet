@@ -43,13 +43,13 @@ namespace ReportPortal.Client.Abstractions.Responses
         public string Text { get; set; }
 
         /// <summary>
-        /// Raw level string as returned by the server. Includes custom levels.
+        /// Gets or sets the textual log level of the log item as returned by the server. Includes custom levels.
         /// </summary>
         [JsonPropertyName("level")]
         public string LevelString { get; set; }
 
         /// <summary>
-        ///     Gets or sets the log level of the log item as enum. Maps from LevelString for backward compatibility.
+        /// Gets or sets the log level of the log item as enum. Maps from LevelString for backward compatibility.
         /// </summary>
         [JsonIgnore]
         public LogLevel Level

@@ -27,15 +27,15 @@ namespace ReportPortal.Client.Abstractions.Requests
         public DateTime Time { get; set; } = DateTime.UtcNow;
 
         /// <summary>
-        /// Custom log level of log item.
+        /// Custom Log level of log item as a string value. Supported from Report Portal Version 25.2.
+        /// Use LogLevelConverter.ToLevelString(level) to convert from enum Level.
         /// </summary>
         [JsonPropertyName("level")]
         public string LevelString { get; set; } = "INFO";
 
         /// <summary>
-        /// A typed helper property for programs that prefer the typed LogLevel enum.
+        /// Log level of log item using the strongly-typed <see cref="LogLevel"/> enumeration.
         /// </summary>
-        [Obsolete]
         [JsonIgnore]
         public LogLevel Level
         {

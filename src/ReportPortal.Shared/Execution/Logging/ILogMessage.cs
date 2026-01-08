@@ -18,12 +18,12 @@ namespace ReportPortal.Shared.Execution.Logging
         DateTime Time { get; set; }
 
         /// <summary>
-        /// Level of log event.
+        /// Log level of log item using the strongly-typed <see cref="LogMessageLevel"/> enumeration.
         /// </summary>
         LogMessageLevel Level { get; set; }
 
         /// <summary>
-        /// Textual custom log level.
+        /// Textual custom log level of log event. Supported from Report Portal Version 25.2.
         /// </summary>
         string LevelString { get; set; }
 
