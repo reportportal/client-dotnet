@@ -76,7 +76,6 @@ namespace ReportPortal.Shared.Execution.Logging
         /// </summary>
         /// <param name="level">The <see cref="LogMessageLevel"/> enumeration value to convert.</param>
         /// <returns>The uppercase string representation of the log level (e.g., "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL").</returns>
-        /// <exception cref="ArgumentException">Thrown when the <paramref name="level"/> value is not a recognized <see cref="LogMessageLevel"/> enumeration member.</exception>
         public static string ToLevelString(LogMessageLevel level)
         {
             return LogLevelConverter.ToLevelString(ToLogLevel(level));
