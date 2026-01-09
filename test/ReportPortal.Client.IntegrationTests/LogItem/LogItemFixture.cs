@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ReportPortal.Client.Converters;
 using Xunit;
 
 namespace ReportPortal.Client.IntegrationTests.LogItem
@@ -32,7 +33,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
         [InlineData(LogLevel.Info)]
         [InlineData(LogLevel.Trace)]
         [InlineData(LogLevel.Warning)]
-        public async Task CteateLogWithAllLevels(LogLevel level)
+        public async Task CreateLogWithAllLevels(LogLevel level)
         {
             var now = DateTime.UtcNow;
             var log = await Service.LogItem.CreateAsync(new CreateLogItemRequest
@@ -47,7 +48,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
             Assert.Equal(0, getLog.LaunchId);
             Assert.Equal(_fixture.TestId, getLog.TestItemId);
             Assert.Equal("Log1", getLog.Text);
-            Assert.Equal(now.ToString(), getLog.Time.ToString());
+            Assert.Equal(now.ToString(CultureInfo.InvariantCulture), getLog.Time.ToString(CultureInfo.InvariantCulture));
         }
 
         [Fact]
@@ -224,6 +225,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
             var gotLogItem = await Service.LogItem.GetAsync(log.Uuid);
             Assert.Equal(addLogItemRequest.Text, gotLogItem.Text);
             Assert.Equal(addLogItemRequest.Level, gotLogItem.Level);
+            Assert.Equal(LogLevelConverter.ToLevelString(addLogItemRequest.Level), addLogItemRequest.LevelString);
             gotLogItem.Time.Should().BeCloseTo(addLogItemRequest.Time, precision: TimeSpan.FromMilliseconds(1));
         }
 
@@ -271,7 +273,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
         [Fact]
         public async Task CreateLogWithCustomLevel()
         {
-            const string customLevel = "CustomLevel";
+            const string customLevel = "DEBUG";
             const string logText = "Custom Log";
             var now = DateTime.UtcNow;
             var log = await Service.LogItem.CreateAsync(new CreateLogItemRequest
