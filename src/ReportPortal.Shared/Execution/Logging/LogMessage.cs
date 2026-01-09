@@ -43,10 +43,15 @@ namespace ReportPortal.Shared.Execution.Logging
             get => _levelString;
             set
             {
-                _levelString = value;
                 if (!string.IsNullOrEmpty(value))
                 {
+                    _levelString = value;
                     _level = LogMessageLevelConverter.Parse(value);
+                }
+                else
+                {
+                    _level = LogMessageLevel.Info;
+                    _levelString = "INFO";
                 }
             }
         }

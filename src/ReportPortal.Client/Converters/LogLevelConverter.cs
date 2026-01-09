@@ -16,7 +16,6 @@ public static class LogLevelConverter
     /// </summary>
     /// <param name="level">The string representation of the log level to parse. Can be null or empty, in which case <see cref="LogLevel.Info"/> is returned.</param>
     /// <returns>The corresponding <see cref="LogLevel"/> enumeration value. Returns <see cref="LogLevel.Info"/> if the input is null or empty.</returns>
-    /// <exception cref="ArgumentException">Thrown when the <paramref name="level"/> string does not match any known log level name.</exception>
     public static LogLevel Parse(string level)
     {
         if (string.IsNullOrEmpty(level)) return LogLevel.Info;
