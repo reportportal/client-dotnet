@@ -18,26 +18,7 @@ public static class LogLevelConverter
     /// <returns>The corresponding <see cref="LogLevel"/> enumeration value. Returns <see cref="LogLevel.Info"/> if the input is null or empty.</returns>
     public static LogLevel Parse(string level)
     {
-        if (string.IsNullOrEmpty(level)) return LogLevel.Info;
-        
-        switch (level.ToUpperInvariant())
-        {
-            case "TRACE":
-                return LogLevel.Trace;
-            case "DEBUG":
-                return LogLevel.Debug;
-            case "INFO":
-                return LogLevel.Info;
-            case "WARN":
-            case "WARNING":
-                return LogLevel.Warning;
-            case "ERROR":
-                return LogLevel.Error;
-            case "FATAL":
-                return LogLevel.Fatal;
-            default:
-                return LogLevel.Info;
-        }
+        return LogLevelMapping.ParseToLogLevel(level, LogLevel.Info);
     }
 
     /// <summary>

@@ -30,34 +30,44 @@ namespace ReportPortal.Shared.Execution.Logging
         }
 
         /// <summary>
-        /// Converts a string representation of a log level to its corresponding <see cref="LogMessageLevel"/> enumeration value.
-        /// The conversion is case-insensitive and supports standard level names (TRACE, DEBUG, INFO, WARN, WARNING, ERROR, FATAL).
+        /// Converts a <see cref="LogLevel"/> to a <see cref="LogMessageLevel"/>.
         /// </summary>
-        /// <param name="level">The string representation of the log level to parse. Can be null or empty, in which case <see cref="LogMessageLevel.Info"/> is returned.</param>
-        /// <returns>The corresponding <see cref="LogMessageLevel"/> enumeration value. Returns <see cref="LogMessageLevel.Info"/> if the input is null or empty.</returns>
-        /// <exception cref="ArgumentException">Thrown when the <paramref name="level"/> string does not match any known log level name.</exception>
-        public static LogMessageLevel Parse(string level)
+        /// <param name="level">The log level to convert.</param>
+        /// <returns>The corresponding LogMessageLevel enum value.</returns>
+        private static LogMessageLevel ToLogMessageLevel(LogLevel level)
         {
-            if (string.IsNullOrEmpty(level)) return LogMessageLevel.Info;
-
-            switch (level.ToUpperInvariant())
+            switch (level)
             {
-                case "TRACE":
+                case LogLevel.Trace:
                     return LogMessageLevel.Trace;
-                case "DEBUG":
+                case LogLevel.Debug:
                     return LogMessageLevel.Debug;
-                case "INFO":
+                case LogLevel.Info:
                     return LogMessageLevel.Info;
-                case "WARN":
-                case "WARNING":
+                case LogLevel.Warning:
                     return LogMessageLevel.Warning;
-                case "ERROR":
+                case LogLevel.Error:
                     return LogMessageLevel.Error;
-                case "FATAL":
+                case LogLevel.Fatal:
                     return LogMessageLevel.Fatal;
                 default:
                     return LogMessageLevel.Info;
             }
+        }
+
+        /// <summary>
+        /// Converts a string representation of a log level to its corresponding <see cref="LogMessageLevel"/> enumeration value.
+        /// The conversion is case-insensitive and supports standard level names (TRACE, DEBUG, INFO, WARN, WARNING, ERROR, FATAL).
+        /// </summary>
+        /// <param name="level">The string representation of the log level to parse. Can be null or empty.</param>
+        /// <returns>
+        /// The corresponding <see cref="LogMessageLevel"/> enumeration value. 
+        /// Returns <see cref="LogMessageLevel.Info"/> if the input is null, empty, or does not match any known log level name.
+        /// </returns>
+        public static LogMessageLevel Parse(string level)
+        {
+            var logLevel = LogLevelConverter.Parse(level);
+            return ToLogMessageLevel(logLevel);
         }
 
         /// <summary>
