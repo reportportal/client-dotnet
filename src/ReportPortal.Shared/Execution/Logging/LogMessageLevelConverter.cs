@@ -1,14 +1,17 @@
 using ReportPortal.Client.Abstractions.Models;
+using System;
+using ReportPortal.Client.Converters;
 
 namespace ReportPortal.Shared.Execution.Logging
 {
     /// <summary>
-    ///     Provides conversion between LogMessageLevel and LogLevel.
+    /// Provides utility methods for bidirectional conversion between string representations 
+    /// and <see cref="LogMessageLevel"/> enumeration values, as well as conversion to <see cref="LogLevel"/>.
     /// </summary>
     public static class LogMessageLevelConverter
     {
         /// <summary>
-        ///     Converts a LogMessageLevel to a LogLevel.
+        /// Converts a LogMessageLevel to a LogLevel.
         /// </summary>
         /// <param name="level">The log message level to convert.</param>
         /// <returns>The corresponding LogLevel enum value.</returns>
@@ -24,6 +27,49 @@ namespace ReportPortal.Shared.Execution.Logging
                 case LogMessageLevel.Warning: return LogLevel.Warning;
                 default: return LogLevel.Info;
             }
+        }
+
+        /// <summary>
+        /// Converts a string representation of a log level to its corresponding <see cref="LogMessageLevel"/> enumeration value.
+        /// The conversion is case-insensitive and supports standard level names (TRACE, DEBUG, INFO, WARN, WARNING, ERROR, FATAL).
+        /// </summary>
+        /// <param name="level">The string representation of the log level to parse. Can be null or empty, in which case <see cref="LogMessageLevel.Info"/> is returned.</param>
+        /// <returns>The corresponding <see cref="LogMessageLevel"/> enumeration value. Returns <see cref="LogMessageLevel.Info"/> if the input is null or empty.</returns>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="level"/> string does not match any known log level name.</exception>
+        public static LogMessageLevel Parse(string level)
+        {
+            if (string.IsNullOrEmpty(level)) return LogMessageLevel.Info;
+
+            switch (level.ToUpperInvariant())
+            {
+                case "TRACE":
+                    return LogMessageLevel.Trace;
+                case "DEBUG":
+                    return LogMessageLevel.Debug;
+                case "INFO":
+                    return LogMessageLevel.Info;
+                case "WARN":
+                case "WARNING":
+                    return LogMessageLevel.Warning;
+                case "ERROR":
+                    return LogMessageLevel.Error;
+                case "FATAL":
+                    return LogMessageLevel.Fatal;
+                default:
+                    return LogMessageLevel.Info;
+            }
+        }
+
+        /// <summary>
+        /// Converts a <see cref="LogMessageLevel"/> enumeration value to its uppercase string representation.
+        /// The returned string follows the standard log level naming convention used in ReportPortal.
+        /// </summary>
+        /// <param name="level">The <see cref="LogMessageLevel"/> enumeration value to convert.</param>
+        /// <returns>The uppercase string representation of the log level (e.g., "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL").</returns>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="level"/> value is not a recognized <see cref="LogMessageLevel"/> enumeration member.</exception>
+        public static string ToLevelString(LogMessageLevel level)
+        {
+            return LogLevelConverter.ToLevelString(ToLogLevel(level));
         }
     }
 }

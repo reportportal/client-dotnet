@@ -20,16 +20,25 @@ public static class LogLevelConverter
     public static LogLevel Parse(string level)
     {
         if (string.IsNullOrEmpty(level)) return LogLevel.Info;
-        return level.ToUpperInvariant() switch
+        
+        switch (level.ToUpperInvariant())
         {
-            "TRACE" => LogLevel.Trace,
-            "DEBUG" => LogLevel.Debug,
-            "INFO" => LogLevel.Info,
-            "WARN" or "WARNING" => LogLevel.Warning,
-            "ERROR" => LogLevel.Error,
-            "FATAL" => LogLevel.Fatal,
-            _ => throw new ArgumentException($"Unknown log level: {level}", nameof(level))
-        };
+            case "TRACE":
+                return LogLevel.Trace;
+            case "DEBUG":
+                return LogLevel.Debug;
+            case "INFO":
+                return LogLevel.Info;
+            case "WARN":
+            case "WARNING":
+                return LogLevel.Warning;
+            case "ERROR":
+                return LogLevel.Error;
+            case "FATAL":
+                return LogLevel.Fatal;
+            default:
+                return LogLevel.Info;
+        }
     }
 
     /// <summary>
@@ -41,15 +50,22 @@ public static class LogLevelConverter
     /// <exception cref="ArgumentException">Thrown when the <paramref name="level"/> value is not a recognized <see cref="LogLevel"/> enumeration member.</exception>
     public static string ToLevelString(LogLevel level)
     {
-        return level switch
+        switch (level)
         {
-            LogLevel.Trace => "TRACE",
-            LogLevel.Debug => "DEBUG",
-            LogLevel.Info => "INFO",
-            LogLevel.Warning => "WARN",
-            LogLevel.Error => "ERROR",
-            LogLevel.Fatal => "FATAL",
-            _ => throw new ArgumentException($"Unknown log level: {level}", nameof(level))
-        };
+            case LogLevel.Trace:
+                return "TRACE";
+            case LogLevel.Debug:
+                return "DEBUG";
+            case LogLevel.Info:
+                return "INFO";
+            case LogLevel.Warning:
+                return "WARN";
+            case LogLevel.Error:
+                return "ERROR";
+            case LogLevel.Fatal:
+                return "FATAL";
+            default:
+                throw new ArgumentException($"Unknown log level: {level}", nameof(level));
+        }
     }
 }
