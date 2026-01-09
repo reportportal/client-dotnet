@@ -18,13 +18,20 @@ namespace ReportPortal.Shared.Execution.Logging
         DateTime Time { get; set; }
 
         /// <summary>
-        /// Log level of log item using the strongly-typed <see cref="LogMessageLevel"/> enumeration.
+        /// Gets or sets the log level of the log message using the strongly-typed <see cref="LogMessageLevel"/> enumeration.
         /// </summary>
+        /// <value>A <see cref="LogMessageLevel"/> enumeration value representing the severity level of the log message.</value>
         LogMessageLevel Level { get; set; }
 
         /// <summary>
-        /// Textual custom log level of log event. Supported from Report Portal Version 25.2.
+        /// Gets or sets the log level of the log message as an uppercase string value (e.g., "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL").
+        /// This property allows for custom or extended log level names beyond the standard <see cref="LogMessageLevel"/> enumeration.
         /// </summary>
+        /// <remarks>
+        /// This property is supported starting from Report Portal version 25.2, which enables custom log level definitions.
+        /// For standard log levels, prefer using the <see cref="Level"/> property for type safety.
+        /// </remarks>
+        /// <value>A string representing the log level. May contain standard level names or custom level values.</value>
         string LevelString { get; set; }
 
         /// <summary>
