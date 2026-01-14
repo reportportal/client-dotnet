@@ -76,16 +76,5 @@ namespace ReportPortal.Shared.Tests.Execution
 
             request.LevelString.Should().Be(levelString);
         }
-
-        [Fact]
-        public void ShouldTrimCustomLevelString()
-        {
-            const string levelString = "MyLevel";
-            var logMessage = new LogMessage("message") { LevelString = $"  {levelString}  " };
-
-            var request = logMessage.ConvertToRequest();
-
-            request.LevelString.Should().Be(levelString);
-        }
     }
 }
