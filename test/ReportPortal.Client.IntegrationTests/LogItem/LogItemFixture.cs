@@ -225,7 +225,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
             var gotLogItem = await Service.LogItem.GetAsync(log.Uuid);
             Assert.Equal(addLogItemRequest.Text, gotLogItem.Text);
             Assert.Equal(addLogItemRequest.Level, gotLogItem.Level);
-            Assert.Equal(LogLevelConverter.ToLevelString(addLogItemRequest.Level), gotLogItem.LevelString);
+            Assert.Equal("INFO", gotLogItem.LevelString);
             gotLogItem.Time.Should().BeCloseTo(addLogItemRequest.Time, precision: TimeSpan.FromMilliseconds(1));
         }
 

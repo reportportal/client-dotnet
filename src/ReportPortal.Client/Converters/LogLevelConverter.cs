@@ -8,7 +8,7 @@ namespace ReportPortal.Client.Converters;
 /// and <see cref="LogLevel"/> enumeration values. This converter supports standard log level 
 /// names and their common variations.
 /// </summary>
-public static class LogLevelConverter
+internal static class LogLevelConverter
 {
     /// <summary>
     /// Converts a string representation of a log level to its corresponding <see cref="LogLevel"/> enumeration value.
@@ -18,8 +18,6 @@ public static class LogLevelConverter
     /// <returns>The corresponding <see cref="LogLevel"/> enumeration value. Returns <see cref="LogLevel.Info"/> if the input is null or empty.</returns>
     public static LogLevel Parse(string level)
     {
-        if (string.IsNullOrEmpty(level)) return LogLevel.Info;
-
         switch (level.ToUpperInvariant())
         {
             case "TRACE":
@@ -36,7 +34,7 @@ public static class LogLevelConverter
             case "FATAL":
                 return LogLevel.Fatal;
             default:
-                return LogLevel.Info;
+                return default;
         }
     }
 

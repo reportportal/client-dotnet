@@ -40,55 +40,45 @@ namespace ReportPortal.Shared.Execution.Logging
 
         private static LogMessageLevel ParseLevel(string levelString)
         {
-            var logLevel = LogLevelConverter.Parse(levelString);
-            switch (logLevel)
+            switch (levelString)
             {
-                case LogLevel.Trace:
+                case "TRACE":
                     return LogMessageLevel.Trace;
-                case LogLevel.Debug:
+                case "DEBUG":
                     return LogMessageLevel.Debug;
-                case LogLevel.Info:
+                case "INFO":
                     return LogMessageLevel.Info;
-                case LogLevel.Warning:
+                case "WARNING":
+                case "WARN":
                     return LogMessageLevel.Warning;
-                case LogLevel.Error:
+                case "ERROR":
                     return LogMessageLevel.Error;
-                case LogLevel.Fatal:
+                case "FATAL":
                     return LogMessageLevel.Fatal;
                 default:
-                    return LogMessageLevel.Info;
+                    throw new ArgumentException($"Unknown log level: {levelString}", nameof(levelString));
             }
         }
 
         private static string ToLevelString(LogMessageLevel level)
         {
-            LogLevel logLevel;
             switch (level)
             {
-                case LogMessageLevel.Debug:
-                    logLevel = LogLevel.Debug;
-                    break;
-                case LogMessageLevel.Error:
-                    logLevel = LogLevel.Error;
-                    break;
-                case LogMessageLevel.Fatal:
-                    logLevel = LogLevel.Fatal;
-                    break;
-                case LogMessageLevel.Info:
-                    logLevel = LogLevel.Info;
-                    break;
                 case LogMessageLevel.Trace:
-                    logLevel = LogLevel.Trace;
-                    break;
+                    return "TRACE";
+                case LogMessageLevel.Debug:
+                    return "DEBUG";
+                case LogMessageLevel.Info:
+                    return "INFO";
                 case LogMessageLevel.Warning:
-                    logLevel = LogLevel.Warning;
-                    break;
+                    return "WARN";
+                case LogMessageLevel.Error:
+                    return "ERROR";
+                case LogMessageLevel.Fatal:
+                    return "FATAL";
                 default:
-                    logLevel = LogLevel.Info;
-                    break;
+                    throw new ArgumentException($"Unknown log level: {level}", nameof(level));
             }
-
-            return LogLevelConverter.ToLevelString(logLevel);
         }
     }
 }
