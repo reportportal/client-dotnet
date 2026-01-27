@@ -40,7 +40,7 @@ namespace ReportPortal.Shared.Execution.Logging
 
         private static LogMessageLevel ParseLevel(string levelString)
         {
-            switch (levelString)
+            switch (levelString.ToUpperInvariant())
             {
                 case "TRACE":
                     return LogMessageLevel.Trace;
