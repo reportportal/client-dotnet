@@ -1,6 +1,4 @@
 ﻿using System;
-using ReportPortal.Client.Abstractions.Models;
-using ReportPortal.Client.Converters;
 
 namespace ReportPortal.Shared.Execution.Logging
 {

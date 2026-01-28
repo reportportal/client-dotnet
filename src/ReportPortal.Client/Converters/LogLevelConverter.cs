@@ -34,7 +34,7 @@ internal static class LogLevelConverter
             case "FATAL":
                 return LogLevel.Fatal;
             default:
-                return default;
+                throw new ArgumentException($"Unknown log level: {level}", nameof(level));
         }
     }
 

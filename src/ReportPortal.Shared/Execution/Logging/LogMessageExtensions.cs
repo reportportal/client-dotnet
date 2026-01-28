@@ -6,7 +6,7 @@ namespace ReportPortal.Shared.Execution.Logging
     /// <summary>
     /// Provides extension methods for converting log messages to log item requests.
     /// </summary>
-    public static class LogMessageExtensions
+    internal static class LogMessageExtensions
     {
         /// <summary>
         /// Converts a log message to a log item request.

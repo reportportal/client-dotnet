@@ -21,10 +21,11 @@ namespace ReportPortal.Shared.Execution.Logging
         /// Gets or sets the log level of the log message using the strongly-typed <see cref="LogMessageLevel"/> enumeration.
         /// </summary>
         /// <value>A <see cref="LogMessageLevel"/> enumeration value representing the severity level of the log message.</value>
+        /// <exception cref="ArgumentException">Thrown when setting a value that corresponds to an invalid or unrecognized log level string, or when getting a value from an invalid <see cref="LevelString"/>.</exception>
         LogMessageLevel Level { get; set; }
 
         /// <summary>
-        /// Gets or sets the log level of the log message as an uppercase string value (e.g., "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL").
+        /// Gets or sets the log level of the log message as a string value (e.g., "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL").
         /// This property allows for custom or extended log level names beyond the standard <see cref="LogMessageLevel"/> enumeration.
         /// </summary>
         /// <remarks>
