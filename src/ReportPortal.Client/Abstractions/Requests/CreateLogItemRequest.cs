@@ -1,7 +1,7 @@
 ﻿using ReportPortal.Client.Abstractions.Models;
-using ReportPortal.Client.Converters;
 using System;
 using System.Text.Json.Serialization;
+using ReportPortal.Client.Converters;
 
 namespace ReportPortal.Client.Abstractions.Requests
 {
@@ -27,10 +27,30 @@ namespace ReportPortal.Client.Abstractions.Requests
         public DateTime Time { get; set; } = DateTime.UtcNow;
 
         /// <summary>
-        /// A level of log item.
+        /// Gets or sets the log level of the log item as an uppercase string value (e.g., "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL").
         /// </summary>
-        [JsonConverter(typeof(JsonStringEnumConverterEx<LogLevel>))]
-        public LogLevel Level { get; set; } = LogLevel.Info;
+        /// <remarks>
+        /// This property is supported starting from Report Portal version 25.2.
+        /// For type-safe log level handling, use the <see cref="Level"/> property instead, which provides automatic conversion
+        /// between the string representation and the <see cref="LogLevel"/> enumeration using <see cref="LogLevelConverter"/>.
+        /// </remarks>
+        /// <value>Default value is "INFO".</value>
+        [JsonPropertyName("level")]
+        public string LevelString { get; set; } = "INFO";
+
+        /// <summary>
+        /// Gets or sets the log level of the log item using the strongly-typed <see cref="LogLevel"/> enumeration.
+        /// This property provides type-safe access to the log level and automatically converts between the enumeration
+        /// and the string representation stored in <see cref="LevelString"/>.
+        /// </summary>
+        /// <value>A <see cref="LogLevel"/> enumeration value representing the log level. Defaults to <see cref="LogLevel.Info"/> when <see cref="LevelString"/> is "INFO".</value>
+        /// <exception cref="ArgumentException">Thrown when setting a value that corresponds to an invalid or unrecognized log level string, or when getting a value from an invalid <see cref="LevelString"/>.</exception>
+        [JsonIgnore]
+        public LogLevel Level
+        {
+            get => LogLevelConverter.Parse(LevelString);
+            set => LevelString = LogLevelConverter.ToLevelString(value);
+        }
 
         /// <summary>
         /// Message of log item.

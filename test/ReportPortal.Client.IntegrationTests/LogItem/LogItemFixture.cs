@@ -4,10 +4,12 @@ using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ReportPortal.Client.Converters;
 using Xunit;
 
 namespace ReportPortal.Client.IntegrationTests.LogItem
@@ -31,7 +33,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
         [InlineData(LogLevel.Info)]
         [InlineData(LogLevel.Trace)]
         [InlineData(LogLevel.Warning)]
-        public async Task CteateLogWithAllLevels(LogLevel level)
+        public async Task CreateLogWithAllLevels(LogLevel level)
         {
             var now = DateTime.UtcNow;
             var log = await Service.LogItem.CreateAsync(new CreateLogItemRequest
@@ -46,7 +48,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
             Assert.Equal(0, getLog.LaunchId);
             Assert.Equal(_fixture.TestId, getLog.TestItemId);
             Assert.Equal("Log1", getLog.Text);
-            Assert.Equal(now.ToString(), getLog.Time.ToString());
+            Assert.Equal(now.ToString(CultureInfo.InvariantCulture), getLog.Time.ToString(CultureInfo.InvariantCulture));
         }
 
         [Fact]
@@ -223,6 +225,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
             var gotLogItem = await Service.LogItem.GetAsync(log.Uuid);
             Assert.Equal(addLogItemRequest.Text, gotLogItem.Text);
             Assert.Equal(addLogItemRequest.Level, gotLogItem.Level);
+            Assert.Equal("INFO", gotLogItem.LevelString);
             gotLogItem.Time.Should().BeCloseTo(addLogItemRequest.Time, precision: TimeSpan.FromMilliseconds(1));
         }
 
@@ -265,6 +268,29 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
             var tempLogItem = await Service.LogItem.GetAsync(log.Uuid);
             var message = (await Service.LogItem.DeleteAsync(tempLogItem.Id)).Info;
             Assert.Contains("successfully", message);
+        }
+
+        [Fact]
+        public async Task CreateLogWithCustomLevel()
+        {
+            const string customLevel = "DEBUG";
+            const string logText = "Custom Log";
+            var now = DateTime.UtcNow;
+            var log = await Service.LogItem.CreateAsync(new CreateLogItemRequest
+            {
+                TestItemUuid = _fixture.TestUuid,
+                Text = logText,
+                Time = now,
+                LevelString = customLevel
+            });
+
+            Assert.NotNull(log.Uuid);
+            var getLog = await Service.LogItem.GetAsync(log.Uuid);
+            Assert.Equal(0, getLog.LaunchId);
+            Assert.Equal(_fixture.TestId, getLog.TestItemId);
+            Assert.Equal(logText, getLog.Text);
+            Assert.Equal(customLevel, getLog.LevelString); 
+            Assert.Equal(now.ToString(CultureInfo.InvariantCulture), getLog.Time.ToString(CultureInfo.InvariantCulture));
         }
     }
 }
